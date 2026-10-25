@@ -57,6 +57,8 @@ class TvControls extends StatefulWidget {
     this.hasRecord = false,
     this.isRecording = false,
     this.onRecord,
+    this.onSwitchServer,
+    this.switchServerLabel,
     this.infoPanel,
     this.onInteract,
     this.titleIsClean = false,
@@ -136,6 +138,10 @@ class TvControls extends StatefulWidget {
   final bool hasRecord;
   final bool isRecording;
   final VoidCallback? onRecord;
+
+  /// Backup IPTV server switch (null unless the channel has backup servers).
+  final VoidCallback? onSwitchServer;
+  final String? switchServerLabel;
 
   /// Live IPTV glues its channel/now-next panel to the top edge so the two
   /// read as one surface, exactly as the touch dock does.
@@ -454,6 +460,12 @@ class _TvControlsState extends State<TvControls> {
           option: true,
         );
       }
+      add(
+        Icons.swap_horiz_rounded,
+        widget.switchServerLabel ?? 'Switch server',
+        widget.onSwitchServer,
+        option: true,
+      );
       add(
         Icons.bedtime_rounded,
         'Sleep timer',

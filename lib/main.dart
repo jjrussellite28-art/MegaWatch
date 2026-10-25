@@ -1,4 +1,5 @@
 import 'services/webdav_sync/webdav_log_upload.dart';
+import 'services/desktop_remote_mode.dart';
 import 'services/cache_scratch_cleanup.dart';
 import 'services/debrify_image_cache.dart';
 import 'widgets/webdav_sync/webdav_save_status.dart';
@@ -244,7 +245,10 @@ String _describeStartupFailure(Object error, StackTrace stackTrace) {
   return '${clamp(described, 300)}\n${clamp(PrivacyLog.redact(frame), 160)}';
 }
 
+List<String> _remoteModeArguments = const <String>[];
+
 Future<void> _mainUnchecked(List<String> launchArguments) async {
+  _remoteModeArguments = launchArguments;
   WidgetsFlutterBinding.ensureInitialized();
   // Apply app-wide Siri Remote thresholds before any focusable UI is mounted.
   // This is inert on Android, iOS, desktop, and web.
@@ -755,6 +759,7 @@ Future<void> _continueApplicationStartup() async {
   try {
     await TvHeroArtworkQualityController.warm();
   } catch (_) {}
+  await DesktopRemoteMode.start(_remoteModeArguments);
   await _capImageCache();
   await _resolveStartupChannel();
   // Install the Top Shelf action listener before the first Home frame. A cold

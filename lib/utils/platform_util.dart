@@ -64,7 +64,13 @@ class PlatformUtil {
   /// for [isAndroidTvCached] only when something is specific to Android the
   /// platform (the native player handoff, Android intents, the recording
   /// engine) — those have no Apple TV counterpart and must NOT light up here.
-  static bool get isTelevision => isAndroidTvCached || isTvOS;
+  static bool get isTelevision =>
+      isAndroidTvCached || isTvOS || desktopRemoteMode;
+
+  /// Windows "remote mode": the app uses its TV layout and focus navigation so
+  /// a controller or HTPC remote can drive everything. Set at startup by
+  /// DesktopRemoteMode; always false on other platforms.
+  static bool desktopRemoteMode = false;
 
   /// Platforms whose bundled libmpv carries the passive auto-sync analysis
   /// filters (astats/aspectralstats/ametadata), verified per build source:

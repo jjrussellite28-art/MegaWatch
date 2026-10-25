@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show TextEditingController, TextEditingValue, TextSelection;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -126,6 +127,46 @@ class IptvMirrors {
     for (final part in raw.split(RegExp(r'[,;\s]+')))
       if (part.trim().isNotEmpty) part.trim(),
   ];
+
+  /// Makes a server box tidy itself: typing (or pasting) a comma moves to the
+  /// next line, so every server sits on its own line. Works for the on-screen
+  /// TV keyboard too, because it watches the controller, not key presses.
+  static void keepOneServerPerLine(TextEditingController controller) {
+    var busy = false;
+    controller.addListener(() {
+      if (busy) return;
+      final value = controller.value;
+      final text = value.text;
+      if (!text.contains(',')) return;
+      final cursor = value.selection.isValid
+          ? value.selection.extentOffset
+          : text.length;
+      final buffer = StringBuffer();
+      var newCursor = cursor;
+      for (var i = 0; i < text.length; i++) {
+        final ch = text[i];
+        if (ch == ' ' && i > 0 && text[i - 1] == ',') {
+          if (i < cursor) newCursor--; // drop the space after a comma
+          continue;
+        }
+        buffer.write(ch);
+        if (ch == ',' && !(i + 1 < text.length && text[i + 1] == '\n')) {
+          buffer.write('\n');
+          if (i + 1 <= cursor) newCursor++;
+        }
+      }
+      final fixed = buffer.toString();
+      if (fixed == text) return;
+      busy = true;
+      controller.value = TextEditingValue(
+        text: fixed,
+        selection: TextSelection.collapsed(
+          offset: newCursor.clamp(0, fixed.length),
+        ),
+      );
+      busy = false;
+    });
+  }
 
   /// Same cleanup the playlist form applies to a single server URL.
   static String? normalizeServer(String raw) {

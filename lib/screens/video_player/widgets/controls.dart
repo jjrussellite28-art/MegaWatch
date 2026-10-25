@@ -68,6 +68,10 @@ class Controls extends StatelessWidget {
   final bool hasRecord;
   final bool isRecording;
   final VoidCallback? onRecord;
+
+  /// Backup IPTV server switch (null unless the channel has backup servers).
+  final VoidCallback? onSwitchServer;
+  final String? switchServerLabel;
   final VoidCallback? onLiveEdgeAction;
   final bool liveEdgeActionActive;
   final bool liveEdgeActionLoading;
@@ -164,6 +168,8 @@ class Controls extends StatelessWidget {
     this.hasRecord = false,
     this.isRecording = false,
     this.onRecord,
+    this.onSwitchServer,
+    this.switchServerLabel,
     this.onLiveEdgeAction,
     this.liveEdgeActionActive = false,
     this.liveEdgeActionLoading = false,
@@ -662,6 +668,15 @@ class Controls extends StatelessWidget {
                                         : Icons.fiber_manual_record_rounded,
                                     label: isRecording ? 'Stop' : 'Record',
                                     onPressed: onRecord!,
+                                    isCompact: true,
+                                  ),
+
+                                // Backup IPTV server switch
+                                if (onSwitchServer != null)
+                                  NetflixControlButton(
+                                    icon: Icons.swap_horiz_rounded,
+                                    label: switchServerLabel ?? 'Switch server',
+                                    onPressed: onSwitchServer!,
                                     isCompact: true,
                                   ),
 

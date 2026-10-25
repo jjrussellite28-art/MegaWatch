@@ -293,6 +293,7 @@ class _IptvSettingsPageState extends State<IptvSettingsPage>
   @override
   void initState() {
     super.initState();
+    IptvMirrors.keepOneServerPerLine(_xcServerController);
     WidgetsBinding.instance.addObserver(this);
     AnalyticsService.screenView('iptv_settings');
     _tabController = TabController(length: 3, vsync: this);
@@ -1991,9 +1992,12 @@ class _IptvSettingsPageState extends State<IptvSettingsPage>
             controller: _xcServerController,
             focusNode: _xcServerFocusNode,
             labelText: 'Server URL (add backup servers after commas)',
-            hintText: 'http://main.example:8080, http://backup.example:8080',
+            hintText: 'http://main.example:8080,\nhttp://backup.example:8080',
             prefixIcon: const Icon(Icons.dns),
-            textInputAction: TextInputAction.next,
+            keyboardType: TextInputType.multiline,
+            minLines: 3,
+            maxLines: 6,
+            textInputAction: TextInputAction.newline,
             onSubmitted: (_) => _focusAndReveal(_xcUsernameFocusNode),
             onUpArrow: () => _focusAndReveal(_xcNameFocusNode),
             onDownArrow: () => _focusAndReveal(_xcUsernameFocusNode),
@@ -3710,6 +3714,7 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
     _nameController = TextEditingController(text: p.name);
     _urlController = TextEditingController(text: p.url);
     _serverController = TextEditingController(text: p.serverUrl ?? '');
+    IptvMirrors.keepOneServerPerLine(_serverController);
     final mainServer = p.serverUrl;
     if (mainServer != null && mainServer.isNotEmpty) {
       // Show any saved backup servers after the main one.
@@ -3717,7 +3722,7 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
         if (!mounted) return;
         final backups = IptvMirrors.instance.backupsFor(mainServer);
         if (backups.isNotEmpty && _serverController.text == mainServer) {
-          _serverController.text = [mainServer, ...backups].join(', ');
+          _serverController.text = [mainServer, ...backups].join(',\n');
         }
       });
     }
@@ -3896,10 +3901,13 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
           controller: _serverController,
           focusNode: _serverFocusNode,
           labelText: 'Server URL (add backup servers after commas)',
-          hintText: 'http://main.example:8080, http://backup.example:8080',
+          hintText: 'http://main.example:8080,\nhttp://backup.example:8080',
           errorText: _serverError,
           prefixIcon: const Icon(Icons.dns),
-          textInputAction: TextInputAction.next,
+          keyboardType: TextInputType.multiline,
+          minLines: 3,
+          maxLines: 6,
+          textInputAction: TextInputAction.newline,
           onUpArrow: up(_serverFocusNode),
           onDownArrow: down(_serverFocusNode),
         ),

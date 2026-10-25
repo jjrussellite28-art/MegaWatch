@@ -749,6 +749,39 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return true;
   }
 
+  /// Which IPTV server the playing live channel belongs to, or null.
+  IptvStreamAddress? get _iptvServerAddress {
+    final channel = _currentIptvChannel;
+    if (channel == null || !channel.isLive) return null;
+    return IptvMirrors.instance.addressOf(channel.url);
+  }
+
+  /// Bottom-bar "switch server" action: null (button hidden) unless the
+  /// playlist has at least one backup server.
+  VoidCallback? get _iptvServerSwitchAction {
+    final address = _iptvServerAddress;
+    if (address == null ||
+        IptvMirrors.instance.serverCount(address.primary) < 2) {
+      return null;
+    }
+    return () {
+      IptvMirrors.instance.switchNext(address.primary).then((_) {
+        if (!mounted) return;
+        setState(() {});
+        _performIptvLiveRetune('server-switch', 1);
+      });
+    };
+  }
+
+  String? get _iptvServerSwitchLabel {
+    final address = _iptvServerAddress;
+    if (address == null) return null;
+    final count = IptvMirrors.instance.serverCount(address.primary);
+    if (count < 2) return null;
+    final position = IptvMirrors.instance.activeIndex(address.primary) + 1;
+    return 'Server $position/$count';
+  }
+
   /// Re-open the current live channel with its full identity (URL + the
   /// channel's own headers — plan finding P7). A fresh open joins the live
   /// edge. Stremio channels re-run the whole switch so their candidate
@@ -4857,6 +4890,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         );
       } catch (e) {
         debugPrint('Player: stream-lavf-o set failed: $e');
+      }
+      // Faster channel start: live MPEG-TS needs far less probing than ffmpeg's
+      // default before it can show the first picture. Other media goes back to
+      // mpv's automatic probing (0 = default).
+      try {
+        await platform.setProperty(
+          'demuxer-lavf-analyzeduration',
+          liveStream ? '2' : '0',
+        );
+        await platform.setProperty(
+          'demuxer-lavf-probesize',
+          liveStream ? '1000000' : '0',
+        );
+      } catch (e) {
+        debugPrint('Player: fast-start probe settings failed: $e');
       }
       await _applyNetworkTuning(
         platform,
@@ -13163,6 +13211,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               hasRecord: _canRecord,
               isRecording: _recordingActiveNow,
               onRecord: _canRecord ? _toggleRecording : null,
+              onSwitchServer: _iptvServerSwitchAction,
+              switchServerLabel: _iptvServerSwitchLabel,
               onLiveEdgeAction: _iptvLiveEdgeAction,
               liveEdgeActionActive: _iptvStartOverActive,
               liveEdgeActionLoading: _iptvStartOverLoading,
@@ -15632,6 +15682,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                   onRecord: _canRecord
                                       ? _toggleRecording
                                       : null,
+                                  onSwitchServer: _iptvServerSwitchAction,
+                                  switchServerLabel: _iptvServerSwitchLabel,
                                   onLiveEdgeAction: _iptvLiveEdgeAction,
                                   liveEdgeActionActive: _iptvStartOverActive,
                                   liveEdgeActionLoading: _iptvStartOverLoading,
