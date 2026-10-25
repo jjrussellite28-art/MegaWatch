@@ -10,6 +10,7 @@ import '../../models/profiles/profile_policy.dart';
 import '../../services/iptv_catalog_key.dart';
 import '../../services/iptv_catalog_db.dart';
 import '../../services/iptv_catalog_refresh_service.dart';
+import '../../services/iptv_mirrors.dart';
 import '../../services/iptv_service.dart';
 import '../../services/xtream_codes_service.dart';
 import '../../services/storage_service.dart';
@@ -1019,11 +1020,20 @@ class _IptvSettingsPageState extends State<IptvSettingsPage>
       return;
     }
 
-    final serverUrl = _normalizeXtreamServerUrl(server);
+    // The server field can hold backup servers after the main one, separated
+    // by commas, spaces or new lines.
+    final serverParts = IptvMirrors.splitServerField(server);
+    final serverUrl = serverParts.isEmpty
+        ? null
+        : _normalizeXtreamServerUrl(serverParts.first);
     if (serverUrl == null) {
       _showSnackBar('Please enter a valid server URL');
       return;
     }
+    final backupServers = <String>[
+      for (final part in serverParts.skip(1))
+        if (_normalizeXtreamServerUrl(part) case final normalized?) normalized,
+    ];
 
     // Check for duplicate
     if (_playlists.any(
@@ -1070,6 +1080,8 @@ class _IptvSettingsPageState extends State<IptvSettingsPage>
       newPlaylists,
       forSettings: true,
     );
+    if (!mounted) return;
+    await IptvMirrors.instance.setBackups(serverUrl, backupServers);
     if (!mounted) return;
 
     setState(() {
@@ -1716,12 +1728,21 @@ class _IptvSettingsPageState extends State<IptvSettingsPage>
 
     // Normalize an edited Xtream server URL the same way add does.
     String? newServerUrl = playlist.serverUrl;
+    var newBackupServers = <String>[];
     if (playlist.isXtreamCodes) {
-      newServerUrl = _normalizeXtreamServerUrl(result.serverUrl ?? '');
+      final serverParts = IptvMirrors.splitServerField(result.serverUrl ?? '');
+      newServerUrl = serverParts.isEmpty
+          ? null
+          : _normalizeXtreamServerUrl(serverParts.first);
       if (newServerUrl == null) {
         _showSnackBar('Please enter a valid server URL');
         return;
       }
+      newBackupServers = <String>[
+        for (final part in serverParts.skip(1))
+          if (_normalizeXtreamServerUrl(part) case final normalized?)
+            normalized,
+      ];
     }
 
     final epg = (result.epgUrl ?? '').trim();
@@ -1803,6 +1824,16 @@ class _IptvSettingsPageState extends State<IptvSettingsPage>
       forSettings: true,
     );
     if (!mounted) return;
+    if (playlist.isXtreamCodes && updated.serverUrl != null) {
+      if (playlist.serverUrl != null && playlist.serverUrl != updated.serverUrl) {
+        await IptvMirrors.instance.forget(playlist.serverUrl!);
+      }
+      await IptvMirrors.instance.setBackups(
+        updated.serverUrl!,
+        newBackupServers,
+      );
+      if (!mounted) return;
+    }
     setState(() => _playlists = savedPlaylists);
     _showSnackBar('Updated "${updated.name}"', isError: false);
   }
@@ -1959,8 +1990,8 @@ class _IptvSettingsPageState extends State<IptvSettingsPage>
           child: TvTextField(
             controller: _xcServerController,
             focusNode: _xcServerFocusNode,
-            labelText: 'Server URL',
-            hintText: 'http://example.com:8080',
+            labelText: 'Server URL (add backup servers after commas)',
+            hintText: 'http://main.example:8080, http://backup.example:8080',
             prefixIcon: const Icon(Icons.dns),
             textInputAction: TextInputAction.next,
             onSubmitted: (_) => _focusAndReveal(_xcUsernameFocusNode),
@@ -3679,6 +3710,17 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
     _nameController = TextEditingController(text: p.name);
     _urlController = TextEditingController(text: p.url);
     _serverController = TextEditingController(text: p.serverUrl ?? '');
+    final mainServer = p.serverUrl;
+    if (mainServer != null && mainServer.isNotEmpty) {
+      // Show any saved backup servers after the main one.
+      IptvMirrors.instance.load().then((_) {
+        if (!mounted) return;
+        final backups = IptvMirrors.instance.backupsFor(mainServer);
+        if (backups.isNotEmpty && _serverController.text == mainServer) {
+          _serverController.text = [mainServer, ...backups].join(', ');
+        }
+      });
+    }
     _usernameController = TextEditingController(text: p.username ?? '');
     _passwordController = TextEditingController(text: p.password ?? '');
     _epgController = TextEditingController(text: p.epgUrl ?? '');
@@ -3853,8 +3895,8 @@ class _EditPlaylistDialogState extends State<_EditPlaylistDialog> {
         TvTextField(
           controller: _serverController,
           focusNode: _serverFocusNode,
-          labelText: 'Server URL',
-          hintText: 'http://example.com:8080',
+          labelText: 'Server URL (add backup servers after commas)',
+          hintText: 'http://main.example:8080, http://backup.example:8080',
           errorText: _serverError,
           prefixIcon: const Icon(Icons.dns),
           textInputAction: TextInputAction.next,

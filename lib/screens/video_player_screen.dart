@@ -97,6 +97,8 @@ import 'video_player/widgets/playlist_sheet.dart';
 import 'video_player/widgets/channel_guide.dart';
 import 'video_player/widgets/iptv_channel_sheet.dart';
 import 'video_player/widgets/iptv_zap_banner.dart';
+import '../services/iptv_mirrors.dart';
+import '../widgets/iptv/iptv_server_badge.dart';
 import 'video_player/widgets/player_guide_style.dart';
 import '../widgets/iptv/styles/iptv_style.dart';
 import 'video_player/widgets/source_sheet.dart';
@@ -4775,6 +4777,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     int? preserveStartupEpoch,
   }) async {
     if (request?.isCurrent == false) return;
+    // Backup IPTV servers: channel URLs always name the playlist's main
+    // server, so swap in whichever backup the user has switched to.
+    await IptvMirrors.instance.load();
+    final mirroredUri = IptvMirrors.instance.rewrite(media.uri);
+    if (mirroredUri != media.uri) {
+      media = mk.Media(
+        mirroredUri,
+        extras: media.extras,
+        httpHeaders: media.httpHeaders,
+        start: media.start,
+      );
+    }
     final watchEpoch = ++_watchOpenEpoch;
     final sources = _effectiveSources;
     final indexedSource = sources != null &&
@@ -14814,6 +14828,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               }
             }
 
+            // M -> switch to the next backup IPTV server
+            if (key == LogicalKeyboardKey.keyM) {
+              final liveUrl = _currentIptvChannel?.url;
+              final address = liveUrl == null
+                  ? null
+                  : IptvMirrors.instance.addressOf(liveUrl);
+              if (address != null &&
+                  IptvMirrors.instance.serverCount(address.primary) > 1) {
+                IptvMirrors.instance.switchNext(address.primary).then((_) {
+                  if (mounted) _performIptvLiveRetune('server-switch', 1);
+                });
+                return KeyEventResult.handled;
+              }
+            }
+
             // S -> Stremio source sheet
             if (key == LogicalKeyboardKey.keyS) {
               if (_effectiveSources != null &&
@@ -15264,6 +15293,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       ),
                     );
                   },
+                ),
+                // Backup IPTV servers: which server is playing, its speed, and
+                // a one-press switch to the next backup.
+                IptvServerBadge(
+                  channelUrl: (_currentIptvChannel?.isLive ?? false)
+                      ? _currentIptvChannel?.url
+                      : null,
+                  controlsVisible: _controlsVisible,
+                  onSwitched: () => _performIptvLiveRetune('server-switch', 1),
                 ),
                 // Buffering indicator (OTT-style centered spinner)
                 ValueListenableBuilder<bool>(
