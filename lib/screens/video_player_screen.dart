@@ -12088,7 +12088,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       unawaited(PlayerDisplayControls.instance.setWakelock(false));
     }
     if (Platform.isWindows || Platform.isLinux) {
-      windowManager.setFullScreen(false);
+      windowManager.setFullScreen(PlatformUtil.desktopRemoteMode);
     }
     if (!replacedPip) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -15071,7 +15071,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             // Escape key: exit fullscreen first, then quit the player
             if (key == LogicalKeyboardKey.escape) {
               // On Windows/Linux desktop, exit fullscreen first if in fullscreen
-              if (Platform.isWindows || Platform.isLinux) {
+              if ((Platform.isWindows || Platform.isLinux) &&
+                  !PlatformUtil.desktopRemoteMode) {
                 windowManager.isFullScreen().then((isFullScreen) {
                   if (!mounted) return; // Safety check for async callback
                   if (isFullScreen) {

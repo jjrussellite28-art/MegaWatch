@@ -40,7 +40,7 @@ import 'screens/profiles/profile_recovery_screen.dart';
 import 'screens/downloads_screen.dart';
 import 'screens/trakt_calendar_screen.dart';
 import 'screens/magic_tv_screen.dart';
-import 'screens/stremio_tv/stremio_tv_screen.dart';
+import 'screens/usenet/usenet_screen.dart';
 import 'screens/playlist_screen.dart';
 import 'screens/addons_screen.dart';
 import 'services/android_native_downloader.dart';
@@ -1150,9 +1150,6 @@ class _DebrifyAppState extends State<DebrifyApp> {
                   (event.logicalKey == LogicalKeyboardKey.escape ||
                       event.logicalKey == LogicalKeyboardKey.goBack ||
                       event.logicalKey == LogicalKeyboardKey.gameButtonB)) {
-                windowManager.isFullScreen().then((isFullScreen) {
-                  if (isFullScreen) windowManager.setFullScreen(false);
-                });
                 WidgetsBinding.instance.handlePopRoute();
                 return KeyEventResult.handled;
               }
@@ -1540,7 +1537,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     const SettingsScreen(), // 8: Settings
     // 9: Stremio TV — overridden in _buildPage so it gets the resolved TV flag;
     // this const entry is only an index-stable fallback (defaults to phone).
-    const StremioTvScreen(),
+    const UsenetScreen(),
     const WebDavFilesScreen(), // 10: WebDAV
     const PremiumizeFilesScreen(), // 11: Premiumize
     const AllDebridFilesScreen(), // 12: AllDebrid
@@ -1558,7 +1555,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     'PikPak',
     'Addons',
     'Settings',
-    'Stremio TV',
+    'Usenet',
     'WebDAV',
     'Premiumize',
     'AllDebrid',
@@ -1582,7 +1579,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     Icons.cloud_circle_rounded,
     Icons.extension_rounded,
     Icons.settings_rounded,
-    Icons.smart_display_rounded,
+    Icons.newspaper_rounded,
     Icons.cloud_sync_rounded,
     Icons.workspace_premium_rounded,
     Icons.all_inclusive_rounded,
@@ -3253,7 +3250,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       case 9: // Stremio TV — built here (not from the const _pages list) so it
         // gets the resolved native TV flag, like IPTV/YouTube/Home. Without it
         // the screen fell back to a width heuristic that mis-detected the TV.
-        return StremioTvScreen(isTelevision: _isAndroidTv);
+        return UsenetScreen(isTelevision: _isAndroidTv);
       case 13: // IPTV
         return BrowseScreen(
           tabIndex: 13,
@@ -3788,6 +3785,34 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
+                        // Mouse: hovering or clicking the top-left corner opens the
+                        // menu, like the controller's LEFT does. The collapsed
+                        // menu icon sits outside its own (zero-width) bounds, so
+                        // it can never be hit directly - this strip stands in.
+                        if (PlatformUtil.desktopRemoteMode)
+                          Positioned(
+                            left: 0,
+                            top: 0,
+                            child: ValueListenableBuilder<bool>(
+                              valueListenable: _tvSidebarExpanded,
+                              builder: (context, expanded, _) => expanded
+                                  ? const SizedBox.shrink()
+                                  : MouseRegion(
+                                      cursor: SystemMouseCursors.click,
+                                      onEnter: (_) => _tvSidebarKey.currentState
+                                          ?.requestFocus(),
+                                      child: GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () => _tvSidebarKey.currentState
+                                            ?.requestFocus(),
+                                        child: const SizedBox(
+                                          width: 64,
+                                          height: 64,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                          ),
                         // LIGHTS OFF, rail edition: while the Home hero's
                         // ambient trailer plays, the board veils its rows and
                         // hero canvas near-black — this mirrors the same veil

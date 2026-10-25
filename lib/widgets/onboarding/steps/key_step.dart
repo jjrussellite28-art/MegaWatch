@@ -105,7 +105,10 @@ class _KeyStepState extends State<KeyStep> {
   );
   FocusNode? _validationReturnFocus;
 
-  bool get _isPikPak => widget.meta.type == IntegrationType.pikpak;
+  bool get _isEasynews => widget.meta.type == IntegrationType.easynews;
+  // PikPak and Easynews both sign in with a name and a password.
+  bool get _isPikPak =>
+      widget.meta.type == IntegrationType.pikpak || _isEasynews;
   bool get _validating => widget.phase == KeyValidationPhase.validating;
   OnboardCell get _fieldCell => OnboardCell(widget.isTelevision ? 2 : 1, 0);
   OnboardCell get _passwordCell => const OnboardCell(3, 0);
@@ -336,8 +339,10 @@ class _KeyStepState extends State<KeyStep> {
               controller: widget.controller,
               focusNode: _fieldFocus,
               cell: _fieldCell,
-              label: 'Email',
-              keyboardType: TextInputType.emailAddress,
+              label: _isEasynews ? 'Username' : 'Email',
+              keyboardType: _isEasynews
+                  ? TextInputType.text
+                  : TextInputType.emailAddress,
               onSubmitted: (_) => _passwordFocus.requestFocus(),
             ),
             const SizedBox(height: 8),
@@ -346,7 +351,9 @@ class _KeyStepState extends State<KeyStep> {
               focusNode: _passwordFocus,
               cell: _passwordCell,
               label: 'Password',
-              hintText: 'Enter your PikPak password',
+              hintText: _isEasynews
+                  ? 'Enter your Easynews password'
+                  : 'Enter your PikPak password',
               obscureText: true,
               onSubmitted: (_) => widget.onConnect(),
             ),

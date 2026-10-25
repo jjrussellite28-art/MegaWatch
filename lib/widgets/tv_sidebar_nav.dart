@@ -885,10 +885,19 @@ class TvSidebarNavState extends State<TvSidebarNav>
     // when it opens — this only adds what stands in for the rail at rest.
     if (_style != 'pill') return shell;
     final pad = MediaQuery.paddingOf(context);
+    final mouseMode = PlatformUtil.desktopRemoteMode;
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        shell,
+        // Remote mode with a mouse: moving off the open menu closes it again.
+        mouseMode
+            ? MouseRegion(
+                onExit: (_) {
+                  if (_hasSidebarFocus) _moveToContent();
+                },
+                child: shell,
+              )
+            : shell,
         // Hard into the corner: the safe-area inset and NOTHING else. The
         // capsule is transient, so a comfortable margin only buys it more
         // content to sit on; flush to the edge is where it overlaps least.
@@ -910,12 +919,30 @@ class TvSidebarNavState extends State<TvSidebarNav>
         Positioned(
           left: pad.left,
           top: pad.top,
-          child: IgnorePointer(
-            child: KeyedSubtree(
-              key: TvSidebarNav.pillKey,
-              child: _buildPill(app),
-            ),
-          ),
+          child: mouseMode
+              ? MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  onEnter: (_) {
+                    if (!_hasSidebarFocus) requestFocus();
+                  },
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: requestFocus,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: KeyedSubtree(
+                        key: TvSidebarNav.pillKey,
+                        child: _buildPill(app),
+                      ),
+                    ),
+                  ),
+                )
+              : IgnorePointer(
+                  child: KeyedSubtree(
+                    key: TvSidebarNav.pillKey,
+                    child: _buildPill(app),
+                  ),
+                ),
         ),
       ],
     );

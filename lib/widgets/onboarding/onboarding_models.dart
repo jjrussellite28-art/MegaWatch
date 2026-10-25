@@ -14,7 +14,14 @@ OnboardLayout resolveOnboardLayout({
   return OnboardLayout.stage;
 }
 
-enum IntegrationType { realDebrid, torbox, pikpak, premiumize, allDebrid }
+enum IntegrationType {
+  realDebrid,
+  torbox,
+  pikpak,
+  premiumize,
+  allDebrid,
+  easynews,
+}
 
 class IntegrationMeta {
   const IntegrationMeta({
@@ -98,6 +105,17 @@ const Map<IntegrationType, IntegrationMeta> integrationMeta = {
     description: 'Unlock cached torrents and supported file hosts.',
     color: Color(0xFF26A69A),
     icon: Icons.all_inclusive_rounded,
+  ),
+  IntegrationType.easynews: IntegrationMeta(
+    type: IntegrationType.easynews,
+    title: 'Easynews (Usenet)',
+    url: 'https://www.easynews.com/',
+    linkLabel: 'Open Easynews',
+    inputLabel: 'Username',
+    hint: 'Your Easynews username',
+    description: 'Search Usenet and stream straight from your Easynews account.',
+    color: Color(0xFFE5484D),
+    icon: Icons.newspaper_rounded,
   ),
 };
 
