@@ -1142,6 +1142,20 @@ class _DebrifyAppState extends State<DebrifyApp> {
             autofocus: false,
             canRequestFocus: false,
             onKeyEvent: (node, event) {
+              // Remote mode: BACK (Escape / controller B / remote Back) that no
+              // screen handled acts like the system Back button on an Android
+              // box - it pops a page or opens the side menu at the root.
+              if (PlatformUtil.desktopRemoteMode &&
+                  event is KeyDownEvent &&
+                  (event.logicalKey == LogicalKeyboardKey.escape ||
+                      event.logicalKey == LogicalKeyboardKey.goBack ||
+                      event.logicalKey == LogicalKeyboardKey.gameButtonB)) {
+                windowManager.isFullScreen().then((isFullScreen) {
+                  if (isFullScreen) windowManager.setFullScreen(false);
+                });
+                WidgetsBinding.instance.handlePopRoute();
+                return KeyEventResult.handled;
+              }
               if (event is KeyDownEvent &&
                   event.logicalKey == LogicalKeyboardKey.escape) {
                 // Check if in fullscreen and exit

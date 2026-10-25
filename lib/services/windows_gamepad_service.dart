@@ -66,6 +66,18 @@ class WindowsGamepadService {
   int _lastScan = 0;
   List<int> _connected = const [];
 
+  /// Other (non-Xbox) controllers, read through the older Windows joystick
+  /// API: PlayStation pads, generic USB pads, GameSir in DirectInput mode.
+  List<int> _joyConnected = const [];
+  Pointer<Uint8>? _joyInfo;
+  Pointer<Uint8>? _joyCaps;
+  bool _joyOk = false;
+  final Map<int, _PadKind> _joyKinds = <int, _PadKind>{};
+
+  /// Name of the controller last seen driving the app, e.g. "Xbox controller"
+  /// or "PlayStation controller". Null when none is connected.
+  final ValueNotifier<String?> controllerName = ValueNotifier<String?>(null);
+
   final Set<int> _held = <int>{};
   final Map<int, int> _nextRepeatMs = <int, int>{};
   final Stopwatch _clock = Stopwatch()..start();
@@ -74,6 +86,8 @@ class WindowsGamepadService {
   late final void Function(int, int, int, int) _keybdEvent;
   late final int Function() _foregroundWindow;
   late final int Function(int, Pointer<Uint32>) _windowProcessId;
+  late final int Function(int, Pointer<Uint8>) _joyGetPosEx;
+  late final int Function(int, Pointer<Uint8>, int) _joyGetDevCaps;
 
   /// Starts polling. Safe to call more than once; does nothing off Windows or
   /// when XInput can't be loaded.
@@ -101,6 +115,24 @@ class WindowsGamepadService {
           )
           .asFunction();
       _state = calloc<Uint8>(16);
+      try {
+        final winmm = DynamicLibrary.open('winmm.dll');
+        _joyGetPosEx = winmm
+            .lookup<NativeFunction<Uint32 Function(Uint32, Pointer<Uint8>)>>(
+              'joyGetPosEx',
+            )
+            .asFunction();
+        _joyGetDevCaps = winmm
+            .lookup<
+              NativeFunction<Uint32 Function(IntPtr, Pointer<Uint8>, Uint32)>
+            >('joyGetDevCapsW')
+            .asFunction();
+        _joyInfo = calloc<Uint8>(52);
+        _joyCaps = calloc<Uint8>(1024);
+        _joyOk = true;
+      } catch (e) {
+        debugPrint('WindowsGamepadService: joystick API unavailable ($e)');
+      }
     } catch (e) {
       debugPrint('WindowsGamepadService: unavailable ($e)');
       return;
@@ -178,7 +210,17 @@ class WindowsGamepadService {
       ];
     }
 
+    if (_joyOk && nowMs - _lastJoyScan > 1000) {
+      _lastJoyScan = nowMs;
+      _scanJoysticks();
+    }
+
     final wanted = <int>{};
+    if (_connected.isEmpty && _joyConnected.isNotEmpty && _appIsActive) {
+      for (final id in _joyConnected) {
+        _readJoystick(id, wanted);
+      }
+    }
     if (_connected.isNotEmpty && _appIsActive) {
       for (final index in _connected) {
         if (_getState(index, _state!) != 0) continue;
@@ -198,6 +240,13 @@ class WindowsGamepadService {
         if (buttons & _rb != 0) wanted.add(_vkPageDown);
       }
     }
+    if (_connected.isNotEmpty) {
+      controllerName.value = 'Xbox controller';
+    } else if (_joyConnected.isNotEmpty) {
+      controllerName.value = _joyKinds[_joyConnected.first]?.label;
+    } else {
+      controllerName.value = null;
+    }
 
     // Released keys.
     for (final vk in _held.difference(wanted).toList()) {
@@ -215,7 +264,92 @@ class WindowsGamepadService {
         _nextRepeatMs[vk] = nowMs + (_isNavigation(vk) ? 90 : 40);
       }
     }
-    if (_connected.isEmpty && _held.isNotEmpty) _releaseAll();
+    if (_connected.isEmpty && _joyConnected.isEmpty && _held.isNotEmpty) {
+      _releaseAll();
+    }
+  }
+
+  int _lastJoyScan = 0;
+
+  void _scanJoysticks() {
+    final found = <int>[];
+    final info = _joyInfo!;
+    for (var id = 0; id < 16; id++) {
+      info.asTypedList(52).fillRange(0, 52, 0);
+      ByteData.sublistView(info.asTypedList(52)).setUint32(0, 52, Endian.little);
+      ByteData.sublistView(info.asTypedList(52)).setUint32(4, 0xFF, Endian.little);
+      if (_joyGetPosEx(id, info) != 0) continue;
+      found.add(id);
+      _joyKinds.putIfAbsent(id, () => _identify(id));
+    }
+    _joyKinds.removeWhere((id, _) => !found.contains(id));
+    _joyConnected = found;
+  }
+
+  _PadKind _identify(int id) {
+    try {
+      final caps = _joyCaps!;
+      if (_joyGetDevCaps(id, caps, 728) != 0) return _PadKind.generic;
+      final vendor = ByteData.sublistView(caps.asTypedList(8)).getUint16(
+        0,
+        Endian.little,
+      );
+      final nameBytes = caps.asTypedList(68).sublist(4, 68);
+      final name = String.fromCharCodes(
+        Uint16List.view(Uint8List.fromList(nameBytes).buffer),
+      ).split('\u0000').first.toLowerCase();
+      if (vendor == 0x054C ||
+          name.contains('dualsense') ||
+          name.contains('dualshock') ||
+          name.contains('wireless controller')) {
+        return _PadKind.playstation;
+      }
+    } catch (_) {}
+    return _PadKind.generic;
+  }
+
+  /// Reads one non-Xbox controller and adds the keys it is pressing.
+  void _readJoystick(int id, Set<int> wanted) {
+    final info = _joyInfo!;
+    info.asTypedList(52).fillRange(0, 52, 0);
+    final data = ByteData.sublistView(info.asTypedList(52));
+    data.setUint32(0, 52, Endian.little);
+    data.setUint32(4, 0xFF, Endian.little);
+    if (_joyGetPosEx(id, info) != 0) return;
+    final x = data.getUint32(8, Endian.little);
+    final y = data.getUint32(12, Endian.little);
+    final buttons = data.getUint32(32, Endian.little);
+    final pov = data.getUint32(40, Endian.little) & 0xFFFF;
+    const low = 32768 - 16000;
+    const high = 32768 + 16000;
+    if (y < low) wanted.add(_vkUp);
+    if (y > high) wanted.add(_vkDown);
+    if (x < low) wanted.add(_vkLeft);
+    if (x > high) wanted.add(_vkRight);
+    if (pov != 0xFFFF) {
+      if (pov >= 31500 || pov <= 4500) wanted.add(_vkUp);
+      if (pov >= 4500 && pov <= 13500) wanted.add(_vkRight);
+      if (pov >= 13500 && pov <= 22500) wanted.add(_vkDown);
+      if (pov >= 22500 && pov <= 31500) wanted.add(_vkLeft);
+    }
+    bool pressed(int n) => buttons & (1 << n) != 0;
+    final kind = _joyKinds[id] ?? _PadKind.generic;
+    if (kind == _PadKind.playstation) {
+      // Windows numbers a PlayStation pad: 0 Square, 1 Cross, 2 Circle,
+      // 3 Triangle, 4 L1, 5 R1, 8 Share, 9 Options.
+      if (pressed(1)) wanted.add(_vkReturn); // Cross = OK
+      if (pressed(2) || pressed(8)) wanted.add(_vkEscape); // Circle = back
+      if (pressed(9)) wanted.add(_vkPlayPause); // Options
+      if (pressed(4)) wanted.add(_vkPageUp);
+      if (pressed(5)) wanted.add(_vkPageDown);
+    } else {
+      // Generic pad (Xbox-style order): 0 A, 1 B, 4 LB, 5 RB, 6 Back, 7 Start.
+      if (pressed(0)) wanted.add(_vkReturn);
+      if (pressed(1) || pressed(6)) wanted.add(_vkEscape);
+      if (pressed(7)) wanted.add(_vkPlayPause);
+      if (pressed(4)) wanted.add(_vkPageUp);
+      if (pressed(5)) wanted.add(_vkPageDown);
+    }
   }
 
   bool _isNavigation(int vk) =>
@@ -225,4 +359,12 @@ class WindowsGamepadService {
       vk == _vkRight ||
       vk == _vkPageUp ||
       vk == _vkPageDown;
+}
+
+enum _PadKind {
+  generic('Game controller'),
+  playstation('PlayStation controller');
+
+  const _PadKind(this.label);
+  final String label;
 }

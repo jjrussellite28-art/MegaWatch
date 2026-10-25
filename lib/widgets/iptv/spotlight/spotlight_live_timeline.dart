@@ -1831,14 +1831,14 @@ class _SpotlightLiveTimelineState extends State<SpotlightLiveTimeline> {
           else if (snapshot!.programmes.isEmpty)
             _GuideMessage(
               key: ValueKey(('spotlight-empty', entry.entryKey)),
-              label: 'No programme information',
+              label: 'No guide data from your provider for this channel',
               color: tokens.fgFaint,
               onTap: () => _tapIdentity(row),
             )
           else if (visible.isEmpty)
             _GuideMessage(
               key: ValueKey(('spotlight-window-empty', entry.entryKey)),
-              label: 'No information in this time window',
+              label: 'Nothing listed in this time window - scroll to another time',
               color: tokens.fgFaint,
               onTap: () => _tapIdentity(row),
             ),

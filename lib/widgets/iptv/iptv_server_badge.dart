@@ -35,7 +35,6 @@ class _IptvServerBadgeState extends State<IptvServerBadge> {
   IptvServerHealth? _health;
   String? _checkedServer;
   Timer? _timer;
-  bool _switching = false;
   int _ticket = 0;
 
   @override
@@ -89,19 +88,6 @@ class _IptvServerBadgeState extends State<IptvServerBadge> {
     });
   }
 
-  Future<void> _switch(IptvStreamAddress address) async {
-    if (_switching) return;
-    setState(() => _switching = true);
-    await IptvMirrors.instance.switchNext(address.primary);
-    if (!mounted) return;
-    setState(() {
-      _switching = false;
-      _health = null;
-    });
-    widget.onSwitched();
-    unawaited(_probe());
-  }
-
   Color _color(IptvServerHealth? health) {
     if (health == null) return Colors.white54;
     if (!health.online) return const Color(0xFFFF5C6C);
@@ -148,7 +134,7 @@ class _IptvServerBadgeState extends State<IptvServerBadge> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 72, right: 16),
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
+                  padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.72),
                     borderRadius: BorderRadius.circular(22),
@@ -181,23 +167,6 @@ class _IptvServerBadgeState extends State<IptvServerBadge> {
                           ),
                         ],
                       ),
-                      if (count > 1) ...[
-                        const SizedBox(width: 10),
-                        TextButton.icon(
-                          onPressed: _switching
-                              ? null
-                              : () => _switch(address),
-                          icon: const Icon(Icons.swap_horiz_rounded, size: 18),
-                          label: const Text('Switch (M)'),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.white.withValues(
-                              alpha: 0.14,
-                            ),
-                            shape: const StadiumBorder(),
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),
