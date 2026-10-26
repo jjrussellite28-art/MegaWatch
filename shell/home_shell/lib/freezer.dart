@@ -35,6 +35,13 @@ class Freezer {
     'sihost.exe',
     'taskmgr.exe',
     'lockapp.exe',
+    'steamwebhelper.exe',
+    'gamebar.exe',
+    'gamebarftserver.exe',
+    'xboxpcapp.exe',
+    'discord.exe',
+    'home_shell.exe',
+    'everything bar.exe',
   };
 
   bool _init() {
@@ -92,25 +99,49 @@ class Freezer {
   /// Pauses the program that is in front right now (if it is safe to).
   void freezeForeground() {
     if (!_init()) return;
-    thawAll();
+    _current = 0;
     final p = OpenWindows.instance.foregroundPid();
     if (p == 0 || p == pid) return;
     final exe = OpenWindows.instance.exeOf(p).toLowerCase();
     if (exe.isEmpty) return;
     final name = exe.split('\\').last;
     if (_neverFreeze.contains(name)) return;
+    if (_frozen.contains(p)) return;
     if (_act(p, _suspend) == 0) {
       _frozen.add(p);
+      _current = p;
       _persist();
     }
   }
 
+  /// The program that was paused when the bar opened.
+  int _current = 0;
+
+  bool isFrozen(int processId) => processId != 0 && _frozen.contains(processId);
+
+  /// Resumes one program. Always do this BEFORE asking Windows to switch to
+  /// its window: switching to a paused window makes the bar wait on it.
+  void thawPid(int processId) {
+    if (!_ready || !_frozen.remove(processId)) return;
+    _act(processId, _resume);
+    if (_current == processId) _current = 0;
+    _persist();
+  }
+
+  void thawWindow(int hwnd) => thawPid(OpenWindows.instance.pidOf(hwnd));
+
+  /// Resumes only the program that was in front when the bar opened.
+  void thawCurrent() {
+    if (_current != 0) thawPid(_current);
+  }
+
   void thawAll() {
     if (!_ready || _frozen.isEmpty) return;
-    for (final p in _frozen) {
+    for (final p in _frozen.toList()) {
       _act(p, _resume);
     }
     _frozen.clear();
+    _current = 0;
     try {
       if (_file.existsSync()) _file.deleteSync();
     } catch (_) {}

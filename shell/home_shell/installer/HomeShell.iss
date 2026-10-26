@@ -1,18 +1,19 @@
-; Home Shell installer (Inno Setup 6). Per-user: no admin rights, nothing in system folders.
+; Everything Bar installer (Inno Setup 6). Per-user: no admin rights, nothing in system folders.
 ; Build:  flutter build windows --release   then compile this file with Inno Setup.
-#define AppName "Home Shell"
-#define AppExe "home_shell.exe"
+#define AppName "Everything Bar"
+#define AppExe "Everything Bar.exe"
 #define BuildDir "..\build\windows\x64\runner\Release"
 
 [Setup]
+; Kept the same as the first version so an update replaces it instead of installing twice.
 AppId={{6F3B1D0C-4E5A-4C8B-9A71-HOMESHELL0001}
 AppName={#AppName}
-AppVersion=0.1.0
+AppVersion=0.2.0
 DefaultDirName={localappdata}\HomeShell
 DefaultGroupName={#AppName}
 PrivilegesRequired=lowest
 OutputDir=output
-OutputBaseFilename=HomeShell-Setup
+OutputBaseFilename=EverythingBar-Setup
 Compression=lzma2
 SolidCompression=yes
 UninstallDisplayName={#AppName}
@@ -20,21 +21,32 @@ UninstallDisplayIcon={app}\{#AppExe}
 CloseApplications=yes
 RestartApplications=no
 
+[Tasks]
+Name: "desktopicon"; Description: "Put an Everything Bar shortcut on the desktop"; Flags: checkedonce
+
+[InstallDelete]
+; Old name from the first version.
+Type: files; Name: "{app}\home_shell.exe"
+
 [Files]
-Source: "{#BuildDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#BuildDir}\home_shell.exe"; DestDir: "{app}"; DestName: "{#AppExe}"; Flags: ignoreversion
+Source: "{#BuildDir}\*"; DestDir: "{app}"; Excludes: "home_shell.exe"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExe}"
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopicon
 
 [Registry]
 ; Same startup entry the app uses itself; removed on uninstall.
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "HomeShell"; ValueData: """{app}\{#AppExe}"""; Flags: uninsdeletevalue
 
 [Run]
-Filename: "{app}\{#AppExe}"; Description: "Start Home Shell now"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#AppExe}"; Description: "Start {#AppName} now"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
-Filename: "{sys}\taskkill.exe"; Parameters: "/F /IM {#AppExe}"; Flags: runhidden; RunOnceId: "KillHomeShell"
+; Resume anything the bar had paused, then close it.
+Filename: "{app}\{#AppExe}"; Parameters: "--thaw"; Flags: runhidden waituntilterminated; RunOnceId: "ThawEverythingBar"
+Filename: "{sys}\taskkill.exe"; Parameters: "/F /IM ""{#AppExe}"""; Flags: runhidden; RunOnceId: "KillEverythingBar"
 
 [Code]
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);

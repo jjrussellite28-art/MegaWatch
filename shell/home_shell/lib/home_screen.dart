@@ -8,6 +8,7 @@ import 'package:window_manager/window_manager.dart';
 import 'icon_cache.dart';
 import 'launcher.dart';
 import 'open_windows.dart';
+import 'quick_settings.dart';
 import 'autostart.dart';
 import 'freezer.dart';
 import 'gamepad.dart';
@@ -130,8 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with WindowListener {
   }
 
   void _switchTo(OpenWindow w) {
-    OpenWindows.instance.switchTo(w.hwnd);
-    ShellMode.instance.hide();
+    ShellMode.instance.goTo(w.hwnd);
   }
 
   void _closeWindow(OpenWindow w) {
@@ -140,6 +140,7 @@ class _HomeScreenState extends State<HomeScreen> with WindowListener {
   }
 
   Future<void> _launch(ShellTile t) async {
+    await WindowsGamepadService.instance.waitForRelease();
     final err = await Launcher.open(t);
     if (err == null) {
       ShellMode.instance.hide();
@@ -210,18 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with WindowListener {
     final choice = await _inBigWindow<String>(
       () => showDialog<String>(
         context: context,
-        builder: (ctx) => SimpleDialog(
-          title: const Text('Power & more'),
-          children: [
-            _menuItem(ctx, 'settings', Icons.settings_rounded, 'Settings (bar button, hold time...)', first: true),
-            _menuItem(ctx, 'sleep', Icons.bedtime_rounded, 'Sleep'),
-            _menuItem(ctx, 'restart', Icons.restart_alt_rounded, 'Restart'),
-            _menuItem(ctx, 'shutdown', Icons.power_settings_new_rounded, 'Shut down'),
-            _menuItem(ctx, 'signout', Icons.logout_rounded, 'Sign out'),
-            _menuItem(ctx, 'keyboard', Icons.keyboard_rounded, 'Open on-screen keyboard'),
-            _menuItem(ctx, 'exit', Icons.close_rounded, 'Close this bar (Home Shell)'),
-          ],
-        ),
+        builder: (ctx) => const QuickSettingsDialog(),
       ),
     );
     switch (choice) {
@@ -237,20 +227,15 @@ class _HomeScreenState extends State<HomeScreen> with WindowListener {
         await Launcher.signOut();
       case 'keyboard':
         await Launcher.screenKeyboard();
+        await WindowsGamepadService.instance.waitForRelease();
+        await ShellMode.instance.hide(resumePrevious: true);
+      case 'hide':
+        await WindowsGamepadService.instance.waitForRelease();
+        await ShellMode.instance.hide();
       case 'exit':
         Freezer.instance.thawAll();
         await windowManager.destroy();
     }
-  }
-
-  Widget _menuItem(BuildContext ctx, String value, IconData icon, String label,
-      {bool first = false}) {
-    return ListTile(
-      autofocus: first,
-      leading: Icon(icon),
-      title: Text(label, style: const TextStyle(fontSize: 20)),
-      onTap: () => Navigator.pop(ctx, value),
-    );
   }
 
   // ---- bar ------------------------------------------------------------------
@@ -284,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> with WindowListener {
       items.add(
         _BarItem(
           key: ValueKey('w${w.hwnd}'),
-          label: w.title,
+          label: Freezer.instance.isFrozen(OpenWindows.instance.pidOf(w.hwnd)) ? '${w.title}  (paused)' : w.title,
           color: icon != null ? const Color(0xFF232B3F) : fallbackColor,
           dot: true,
           autofocus: af(),
@@ -341,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> with WindowListener {
     items.add(
       _BarItem(
         key: const ValueKey('power'),
-        label: 'Power & more',
+        label: 'Quick settings & power',
         color: const Color(0xFF232B3F),
         onTap: _powerMenu,
         onFocusLabel: (t) => _label.value = t,
@@ -981,6 +966,16 @@ class _SettingsDialogState extends State<_SettingsDialog> {
                     style: TextStyle(fontSize: 15)),
                 onChanged: (v) {
                   setState(() => s.pinned = v);
+                  s.save();
+                },
+              ),
+              SwitchListTile(
+                value: s.keepFrozen,
+                title: const Text('Keep the app you left paused', style: TextStyle(fontSize: 19)),
+                subtitle: const Text('When you open another app, the one you left stays paused until you switch back to it',
+                    style: TextStyle(fontSize: 15)),
+                onChanged: (v) {
+                  setState(() => s.keepFrozen = v);
                   s.save();
                 },
               ),

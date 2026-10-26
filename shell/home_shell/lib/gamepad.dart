@@ -94,6 +94,78 @@ class WindowsGamepadService {
   final ValueNotifier<String?> controllerName = ValueNotifier<String?>(null);
 
   final Set<int> _held = <int>{};
+
+  /// Left stick moves the mouse, A / B click, right stick scrolls — used while
+  /// another app is in front. Off at every start.
+  final ValueNotifier<bool> cursorMode = ValueNotifier<bool>(false);
+  void Function(int, int, int, int, int)? _mouseEvent;
+  bool _cursorLeftDown = false;
+  bool _cursorRightDown = false;
+  Pointer<Uint32>? _pidOut;
+  bool _activeNow = false;
+  int _frame = 0;
+
+  void setCursorMode(bool on) {
+    cursorMode.value = on;
+    if (!on) _releaseCursorButtons();
+  }
+
+  void _releaseCursorButtons() {
+    final m = _mouseEvent;
+    if (m == null) return;
+    if (_cursorLeftDown) m(0x0004, 0, 0, 0, 0);
+    if (_cursorRightDown) m(0x0010, 0, 0, 0, 0);
+    _cursorLeftDown = false;
+    _cursorRightDown = false;
+  }
+
+  void _cursorTick() {
+    final m = _mouseEvent;
+    if (m == null || _connected.isEmpty) return;
+    if (_getState(_connected.first, _state!) != 0) return;
+    final d = ByteData.sublistView(_state!.asTypedList(16));
+    final b = d.getUint16(4, Endian.little);
+    double axis(int v) {
+      const dead = 7849;
+      if (v.abs() < dead) return 0;
+      final n = (v.abs() - dead) / (32767 - dead);
+      return (v < 0 ? -1 : 1) * n * n;
+    }
+
+    final dx = (axis(d.getInt16(8, Endian.little)) * 22).round();
+    final dy = (-axis(d.getInt16(10, Endian.little)) * 22).round();
+    if (dx != 0 || dy != 0) m(0x0001, dx, dy, 0, 0);
+    final wheel = (axis(d.getInt16(14, Endian.little)) * 90).round();
+    if (wheel != 0) m(0x0800, 0, 0, wheel, 0);
+    final a = b & _a != 0;
+    if (a && !_cursorLeftDown) m(0x0002, 0, 0, 0, 0);
+    if (!a && _cursorLeftDown) m(0x0004, 0, 0, 0, 0);
+    _cursorLeftDown = a;
+    final r = b & _b != 0;
+    if (r && !_cursorRightDown) m(0x0008, 0, 0, 0, 0);
+    if (!r && _cursorRightDown) m(0x0010, 0, 0, 0, 0);
+    _cursorRightDown = r;
+  }
+
+  /// Waits until every controller button is let go (up to [max]), plus a short
+  /// pause. Used before waking or opening another app, so the button you just
+  /// pressed on the bar is not seen by that app.
+  Future<void> waitForRelease({Duration max = const Duration(milliseconds: 1500)}) async {
+    if (!_started) return;
+    final end = _clock.elapsedMilliseconds + max.inMilliseconds;
+    while (_clock.elapsedMilliseconds < end) {
+      var down = false;
+      for (final i in _connected) {
+        if (_padButtons(i) & 0xF3FF != 0) down = true;
+      }
+      for (final id in _joyConnected) {
+        if (_joyButtons(id) != 0) down = true;
+      }
+      if (!down) break;
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+  }
   final Map<int, int> _nextRepeatMs = <int, int>{};
   final Stopwatch _clock = Stopwatch()..start();
 
@@ -131,6 +203,14 @@ class WindowsGamepadService {
           .asFunction();
       _state = calloc<Uint8>(16);
       _exState = calloc<Uint8>(16);
+      _pidOut = calloc<Uint32>();
+      try {
+        _mouseEvent = user32
+            .lookup<NativeFunction<Void Function(Uint32, Int32, Int32, Int32, IntPtr)>>(
+              'mouse_event',
+            )
+            .asFunction();
+      } catch (_) {}
       _asyncKey = user32
           .lookup<NativeFunction<Int16 Function(Int32)>>('GetAsyncKeyState')
           .asFunction();
@@ -374,16 +454,14 @@ class WindowsGamepadService {
     if (wantHome && !_appIsActive) onHomeRequested?.call();
   }
 
-  bool get _appIsActive {
+  bool get _appIsActive => _activeNow;
+
+  bool _computeActive() {
     final hwnd = _foregroundWindow();
     if (hwnd == 0) return false;
-    final out = calloc<Uint32>();
-    try {
-      _windowProcessId(hwnd, out);
-      return out.value == pid;
-    } finally {
-      calloc.free(out);
-    }
+    final out = _pidOut!;
+    _windowProcessId(hwnd, out);
+    return out.value == pid;
   }
 
   void _sendKey(int vk, {required bool down}) {
@@ -406,6 +484,16 @@ class WindowsGamepadService {
   }
 
   void _tick() {
+    _activeNow = _computeActive();
+    // Idle (another app in front, nothing to do): wake only every third frame
+    // to keep CPU use close to zero. Full speed while the bar is in front.
+    if (!_activeNow &&
+        !cursorMode.value &&
+        _recording == null &&
+        _held.isEmpty &&
+        (++_frame % 3 != 0)) {
+      return;
+    }
     final nowMs = _clock.elapsedMilliseconds;
 
     // Look for connected controllers about once a second; polling an empty
@@ -424,6 +512,7 @@ class WindowsGamepadService {
     }
 
     _checkGuide();
+    if (cursorMode.value && !_activeNow) _cursorTick();
 
     final wanted = <int>{};
     if (_connected.isEmpty && _joyConnected.isNotEmpty && _appIsActive) {

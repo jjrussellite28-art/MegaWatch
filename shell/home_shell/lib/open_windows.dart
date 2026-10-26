@@ -184,6 +184,22 @@ class OpenWindows {
     }
   }
 
+  /// Process id that owns [hwnd] (0 if unknown).
+  int pidOf(int hwnd) {
+    try {
+      _init();
+      final b = calloc<Uint32>();
+      try {
+        _getPid(hwnd, b);
+        return b.value;
+      } finally {
+        calloc.free(b);
+      }
+    } catch (_) {
+      return 0;
+    }
+  }
+
   /// Process id of the window in front (0 if none).
   int foregroundPid() {
     try {

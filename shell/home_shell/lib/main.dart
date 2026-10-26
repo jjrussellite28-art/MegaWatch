@@ -11,8 +11,13 @@ import 'freezer.dart';
 import 'settings.dart';
 import 'shell_mode.dart';
 
-Future<void> main() async {
+Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (args.contains('--thaw')) {
+    // Used by the uninstaller: resume anything left paused, then quit.
+    Freezer.instance.resumeStale();
+    exit(0);
+  }
   await ShellSettings.instance.load();
   Freezer.instance.resumeStale();
   if (Platform.isWindows && !ShellSettings.instance.autostartDone) {
@@ -25,7 +30,7 @@ Future<void> main() async {
     await windowManager.ensureInitialized();
     await windowManager.waitUntilReadyToShow(
       const WindowOptions(
-        title: 'Home Shell',
+        title: 'Everything Bar',
         size: Size(640, 156),
         backgroundColor: Color(0xFF11151F),
         titleBarStyle: TitleBarStyle.hidden,
@@ -53,7 +58,7 @@ class HomeShellApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Home Shell',
+      title: 'Everything Bar',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,

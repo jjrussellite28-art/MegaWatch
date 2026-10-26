@@ -95,6 +95,9 @@ class ShellSettings {
   /// Pause the app behind the bar while the bar is open.
   bool freeze = true;
 
+  /// Keep the app you left paused until you switch back to it.
+  bool keepFrozen = true;
+
   /// Keep the bar on screen all the time (it shrinks to just icons when you
   /// are using another app). Turn off to hide it after each use.
   bool pinned = false;
@@ -114,6 +117,7 @@ class ShellSettings {
           }
           holdMs = (j['holdMs'] as num?)?.toInt() ?? holdMs;
           freeze = j['freeze'] as bool? ?? freeze;
+          keepFrozen = j['keepFrozen'] as bool? ?? keepFrozen;
           pinned = j['pinned'] as bool? ?? pinned;
           autostartDone = j['autostartDone'] as bool? ?? autostartDone;
         }
@@ -129,6 +133,7 @@ class ShellSettings {
           'shortcut': shortcut.toJson(),
           'holdMs': holdMs,
           'freeze': freeze,
+          'keepFrozen': keepFrozen,
           'pinned': pinned,
           'autostartDone': autostartDone,
         }),
