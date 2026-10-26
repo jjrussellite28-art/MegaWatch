@@ -3278,6 +3278,20 @@ class IptvResultsViewState extends State<IptvResultsView>
               ),
               onTap: () => Navigator.of(dialogContext).pop('hideForeign'),
             ),
+            ListTile(
+              leading: Icon(Icons.playlist_remove_rounded, color: app.core.tx),
+              title: Text(
+                'Manage / remove playlists…',
+                style: TextStyle(color: app.core.tx),
+              ),
+              subtitle: Text(
+                'Open IPTV settings to remove a playlist you don\'t want',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: app.core.tx.withAlpha(0xB3)),
+              ),
+              onTap: () => Navigator.of(dialogContext).pop('manageSources'),
+            ),
           ],
         ),
       ),
@@ -3316,6 +3330,8 @@ class IptvResultsViewState extends State<IptvResultsView>
         await _promptHideCategory(category);
       case 'hideForeign':
         await _hideNonEnglishCategories();
+      case 'manageSources':
+        _navigateToSettings(openAddSource: false);
     }
   }
 
