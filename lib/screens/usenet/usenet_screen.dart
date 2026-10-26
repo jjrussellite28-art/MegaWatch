@@ -87,7 +87,7 @@ class _UsenetScreenState extends State<UsenetScreen> {
       if (!mounted) return;
       setState(() {
         _results = _sorted(found, _sort);
-        _hasMore = found.length >= 20;
+        _hasMore = found.isNotEmpty;
         _searching = false;
       });
     } on EasynewsException catch (e) {

@@ -241,7 +241,16 @@ class EasynewsService {
       );
     }
     final body = utf8.decode(response.bodyBytes, allowMalformed: true);
-    return _parse(body);
+    final all = _parse(body);
+    if (type != EasynewsType.video) return all;
+    // Video search: only real, playable video files (no leftovers or tiny clips).
+    return all
+        .where(
+          (r) =>
+              videoExtensions.contains(r.extension) &&
+              (r.sizeBytes == 0 || r.sizeBytes >= 30 * 1024 * 1024),
+        )
+        .toList();
   }
 
   /// Always use the encrypted (https) address, so your internet provider can
@@ -302,9 +311,23 @@ class EasynewsService {
           continue;
         }
         if (code == 200 || code == 206) {
+          final type = (response.headers['content-type'] ?? '').toLowerCase();
+          if (type.startsWith('text/') || type.contains('json')) {
+            throw const EasynewsException(
+              'Easynews sent a web page instead of the video. Check your '
+              'account is active and has not hit its limit.',
+            );
+          }
+          final onEasynews = _isEasynewsHost(uri);
+          // The login goes in the address too: the player then sends it on its
+          // own for every request, including after redirects.
+          final playUri = onEasynews
+              ? uri.replace(userInfo: '${Uri.encodeComponent(_username)}:'
+                    '${Uri.encodeComponent(_password)}')
+              : uri;
           return EasynewsPlayback(
-            url: uri.toString(),
-            headers: _isEasynewsHost(uri) ? auth : const <String, String>{},
+            url: playUri.toString(),
+            headers: onEasynews ? auth : const <String, String>{},
           );
         }
         if (code == 401 || code == 403) {
@@ -365,6 +388,8 @@ class EasynewsService {
       if (name.toLowerCase().contains('sample') && size < 300 * 1024 * 1024) {
         continue;
       }
+      final description = _plain(_tag(block, 'description'));
+      if (size == 0) size = _sizeFromText('$description ${_tag(block, 'title')}');
 
       DateTime? published;
       final pub = _tag(block, 'pubDate');
@@ -382,12 +407,30 @@ class EasynewsService {
           sizeBytes: size,
           published: published,
           extension: extension,
-          details: _plain(_tag(block, 'description')),
+          details: description,
         ),
       );
     }
     return results;
   }
+
+  static int _sizeFromText(String text) {
+    final m = RegExp(
+      r'(\d+(?:[.,]\d+)?)\s*(KB|MB|GB|TB)\b',
+      caseSensitive: false,
+    ).firstMatch(text);
+    if (m == null) return 0;
+    final n = double.tryParse(m.group(1)!.replaceAll(',', '.')) ?? 0;
+    final unit = m.group(2)!.toUpperCase();
+    const mult = {'KB': 1024, 'MB': 1048576, 'GB': 1073741824, 'TB': 1099511627776};
+    return (n * (mult[unit] ?? 1)).round();
+  }
+
+  /// File types the player can really open as a movie or episode.
+  static const Set<String> videoExtensions = {
+    '.mp4', '.mkv', '.avi', '.wmv', '.flv', '.mov', '.webm', '.m4v',
+    '.ts', '.m2ts', '.mts', '.mpg', '.mpeg', '.vob', '.divx', '.ogv', '.3gp',
+  };
 
   static String? _attribute(String attrs, String name) {
     final m = RegExp('$name\\s*=\\s*"([^"]*)"').firstMatch(attrs) ??
