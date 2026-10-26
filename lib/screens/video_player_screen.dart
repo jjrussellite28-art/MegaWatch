@@ -100,6 +100,7 @@ import 'video_player/widgets/iptv_channel_sheet.dart';
 import 'video_player/widgets/iptv_zap_banner.dart';
 import '../services/iptv_mirrors.dart';
 import '../widgets/iptv/iptv_server_badge.dart';
+import '../widgets/usenet_safety_badge.dart';
 import 'video_player/widgets/player_guide_style.dart';
 import '../widgets/iptv/styles/iptv_style.dart';
 import 'video_player/widgets/source_sheet.dart';
@@ -3769,6 +3770,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _seekToFromBar(candidate);
   }
 
+  String? get _activeUrlForBadge => widget.videoUrl;
+
   bool _isEasynewsLaunch(String url) {
     final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';
     return host == 'easynews.com' || host.endsWith('.easynews.com');
@@ -3778,6 +3781,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _showPlayerErrorOnce() {
     StreamSubscription<String>? sub;
     sub = _player.stream.error.listen((error) {
+      // Once the video is running, a passing network hiccup is not worth a
+      // message (the player reconnects by itself).
+      if (_position > Duration.zero) return;
       if (mounted && !_screenDisposed) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -15452,6 +15458,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       : null,
                   controlsVisible: _controlsVisible,
                   onSwitched: () => _performIptvLiveRetune('server-switch', 1),
+                ),
+                // Usenet (Easynews): is this connection encrypted / on a VPN.
+                UsenetSafetyBadge(
+                  url: _activeUrlForBadge,
+                  controlsVisible: _controlsVisible,
                 ),
                 // Buffering indicator (OTT-style centered spinner)
                 ValueListenableBuilder<bool>(
