@@ -92,6 +92,7 @@ import 'theme/legacy_theme_boundary.dart';
 import 'theme/system_bars.dart';
 import 'models/rd_torrent.dart';
 import 'package:window_manager/window_manager.dart';
+import 'services/input_mode.dart';
 import 'services/deep_link_service.dart';
 import 'services/magnet_link_handler.dart';
 import 'services/stremio_service.dart';
@@ -3810,8 +3811,12 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                                   ? const SizedBox.shrink()
                                   : MouseRegion(
                                       cursor: SystemMouseCursors.click,
-                                      onEnter: (_) => _tvSidebarKey.currentState
-                                          ?.requestFocus(),
+                                      onHover: (e) {
+                                        if (InputMode.instance.realHover(e)) {
+                                          _tvSidebarKey.currentState
+                                              ?.requestFocus();
+                                        }
+                                      },
                                       child: GestureDetector(
                                         behavior: HitTestBehavior.opaque,
                                         onTap: () => _tvSidebarKey.currentState

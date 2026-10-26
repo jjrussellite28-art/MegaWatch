@@ -3,6 +3,7 @@ import 'dart:ui' as ui show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/input_mode.dart';
 
 import '../services/main_page_bridge.dart';
 import '../models/profiles/user_profile.dart';
@@ -922,8 +923,10 @@ class TvSidebarNavState extends State<TvSidebarNav>
           child: mouseMode
               ? MouseRegion(
                   cursor: SystemMouseCursors.click,
-                  onEnter: (_) {
-                    if (!_hasSidebarFocus) requestFocus();
+                  onHover: (e) {
+                    if (!_hasSidebarFocus && InputMode.instance.realHover(e)) {
+                      requestFocus();
+                    }
                   },
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,

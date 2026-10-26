@@ -18,7 +18,10 @@ class InputMode {
     if (_started) return;
     _started = true;
     GestureBinding.instance.pointerRouter.addGlobalRoute((event) {
-      if (event is PointerDownEvent || event is PointerScrollEvent) {
+      if (event is PointerScrollEvent) {
+        _lastScroll = DateTime.now();
+        _set(false);
+      } else if (event is PointerDownEvent) {
         _set(false);
       } else if (event is PointerHoverEvent && event.kind == PointerDeviceKind.mouse) {
         // Only real movement counts (not a pointer that is just sitting there).
@@ -41,6 +44,16 @@ class InputMode {
   }
 
   bool _fromController = false;
+  DateTime _lastScroll = DateTime.fromMillisecondsSinceEpoch(0);
+
+  /// True for a moment after the mouse wheel was used, so scrolling can never
+  /// be mistaken for "the pointer moved onto something".
+  bool get scrolledRecently =>
+      DateTime.now().difference(_lastScroll).inMilliseconds < 900;
+
+  /// True only for a genuine mouse movement (not a layout-caused re-hover).
+  bool realHover(PointerHoverEvent e) =>
+      e.delta != Offset.zero && !scrolledRecently;
 
   /// Called by the gamepad service around the key presses it injects.
   void noteController() {
