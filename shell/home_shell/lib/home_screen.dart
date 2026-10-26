@@ -8,6 +8,9 @@ import 'package:window_manager/window_manager.dart';
 import 'icon_cache.dart';
 import 'launcher.dart';
 import 'open_windows.dart';
+import 'freezer.dart';
+import 'gamepad.dart';
+import 'settings.dart';
 import 'shell_mode.dart';
 import 'tiles.dart';
 
@@ -41,13 +44,14 @@ class _HomeScreenState extends State<HomeScreen> {
     TileStore.load().then((t) {
       if (!mounted) return;
       setState(() => _tiles = t);
-      ShellMode.instance.showBar();
+      ShellMode.instance.showBar(freeze: false);
     });
   }
 
   @override
   void dispose() {
     ShellMode.instance.barRequest.removeListener(_applyBar);
+    Freezer.instance.thawAll();
     _timer?.cancel();
     super.dispose();
   }
@@ -70,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  int get _barItemCount => _open.length + _tiles.length + 2;
+  int get _barItemCount => _open.length + _tiles.length + 3;
 
   Future<void> _applyBar() async {
     if (!mounted) return;
@@ -177,6 +181,12 @@ class _HomeScreenState extends State<HomeScreen> {
     await ShellMode.instance.applyBar(itemCount: _barItemCount);
   }
 
+  Future<void> _openSettings() async {
+    await _inBigWindow<void>(
+      () => showDialog<void>(context: context, builder: (_) => const _SettingsDialog()),
+    );
+  }
+
   Future<void> _powerMenu() async {
     final choice = await _inBigWindow<String>(
       () => showDialog<String>(
@@ -184,7 +194,8 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (ctx) => SimpleDialog(
           title: const Text('Power & more'),
           children: [
-            _menuItem(ctx, 'sleep', Icons.bedtime_rounded, 'Sleep', first: true),
+            _menuItem(ctx, 'settings', Icons.settings_rounded, 'Settings (bar button, hold time...)', first: true),
+            _menuItem(ctx, 'sleep', Icons.bedtime_rounded, 'Sleep'),
             _menuItem(ctx, 'restart', Icons.restart_alt_rounded, 'Restart'),
             _menuItem(ctx, 'shutdown', Icons.power_settings_new_rounded, 'Shut down'),
             _menuItem(ctx, 'signout', Icons.logout_rounded, 'Sign out'),
@@ -195,6 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
     switch (choice) {
+      case 'settings':
+        await _openSettings();
       case 'sleep':
         await Launcher.sleep();
       case 'restart':
@@ -206,6 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'keyboard':
         await Launcher.screenKeyboard();
       case 'exit':
+        Freezer.instance.thawAll();
         await windowManager.destroy();
     }
   }
@@ -293,6 +307,16 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _add,
         onFocusLabel: (t) => _label.value = t,
         child: const Icon(Icons.add_rounded, size: 30),
+      ),
+    );
+    items.add(
+      _BarItem(
+        key: const ValueKey('settings'),
+        label: 'Settings (bar button, hold time, freeze)',
+        color: const Color(0xFF232B3F),
+        onTap: _openSettings,
+        onFocusLabel: (t) => _label.value = t,
+        child: const Icon(Icons.settings_rounded, size: 30),
       ),
     );
     items.add(
@@ -516,26 +540,25 @@ class _AddPickerState extends State<_AddPicker> {
             Expanded(
               child: ListView(
                 children: [
+                  _row(Icons.keyboard_rounded, 'Type a path or link myself (keyboard / mouse)',
+                      () => Navigator.pop(context, _PickResult(manual: true)),
+                      autofocus: af()),
                   if (_running.isNotEmpty) _header('Open right now'),
                   for (final c in _running)
                     _row(Icons.window_rounded, c.name,
                         () => Navigator.pop(context, _PickResult(tile: _tileOf(c))),
-                        autofocus: af()),
+                        ),
                   _header('Quick links'),
                   for (final l in _links)
                     _row(Icons.public_rounded, l[0],
                         () => Navigator.pop(
                               context,
                               _PickResult(tile: _tileOf(_Candidate(l[0], l[1], 'link'))),
-                            ),
-                        autofocus: af()),
+                            )),
                   _header(_loading ? 'Installed apps (loading...)' : 'Installed apps'),
                   for (final c in _installed)
                     _row(Icons.apps_rounded, c.name,
                         () => Navigator.pop(context, _PickResult(tile: _tileOf(c)))),
-                  _header('Something else'),
-                  _row(Icons.keyboard_rounded, 'Type a path or link myself (keyboard)',
-                      () => Navigator.pop(context, _PickResult(manual: true))),
                 ],
               ),
             ),
@@ -823,6 +846,141 @@ class _EditDialogState extends State<_EditDialog> {
         TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
         FilledButton(onPressed: _save, child: const Text('Save')),
       ],
+    );
+  }
+}
+
+class _SettingsDialog extends StatefulWidget {
+  const _SettingsDialog();
+
+  @override
+  State<_SettingsDialog> createState() => _SettingsDialogState();
+}
+
+class _SettingsDialogState extends State<_SettingsDialog> {
+  final s = ShellSettings.instance;
+  bool _recording = false;
+  String _status = '';
+
+  static const _holds = [0, 250, 500, 1000, 1500, 2000, 3000];
+
+  bool _swallow(KeyEvent e) => true; // keep recorded keys from clicking buttons
+
+  Future<void> _record() async {
+    setState(() {
+      _recording = true;
+      _status = 'Press and HOLD the button(s) you want — all at once — then let go...';
+    });
+    HardwareKeyboard.instance.addHandler(_swallow);
+    final result = await WindowsGamepadService.instance.record();
+    HardwareKeyboard.instance.removeHandler(_swallow);
+    if (!mounted) return;
+    if (result != null && !result.isEmpty) {
+      s.shortcut = result;
+      await s.save();
+      setState(() {
+        _recording = false;
+        _status = 'Saved: ${result.describe()}';
+      });
+    } else {
+      setState(() {
+        _recording = false;
+        _status = 'Nothing was pressed — nothing changed.';
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    WindowsGamepadService.instance.cancelRecording();
+    HardwareKeyboard.instance.removeHandler(_swallow);
+    super.dispose();
+  }
+
+  String get _holdText =>
+      s.holdMs == 0 ? 'Just press (no hold)' : '${(s.holdMs / 1000).toStringAsFixed(2)} seconds';
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: SizedBox(
+        width: 660,
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Settings', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
+              ListTile(
+                autofocus: true,
+                enabled: !_recording,
+                leading: const Icon(Icons.gamepad_rounded),
+                title: const Text('Button that opens the bar', style: TextStyle(fontSize: 19)),
+                subtitle: Text(s.shortcut.describe(), style: const TextStyle(fontSize: 15)),
+                trailing: const Text('Change'),
+                onTap: _record,
+              ),
+              ListTile(
+                enabled: !_recording,
+                leading: const Icon(Icons.timer_rounded),
+                title: const Text('How long to hold it', style: TextStyle(fontSize: 19)),
+                subtitle: Text(_holdText, style: const TextStyle(fontSize: 15)),
+                trailing: const Text('Next'),
+                onTap: () {
+                  final i = _holds.indexOf(s.holdMs);
+                  setState(() => s.holdMs = _holds[(i + 1) % _holds.length]);
+                  s.save();
+                },
+              ),
+              SwitchListTile(
+                value: s.freeze,
+                title: const Text('Freeze the app behind the bar', style: TextStyle(fontSize: 19)),
+                subtitle: const Text('Pauses the game/app while the bar is open so it ignores the controller',
+                    style: TextStyle(fontSize: 15)),
+                onChanged: (v) {
+                  setState(() => s.freeze = v);
+                  s.save();
+                },
+              ),
+              ListTile(
+                enabled: !_recording,
+                leading: const Icon(Icons.restore_rounded),
+                title: const Text('Reset to Guide button, hold 1 second', style: TextStyle(fontSize: 19)),
+                onTap: () {
+                  setState(() {
+                    s.shortcut = ShellShortcut.guide;
+                    s.holdMs = 1000;
+                    _status = 'Reset.';
+                  });
+                  s.save();
+                },
+              ),
+              if (_status.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Text(_status, style: const TextStyle(fontSize: 16, color: Colors.amberAccent)),
+                ),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Text(
+                  'Ctrl+Alt+H always opens the bar too. Remotes that act like a keyboard work — '
+                  'press their button when recording.',
+                  style: TextStyle(fontSize: 14, color: Colors.white54),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: _recording ? null : () => Navigator.pop(context),
+                  child: const Text('Done', style: TextStyle(fontSize: 18)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

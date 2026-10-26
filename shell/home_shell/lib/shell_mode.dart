@@ -4,6 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart' show Alignment;
 import 'package:window_manager/window_manager.dart';
 
+import 'freezer.dart';
+import 'settings.dart';
+
 /// Controls the small bar window: where it sits, when it shows and hides, and
 /// the temporary bigger window used for the Add/Edit and Power dialogs.
 class ShellMode {
@@ -15,7 +18,14 @@ class ShellMode {
 
   bool visible = false;
 
-  void showBar() => barRequest.value++;
+  /// [freeze] pauses the app in front (if the setting is on) so it doesn't keep
+  /// running or reacting behind the bar. It is resumed by [hide].
+  void showBar({bool freeze = true}) {
+    if (freeze && ShellSettings.instance.freeze) {
+      Freezer.instance.freezeForeground();
+    }
+    barRequest.value++;
+  }
 
   Future<void> applyBar({required int itemCount}) async {
     final display = ui.PlatformDispatcher.instance.displays.first;
@@ -33,6 +43,7 @@ class ShellMode {
 
   Future<void> hide() async {
     visible = false;
+    Freezer.instance.thawAll();
     await windowManager.hide();
   }
 

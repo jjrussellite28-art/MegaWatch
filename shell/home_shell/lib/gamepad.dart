@@ -7,6 +7,8 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import 'settings.dart';
+
 /// Lets an Xbox-style controller (XInput) and ordinary HTPC remotes drive the
 /// home screen on Windows, exactly like a TV remote on an Android box.
 ///
@@ -72,7 +74,6 @@ class WindowsGamepadService {
   static const int _guide = 0x0400;
   int Function(int, Pointer<Uint8>)? _getStateEx;
   Pointer<Uint8>? _exState;
-  bool _guideWasDown = false;
 
   /// Called when the Home gesture is used while another app is in front.
   void Function()? onHomeRequested;
@@ -208,38 +209,157 @@ class WindowsGamepadService {
     return false;
   }
 
-  int _guideHeldSince = -1;
-  bool _guideFired = false;
+  int _trigSince = -1;
+  bool _trigFired = false;
   bool _hotkeyWasDown = false;
   int Function(int)? _asyncKey;
 
-  /// "Home" gesture: HOLD the Guide button for one second (or press
-  /// Ctrl+Alt+H) from any app to bring the home screen forward. Nothing is
-  /// closed, and a quick tap of Guide still goes to the other app untouched
-  /// (Playnite, Steam, Game Bar), because this only watches the button.
+  // ---- shortcut recording ---------------------------------------------------
+  Completer<ShellShortcut?>? _recording;
+  int _recDeadline = 0;
+  bool _recStarted = false;
+  bool _recArmed = false; // waits until everything is let go first
+  ShellShortcut _recPeak = const ShellShortcut();
+  int _recPeakCount = 0;
+
+  static int _bits(int v) {
+    var n = 0;
+    while (v != 0) {
+      n += v & 1;
+      v >>= 1;
+    }
+    return n;
+  }
+
+  static const Set<int> _skipKeys = {0x01, 0x02, 0x04, 0x05, 0x06, 0x10, 0x11, 0x12};
+
+  int _padButtons(int index) {
+    final ex = _getStateEx;
+    final ok = ex != null ? ex(index, _exState!) : _getState(index, _exState!);
+    if (ok != 0) return 0;
+    return ByteData.sublistView(_exState!.asTypedList(16)).getUint16(4, Endian.little);
+  }
+
+  int _joyButtons(int id) {
+    if (!_joyOk) return 0;
+    final info = _joyInfo!;
+    info.asTypedList(52).fillRange(0, 52, 0);
+    final data = ByteData.sublistView(info.asTypedList(52));
+    data.setUint32(0, 52, Endian.little);
+    data.setUint32(4, 0xFF, Endian.little);
+    if (_joyGetPosEx(id, info) != 0) return 0;
+    return data.getUint32(32, Endian.little);
+  }
+
+  List<int> _downKeys() {
+    final key = _asyncKey;
+    if (key == null) return const [];
+    return [
+      for (var vk = 8; vk < 255; vk++)
+        if (!_skipKeys.contains(vk) && key(vk) & 0x8000 != 0) vk,
+    ];
+  }
+
+  bool _matches(ShellShortcut sc) {
+    if (sc.padMask != 0) {
+      for (final i in _connected) {
+        if (_padButtons(i) & sc.padMask == sc.padMask) return true;
+      }
+    }
+    if (sc.joyMask != 0) {
+      for (final id in _joyConnected) {
+        if (_joyButtons(id) & sc.joyMask == sc.joyMask) return true;
+      }
+    }
+    if (sc.keys.isNotEmpty) {
+      final key = _asyncKey;
+      if (key != null && sc.keys.every((vk) => key(vk) & 0x8000 != 0)) return true;
+    }
+    return false;
+  }
+
+  /// Listens for the next button press (one or several buttons held together,
+  /// on a controller, a PlayStation/generic pad, a keyboard or a remote) and
+  /// returns it when everything is let go. Null if nothing is pressed in time.
+  Future<ShellShortcut?> record({Duration timeout = const Duration(seconds: 20)}) {
+    _recording?.complete(null);
+    final c = Completer<ShellShortcut?>();
+    _recording = c;
+    _recStarted = false;
+    _recArmed = false;
+    _recPeak = const ShellShortcut();
+    _recPeakCount = 0;
+    _recDeadline = _clock.elapsedMilliseconds + timeout.inMilliseconds;
+    return c.future;
+  }
+
+  void cancelRecording() {
+    _recording?.complete(null);
+    _recording = null;
+  }
+
+  void _recordTick() {
+    final nowMs = _clock.elapsedMilliseconds;
+    var pad = 0;
+    for (final i in _connected) {
+      final b = _padButtons(i);
+      if (_bits(b) > _bits(pad)) pad = b;
+    }
+    var joy = 0;
+    for (final id in _joyConnected) {
+      final b = _joyButtons(id);
+      if (_bits(b) > _bits(joy)) joy = b;
+    }
+    final keys = _downKeys();
+    final count = _bits(pad) + _bits(joy) + keys.length;
+    if (!_recArmed) {
+      if (count == 0) {
+        _recArmed = true;
+        _recDeadline = nowMs + 20000;
+      }
+      return;
+    }
+    if (count > 0) {
+      _recStarted = true;
+      if (count >= _recPeakCount) {
+        _recPeakCount = count;
+        _recPeak = ShellShortcut(padMask: pad, joyMask: joy, keys: keys);
+      }
+    } else if (_recStarted) {
+      final c = _recording;
+      _recording = null;
+      c?.complete(_recPeak);
+      return;
+    }
+    if (nowMs > _recDeadline && !_recStarted) {
+      final c = _recording;
+      _recording = null;
+      c?.complete(null);
+    }
+  }
+
+  /// "Home" gesture: hold the saved shortcut (default: Guide for 1 second) or
+  /// press Ctrl+Alt+H from any app to bring the bar up. Nothing is closed, and
+  /// a quick tap of the same button still goes to the other app untouched,
+  /// because this only watches the buttons.
   void _checkGuide() {
+    if (_recording != null) {
+      _recordTick();
+      return;
+    }
     final nowMs = _clock.elapsedMilliseconds;
     var wantHome = false;
+    final settings = ShellSettings.instance;
 
-    final ex = _getStateEx;
-    if (ex != null && _connected.isNotEmpty) {
-      var down = false;
-      for (final i in _connected) {
-        if (ex(i, _exState!) != 0) continue;
-        final b = ByteData.sublistView(_exState!.asTypedList(16))
-            .getUint16(4, Endian.little);
-        if (b & _guide != 0) down = true;
+    if (_matches(settings.shortcut)) {
+      if (_trigSince < 0) _trigSince = nowMs;
+      if (!_trigFired && nowMs - _trigSince >= settings.holdMs) {
+        _trigFired = true;
+        wantHome = true;
       }
-      if (down) {
-        if (_guideHeldSince < 0) _guideHeldSince = nowMs;
-        if (!_guideFired && nowMs - _guideHeldSince >= 1000) {
-          _guideFired = true;
-          wantHome = true;
-        }
-      } else {
-        _guideHeldSince = -1;
-        _guideFired = false;
-      }
+    } else {
+      _trigSince = -1;
+      _trigFired = false;
     }
 
     final key = _asyncKey;
@@ -339,6 +459,8 @@ class WindowsGamepadService {
     } else {
       controllerName.value = null;
     }
+
+    if (_recording != null) wanted.clear();
 
     // Released keys.
     for (final vk in _held.difference(wanted).toList()) {

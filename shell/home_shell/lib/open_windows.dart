@@ -92,7 +92,14 @@ class OpenWindows {
     return 1;
   }
 
-  String _exeOf(int processId) {
+  /// Full path of a program's .exe from its process id ('' if unknown).
+  String exeOf(int processId) {
+    if (!Platform.isWindows) return '';
+    try {
+      _init();
+    } catch (_) {
+      return '';
+    }
     final h = _openProcess(0x1000, 0, processId); // QUERY_LIMITED_INFORMATION
     if (h == 0) return '';
     final buf = calloc<Uint16>(1024);
@@ -146,7 +153,7 @@ class OpenWindows {
             calloc.free(buf);
           }
           if (title == 'Program Manager') continue;
-          var exe = _exeOf(pidBuf.value);
+          var exe = exeOf(pidBuf.value);
           if (exe.toLowerCase().endsWith('applicationframehost.exe')) exe = '';
           out.add(OpenWindow(h, title, exe));
         }

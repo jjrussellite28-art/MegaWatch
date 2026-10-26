@@ -6,10 +6,14 @@ import 'package:window_manager/window_manager.dart';
 import 'cursor_hide.dart';
 import 'gamepad.dart';
 import 'home_screen.dart';
+import 'freezer.dart';
+import 'settings.dart';
 import 'shell_mode.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ShellSettings.instance.load();
+  Freezer.instance.resumeStale();
   if (Platform.isWindows) {
     await windowManager.ensureInitialized();
     await windowManager.waitUntilReadyToShow(
