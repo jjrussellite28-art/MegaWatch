@@ -1,4 +1,4 @@
-# Home Shell (small bar)
+# Everything Bar (small bar)
 
 A small bar that floats at the top of the screen, on top of any app or game. Pick an open app to
 switch to it, or start one of your tiles. Works with an Xbox controller, keyboard and mouse.
@@ -27,3 +27,7 @@ The first time it runs, Home Shell sets itself to start when you sign in to Wind
 
 Tiles are saved in `%APPDATA%\HomeShell\tiles.json`; icons are cached in `%APPDATA%\HomeShell\icons`.
 If the Windows Game Bar pops up on Guide, turn that off in Settings > Gaming > Game Bar.
+
+
+## Name shown by Windows
+After `flutter create --platforms=windows .`, run `powershell -ExecutionPolicy Bypass -File brand_windows.ps1` once so Task Manager and file properties say "Everything Bar".

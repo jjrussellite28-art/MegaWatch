@@ -952,7 +952,7 @@ class _SettingsDialogState extends State<_SettingsDialog> {
               SwitchListTile(
                 value: _autostart,
                 title: const Text('Start with Windows', style: TextStyle(fontSize: 19)),
-                subtitle: const Text('Home Shell opens by itself when you turn on / restart the PC',
+                subtitle: const Text('Everything Bar opens by itself when you turn on / restart the PC',
                     style: TextStyle(fontSize: 15)),
                 onChanged: (v) async {
                   final ok = await Autostart.set(v);

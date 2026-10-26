@@ -22,7 +22,7 @@ CloseApplications=yes
 RestartApplications=no
 
 [Tasks]
-Name: "desktopicon"; Description: "Put an Everything Bar shortcut on the desktop"; Flags: checkedonce
+Name: "desktopicon"; Description: "Put an Everything Bar shortcut on the desktop"
 
 [InstallDelete]
 ; Old name from the first version.
