@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io' show Platform, exit;
 import 'dart:ui' as ui show ImageFilter;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/input_mode.dart';
@@ -8,6 +10,7 @@ import '../services/input_mode.dart';
 import '../services/main_page_bridge.dart';
 import '../models/profiles/user_profile.dart';
 import '../utils/platform_util.dart';
+import 'package:window_manager/window_manager.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_theme_scope.dart';
@@ -257,7 +260,8 @@ class TvSidebarNavState extends State<TvSidebarNav>
     _focusNodes.clear();
     final count =
         widget.items.length +
-        (widget.profile != null && widget.onProfileTap != null ? 1 : 0);
+        (widget.profile != null && widget.onProfileTap != null ? 1 : 0) +
+        (_exitEnabled ? 1 : 0);
     for (int i = 0; i < count; i++) {
       final capturedIndex = i;
       // skipTraversal: the rail must NEVER be reachable by Flutter's directional
@@ -351,7 +355,27 @@ class TvSidebarNavState extends State<TvSidebarNav>
     });
   }
 
+  /// An "Exit" button under the profile, Windows desktop only. Closing Debrify
+  /// returns to whatever launched it (e.g. the Home Shell).
+  bool get _exitEnabled => !kIsWeb && Platform.isWindows;
+
+  int get _exitIndex =>
+      widget.items.length +
+      (widget.profile != null && widget.onProfileTap != null ? 1 : 0);
+
+  Future<void> _exitApp() async {
+    try {
+      await windowManager.setPreventClose(false);
+      await windowManager.destroy();
+    } catch (_) {}
+    exit(0);
+  }
+
   void _selectMenuItem(int index) {
+    if (_exitEnabled && index == _exitIndex) {
+      _exitApp();
+      return;
+    }
     if (index == widget.items.length &&
         widget.profile != null &&
         widget.onProfileTap != null) {
@@ -883,7 +907,8 @@ class TvSidebarNavState extends State<TvSidebarNav>
                   },
                 ),
               ),
-              if (widget.profile != null && widget.onProfileTap != null)
+              if ((widget.profile != null && widget.onProfileTap != null) ||
+                  _exitEnabled)
                 _buildProfileFooter(app),
             ],
           ),
@@ -1111,6 +1136,7 @@ class TvSidebarNavState extends State<TvSidebarNav>
   }
 
   Widget _buildProfileFooter(AppTheme app) {
+    final hasProfile = widget.profile != null && widget.onProfileTap != null;
     final index = widget.items.length;
     return Padding(
       key: const ValueKey('tv-sidebar-profile'),
@@ -1130,16 +1156,29 @@ class TvSidebarNavState extends State<TvSidebarNav>
               child: Container(height: 1, color: app.fade(app.core.tx, 0.08)),
             ),
           ),
-          _TvProfileItemWidget(
-            app: app,
-            profile: widget.profile!,
-            isFocused: index == _focusedIndex && _hasSidebarFocus,
-            expand: _expand,
-            focusNode: _focusNodes[index],
-            onTap: () => _selectMenuItem(index),
-            onKeyEvent: (event) => _handleKeyEvent(index, event),
-            style: _style,
-          ),
+          if (hasProfile)
+            _TvProfileItemWidget(
+              app: app,
+              profile: widget.profile!,
+              isFocused: index == _focusedIndex && _hasSidebarFocus,
+              expand: _expand,
+              focusNode: _focusNodes[index],
+              onTap: () => _selectMenuItem(index),
+              onKeyEvent: (event) => _handleKeyEvent(index, event),
+              style: _style,
+            ),
+          if (_exitEnabled && _exitIndex < _focusNodes.length) ...[
+            const SizedBox(height: 4),
+            _TvExitItemWidget(
+              app: app,
+              isFocused: _exitIndex == _focusedIndex && _hasSidebarFocus,
+              expand: _expand,
+              focusNode: _focusNodes[_exitIndex],
+              onTap: () => _selectMenuItem(_exitIndex),
+              onKeyEvent: (event) => _handleKeyEvent(_exitIndex, event),
+              style: _style,
+            ),
+          ],
         ],
       ),
     );
@@ -1226,6 +1265,98 @@ class TvSidebarNavState extends State<TvSidebarNav>
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TvExitItemWidget extends StatelessWidget {
+  final AppTheme app;
+  final bool isFocused;
+  final Animation<double> expand;
+  final FocusNode focusNode;
+  final VoidCallback onTap;
+  final KeyEventResult Function(KeyEvent) onKeyEvent;
+  final String style;
+
+  const _TvExitItemWidget({
+    required this.app,
+    required this.isFocused,
+    required this.expand,
+    required this.focusNode,
+    required this.onTap,
+    required this.onKeyEvent,
+    required this.style,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      focusNode: focusNode,
+      onKeyEvent: (_, event) => onKeyEvent(event),
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedBuilder(
+          animation: expand,
+          builder: (context, _) {
+            final open = expand.value;
+            final whiteFocus =
+                isFocused && (style == 'badge' || style == 'pill');
+            final fg = whiteFocus ? app.shell.railInk : app.core.tx;
+            final collapsedSlot = style == 'island'
+                ? TvSidebarNav.collapsedWidth - 12
+                : TvSidebarNav.collapsedWidth - 20;
+            return Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: whiteFocus
+                    ? app.core.tx
+                    : isFocused
+                    ? app.shell.navFocus.withValues(alpha: 0.22)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(999),
+                border: isFocused && !whiteFocus
+                    ? Border.all(color: app.fade(app.core.tx, 0.55), width: 1.5)
+                    : null,
+              ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: collapsedSlot,
+                    child: Center(
+                      child: Icon(
+                        Icons.power_settings_new_rounded,
+                        size: 22,
+                        color: isFocused ? fg : app.fade(app.core.tx, 0.7),
+                      ),
+                    ),
+                  ),
+                  if (open > 0.01)
+                    Expanded(
+                      child: ClipRect(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          widthFactor: open,
+                          child: Text(
+                            'Exit',
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.clip,
+                            style: TextStyle(
+                              color: fg,
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
