@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'launcher.dart';
+import 'open_windows.dart';
 import 'tiles.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,6 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime _now = DateTime.now();
   Timer? _clock;
   final Map<String, FocusNode> _nodes = {};
+  List<OpenWindow> _open = [];
+  Timer? _windowTimer;
+  final Map<int, FocusNode> _winNodes = {};
 
   @override
   void initState() {
@@ -27,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _clock = Timer.periodic(const Duration(seconds: 20), (_) {
       if (mounted) setState(() => _now = DateTime.now());
     });
+    _refreshWindows();
+    _windowTimer = Timer.periodic(const Duration(seconds: 2), (_) => _refreshWindows());
     TileStore.load().then((t) {
       if (!mounted) return;
       setState(() {
@@ -42,11 +48,33 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _clock?.cancel();
+    _windowTimer?.cancel();
+    for (final n in _winNodes.values) {
+      n.dispose();
+    }
     for (final n in _nodes.values) {
       n.dispose();
     }
     super.dispose();
   }
+
+  void _refreshWindows() {
+    if (!mounted) return;
+    final list = OpenWindows.instance.list();
+    final same = list.length == _open.length &&
+        [for (var i = 0; i < list.length; i++) list[i].hwnd == _open[i].hwnd && list[i].title == _open[i].title]
+            .every((e) => e);
+    if (same) return;
+    final alive = list.map((w) => w.hwnd).toSet();
+    for (final k in _winNodes.keys.where((k) => !alive.contains(k)).toList()) {
+      final n = _winNodes.remove(k)!;
+      WidgetsBinding.instance.addPostFrameCallback((_) => n.dispose());
+    }
+    setState(() => _open = list);
+  }
+
+  FocusNode _winNodeFor(int hwnd) =>
+      _winNodes.putIfAbsent(hwnd, () => FocusNode(debugLabel: 'win-$hwnd'));
 
   FocusNode _nodeFor(ShellTile t) =>
       _nodes.putIfAbsent(t.id, () => FocusNode(debugLabel: t.id));
@@ -188,7 +216,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       _BarButton(icon: Icons.power_settings_new_rounded, label: 'Power', onTap: _powerMenu),
                     ],
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
+                  if (_open.isNotEmpty) ...[
+                    const Text('Open now',
+                        style: TextStyle(fontSize: 16, color: Colors.white54)),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 56,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          for (final w in _open)
+                            _WindowChip(
+                              key: ValueKey(w.hwnd),
+                              window: w,
+                              node: _winNodeFor(w.hwnd),
+                              onOpen: () => OpenWindows.instance.switchTo(w.hwnd),
+                              onClose: () {
+                                OpenWindows.instance.close(w.hwnd);
+                                Future.delayed(const Duration(milliseconds: 600), _refreshWindows);
+                              },
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 20),
                   Expanded(
                     child: !_loaded
                         ? const Center(child: CircularProgressIndicator())
@@ -213,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                   ),
                   const Text(
-                    'A / Enter / click: open     Start / right-click / F2: edit tile     B / Esc: power menu',
+                    'A / Enter / click: open     Start / right-click / F2: edit tile (or close an open app)     B / Esc: power menu',
                     style: TextStyle(color: Colors.white38, fontSize: 15),
                   ),
                 ],
@@ -228,6 +281,95 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _PowerIntent extends Intent {
   const _PowerIntent();
+}
+
+class _WindowChip extends StatefulWidget {
+  const _WindowChip({
+    super.key,
+    required this.window,
+    required this.node,
+    required this.onOpen,
+    required this.onClose,
+  });
+  final OpenWindow window;
+  final FocusNode node;
+  final VoidCallback onOpen;
+  final VoidCallback onClose;
+
+  @override
+  State<_WindowChip> createState() => _WindowChipState();
+}
+
+class _WindowChipState extends State<_WindowChip> {
+  bool _focused = false;
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final active = _focused || _hover;
+    return Padding(
+      padding: const EdgeInsets.only(right: 12),
+      child: Focus(
+        focusNode: widget.node,
+        onFocusChange: (f) {
+          setState(() => _focused = f);
+          if (f) {
+            Scrollable.ensureVisible(context,
+                duration: const Duration(milliseconds: 150), alignment: 0.5);
+          }
+        },
+        onKeyEvent: (_, e) {
+          if (e is! KeyDownEvent) return KeyEventResult.ignored;
+          final k = e.logicalKey;
+          if (k == LogicalKeyboardKey.enter ||
+              k == LogicalKeyboardKey.numpadEnter ||
+              k == LogicalKeyboardKey.select ||
+              k == LogicalKeyboardKey.space) {
+            widget.onOpen();
+            return KeyEventResult.handled;
+          }
+          if (k == LogicalKeyboardKey.mediaPlayPause ||
+              k == LogicalKeyboardKey.contextMenu ||
+              k == LogicalKeyboardKey.f2) {
+            widget.onClose();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: MouseRegion(
+          onEnter: (_) => setState(() => _hover = true),
+          onExit: (_) => setState(() => _hover = false),
+          child: GestureDetector(
+            onTap: widget.onOpen,
+            onSecondaryTap: widget.onClose,
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 300),
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: active ? const Color(0xFF2B3550) : const Color(0xFF1A2030),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(
+                  color: _focused ? Colors.white : Colors.white12,
+                  width: _focused ? 3 : 1,
+                ),
+              ),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.window_rounded, size: 22),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(widget.window.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 18)),
+                ),
+              ]),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _BarButton extends StatelessWidget {

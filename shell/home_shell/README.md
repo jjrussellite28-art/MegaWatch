@@ -20,6 +20,8 @@ flutter run -d windows --release
 | Edit tile | Start | F2 / right-click |
 | Power menu | B / Back | Esc / F10 |
 
+**Open now row:** apps that are already running appear at the top. Select one to switch to it (Start / right-click closes it).
+
 Tiles are saved in `%APPDATA%\HomeShell\tiles.json`. Use **Add** to make your own tile
 (a program path or a link like `steam://open/bigpicture`).
 
