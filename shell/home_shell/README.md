@@ -12,6 +12,9 @@ flutter pub get
 flutter run -d windows --release
 ```
 
+## Starts by itself
+The first time it runs, Home Shell sets itself to start when you sign in to Windows (Settings > "Start with Windows" turns that off). Run it from the built exe, e.g. `C:\\debrifyy\\shell\\home_shell\\build\\windows\\x64\\runner\\Release\\home_shell.exe`; if you move or rebuild into another folder, run it once from there to update the startup entry.
+
 ## Using it
 - **Always on screen:** the bar stays at the top all the time (turn off in Settings). While you use another app it shrinks to just icons; your bar button (default: hold Guide) puts it back into focus so the controller drives it. B / Esc gives control back to the app you were in.
 - **Show the bar from anywhere:** HOLD the Xbox Guide button for 1 second, or press Ctrl+Alt+H.

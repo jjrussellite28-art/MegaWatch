@@ -97,7 +97,10 @@ class ShellSettings {
 
   /// Keep the bar on screen all the time (it shrinks to just icons when you
   /// are using another app). Turn off to hide it after each use.
-  bool pinned = true;
+  bool pinned = false;
+
+  /// Start-with-Windows was switched on automatically the first time.
+  bool autostartDone = false;
 
   static File get _file => File('${TileStore.dir}\\settings.json');
 
@@ -112,6 +115,7 @@ class ShellSettings {
           holdMs = (j['holdMs'] as num?)?.toInt() ?? holdMs;
           freeze = j['freeze'] as bool? ?? freeze;
           pinned = j['pinned'] as bool? ?? pinned;
+          autostartDone = j['autostartDone'] as bool? ?? autostartDone;
         }
       }
     } catch (_) {}
@@ -126,6 +130,7 @@ class ShellSettings {
           'holdMs': holdMs,
           'freeze': freeze,
           'pinned': pinned,
+          'autostartDone': autostartDone,
         }),
       );
     } catch (_) {}

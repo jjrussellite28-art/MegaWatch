@@ -8,6 +8,7 @@ import 'package:window_manager/window_manager.dart';
 import 'icon_cache.dart';
 import 'launcher.dart';
 import 'open_windows.dart';
+import 'autostart.dart';
 import 'freezer.dart';
 import 'gamepad.dart';
 import 'settings.dart';
@@ -880,9 +881,18 @@ class _SettingsDialog extends StatefulWidget {
 class _SettingsDialogState extends State<_SettingsDialog> {
   final s = ShellSettings.instance;
   bool _recording = false;
+  bool _autostart = false;
   String _status = '';
 
   static const _holds = [0, 250, 500, 1000, 1500, 2000, 3000];
+
+  @override
+  void initState() {
+    super.initState();
+    Autostart.isEnabled().then((v) {
+      if (mounted) setState(() => _autostart = v);
+    });
+  }
 
   bool _swallow(KeyEvent e) => true; // keep recorded keys from clicking buttons
 
@@ -952,6 +962,16 @@ class _SettingsDialogState extends State<_SettingsDialog> {
                   final i = _holds.indexOf(s.holdMs);
                   setState(() => s.holdMs = _holds[(i + 1) % _holds.length]);
                   s.save();
+                },
+              ),
+              SwitchListTile(
+                value: _autostart,
+                title: const Text('Start with Windows', style: TextStyle(fontSize: 19)),
+                subtitle: const Text('Home Shell opens by itself when you turn on / restart the PC',
+                    style: TextStyle(fontSize: 15)),
+                onChanged: (v) async {
+                  final ok = await Autostart.set(v);
+                  if (mounted && ok) setState(() => _autostart = v);
                 },
               ),
               SwitchListTile(

@@ -6,6 +6,7 @@ import 'package:window_manager/window_manager.dart';
 import 'cursor_hide.dart';
 import 'gamepad.dart';
 import 'home_screen.dart';
+import 'autostart.dart';
 import 'freezer.dart';
 import 'settings.dart';
 import 'shell_mode.dart';
@@ -14,6 +15,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ShellSettings.instance.load();
   Freezer.instance.resumeStale();
+  if (Platform.isWindows && !ShellSettings.instance.autostartDone) {
+    // First run: start with Windows from now on (can be switched off in Settings).
+    await Autostart.set(true);
+    ShellSettings.instance.autostartDone = true;
+    await ShellSettings.instance.save();
+  }
   if (Platform.isWindows) {
     await windowManager.ensureInitialized();
     await windowManager.waitUntilReadyToShow(
