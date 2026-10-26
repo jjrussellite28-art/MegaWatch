@@ -24,7 +24,7 @@ class ShellMode {
     await windowManager.setFullScreen(false);
     await windowManager.setSkipTaskbar(true);
     await windowManager.setAlwaysOnTop(true);
-    await windowManager.setSize(ui.Size(width, 128));
+    await windowManager.setSize(ui.Size(width, 156));
     await windowManager.setAlignment(Alignment.topCenter);
     await windowManager.show();
     await windowManager.focus();

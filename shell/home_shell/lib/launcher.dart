@@ -18,6 +18,12 @@ class Launcher {
         await Process.run('cmd', ['/c', 'start', '', target]);
         return null;
       }
+      final lower = target.toLowerCase();
+      if (lower.endsWith('.lnk') || lower.endsWith('.url') || lower.endsWith('.bat')) {
+        if (!File(target).existsSync()) return 'Not found: $target';
+        await Process.run('cmd', ['/c', 'start', '', target]);
+        return null;
+      }
       final hasPath = target.contains('\\') || target.contains('/');
       if (hasPath && !File(target).existsSync()) {
         return 'Not found: $target\nPress the Options button (or right-click) '

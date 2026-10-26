@@ -94,7 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String _tileExe(ShellTile t) {
     if (t.kind != 'app') return '';
     final p = Launcher.expand(t.target.trim());
-    return p.toLowerCase().endsWith('.exe') && File(p).existsSync() ? p : '';
+    final low = p.toLowerCase();
+    return (low.endsWith('.exe') || low.endsWith('.lnk')) && File(p).existsSync() ? p : '';
   }
 
   // ---- actions --------------------------------------------------------------
@@ -155,6 +156,23 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     });
+    await _save();
+    await ShellMode.instance.applyBar(itemCount: _barItemCount);
+  }
+
+  Future<void> _add() async {
+    final pick = await _inBigWindow<_PickResult>(
+      () => showDialog<_PickResult>(
+        context: context,
+        builder: (_) => const _AddPicker(),
+      ),
+    );
+    if (pick == null || !mounted) return;
+    if (pick.manual) {
+      await _edit(null);
+      return;
+    }
+    setState(() => _tiles.add(pick.tile!));
     await _save();
     await ShellMode.instance.applyBar(itemCount: _barItemCount);
   }
@@ -272,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
         label: 'Add an app or link',
         color: const Color(0xFF232B3F),
         autofocus: af(),
-        onTap: () => _edit(null),
+        onTap: _add,
         onFocusLabel: (t) => _label.value = t,
         child: const Icon(Icons.add_rounded, size: 30),
       ),
@@ -291,9 +309,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Shortcuts(
       shortcuts: const {
         SingleActivator(LogicalKeyboardKey.escape): _HideBarIntent(),
+        SingleActivator(LogicalKeyboardKey.f3): _AddIntent(),
       },
       child: Actions(
         actions: {
+          _AddIntent: CallbackAction<_AddIntent>(onInvoke: (_) {
+            if (!_busyDialog) _add();
+            return null;
+          }),
           _HideBarIntent: CallbackAction<_HideBarIntent>(onInvoke: (_) {
             if (!_busyDialog) ShellMode.instance.hide();
             return null;
@@ -315,7 +338,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 ValueListenableBuilder<String>(
                   valueListenable: _label,
                   builder: (_, v, __) => Text(
@@ -325,6 +348,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(fontSize: 16, color: Colors.white70),
                   ),
                 ),
+                const SizedBox(height: 6),
+                const Wrap(
+                  spacing: 18,
+                  children: [
+                    _Hint('A', 'Open', Color(0xFF51CF66)),
+                    _Hint('X', 'Close / Edit', Color(0xFF4DABF7)),
+                    _Hint('Y', 'Add', Color(0xFFFFD43B)),
+                    _Hint('B', 'Hide', Color(0xFFFF6B6B)),
+                  ],
+                ),
               ],
             ),
           ),
@@ -332,6 +365,199 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+class _Hint extends StatelessWidget {
+  const _Hint(this.button, this.text, this.color);
+  final String button;
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+        width: 22,
+        height: 22,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        child: Text(button,
+            style: const TextStyle(
+                fontSize: 13, fontWeight: FontWeight.w800, color: Colors.black)),
+      ),
+      const SizedBox(width: 6),
+      Text(text, style: const TextStyle(fontSize: 14, color: Colors.white60)),
+    ]);
+  }
+}
+
+class _AddIntent extends Intent {
+  const _AddIntent();
+}
+
+class _PickResult {
+  _PickResult({this.tile, this.manual = false});
+  final ShellTile? tile;
+  final bool manual;
+}
+
+/// Controller-friendly "add to the bar" list: open apps, quick links,
+/// installed apps (Start menu), or type it yourself.
+class _AddPicker extends StatefulWidget {
+  const _AddPicker();
+
+  @override
+  State<_AddPicker> createState() => _AddPickerState();
+}
+
+class _AddPickerState extends State<_AddPicker> {
+  List<_Candidate> _installed = [];
+  bool _loading = true;
+  late final List<_Candidate> _running;
+
+  static const _links = [
+    ['YouTube', 'https://www.youtube.com'],
+    ['Netflix', 'https://www.netflix.com'],
+    ['Disney+', 'https://www.disneyplus.com'],
+    ['Prime Video', 'https://www.primevideo.com'],
+    ['Twitch', 'https://www.twitch.tv'],
+    ['Spotify', 'https://open.spotify.com'],
+    ['Google', 'https://www.google.com'],
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    final seen = <String>{};
+    _running = [
+      for (final w in OpenWindows.instance.list())
+        if (w.exePath.isNotEmpty && seen.add(w.exePath.toLowerCase()))
+          _Candidate(w.title, w.exePath, 'app'),
+    ];
+    _scan();
+  }
+
+  Future<void> _scan() async {
+    final found = <String, _Candidate>{};
+    final roots = [
+      '${Platform.environment['ProgramData'] ?? r'C:\ProgramData'}\\Microsoft\\Windows\\Start Menu\\Programs',
+      '${Platform.environment['APPDATA'] ?? ''}\\Microsoft\\Windows\\Start Menu\\Programs',
+    ];
+    final skip = RegExp(r'uninstall|readme|help|documentation|license|release notes', caseSensitive: false);
+    for (final root in roots) {
+      try {
+        final dir = Directory(root);
+        if (!dir.existsSync()) continue;
+        await for (final e in dir.list(recursive: true, followLinks: false)) {
+          if (e is! File || !e.path.toLowerCase().endsWith('.lnk')) continue;
+          final file = e.path.split('\\').last;
+          final name = file.substring(0, file.length - 4);
+          if (skip.hasMatch(name)) continue;
+          found.putIfAbsent(name.toLowerCase(), () => _Candidate(name, e.path, 'app'));
+        }
+      } catch (_) {}
+    }
+    final list = found.values.toList()
+      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    if (mounted) {
+      setState(() {
+        _installed = list;
+        _loading = false;
+      });
+    }
+  }
+
+  ShellTile _tileOf(_Candidate c) => ShellTile(
+    id: DateTime.now().microsecondsSinceEpoch.toString(),
+    name: c.name,
+    kind: c.kind,
+    target: c.target,
+    icon: c.kind == 'link' ? 'web' : 'apps',
+    color: c.name.hashCode.abs() % kTileColors.length,
+  );
+
+  Widget _header(String text) => Padding(
+    padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+    child: Text(text,
+        style: const TextStyle(fontSize: 16, color: Colors.white54, fontWeight: FontWeight.w600)),
+  );
+
+  Widget _row(IconData icon, String text, VoidCallback onTap, {bool autofocus = false}) =>
+      ListTile(
+        autofocus: autofocus,
+        leading: Icon(icon),
+        title: Text(text, style: const TextStyle(fontSize: 19)),
+        onTap: onTap,
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    var first = true;
+    bool af() {
+      final v = first;
+      first = false;
+      return v;
+    }
+
+    return Dialog(
+      child: SizedBox(
+        width: 640,
+        height: 560,
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 18, 20, 4),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Add to the bar',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+                  if (_running.isNotEmpty) _header('Open right now'),
+                  for (final c in _running)
+                    _row(Icons.window_rounded, c.name,
+                        () => Navigator.pop(context, _PickResult(tile: _tileOf(c))),
+                        autofocus: af()),
+                  _header('Quick links'),
+                  for (final l in _links)
+                    _row(Icons.public_rounded, l[0],
+                        () => Navigator.pop(
+                              context,
+                              _PickResult(tile: _tileOf(_Candidate(l[0], l[1], 'link'))),
+                            ),
+                        autofocus: af()),
+                  _header(_loading ? 'Installed apps (loading...)' : 'Installed apps'),
+                  for (final c in _installed)
+                    _row(Icons.apps_rounded, c.name,
+                        () => Navigator.pop(context, _PickResult(tile: _tileOf(c)))),
+                  _header('Something else'),
+                  _row(Icons.keyboard_rounded, 'Type a path or link myself (keyboard)',
+                      () => Navigator.pop(context, _PickResult(manual: true))),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel', style: TextStyle(fontSize: 18)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Candidate {
+  _Candidate(this.name, this.target, this.kind);
+  final String name;
+  final String target;
+  final String kind;
 }
 
 class _HideBarIntent extends Intent {

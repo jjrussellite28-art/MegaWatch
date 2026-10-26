@@ -34,6 +34,8 @@ class WindowsGamepadService {
   static const int _rb = 0x0200;
   static const int _a = 0x1000;
   static const int _b = 0x2000;
+  static const int _x = 0x4000;
+  static const int _y = 0x8000;
 
   // Windows virtual-key codes.
   static const int _vkReturn = 0x0D;
@@ -45,6 +47,8 @@ class WindowsGamepadService {
   static const int _vkRight = 0x27;
   static const int _vkDown = 0x28;
   static const int _vkPlayPause = 0xB3;
+  static const int _vkF2 = 0x71; // X / Square: edit or close
+  static const int _vkF3 = 0x72; // Y / Triangle: add
 
   static const int _keyEventExtended = 0x0001;
   static const int _keyEventKeyUp = 0x0002;
@@ -322,6 +326,8 @@ class WindowsGamepadService {
         if (buttons & _a != 0) wanted.add(_vkReturn);
         if (buttons & (_b | _back) != 0) wanted.add(_vkEscape);
         if (buttons & _start != 0) wanted.add(_vkPlayPause);
+        if (buttons & _x != 0) wanted.add(_vkF2);
+        if (buttons & _y != 0) wanted.add(_vkF3);
         if (buttons & _lb != 0) wanted.add(_vkPageUp);
         if (buttons & _rb != 0) wanted.add(_vkPageDown);
       }
@@ -426,6 +432,8 @@ class WindowsGamepadService {
       if (pressed(1)) wanted.add(_vkReturn); // Cross = OK
       if (pressed(2) || pressed(8)) wanted.add(_vkEscape); // Circle = back
       if (pressed(9)) wanted.add(_vkPlayPause); // Options
+      if (pressed(0)) wanted.add(_vkF2); // Square
+      if (pressed(3)) wanted.add(_vkF3); // Triangle
       if (pressed(4)) wanted.add(_vkPageUp);
       if (pressed(5)) wanted.add(_vkPageDown);
     } else {
@@ -433,6 +441,8 @@ class WindowsGamepadService {
       if (pressed(0)) wanted.add(_vkReturn);
       if (pressed(1) || pressed(6)) wanted.add(_vkEscape);
       if (pressed(7)) wanted.add(_vkPlayPause);
+      if (pressed(2)) wanted.add(_vkF2);
+      if (pressed(3)) wanted.add(_vkF3);
       if (pressed(4)) wanted.add(_vkPageUp);
       if (pressed(5)) wanted.add(_vkPageDown);
     }

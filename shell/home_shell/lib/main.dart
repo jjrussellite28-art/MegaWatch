@@ -15,7 +15,7 @@ Future<void> main() async {
     await windowManager.waitUntilReadyToShow(
       const WindowOptions(
         title: 'Home Shell',
-        size: Size(640, 128),
+        size: Size(640, 156),
         backgroundColor: Color(0xFF11151F),
         titleBarStyle: TitleBarStyle.hidden,
         alwaysOnTop: true,

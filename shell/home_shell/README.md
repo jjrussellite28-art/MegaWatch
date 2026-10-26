@@ -15,7 +15,8 @@ flutter run -d windows --release
 ## Using it
 - **Show the bar from anywhere:** HOLD the Xbox Guide button for 1 second, or press Ctrl+Alt+H.
   A quick tap of Guide still goes to the other app (Playnite, Steam, Game Bar) untouched.
-- **Move:** D-pad / arrow keys / mouse. **Select:** A / Enter / click. **Hide:** B / Esc.
+- **Controller:** D-pad = move, **A** = open, **X** = close an open app / edit a tile, **Y** = add, **B** = hide. (Keyboard: Enter, F2, F3, Esc.) The buttons are shown at the bottom of the bar.
+- **Add (Y or +):** pick from your open apps, quick links (YouTube, Netflix...), or any installed app (Start menu) — no typing needed. "Type it myself" is there for anything else.
 - **Open apps** (left, with a green dot) show their real icon. Start / F2 / right-click closes one.
 - **Your tiles** (middle): Start / F2 / right-click edits or deletes one. **+** adds a new one.
 - **Power** (right): sleep, restart, shut down, sign out, on-screen keyboard, close the bar.
