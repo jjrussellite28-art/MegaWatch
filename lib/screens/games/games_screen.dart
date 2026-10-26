@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import '../../services/main_page_bridge.dart';
 import '../../services/playnite_service.dart';
-import '../../services/playnite_switcher.dart';
 import '../../widgets/tv_text_field.dart';
 
 /// The Games tab: your Playnite library inside Debrify. Pick a game to start
@@ -77,7 +76,7 @@ class _GamesScreenState extends State<GamesScreen> {
   }
 
   Future<void> _openPlaynite() async {
-    final ok = await PlayniteSwitcher.instance.openPlaynite();
+    final ok = await PlayniteService.instance.openPlaynite();
     if (!mounted) return;
     if (!ok) {
       setState(() => _message = 'Playnite was not found on this PC.');

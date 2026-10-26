@@ -1,6 +1,5 @@
 import 'services/webdav_sync/webdav_log_upload.dart';
 import 'services/desktop_remote_mode.dart';
-import 'services/playnite_switcher.dart';
 import 'services/cache_scratch_cleanup.dart';
 import 'services/debrify_image_cache.dart';
 import 'widgets/webdav_sync/webdav_save_status.dart';
@@ -806,7 +805,6 @@ Future<void> _continueApplicationStartup() async {
     windowManager.waitUntilReadyToShow().then((_) async {
       await windowManager.show();
       await windowManager.focus();
-      if (Platform.isWindows) PlayniteSwitcher.instance.start();
     });
   }
 }
