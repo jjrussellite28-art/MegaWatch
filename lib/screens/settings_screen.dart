@@ -1298,7 +1298,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _indexerManagersInfo,
         // Usenet and display live in their own block under the debrid ones.
         _usenetInfo,
-        if (_showWindowsDisplay) _windowsDisplayInfo,
       ],
       separateConnectionsFrom: 9,
       // Watch history lives on its own rail category — Connections had grown

@@ -1,4 +1,6 @@
 import 'dart:async';
+
+import 'input_mode.dart';
 import 'dart:ffi';
 import 'dart:io' show Platform, pid;
 import 'dart:typed_data';
@@ -179,6 +181,7 @@ class WindowsGamepadService {
   }
 
   void _sendKey(int vk, {required bool down}) {
+    if (down) InputMode.instance.noteController();
     var flags = _extendedKeys.contains(vk) ? _keyEventExtended : 0;
     if (!down) flags |= _keyEventKeyUp;
     _keybdEvent(vk, 0, flags, 0);

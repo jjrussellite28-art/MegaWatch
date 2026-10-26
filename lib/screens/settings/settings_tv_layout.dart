@@ -11,6 +11,7 @@ import '../../utils/platform_util.dart';
 import '../../theme/app_focus.dart';
 import '../../theme/widgets/parallax_focus.dart';
 import 'settings_spotlight_shell.dart';
+import 'windows_display_page.dart';
 import 'widgets/settings_widgets.dart';
 import '../../theme/app_theme_scope.dart';
 
@@ -360,6 +361,13 @@ const List<_Category> _kCategories = [
     'Debrify TV, recordings & IPTV',
     'Live television, organized.',
     'Manage channel sources, recordings, and the on-screen guide.',
+  ),
+  _Category(
+    Icons.sports_esports_rounded,
+    'Controller & Screen',
+    'Full screen, window, mouse',
+    'Made for the couch or the desk.',
+    'Choose full screen or a window, and how the pointer behaves.',
   ),
   _Category(
     Icons.devices_rounded,
@@ -1276,7 +1284,9 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
             ],
           ),
         ];
-      case 11: // Devices
+      case 11: // Controller & Screen
+        return [WindowsDisplayPane(nodes: _paneNodes)];
+      case 12: // Devices
         return [
           SettingsSection(
             title: '',
@@ -1289,7 +1299,7 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
             ],
           ),
         ];
-      case 12: // Profiles — its own card (it was a tenant row under Devices).
+      case 13: // Profiles — its own card (it was a tenant row under Devices).
         return [
           SettingsSection(
             title: '',
@@ -1331,7 +1341,7 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
             ],
           ),
         ];
-      case 13: // Sync and Migrate
+      case 14: // Sync and Migrate
         return [
           SettingsSection(
             title: '',
@@ -1345,7 +1355,7 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
             ],
           ),
         ];
-      case 14: // Data & Backup
+      case 15: // Data & Backup
         {
           // Focus nodes are claimed sequentially so the optional
           // download-location row doesn't shift hardcoded indices.
@@ -1416,7 +1426,7 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
             ],
           ];
         }
-      case 15: // About (Updates + Support merged — matches the phone layout)
+      case 16: // About (Updates + Support merged — matches the phone layout)
         {
           // The donation row is conditional, so index the pane nodes off a
           // running counter to keep Up/Down wiring contiguous.
@@ -1491,7 +1501,7 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
             ),
           ];
         }
-      case 16: // Danger Zone
+      case 17: // Danger Zone
         return [
           SettingsSection(
             title: '',

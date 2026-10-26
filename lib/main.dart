@@ -1142,6 +1142,17 @@ class _DebrifyAppState extends State<DebrifyApp> {
             autofocus: false,
             canRequestFocus: false,
             onKeyEvent: (node, event) {
+              // F11 toggles full screen from anywhere (the player has its own).
+              if (event is KeyDownEvent &&
+                  event.logicalKey == LogicalKeyboardKey.f11) {
+                () async {
+                  try {
+                    final full = await windowManager.isFullScreen();
+                    await windowManager.setFullScreen(!full);
+                  } catch (_) {}
+                }();
+                return KeyEventResult.handled;
+              }
               // Remote mode: BACK (Escape / controller B / remote Back) that no
               // screen handled acts like the system Back button on an Android
               // box - it pops a page or opens the side menu at the root.

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/services.dart';
 
+import '../services/input_mode.dart';
 import '../services/storage_service.dart';
 import '../services/tv_voice_input.dart';
 import '../theme/overlay_theme.dart';
@@ -558,7 +559,20 @@ class TvTextFieldState extends State<TvTextField> {
       (widget.forceTvKeyboard ||
           (PlatformUtil.isTelevision &&
               StorageService.tvKeyboardEnabledCached)) &&
-      widget.enabled;
+      widget.enabled &&
+      (!PlatformUtil.desktopRemoteMode || _padInput);
+
+  /// Desktop only: true while the controller/remote is the last input used.
+  /// With a real keyboard or mouse the plain text box is used instead. It only
+  /// changes while this field is not being edited, so nothing closes mid-typing.
+  bool _padInput = InputMode.instance.controller.value;
+
+  void _inputModeChanged() {
+    final want = InputMode.instance.controller.value;
+    if (want == _padInput || !mounted) return;
+    if (_editing || _shellNode.hasFocus || _editNode.hasFocus) return;
+    setState(() => _padInput = want);
+  }
 
   /// Cancels the Apple TV "editing finished" subscription.
   VoidCallback? _tvosEndEditing;
@@ -571,6 +585,7 @@ class TvTextFieldState extends State<TvTextField> {
     }
     _shellNode.addListener(_handleFocusChange);
     _editNode.addListener(_handleFocusChange);
+    InputMode.instance.controller.addListener(_inputModeChanged);
     widget.suggestions?.addListener(_suggestionsChanged);
     widget.controller.addListener(_suggestionInputChanged);
     _suggestionText = widget.controller.text;
@@ -612,6 +627,7 @@ class TvTextFieldState extends State<TvTextField> {
 
   @override
   void dispose() {
+    InputMode.instance.controller.removeListener(_inputModeChanged);
     widget.suggestions?.removeListener(_suggestionsChanged);
     widget.controller.removeListener(_suggestionInputChanged);
     _tvosEndEditing?.call();
@@ -636,6 +652,9 @@ class TvTextFieldState extends State<TvTextField> {
   }
 
   void _handleFocusChange() {
+    if (!_editing && !_shellNode.hasFocus && !_editNode.hasFocus) {
+      _inputModeChanged();
+    }
     // Editing must not outlive the editor's focus: if a background focus grab
     // (or a route push) moves focus elsewhere, take the keyboard down instead
     // of leaving a zombie overlay. hasFocus on the shell includes the editor

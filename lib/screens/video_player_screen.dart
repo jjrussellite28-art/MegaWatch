@@ -595,6 +595,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// the focused control is excluded from the tree.
   final FocusNode _tvRootFocus = FocusNode(debugLabel: 'tvPlayerRoot');
 
+  /// The bar button that had focus last, so closing a menu returns to it
+  /// (e.g. the Settings button) instead of dropping focus onto the video.
+  FocusNode? _tvLastBarFocus;
+
+  void _trackTvBarFocus() {
+    final f = FocusManager.instance.primaryFocus;
+    if (f != null && f != _tvBarScope && _tvBarScope.hasFocus) {
+      _tvLastBarFocus = f;
+    }
+  }
+
+  void _tvRestoreFocusAfterOverlay() {
+    final last = _tvLastBarFocus;
+    if (last != null && last.context != null && last.canRequestFocus) {
+      _controlsVisible.value = true;
+      _scheduleAutoHide();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _anyPlayerOverlayOpen) return;
+        if (last.context != null && last.canRequestFocus) {
+          last.requestFocus();
+        } else {
+          _tvRootFocus.requestFocus();
+        }
+      });
+      return;
+    }
+    _tvRootFocus.requestFocus();
+  }
+
   /// True when there is genuinely nothing to seek: a live channel's ordinary
   /// position/duration is just the HLS rolling window. Start Over may expose
   /// its finite archive timeline explicitly. Mirrors the signal the bar uses,
@@ -1652,6 +1681,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   @override
   void initState() {
     super.initState();
+    FocusManager.instance.addListener(_trackTvBarFocus);
     _continuousShuffleEnabled = widget.initialContinuousShuffle;
     _activeHttpHeaders = widget.httpHeaders;
     PlayerVisibility.opened(this);
@@ -12018,6 +12048,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _iptvZapHideTimer?.cancel();
     _iptvZapTicker?.cancel();
     _tvScrubGeneration++; // invalidate any scrub still in flight
+    FocusManager.instance.removeListener(_trackTvBarFocus);
     _tvBarScope.dispose();
     _dockExtent.dispose();
     _tvPlayPauseFocus.dispose();
@@ -13283,7 +13314,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     } else {
       return;
     }
-    if (PlatformUtil.isTelevision) _tvRootFocus.requestFocus();
+    if (PlatformUtil.isTelevision) _tvRestoreFocusAfterOverlay();
   }
 
   /// Opens whichever guide this session actually has, in the order the dock
@@ -16963,7 +16994,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _hidePlayerMenu() {
     if (!_showPlayerMenu) return;
     setState(() => _showPlayerMenu = false);
-    if (PlatformUtil.isTelevision) _tvRootFocus.requestFocus();
+    if (PlatformUtil.isTelevision) _tvRestoreFocusAfterOverlay();
   }
 
   /// Persist an explicit subtitle choice made from the menu.

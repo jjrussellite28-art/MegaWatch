@@ -1,4 +1,6 @@
 import 'dart:async';
+
+import 'input_mode.dart';
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
@@ -70,6 +72,7 @@ class DesktopRemoteMode {
       PlatformUtil.desktopRemoteMode = enabled;
       if (enabled) WindowsGamepadService.instance.start();
       CursorAutoHide.instance.start(enabled: hideCursor);
+      InputMode.instance.start();
       if (fullScreen) unawaited(_enterFullScreen());
     } catch (e) {
       debugPrint('DesktopRemoteMode: could not start ($e)');
