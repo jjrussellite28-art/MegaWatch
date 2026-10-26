@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import '../../services/easynews_service.dart';
@@ -194,15 +195,54 @@ class _UsenetScreenState extends State<UsenetScreen> {
     final link = r.url.replaceFirst(RegExp(r'//[^/@]*@'), '//');
     final text = 'Name: ${r.title}\nLink: $link\n'
         'Picture tries:\n${r.thumbnailCandidates.join('\n')}';
+    final testResult = ValueNotifier<String>('');
+    Future<void> runTest() async {
+      testResult.value = 'Testing…';
+      final out = StringBuffer();
+      for (final url in r.thumbnailCandidates) {
+        for (final withLogin in [false, true]) {
+          try {
+            final res = await http
+                .get(
+                  Uri.parse(url),
+                  headers: withLogin ? _imageHeaders : const {},
+                )
+                .timeout(const Duration(seconds: 10));
+            out.writeln(
+              '${res.statusCode} ${res.headers['content-type'] ?? ''} '
+              '${res.bodyBytes.length}B  ${withLogin ? 'login' : 'no login'}'
+              '  ${url.split('/').last}',
+            );
+          } catch (e) {
+            out.writeln('error $e  ${url.split('/').last}');
+          }
+        }
+      }
+      testResult.value = out.toString();
+    }
+
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Result details'),
-        content: SingleChildScrollView(child: SelectableText(text)),
+        content: SingleChildScrollView(
+          child: ValueListenableBuilder<String>(
+            valueListenable: testResult,
+            builder: (_, result, __) =>
+                SelectableText(result.isEmpty ? text : '$text\n\n$result'),
+          ),
+        ),
         actions: [
+          TextButton(onPressed: runTest, child: const Text('Test pictures')),
           TextButton(
             onPressed: () {
-              Clipboard.setData(ClipboardData(text: text));
+              Clipboard.setData(
+                ClipboardData(
+                  text: testResult.value.isEmpty
+                      ? text
+                      : '$text\n\n${testResult.value}',
+                ),
+              );
               Navigator.of(ctx).pop();
             },
             child: const Text('Copy'),
@@ -456,11 +496,15 @@ class _ResultThumbState extends State<_ResultThumb> {
   @override
   Widget build(BuildContext context) {
     const fallback = Icon(Icons.play_circle_outline_rounded, size: 30);
-    if (_index >= widget.urls.length) return fallback;
+    // Each address is tried twice: without the login first (the picture
+    // server is usually public), then with it.
+    if (_index >= widget.urls.length * 2) return fallback;
+    final url = widget.urls[_index ~/ 2];
+    final withLogin = _index.isOdd;
     return Image.network(
-      widget.urls[_index],
-      key: ValueKey(widget.urls[_index]),
-      headers: widget.headers,
+      url,
+      key: ValueKey('$url|$withLogin'),
+      headers: withLogin ? widget.headers : const <String, String>{},
       fit: BoxFit.cover,
       cacheWidth: 192,
       errorBuilder: (_, __, ___) {
