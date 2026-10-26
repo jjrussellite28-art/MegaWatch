@@ -44,7 +44,13 @@ class EasynewsResult {
     if (picture != null && picture!.isNotEmpty) out.add(picture!);
     final id = fileId;
     if (id != null) {
-      final ids = <String>{id, if (id.length > 40) id.substring(0, 40)};
+      // Pictures use the first 41 characters of the id; the video link
+      // carries a few extra characters on the end.
+      final ids = <String>{
+        if (id.length > 41) id.substring(0, 41),
+        id,
+        if (id.length > 40) id.substring(0, 40),
+      };
       for (final i in ids) {
         for (final kind in const ['th', 'pr']) {
           out.add('https://th.easynews.com/thumbnails-${i.substring(0, 3)}/$kind-$i.jpg');
