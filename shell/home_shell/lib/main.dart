@@ -15,11 +15,13 @@ Future<void> main() async {
     await windowManager.waitUntilReadyToShow(
       const WindowOptions(
         title: 'Home Shell',
-        backgroundColor: Colors.black,
+        size: Size(640, 128),
+        backgroundColor: Color(0xFF11151F),
         titleBarStyle: TitleBarStyle.hidden,
+        alwaysOnTop: true,
+        skipTaskbar: true,
       ),
       () async {
-        await windowManager.setFullScreen(true);
         await windowManager.show();
         await windowManager.focus();
       },

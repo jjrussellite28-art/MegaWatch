@@ -1,8 +1,8 @@
-# Home Shell (version 0.1)
+# Home Shell (small bar)
 
-A full-screen home screen for Windows with big tiles. Works with an Xbox / PlayStation / GameSir
-controller, a TV remote (as keyboard keys), keyboard and mouse. It runs ON TOP of Windows —
-nothing about Windows is replaced, so nothing can break.
+A small bar that floats at the top of the screen, on top of any app or game. Pick an open app to
+switch to it, or start one of your tiles. Works with an Xbox controller, keyboard and mouse.
+It runs on top of Windows and replaces nothing.
 
 ## First run (once)
 ```
@@ -12,20 +12,13 @@ flutter pub get
 flutter run -d windows --release
 ```
 
-## Controls
-| Action | Controller | Keyboard / mouse |
-|---|---|---|
-| Move | D-pad / stick | Arrow keys / mouse |
-| Open tile | A | Enter / click |
-| Edit tile | Start | F2 / right-click |
-| Power menu | B / Back | Esc / F10 |
+## Using it
+- **Show the bar from anywhere:** HOLD the Xbox Guide button for 1 second, or press Ctrl+Alt+H.
+  A quick tap of Guide still goes to the other app (Playnite, Steam, Game Bar) untouched.
+- **Move:** D-pad / arrow keys / mouse. **Select:** A / Enter / click. **Hide:** B / Esc.
+- **Open apps** (left, with a green dot) show their real icon. Start / F2 / right-click closes one.
+- **Your tiles** (middle): Start / F2 / right-click edits or deletes one. **+** adds a new one.
+- **Power** (right): sleep, restart, shut down, sign out, on-screen keyboard, close the bar.
 
-**Open now row:** apps that are already running appear at the top. Select one to switch to it (Start / right-click closes it).
-
-**Home gesture (from any app):** HOLD the Xbox Guide button for 1 second, or press Ctrl+Alt+H, and a small bar appears on top of whatever you're doing (Home, open apps, your tiles, Power). Pick one to switch; B/Esc hides the bar; the Home button opens the full home screen. Nothing gets closed, and a quick tap of Guide still works in the other app (Playnite, Steam).
-If the Windows Game Bar pops up on Guide, turn it off in Settings > Gaming > Game Bar.
-
-Tiles are saved in `%APPDATA%\HomeShell\tiles.json`. Use **Add** to make your own tile
-(a program path or a link like `steam://open/bigpicture`).
-
-Debrify is untouched; the default Debrify tile just points at its built exe.
+Tiles are saved in `%APPDATA%\HomeShell\tiles.json`; icons are cached in `%APPDATA%\HomeShell\icons`.
+If the Windows Game Bar pops up on Guide, turn that off in Settings > Gaming > Game Bar.

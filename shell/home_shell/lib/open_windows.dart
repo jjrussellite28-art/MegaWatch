@@ -6,9 +6,12 @@ import 'package:flutter/foundation.dart';
 
 /// One open program window.
 class OpenWindow {
-  OpenWindow(this.hwnd, this.title);
+  OpenWindow(this.hwnd, this.title, [this.exePath = '']);
   final int hwnd;
   final String title;
+
+  /// Full path of the program's .exe ('' when unknown).
+  final String exePath;
 }
 
 /// Lists the programs that are open on Windows, switches to one, or closes one.
@@ -17,6 +20,9 @@ class OpenWindows {
   static final OpenWindows instance = OpenWindows._();
 
   bool _ready = false;
+  late final int Function(int, int, int) _openProcess;
+  late final int Function(int, int, Pointer<Uint16>, Pointer<Uint32>) _queryImage;
+  late final int Function(int) _closeHandle;
   late final int Function(Pointer<NativeFunction<Int32 Function(IntPtr, IntPtr)>>, int) _enumWindows;
   late final int Function(int) _isVisible;
   late final int Function(int) _isIconic;
@@ -66,6 +72,16 @@ class OpenWindows {
       Int32 Function(IntPtr, Uint32, Pointer<Int32>, Uint32),
       int Function(int, int, Pointer<Int32>, int)
     >('DwmGetWindowAttribute');
+    final k = DynamicLibrary.open('kernel32.dll');
+    _openProcess = k.lookupFunction<
+      IntPtr Function(Uint32, Int32, Uint32),
+      int Function(int, int, int)
+    >('OpenProcess');
+    _queryImage = k.lookupFunction<
+      Int32 Function(IntPtr, Uint32, Pointer<Uint16>, Pointer<Uint32>),
+      int Function(int, int, Pointer<Uint16>, Pointer<Uint32>)
+    >('QueryFullProcessImageNameW');
+    _closeHandle = k.lookupFunction<Int32 Function(IntPtr), int Function(int)>('CloseHandle');
     _ready = true;
   }
 
@@ -74,6 +90,21 @@ class OpenWindows {
   static int _collect(int hwnd, int lParam) {
     _found.add(hwnd);
     return 1;
+  }
+
+  String _exeOf(int processId) {
+    final h = _openProcess(0x1000, 0, processId); // QUERY_LIMITED_INFORMATION
+    if (h == 0) return '';
+    final buf = calloc<Uint16>(1024);
+    final size = calloc<Uint32>()..value = 1024;
+    try {
+      if (_queryImage(h, 0, buf, size) == 0) return '';
+      return buf.cast<Utf16>().toDartString();
+    } finally {
+      calloc.free(buf);
+      calloc.free(size);
+      _closeHandle(h);
+    }
   }
 
   /// Open program windows, skipping this app and Windows' own background ones.
@@ -115,7 +146,9 @@ class OpenWindows {
             calloc.free(buf);
           }
           if (title == 'Program Manager') continue;
-          out.add(OpenWindow(h, title));
+          var exe = _exeOf(pidBuf.value);
+          if (exe.toLowerCase().endsWith('applicationframehost.exe')) exe = '';
+          out.add(OpenWindow(h, title, exe));
         }
       } finally {
         calloc.free(pidBuf);
