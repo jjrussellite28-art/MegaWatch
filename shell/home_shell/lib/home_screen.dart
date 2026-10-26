@@ -6,6 +6,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'launcher.dart';
 import 'open_windows.dart';
+import 'shell_mode.dart';
 import 'tiles.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _clock = Timer.periodic(const Duration(seconds: 20), (_) {
       if (mounted) setState(() => _now = DateTime.now());
     });
+    ShellMode.instance.bar.addListener(_onModeChange);
+    ShellMode.instance.barRequest.addListener(_applyMode);
     _refreshWindows();
     _windowTimer = Timer.periodic(const Duration(seconds: 2), (_) => _refreshWindows());
     TileStore.load().then((t) {
@@ -47,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    ShellMode.instance.bar.removeListener(_onModeChange);
+    ShellMode.instance.barRequest.removeListener(_applyMode);
     _clock?.cancel();
     _windowTimer?.cancel();
     for (final n in _winNodes.values) {
@@ -56,6 +61,133 @@ class _HomeScreenState extends State<HomeScreen> {
       n.dispose();
     }
     super.dispose();
+  }
+
+  void _onModeChange() {
+    if (mounted) setState(() {});
+  }
+
+  int get _barItemCount => 1 + _open.length + _tiles.length + 1;
+
+  void _applyMode() {
+    if (!mounted) return;
+    _refreshWindows();
+    ShellMode.instance.applyWindow(itemCount: _barItemCount);
+  }
+
+  void _hideBar() {
+    windowManager.hide();
+  }
+
+  void _barSwitch(int hwnd) {
+    OpenWindows.instance.switchTo(hwnd);
+    _hideBar();
+  }
+
+  Future<void> _barLaunch(ShellTile t) async {
+    final err = await Launcher.open(t);
+    if (err == null) {
+      _hideBar();
+    } else if (mounted) {
+      _toast(err);
+    }
+  }
+
+  Widget _buildBar() {
+    final label = ValueNotifier<String>('');
+    Widget item(IconData? icon, String text, VoidCallback onTap,
+        {String? letter, bool autofocus = false, Color? color, int? key}) {
+      return _BarItem(
+        key: key == null ? null : ValueKey(key),
+        icon: icon,
+        letter: letter,
+        color: color ?? const Color(0xFF2B3550),
+        label: text,
+        onTap: onTap,
+        onFocusLabel: (t) => label.value = t,
+        autofocus: autofocus,
+      );
+    }
+
+    final divider = Container(
+      width: 1,
+      height: 40,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      color: Colors.white24,
+    );
+    return Shortcuts(
+      shortcuts: const {
+        SingleActivator(LogicalKeyboardKey.escape): _HideBarIntent(),
+      },
+      child: Actions(
+        actions: {
+          _HideBarIntent: CallbackAction<_HideBarIntent>(onInvoke: (_) {
+            _hideBar();
+            return null;
+          }),
+        },
+        child: Scaffold(
+          backgroundColor: const Color(0xFF11151F),
+          body: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 64,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    children: [
+                      item(Icons.home_rounded, 'Home',
+                          () => ShellMode.instance.showFull(),
+                          autofocus: true),
+                      if (_open.isNotEmpty) divider,
+                      for (final w in _open)
+                        item(
+                          null,
+                          w.title,
+                          () => _barSwitch(w.hwnd),
+                          key: w.hwnd,
+                          letter: w.title.trim().isEmpty
+                              ? '?'
+                              : w.title.trim()[0].toUpperCase(),
+                          color: HSLColor.fromAHSL(
+                                  1, (w.title.hashCode % 360).abs().toDouble(), 0.45, 0.32)
+                              .toColor(),
+                        ),
+                      if (_tiles.isNotEmpty) divider,
+                      for (final t in _tiles)
+                        item(
+                          kTileIcons[t.icon] ?? Icons.apps_rounded,
+                          t.name,
+                          () => _barLaunch(t),
+                          color: kTileColors[t.color.clamp(0, kTileColors.length - 1)],
+                        ),
+                      divider,
+                      item(Icons.power_settings_new_rounded, 'Power menu', () {
+                        ShellMode.instance.showFull();
+                        WidgetsBinding.instance.addPostFrameCallback((_) => _powerMenu());
+                      }),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                ValueListenableBuilder<String>(
+                  valueListenable: label,
+                  builder: (_, v, __) => Text(
+                    v.isEmpty ? 'Hold Guide to show this bar   B / Esc: hide' : v,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 16, color: Colors.white70),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   void _refreshWindows() {
@@ -179,6 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (ShellMode.instance.bar.value) return _buildBar();
     return Shortcuts(
       shortcuts: const {
         // Escape (controller B / remote Back) opens the power menu.
@@ -270,6 +403,100 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(color: Colors.white38, fontSize: 15),
                   ),
                 ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HideBarIntent extends Intent {
+  const _HideBarIntent();
+}
+
+class _BarItem extends StatefulWidget {
+  const _BarItem({
+    super.key,
+    this.icon,
+    this.letter,
+    required this.color,
+    required this.label,
+    required this.onTap,
+    required this.onFocusLabel,
+    this.autofocus = false,
+  });
+  final IconData? icon;
+  final String? letter;
+  final Color color;
+  final String label;
+  final VoidCallback onTap;
+  final void Function(String) onFocusLabel;
+  final bool autofocus;
+
+  @override
+  State<_BarItem> createState() => _BarItemState();
+}
+
+class _BarItemState extends State<_BarItem> {
+  bool _focused = false;
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final active = _focused || _hover;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Focus(
+        autofocus: widget.autofocus,
+        onFocusChange: (f) {
+          setState(() => _focused = f);
+          if (f) {
+            widget.onFocusLabel(widget.label);
+            Scrollable.ensureVisible(context,
+                duration: const Duration(milliseconds: 120), alignment: 0.5);
+          }
+        },
+        onKeyEvent: (_, e) {
+          if (e is! KeyDownEvent) return KeyEventResult.ignored;
+          final k = e.logicalKey;
+          if (k == LogicalKeyboardKey.enter ||
+              k == LogicalKeyboardKey.numpadEnter ||
+              k == LogicalKeyboardKey.select ||
+              k == LogicalKeyboardKey.space) {
+            widget.onTap();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: MouseRegion(
+          onEnter: (_) {
+            setState(() => _hover = true);
+            widget.onFocusLabel(widget.label);
+          },
+          onExit: (_) => setState(() => _hover = false),
+          child: GestureDetector(
+            onTap: widget.onTap,
+            child: AnimatedScale(
+              scale: active ? 1.1 : 1.0,
+              duration: const Duration(milliseconds: 100),
+              child: Container(
+                width: 60,
+                height: 60,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: widget.color,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: _focused ? Colors.white : Colors.transparent,
+                    width: 3,
+                  ),
+                ),
+                child: widget.icon != null
+                    ? Icon(widget.icon, size: 30)
+                    : Text(widget.letter ?? '?',
+                        style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w700)),
               ),
             ),
           ),

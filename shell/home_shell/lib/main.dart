@@ -6,6 +6,7 @@ import 'package:window_manager/window_manager.dart';
 import 'cursor_hide.dart';
 import 'gamepad.dart';
 import 'home_screen.dart';
+import 'shell_mode.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,10 +24,9 @@ Future<void> main() async {
         await windowManager.focus();
       },
     );
-    WindowsGamepadService.instance.onHomeRequested = () async {
-      await windowManager.setFullScreen(true);
-      await windowManager.show();
-      await windowManager.focus();
+    // Hold Guide from any app: show the small bar on top of it.
+    WindowsGamepadService.instance.onHomeRequested = () {
+      ShellMode.instance.showBar();
     };
     WindowsGamepadService.instance.start();
     CursorAutoHide.instance.start();
