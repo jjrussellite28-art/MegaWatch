@@ -28,9 +28,10 @@ class EasynewsResult {
   final String extension;
   final String details;
 
-  /// The 40-character file id inside the link, when there is one.
+  /// The long file id inside the link (about 40 characters), when there is one.
   String? get fileId {
-    final m = RegExp(r'([0-9a-fA-F]{40})').firstMatch(url);
+    final m = RegExp(r'/dl/(?:[^/]*/)?([0-9a-fA-F]{38,64})').firstMatch(url) ??
+        RegExp(r'([0-9a-fA-F]{38,64})').firstMatch(url);
     return m?.group(1)?.toLowerCase();
   }
 
@@ -42,7 +43,7 @@ class EasynewsResult {
     if (picture != null && picture!.isNotEmpty) return picture;
     final id = fileId;
     if (id == null) return null;
-    return 'https://th.easynews.com/thumbnails-${id.substring(0, 3)}/pr-$id.jpg';
+    return 'https://th.easynews.com/thumbnails-${id.substring(0, 3)}/th-$id.jpg';
   }
 
   String get sizeLabel {
