@@ -93,6 +93,7 @@ import 'theme/system_bars.dart';
 import 'models/rd_torrent.dart';
 import 'package:window_manager/window_manager.dart';
 import 'services/input_mode.dart';
+import 'screens/games/games_screen.dart';
 import 'screens/links/links_screen.dart';
 import 'services/deep_link_service.dart';
 import 'services/magnet_link_handler.dart';
@@ -1580,7 +1581,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     'Search', // 17: dedicated search tab (TV + sidebar layouts)
     'Discover', // 18: source-dropdown browser (Continue Watching / Trakt / …)
     'Calendar', // 19: Trakt/Simkl calendar (visible when either is connected)
-    'Links', // 20: Links & safety (link checker, ad-free link player)
+    'Games', // 20: game library (Steam, Epic, your own)
+    'Links', // 21: Links & safety (link checker, ad-free link player)
   ];
 
   final List<IconData> _icons = [
@@ -1604,7 +1606,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     Icons.search_rounded, // 17: Search
     Icons.explore_rounded, // 18: Discover
     Icons.calendar_month_rounded, // 19: Calendar (Trakt/Simkl)
-    Icons.link_rounded, // 20: Links & safety
+    Icons.sports_esports_rounded, // 20: Games
+    Icons.link_rounded, // 21: Links & safety
   ];
 
   /// Tab index → bridge back-handler key, in ONE place. Every path that
@@ -3080,10 +3083,12 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   /// lands right after Discover (18) — the same visual slot — so the tab is
   /// always in a consistent place. Mutates [indices] in place.
   void _insertTraktCalendarTab(List<int> indices, bool authed) {
-    // Links & safety sits just before Addons.
-    if (!indices.contains(MainTab.games)) {
-      final at = indices.indexOf(MainTab.addons);
-      indices.insert(at >= 0 ? at : indices.length, MainTab.games);
+    // Games and Links & safety sit just before Addons.
+    for (final tab in [MainTab.games, MainTab.links]) {
+      if (!indices.contains(tab)) {
+        final at = indices.indexOf(MainTab.addons);
+        indices.insert(at >= 0 ? at : indices.length, tab);
+      }
     }
     if (!authed || indices.contains(19)) return;
     var pos = indices.indexOf(2);
@@ -3228,7 +3233,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         return 'Main';
       case 13: // IPTV
       case 14: // YouTube
-      case 20: // Links & safety
+      case 20: // Games
+      case 21: // Links & safety
         return 'Browse';
       case 3: // Debrify TV
       case 9: // Stremio TV
@@ -3314,7 +3320,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         return SearchScreen(isTelevision: _isAndroidTv, discoverMode: true);
       case 19: // Calendar (gated on Trakt OR Simkl auth in the nav below)
         return const TraktCalendarScreen();
-      case 20: // Links & safety
+      case 20: // Games
+        return GamesScreen(isTelevision: _isAndroidTv);
+      case 21: // Links & safety
         return LinksScreen(isTelevision: _isAndroidTv);
       default:
         return _pages[index];

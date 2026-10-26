@@ -14,7 +14,7 @@ enum SurfaceKind { themed, frozen }
 /// entry is added.
 abstract final class AppSurfaces {
   /// Must equal the length of `_MainPageState._titles`. Asserted by test.
-  static const int tabCount = 21;
+  static const int tabCount = 22;
 
   static const Map<int, SurfaceKind> tabs = {
     0: SurfaceKind.frozen, //  inert slot (deprecated old Home)
@@ -37,7 +37,8 @@ abstract final class AppSurfaces {
     17: SurfaceKind.themed, // Search
     18: SurfaceKind.themed, // Discover
     19: SurfaceKind.themed, // Calendar
-    20: SurfaceKind.themed, // Games (Playnite)
+    20: SurfaceKind.themed, // Games
+    21: SurfaceKind.themed, // Links & safety
   };
 
   static SurfaceKind kindForTab(int index) =>

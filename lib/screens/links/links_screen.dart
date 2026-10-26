@@ -45,7 +45,7 @@ class _LinksScreenState extends State<LinksScreen> {
     _contentFocus = () {
       if (mounted) _pasteFocus.requestFocus();
     };
-    MainPageBridge.registerTvContentFocusHandler(20, _contentFocus);
+    MainPageBridge.registerTvContentFocusHandler(21, _contentFocus);
     _timer = Timer.periodic(const Duration(seconds: 2), (_) {
       if (mounted) setState(() {});
     });
@@ -56,7 +56,7 @@ class _LinksScreenState extends State<LinksScreen> {
 
   @override
   void dispose() {
-    MainPageBridge.unregisterTvContentFocusHandler(20, _contentFocus);
+    MainPageBridge.unregisterTvContentFocusHandler(21, _contentFocus);
     _timer?.cancel();
     _cancel = true;
     _url.dispose();

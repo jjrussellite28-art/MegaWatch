@@ -47,6 +47,7 @@ abstract final class MainTab {
   static const int discover = 18;
   static const int calendar = 19;
   static const int games = 20;
+  static const int links = 21;
 }
 
 class MainPageBridge {
