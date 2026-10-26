@@ -31,6 +31,7 @@ class OpenWindows {
   late final int Function(int, int) _getWindow;
   late final int Function(int, int) _getLong;
   late final int Function(int, Pointer<Uint32>) _getPid;
+  late final int Function() _foreground;
   late final int Function(int, int) _showWindow;
   late final int Function(int) _setForeground;
   late final int Function(int, int, int, int) _postMessage;
@@ -58,6 +59,7 @@ class OpenWindows {
       Uint32 Function(IntPtr, Pointer<Uint32>),
       int Function(int, Pointer<Uint32>)
     >('GetWindowThreadProcessId');
+    _foreground = u.lookupFunction<IntPtr Function(), int Function()>('GetForegroundWindow');
     _showWindow = u.lookupFunction<Int32 Function(IntPtr, Int32), int Function(int, int)>('ShowWindow');
     _setForeground = u.lookupFunction<Int32 Function(IntPtr), int Function(int)>('SetForegroundWindow');
     _postMessage = u.lookupFunction<
@@ -179,6 +181,38 @@ class OpenWindows {
       _setForeground(hwnd);
     } catch (e) {
       debugPrint('OpenWindows.switchTo failed: $e');
+    }
+  }
+
+  /// Process id of the window in front (0 if none).
+  int foregroundPid() {
+    try {
+      _init();
+      final h = _foreground();
+      if (h == 0) return 0;
+      final b = calloc<Uint32>();
+      try {
+        _getPid(h, b);
+        return b.value;
+      } finally {
+        calloc.free(b);
+      }
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  /// True when the window in front belongs to this app.
+  bool foregroundIsSelf() => foregroundPid() == pid;
+
+  /// Handle of the window in front (0 if none or if it is this app).
+  int foregroundHwnd() {
+    try {
+      _init();
+      if (foregroundIsSelf()) return 0;
+      return _foreground();
+    } catch (_) {
+      return 0;
     }
   }
 
