@@ -13,6 +13,7 @@ flutter run -d windows --release
 ```
 
 ## Using it
+- **Always on screen:** the bar stays at the top all the time (turn off in Settings). While you use another app it shrinks to just icons; your bar button (default: hold Guide) puts it back into focus so the controller drives it. B / Esc gives control back to the app you were in.
 - **Show the bar from anywhere:** HOLD the Xbox Guide button for 1 second, or press Ctrl+Alt+H.
   A quick tap of Guide still goes to the other app (Playnite, Steam, Game Bar) untouched.
 - **Controller:** D-pad = move, **A** = open, **X** = close an open app / edit a tile, **Y** = add, **B** = hide. (Keyboard: Enter, F2, F3, Esc.) The buttons are shown at the bottom of the bar.

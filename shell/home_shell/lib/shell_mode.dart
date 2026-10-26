@@ -5,6 +5,7 @@ import 'package:flutter/painting.dart' show Alignment;
 import 'package:window_manager/window_manager.dart';
 
 import 'freezer.dart';
+import 'open_windows.dart';
 import 'settings.dart';
 
 /// Controls the small bar window: where it sits, when it shows and hides, and
@@ -18,32 +19,59 @@ class ShellMode {
 
   bool visible = false;
 
+  /// The window that was in front when the bar was opened.
+  int _previousHwnd = 0;
+
   /// [freeze] pauses the app in front (if the setting is on) so it doesn't keep
   /// running or reacting behind the bar. It is resumed by [hide].
   void showBar({bool freeze = true}) {
+    _previousHwnd = freeze ? OpenWindows.instance.foregroundHwnd() : 0;
     if (freeze && ShellSettings.instance.freeze) {
       Freezer.instance.freezeForeground();
     }
     barRequest.value++;
   }
 
-  Future<void> applyBar({required int itemCount}) async {
+  double _widthFor(int itemCount) {
     final display = ui.PlatformDispatcher.instance.displays.first;
     final screenW = display.size.width / display.devicePixelRatio;
-    final width = (itemCount * 70.0 + 64).clamp(320.0, screenW - 60.0);
+    return (itemCount * 70.0 + 64).clamp(320.0, screenW - 60.0);
+  }
+
+  /// Puts the bar at the top of the screen. [slim] = icons only (used while
+  /// another app is in front), [focus] = take the keyboard/controller focus.
+  Future<void> applyBar({required int itemCount, bool slim = false, bool focus = true}) async {
     await windowManager.setFullScreen(false);
     await windowManager.setSkipTaskbar(true);
     await windowManager.setAlwaysOnTop(true);
-    await windowManager.setSize(ui.Size(width, 156));
+    await windowManager.setSize(ui.Size(_widthFor(itemCount), slim ? 84 : 156));
     await windowManager.setAlignment(Alignment.topCenter);
     await windowManager.show();
-    await windowManager.focus();
+    if (focus) await windowManager.focus();
     visible = true;
   }
 
+  /// Only changes the size (no focus change) — slim while another app is used.
+  Future<void> resizeBar({required int itemCount, required bool slim}) async {
+    await windowManager.setSize(ui.Size(_widthFor(itemCount), slim ? 84 : 156));
+    await windowManager.setAlignment(Alignment.topCenter);
+  }
+
+  /// B / Esc: give control back to the app that was in front. When the bar is
+  /// kept on screen it stays; otherwise it hides.
+  Future<void> leave() async {
+    if (ShellSettings.instance.pinned) {
+      Freezer.instance.thawAll();
+      if (_previousHwnd != 0) OpenWindows.instance.switchTo(_previousHwnd);
+    } else {
+      await hide();
+    }
+  }
+
   Future<void> hide() async {
-    visible = false;
     Freezer.instance.thawAll();
+    if (ShellSettings.instance.pinned) return; // stays on screen
+    visible = false;
     await windowManager.hide();
   }
 

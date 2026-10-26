@@ -95,6 +95,10 @@ class ShellSettings {
   /// Pause the app behind the bar while the bar is open.
   bool freeze = true;
 
+  /// Keep the bar on screen all the time (it shrinks to just icons when you
+  /// are using another app). Turn off to hide it after each use.
+  bool pinned = true;
+
   static File get _file => File('${TileStore.dir}\\settings.json');
 
   Future<void> load() async {
@@ -107,6 +111,7 @@ class ShellSettings {
           }
           holdMs = (j['holdMs'] as num?)?.toInt() ?? holdMs;
           freeze = j['freeze'] as bool? ?? freeze;
+          pinned = j['pinned'] as bool? ?? pinned;
         }
       }
     } catch (_) {}
@@ -120,6 +125,7 @@ class ShellSettings {
           'shortcut': shortcut.toJson(),
           'holdMs': holdMs,
           'freeze': freeze,
+          'pinned': pinned,
         }),
       );
     } catch (_) {}

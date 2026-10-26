@@ -22,7 +22,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WindowListener {
   List<ShellTile> _tiles = [];
   List<OpenWindow> _open = [];
   final Map<String, File?> _icons = {};
@@ -30,13 +30,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final ValueNotifier<String> _label = ValueNotifier<String>('');
   Timer? _timer;
   bool _busyDialog = false;
+  bool _slim = false;
 
-  static const _idleHint = 'Hold Guide: show this bar     B / Esc: hide';
+  static const _idleHint = 'Pick an app     Your bar button brings this back into focus';
 
   @override
   void initState() {
     super.initState();
     _label.value = _idleHint;
+    windowManager.addListener(this);
     ShellMode.instance.barRequest.addListener(_applyBar);
     _timer = Timer.periodic(const Duration(seconds: 2), (_) {
       if (ShellMode.instance.visible && !_busyDialog) _refreshWindows();
@@ -50,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    windowManager.removeListener(this);
     ShellMode.instance.barRequest.removeListener(_applyBar);
     Freezer.instance.thawAll();
     _timer?.cancel();
@@ -57,6 +60,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // ---- data ---------------------------------------------------------------
+
+  @override
+  void onWindowBlur() {
+    if (!ShellSettings.instance.pinned || _busyDialog || !mounted) return;
+    setState(() => _slim = true);
+    ShellMode.instance.resizeBar(itemCount: _barItemCount, slim: true);
+  }
+
+  @override
+  void onWindowFocus() {
+    if (!mounted || !_slim) return;
+    setState(() => _slim = false);
+    ShellMode.instance.resizeBar(itemCount: _barItemCount, slim: false);
+  }
 
   void _refreshWindows() {
     if (!mounted) return;
@@ -70,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final before = _barItemCount;
     setState(() => _open = list);
     if (_barItemCount != before) {
-      ShellMode.instance.applyBar(itemCount: _barItemCount);
+      ShellMode.instance.applyBar(itemCount: _barItemCount, slim: _slim, focus: false);
     }
   }
 
@@ -79,6 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _applyBar() async {
     if (!mounted) return;
     _refreshWindows();
+    setState(() => _slim = false);
     await ShellMode.instance.applyBar(itemCount: _barItemCount);
   }
 
@@ -342,14 +360,14 @@ class _HomeScreenState extends State<HomeScreen> {
             return null;
           }),
           _HideBarIntent: CallbackAction<_HideBarIntent>(onInvoke: (_) {
-            if (!_busyDialog) ShellMode.instance.hide();
+            if (!_busyDialog) ShellMode.instance.leave();
             return null;
           }),
         },
         child: Scaffold(
           backgroundColor: const Color(0xFF11151F),
           body: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            padding: EdgeInsets.fromLTRB(16, _slim ? 8 : 12, 16, 8),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -362,7 +380,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 4),
+                if (!_slim) const SizedBox(height: 4),
+                if (!_slim)
                 ValueListenableBuilder<String>(
                   valueListenable: _label,
                   builder: (_, v, __) => Text(
@@ -372,7 +391,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(fontSize: 16, color: Colors.white70),
                   ),
                 ),
-                const SizedBox(height: 6),
+                if (!_slim) const SizedBox(height: 6),
+                if (!_slim)
                 const Wrap(
                   spacing: 18,
                   children: [
@@ -931,6 +951,16 @@ class _SettingsDialogState extends State<_SettingsDialog> {
                 onTap: () {
                   final i = _holds.indexOf(s.holdMs);
                   setState(() => s.holdMs = _holds[(i + 1) % _holds.length]);
+                  s.save();
+                },
+              ),
+              SwitchListTile(
+                value: s.pinned,
+                title: const Text('Keep the bar on screen all the time', style: TextStyle(fontSize: 19)),
+                subtitle: const Text('Shrinks to just icons while you use another app; your button brings it back into focus',
+                    style: TextStyle(fontSize: 15)),
+                onChanged: (v) {
+                  setState(() => s.pinned = v);
                   s.save();
                 },
               ),
