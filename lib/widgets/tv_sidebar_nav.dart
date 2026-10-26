@@ -276,6 +276,16 @@ class TvSidebarNavState extends State<TvSidebarNav>
   void _handleFocusChange(int index, bool hasFocus) {
     if (!mounted) return;
     if (hasFocus) {
+      // Mouse wheel: scrolling must never throw focus onto the menu. Hand it
+      // straight back to the page instead of opening the rail.
+      if (PlatformUtil.desktopRemoteMode &&
+          !_hasSidebarFocus &&
+          InputMode.instance.scrolledRecently) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && !_hasSidebarFocus) _focusContent();
+        });
+        return;
+      }
       final wasFocused = _hasSidebarFocus;
       setState(() {
         _focusedIndex = index;
