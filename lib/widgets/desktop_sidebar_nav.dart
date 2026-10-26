@@ -4,6 +4,7 @@ import '../theme/app_motion.dart';
 import '../theme/app_theme_scope.dart';
 import '../models/profiles/user_profile.dart';
 import 'profiles/profile_avatar_view.dart';
+import 'app_exit_button.dart';
 import 'window_drag_area.dart';
 
 /// One entry in the desktop sidebar. [section] groups consecutive entries; a
@@ -110,6 +111,7 @@ class DesktopSidebarNav extends StatelessWidget {
               expanded: expanded,
               onTap: onProfileTap!,
             ),
+          const AppExitButton(),
         ],
       ),
     );

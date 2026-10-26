@@ -7,6 +7,7 @@ import '../theme/app_motion.dart';
 import '../theme/app_theme_scope.dart';
 import '../models/profiles/user_profile.dart';
 import 'profiles/profile_avatar_view.dart';
+import 'app_exit_button.dart';
 import 'desktop_sidebar_nav.dart' show DesktopNavEntry;
 
 /// The pointer-world sibling of the TV rail's 'pill' style: no rail at all —
@@ -398,6 +399,7 @@ class _DesktopPillNavState extends State<DesktopPillNav> {
                     widget.onProfileTap!();
                   },
                 ),
+              const AppExitButton(),
             ],
           ),
         ),
