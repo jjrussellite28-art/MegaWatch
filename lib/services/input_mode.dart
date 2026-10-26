@@ -18,6 +18,9 @@ class InputMode {
     if (_started) return;
     _started = true;
     GestureBinding.instance.pointerRouter.addGlobalRoute((event) {
+      if (event is PointerScrollEvent || event is PointerDownEvent) {
+        _lastPointer = DateTime.now();
+      }
       if (event is PointerScrollEvent) {
         _lastScroll = DateTime.now();
         _set(false);
@@ -25,7 +28,10 @@ class InputMode {
         _set(false);
       } else if (event is PointerHoverEvent && event.kind == PointerDeviceKind.mouse) {
         // Only real movement counts (not a pointer that is just sitting there).
-        if (event.delta != Offset.zero) _set(false);
+        if (event.delta != Offset.zero) {
+          _lastPointer = DateTime.now();
+          _set(false);
+        }
       }
     });
     HardwareKeyboard.instance.addHandler((event) {
@@ -39,12 +45,24 @@ class InputMode {
           k == LogicalKeyboardKey.backspace) {
         _set(false);
       }
+      // Arrow keys and Enter count as a keyboard too, but only on a PC where a
+      // mouse has been used (so an infrared remote alone stays "remote").
+      final arrowish = k == LogicalKeyboardKey.arrowLeft ||
+          k == LogicalKeyboardKey.arrowRight ||
+          k == LogicalKeyboardKey.arrowUp ||
+          k == LogicalKeyboardKey.arrowDown ||
+          k == LogicalKeyboardKey.enter;
+      if (arrowish &&
+          DateTime.now().difference(_lastPointer).inMinutes < 30) {
+        _set(false);
+      }
       return false;
     });
   }
 
   bool _fromController = false;
   DateTime _lastScroll = DateTime.fromMillisecondsSinceEpoch(0);
+  DateTime _lastPointer = DateTime.fromMillisecondsSinceEpoch(0);
 
   /// True for a moment after the mouse wheel was used, so scrolling can never
   /// be mistaken for "the pointer moved onto something".

@@ -30,6 +30,7 @@ class TvControls extends StatefulWidget {
     required this.playPauseFocusNode,
     required this.progressFocusNode,
     required this.progressFocusable,
+    this.onSeekTo,
     required this.onPlayPause,
     required this.onShowTracks,
     required this.onSpeed,
@@ -109,6 +110,9 @@ class TvControls extends StatefulWidget {
   final Duration? scrubPreview;
 
   final VoidCallback onPlayPause;
+
+  /// Mouse: click or drag on the progress bar to jump to a position.
+  final void Function(Duration position)? onSeekTo;
   final VoidCallback onShowTracks;
   final VoidCallback onSpeed;
   final VoidCallback onAspect;
@@ -256,6 +260,7 @@ class _TvControlsState extends State<TvControls> {
                   builder: (context, value, _) => _TvProgressRow(
                     focusNode: widget.progressFocusNode,
                     focusable: widget.progressFocusable,
+                    onSeekTo: widget.onSeekTo,
                     position: value.position,
                     duration: value.duration,
                     preview: widget.scrubPreview,
@@ -737,6 +742,7 @@ class _TvProgressRow extends StatefulWidget {
   const _TvProgressRow({
     required this.focusNode,
     required this.focusable,
+    this.onSeekTo,
     required this.position,
     required this.duration,
     required this.preview,
@@ -746,6 +752,7 @@ class _TvProgressRow extends StatefulWidget {
 
   final FocusNode focusNode;
   final bool focusable;
+  final void Function(Duration position)? onSeekTo;
   final Duration position;
   final Duration duration;
   final Duration? preview;
@@ -759,16 +766,36 @@ class _TvProgressRow extends StatefulWidget {
 class _TvProgressRowState extends State<_TvProgressRow> {
   bool _focused = false;
 
+  /// Where the mouse is dragging the handle (0..1), or null when not dragging.
+  double? _drag;
+
+  void _dragTo(double dx, double width) {
+    if (width <= 0) return;
+    setState(() => _drag = (dx / width).clamp(0.0, 1.0));
+  }
+
+  void _commitDrag() {
+    final f = _drag;
+    if (f == null) return;
+    setState(() => _drag = null);
+    final total = widget.duration.inMilliseconds;
+    if (total > 0) {
+      widget.onSeekTo?.call(Duration(milliseconds: (total * f).round()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final shown = widget.preview ?? widget.position;
     final total = widget.duration.inMilliseconds;
+    final shown = _drag != null && total > 0
+        ? Duration(milliseconds: (total * _drag!).round())
+        : (widget.preview ?? widget.position);
     final fraction = total <= 0
         ? 0.0
         : (shown.inMilliseconds / total).clamp(0.0, 1.0);
-    final scrubbing = widget.preview != null;
+    final scrubbing = widget.preview != null || _drag != null;
     final live = _focused || scrubbing;
-    final delta = scrubbing ? widget.preview! - widget.position : Duration.zero;
+    final delta = scrubbing ? shown - widget.position : Duration.zero;
 
     return Focus(
       focusNode: widget.focusNode,
@@ -808,7 +835,7 @@ class _TvProgressRowState extends State<_TvProgressRow> {
           LayoutBuilder(
             builder: (context, c) {
               final w = c.maxWidth;
-              return SizedBox(
+              final bar = SizedBox(
                 height: 14,
                 child: Stack(
                   alignment: Alignment.centerLeft,
@@ -850,6 +877,28 @@ class _TvProgressRowState extends State<_TvProgressRow> {
                         ),
                       ),
                   ],
+                ),
+              );
+              if (widget.onSeekTo == null || widget.duration <= Duration.zero) {
+                return bar;
+              }
+              // Mouse: click anywhere on the bar, or grab and drag it.
+              return MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: (d) => _dragTo(d.localPosition.dx, w),
+                  onTapUp: (_) => _commitDrag(),
+                  onTapCancel: () => setState(() => _drag = null),
+                  onHorizontalDragStart: (d) => _dragTo(d.localPosition.dx, w),
+                  onHorizontalDragUpdate: (d) =>
+                      _dragTo(d.localPosition.dx, w),
+                  onHorizontalDragEnd: (_) => _commitDrag(),
+                  onHorizontalDragCancel: () => setState(() => _drag = null),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: bar,
+                  ),
                 ),
               );
             },

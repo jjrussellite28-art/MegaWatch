@@ -15,6 +15,7 @@ class EasynewsResult {
     this.published,
     this.extension = '',
     this.details = '',
+    this.picture,
   });
 
   /// File name as shown on the Easynews website.
@@ -33,8 +34,12 @@ class EasynewsResult {
     return m?.group(1)?.toLowerCase();
   }
 
+  /// Preview picture given by Easynews itself, when the feed has one.
+  final String? picture;
+
   /// Preview picture, like the thumbnails on the Easynews website.
   String? get thumbnailUrl {
+    if (picture != null && picture!.isNotEmpty) return picture;
     final id = fileId;
     if (id == null) return null;
     return 'https://th.easynews.com/thumbnails-${id.substring(0, 3)}/pr-$id.jpg';
@@ -408,10 +413,37 @@ class EasynewsService {
           published: published,
           extension: extension,
           details: description,
+          picture: _findPicture(block),
         ),
       );
     }
     return results;
+  }
+
+  /// Looks for a thumbnail the feed already provides (media:thumbnail, an
+  /// image tag in the description, or an image enclosure).
+  static String? _findPicture(String block) {
+    final media = RegExp(
+      r'<media:thumbnail[^>]*?url\s*=\s*"([^"]+)"',
+      caseSensitive: false,
+    ).firstMatch(block);
+    if (media != null) return _secureThumb(_decode(media.group(1)!));
+    final img = RegExp(
+      r'''<img[^>]*?src\s*=\s*["']([^"']+)["']''',
+      caseSensitive: false,
+    ).firstMatch(_decode(_tag(block, 'description')));
+    if (img != null) return _secureThumb(img.group(1)!);
+    final raw = RegExp(
+      r'''https?://[^\s"'<>]*thumbnails[^\s"'<>]*\.(?:jpg|jpeg|png)''',
+      caseSensitive: false,
+    ).firstMatch(_decode(block));
+    if (raw != null) return _secureThumb(raw.group(0)!);
+    return null;
+  }
+
+  static String _secureThumb(String url) {
+    final u = secureUrl(url.trim());
+    return u.startsWith('//') ? 'https:$u' : u;
   }
 
   static int _sizeFromText(String text) {

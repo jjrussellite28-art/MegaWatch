@@ -7,6 +7,7 @@ import 'video_player/player_pip_route.dart';
 import 'dart:async';
 import '../services/source_selection_diagnostics.dart';
 import '../services/player_visibility.dart';
+import '../services/input_mode.dart';
 import '../utils/media_kit_init.dart';
 import 'dart:io';
 import 'dart:math' as math;
@@ -3744,6 +3745,30 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _episodeMetadataReady ??= _preloadEpisodeInfo();
   }
 
+  /// Jump to [target] (mouse click or drag on the control bar).
+  void _seekToFromBar(Duration target) {
+    final clamped = target < Duration.zero
+        ? Duration.zero
+        : (target > _duration ? _duration : target);
+    _player.seek(clamped);
+    _traktScrobbleSeek(clamped);
+    _simklScrobbleSeek(clamped);
+    _mdblistScrobbleSeek(clamped);
+    _scheduleAutoHide();
+  }
+
+  DateTime _lastKeyboardSeekAt = DateTime.fromMillisecondsSinceEpoch(0);
+
+  /// Keyboard arrows: jump 10 seconds; hold the key to keep skipping.
+  void _keyboardSeek(int direction) {
+    final now = DateTime.now();
+    if (now.difference(_lastKeyboardSeekAt).inMilliseconds < 130) return;
+    _lastKeyboardSeekAt = now;
+    final candidate =
+        _position + VideoPlayerTimingConstants.seekDelta * direction;
+    _seekToFromBar(candidate);
+  }
+
   bool _isEasynewsLaunch(String url) {
     final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';
     return host == 'easynews.com' || host.endsWith('.easynews.com');
@@ -4955,9 +4980,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           'demuxer-lavf-analyzeduration',
           liveStream ? '2' : '0',
         );
+        // 5000000 is ffmpeg's own default. (Some mpv builds reject 0 here and
+        // report "must be >= 32".)
         await platform.setProperty(
           'demuxer-lavf-probesize',
-          liveStream ? '1000000' : '0',
+          liveStream ? '1000000' : '5000000',
         );
       } catch (e) {
         debugPrint('Player: fast-start probe settings failed: $e');
@@ -13218,6 +13245,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               // duration has nothing to scrub, so traversal skips the row entirely
               // rather than parking the remote on it.
               progressFocusable: !_tvNoTimeline,
+              onSeekTo: _tvNoTimeline ? null : _seekToFromBar,
               // OK is claimed by the dock's own buttons, so those presses never
               // reach _handleTvKey and never restarted the countdown.
               onInteract: _scheduleAutoHide,
@@ -13377,6 +13405,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final isRight = key == LogicalKeyboardKey.arrowRight;
     final isBack =
         key == LogicalKeyboardKey.escape || key == LogicalKeyboardKey.goBack;
+
+    // Real keyboard (not a controller): LEFT/RIGHT always skip 10 seconds and
+    // keep skipping while held, whether or not the control bar is showing.
+    if ((isLeft || isRight) &&
+        PlatformUtil.desktopRemoteMode &&
+        !InputMode.instance.controller.value &&
+        _isReady &&
+        !_isTransitioning &&
+        !_tvNoTimeline &&
+        !_canZapIptvChannel &&
+        _tvScrubTarget == null) {
+      _keyboardSeek(isRight ? 1 : -1);
+      return KeyEventResult.handled;
+    }
 
     // A scrub in flight owns the remote completely.
     if (_tvScrubTarget != null) {
