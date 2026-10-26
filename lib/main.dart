@@ -95,6 +95,7 @@ import 'package:window_manager/window_manager.dart';
 import 'services/input_mode.dart';
 import 'screens/games/games_screen.dart';
 import 'screens/links/links_screen.dart';
+import 'screens/streaming/streaming_screen.dart';
 import 'services/deep_link_service.dart';
 import 'services/magnet_link_handler.dart';
 import 'services/stremio_service.dart';
@@ -1583,6 +1584,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     'Calendar', // 19: Trakt/Simkl calendar (visible when either is connected)
     'Games', // 20: game library (Steam, Epic, your own)
     'Links', // 21: Links & safety (link checker, ad-free link player)
+    'Streaming', // 22: your own subscriptions (YouTube, Peacock...) in a browser view
   ];
 
   final List<IconData> _icons = [
@@ -1608,6 +1610,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     Icons.calendar_month_rounded, // 19: Calendar (Trakt/Simkl)
     Icons.sports_esports_rounded, // 20: Games
     Icons.link_rounded, // 21: Links & safety
+    Icons.live_tv_rounded, // 22: Streaming
   ];
 
   /// Tab index → bridge back-handler key, in ONE place. Every path that
@@ -3084,7 +3087,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   /// always in a consistent place. Mutates [indices] in place.
   void _insertTraktCalendarTab(List<int> indices, bool authed) {
     // Games and Links & safety sit just before Addons.
-    for (final tab in [MainTab.games, MainTab.links]) {
+    for (final tab in [MainTab.games, MainTab.links, MainTab.streaming]) {
       if (!indices.contains(tab)) {
         final at = indices.indexOf(MainTab.addons);
         indices.insert(at >= 0 ? at : indices.length, tab);
@@ -3235,6 +3238,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       case 14: // YouTube
       case 20: // Games
       case 21: // Links & safety
+      case 22: // Streaming
         return 'Browse';
       case 3: // Debrify TV
       case 9: // Stremio TV
@@ -3324,6 +3328,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         return GamesScreen(isTelevision: _isAndroidTv);
       case 21: // Links & safety
         return LinksScreen(isTelevision: _isAndroidTv);
+      case 22: // Streaming
+        return StreamingScreen(isTelevision: _isAndroidTv);
       default:
         return _pages[index];
     }

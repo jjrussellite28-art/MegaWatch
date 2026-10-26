@@ -48,6 +48,7 @@ abstract final class MainTab {
   static const int calendar = 19;
   static const int games = 20;
   static const int links = 21;
+  static const int streaming = 22;
 }
 
 class MainPageBridge {

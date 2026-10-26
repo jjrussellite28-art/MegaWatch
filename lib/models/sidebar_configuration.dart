@@ -114,6 +114,13 @@ const List<SidebarDestination> sidebarDestinations = <SidebarDestination>[
     icon: Icons.link_rounded,
   ),
   SidebarDestination(
+    id: 'streaming',
+    tabIndex: MainTab.streaming,
+    defaultLabel: 'Streaming',
+    section: 'Browse',
+    icon: Icons.live_tv_rounded,
+  ),
+  SidebarDestination(
     id: 'addons',
     tabIndex: MainTab.addons,
     defaultLabel: 'Addons',
