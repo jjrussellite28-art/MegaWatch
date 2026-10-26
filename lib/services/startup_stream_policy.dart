@@ -11,10 +11,12 @@ class StartupStreamPolicy {
     required bool hasExternalAudio,
     required bool isLiveIptv,
     required bool isStremioTv,
+    bool forceDirect = false,
     required Future<void> Function() openDirect,
     required Future<bool> Function() openValidated,
   }) async {
-    if (hasResolvedUrl && (hasExternalAudio || isLiveIptv || isStremioTv)) {
+    if (hasResolvedUrl &&
+        (hasExternalAudio || isLiveIptv || isStremioTv || forceDirect)) {
       await openDirect();
       return true;
     }

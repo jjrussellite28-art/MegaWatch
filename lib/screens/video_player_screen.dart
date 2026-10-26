@@ -3630,7 +3630,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             // Stremio TV owns channel selection and slot changes. As on native
             // TV, a slow channel must not hit the VOD gate's one-attempt limit.
             isStremioTv: isStremioTv,
+            // Easynews links are one trusted, already-checked file: open them
+            // directly and show the player's own error if it cannot start.
+            forceDirect: _isEasynewsLaunch(initialUrl),
             openDirect: () async {
+              if (_isEasynewsLaunch(initialUrl)) _showPlayerErrorOnce();
               final opening = _openMedia(
                 mk.Media(initialUrl, httpHeaders: _activeHttpHeaders),
                 play: !hasExternalAudio,
@@ -3738,6 +3742,28 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     // Preload episode information if this is a series
     _episodeMetadataReady ??= _preloadEpisodeInfo();
+  }
+
+  bool _isEasynewsLaunch(String url) {
+    final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';
+    return host == 'easynews.com' || host.endsWith('.easynews.com');
+  }
+
+  /// Shows the player's first error as a message, then stops listening.
+  void _showPlayerErrorOnce() {
+    StreamSubscription<String>? sub;
+    sub = _player.stream.error.listen((error) {
+      if (mounted && !_screenDisposed) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 12),
+            content: Text('Player could not open it: $error'),
+          ),
+        );
+      }
+      sub?.cancel();
+    });
+    Future<void>.delayed(const Duration(seconds: 40), () => sub?.cancel());
   }
 
   void _watchStremioTvStartup(String url) {
