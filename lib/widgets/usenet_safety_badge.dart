@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 
 /// Small status pill shown while an Easynews (Usenet) video plays: tells you
-/// whether the connection is encrypted and whether a VPN looks switched on.
+/// whether the connection to Easynews is encrypted (HTTPS).
 ///
 /// Appears with the player controls, and pops up by itself for a few seconds
-/// whenever the status changes (for example when a VPN turns on or off).
+/// whenever the status changes.
 class UsenetSafetyBadge extends StatefulWidget {
   const UsenetSafetyBadge({
     super.key,
@@ -29,69 +28,41 @@ class UsenetSafetyBadge extends StatefulWidget {
   State<UsenetSafetyBadge> createState() => _UsenetSafetyBadgeState();
 }
 
-enum _Level { protected, ok, bad }
+enum _Level { secure, bad }
 
 class _UsenetSafetyBadgeState extends State<UsenetSafetyBadge> {
-  Timer? _poll;
   Timer? _flash;
-  bool _vpn = false;
   bool _flashing = false;
   String _lastKey = '';
-
-  static const _vpnWords = [
-    'vpn', 'wireguard', 'openvpn', 'nord', 'proton', 'mullvad', 'surfshark',
-    'expressvpn', 'express', 'cyberghost', 'windscribe', 'private internet',
-    'pia', 'tap-windows', 'wintun', 'ipvanish', 'hotspot shield',
-  ];
 
   @override
   void initState() {
     super.initState();
-    _check();
-    _poll = Timer.periodic(const Duration(seconds: 10), (_) => _check());
+    _lastKey = _level.name;
   }
 
   @override
-  void dispose() {
-    _poll?.cancel();
-    _flash?.cancel();
-    super.dispose();
-  }
-
-  Future<void> _check() async {
-    var found = false;
-    try {
-      final interfaces = await NetworkInterface.list();
-      for (final i in interfaces) {
-        final name = i.name.toLowerCase();
-        if (_vpnWords.any(name.contains)) {
-          found = true;
-          break;
-        }
-      }
-    } catch (_) {}
-    if (!mounted) return;
-    setState(() => _vpn = found);
-    _noteChange();
-  }
-
-  _Level get _level {
-    final secure = (widget.url ?? '').startsWith('https://');
-    if (!secure) return _Level.bad;
-    return _vpn ? _Level.protected : _Level.ok;
-  }
-
-  void _noteChange() {
-    final key = '${_level.name}';
-    if (_lastKey.isNotEmpty && key != _lastKey) {
+  void didUpdateWidget(UsenetSafetyBadge oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final key = _level.name;
+    if (key != _lastKey) {
+      _lastKey = key;
       _flash?.cancel();
       setState(() => _flashing = true);
       _flash = Timer(const Duration(seconds: 6), () {
         if (mounted) setState(() => _flashing = false);
       });
     }
-    _lastKey = key;
   }
+
+  @override
+  void dispose() {
+    _flash?.cancel();
+    super.dispose();
+  }
+
+  _Level get _level =>
+      (widget.url ?? '').startsWith('https://') ? _Level.secure : _Level.bad;
 
   @override
   Widget build(BuildContext context) {
@@ -103,18 +74,14 @@ class _UsenetSafetyBadgeState extends State<UsenetSafetyBadge> {
     final String title;
     final String detail;
     switch (level) {
-      case _Level.protected:
+      case _Level.secure:
         color = const Color(0xFF3DDC84);
-        title = 'Protected';
-        detail = 'Encrypted connection · VPN detected';
-      case _Level.ok:
-        color = const Color(0xFFFFC857);
-        title = 'Encrypted';
-        detail = 'Your provider cannot see the video · no VPN detected';
+        title = 'Secure';
+        detail = 'Encrypted connection to Easynews';
       case _Level.bad:
         color = const Color(0xFFFF5C6C);
         title = 'Not encrypted';
-        detail = 'Your provider could see this connection';
+        detail = 'This link is not secure';
     }
     return ValueListenableBuilder<bool>(
       valueListenable: widget.controlsVisible,
