@@ -27,6 +27,19 @@ class EasynewsResult {
   final String extension;
   final String details;
 
+  /// The 40-character file id inside the link, when there is one.
+  String? get fileId {
+    final m = RegExp(r'([0-9a-fA-F]{40})').firstMatch(url);
+    return m?.group(1)?.toLowerCase();
+  }
+
+  /// Preview picture, like the thumbnails on the Easynews website.
+  String? get thumbnailUrl {
+    final id = fileId;
+    if (id == null) return null;
+    return 'https://th.easynews.com/thumbnails-${id.substring(0, 3)}/pr-$id.jpg';
+  }
+
   String get sizeLabel {
     if (sizeBytes <= 0) return '';
     const kb = 1024;
@@ -36,6 +49,26 @@ class EasynewsResult {
     if (sizeBytes >= mb) return '${(sizeBytes / mb).toStringAsFixed(0)} MB';
     return '${(sizeBytes / kb).toStringAsFixed(0)} KB';
   }
+}
+
+/// What kind of files to look for (the Easynews website's file type boxes).
+enum EasynewsType {
+  video('Video', 'VIDEO'),
+  audio('Audio', 'AUDIO'),
+  image('Pictures', 'IMAGE'),
+  archive('Archives', 'ARCHIVE'),
+  everything('Everything', null);
+
+  const EasynewsType(this.label, this.param);
+  final String label;
+  final String? param;
+}
+
+/// A link ready for the player: the final address plus the login it needs.
+class EasynewsPlayback {
+  const EasynewsPlayback({required this.url, required this.headers});
+  final String url;
+  final Map<String, String> headers;
 }
 
 class EasynewsException implements Exception {
@@ -131,7 +164,7 @@ class EasynewsService {
     try {
       final response = await http
           .get(
-            _searchUri('test', pageSize: 1, videoOnly: true),
+            _searchUri('test', pageSize: 1),
             headers: _authHeaders(user, pass),
           )
           .timeout(const Duration(seconds: 20));
@@ -150,16 +183,21 @@ class EasynewsService {
     return null;
   }
 
-  Uri _searchUri(String query, {int pageSize = 200, bool videoOnly = true}) {
+  Uri _searchUri(
+    String query, {
+    int pageSize = 200,
+    int page = 1,
+    EasynewsType type = EasynewsType.video,
+  }) {
     return Uri.https(_host, '/1.0/global5/search.html', <String, String>{
       'fil': query,
       'submit': 'Search',
-      if (videoOnly) 'fty[]': 'VIDEO',
+      if (type.param != null) 'fty[]': type.param!,
       's1': 'dtime',
       's2': 'nsubject',
       's3': 'nrfile',
       'pby': '$pageSize',
-      'pno': '1',
+      'pno': '$page',
       'sS': '5',
       'u': '1',
       'fly': '1',
@@ -169,7 +207,8 @@ class EasynewsService {
   /// Searches Easynews. Throws [EasynewsException] with a readable message.
   Future<List<EasynewsResult>> search(
     String query, {
-    bool videoOnly = true,
+    EasynewsType type = EasynewsType.video,
+    int page = 1,
     int pageSize = 200,
   }) async {
     await load();
@@ -182,7 +221,7 @@ class EasynewsService {
     try {
       response = await http
           .get(
-            _searchUri(text, pageSize: pageSize, videoOnly: videoOnly),
+            _searchUri(text, pageSize: pageSize, page: page, type: type),
             headers: _authHeaders(_username, _password),
           )
           .timeout(const Duration(seconds: 30));
@@ -203,6 +242,86 @@ class EasynewsService {
     }
     final body = utf8.decode(response.bodyBytes, allowMalformed: true);
     return _parse(body);
+  }
+
+  /// Always use the encrypted (https) address, so your internet provider can
+  /// see that you connect to Easynews but not what you are watching.
+  static String secureUrl(String url) {
+    var u = url.trim();
+    if (u.startsWith('http://')) u = 'https://${u.substring(7)}';
+    return u.replaceFirst(RegExp(r'^(https://[^/:]+):80(?=/)'), r'$1');
+  }
+
+  static bool _isEasynewsHost(Uri uri) =>
+      uri.host == 'easynews.com' || uri.host.endsWith('.easynews.com');
+
+  /// Headers for loading Easynews pictures.
+  Future<Map<String, String>> imageHeaders() => playbackHeaders();
+
+  /// Checks a result's link before playing: follows redirects, makes sure the
+  /// login is accepted and the file still exists, and returns the final secure
+  /// address. Throws [EasynewsException] with a readable reason otherwise.
+  Future<EasynewsPlayback> preparePlayback(EasynewsResult result) async {
+    await load();
+    if (_username.isEmpty || _password.isEmpty) {
+      throw const EasynewsException('Add your Easynews login in Settings.');
+    }
+    final auth = _authHeaders(_username, _password);
+    var uri = Uri.parse(secureUrl(result.url));
+    final client = http.Client();
+    try {
+      for (var hop = 0; hop < 6; hop++) {
+        final request = http.Request('GET', uri)
+          ..followRedirects = false
+          ..headers.addAll(
+            _isEasynewsHost(uri)
+                ? auth
+                : const {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'},
+          )
+          ..headers['Range'] = 'bytes=0-0';
+        final http.StreamedResponse response;
+        try {
+          response = await client.send(request).timeout(
+            const Duration(seconds: 25),
+          );
+        } on TimeoutException {
+          throw const EasynewsException('Easynews did not answer in time.');
+        } catch (e) {
+          throw EasynewsException('Could not reach Easynews ($e).');
+        }
+        // Do not download the file here; only the answer matters.
+        final sub = response.stream.listen((_) {}, onError: (_) {});
+        await sub.cancel();
+        final code = response.statusCode;
+        if (code == 301 || code == 302 || code == 303 || code == 307 || code == 308) {
+          final location = response.headers['location'];
+          if (location == null || location.isEmpty) {
+            throw const EasynewsException('Easynews sent a broken redirect.');
+          }
+          uri = Uri.parse(secureUrl(uri.resolve(location).toString()));
+          continue;
+        }
+        if (code == 200 || code == 206) {
+          return EasynewsPlayback(
+            url: uri.toString(),
+            headers: _isEasynewsHost(uri) ? auth : const <String, String>{},
+          );
+        }
+        if (code == 401 || code == 403) {
+          throw EasynewsException(
+            'Easynews refused this file ($code). Check your login, your '
+            'account limit, or whether the file needs a different plan.',
+          );
+        }
+        if (code == 404 || code == 410) {
+          throw const EasynewsException('That file is no longer on Easynews.');
+        }
+        throw EasynewsException('Easynews answered with error $code.');
+      }
+      throw const EasynewsException('Too many redirects from Easynews.');
+    } finally {
+      client.close();
+    }
   }
 
   static List<EasynewsResult> _parse(String body) {
@@ -231,6 +350,7 @@ class EasynewsService {
         size = int.tryParse(_attribute(attrs, 'length') ?? '') ?? 0;
       }
       if (url.isEmpty) url = _tag(block, 'link');
+      url = secureUrl(url);
       if (url.isEmpty || !seen.add(url)) continue;
 
       var name = '';

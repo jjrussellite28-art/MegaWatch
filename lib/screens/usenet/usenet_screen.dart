@@ -27,7 +27,12 @@ class _UsenetScreenState extends State<UsenetScreen> {
   bool _checking = true;
   bool _configured = false;
   bool _searching = false;
-  bool _videoOnly = true;
+  EasynewsType _type = EasynewsType.video;
+  int _page = 1;
+  bool _loadingMore = false;
+  bool _hasMore = false;
+  bool _opening = false;
+  Map<String, String> _imageHeaders = const {};
   String? _error;
   String _lastQuery = '';
   List<EasynewsResult> _results = const [];
@@ -50,7 +55,11 @@ class _UsenetScreenState extends State<UsenetScreen> {
 
   Future<void> _refreshConfigured() async {
     final configured = await EasynewsService.instance.isConfigured();
+    final headers = configured
+        ? await EasynewsService.instance.imageHeaders()
+        : const <String, String>{};
     if (!mounted) return;
+    _imageHeaders = headers;
     setState(() {
       _configured = configured;
       _checking = false;
@@ -70,15 +79,15 @@ class _UsenetScreenState extends State<UsenetScreen> {
       _searching = true;
       _error = null;
       _lastQuery = text;
+      _page = 1;
+      _hasMore = false;
     });
     try {
-      final found = await EasynewsService.instance.search(
-        text,
-        videoOnly: _videoOnly,
-      );
+      final found = await EasynewsService.instance.search(text, type: _type);
       if (!mounted) return;
       setState(() {
         _results = _sorted(found, _sort);
+        _hasMore = found.length >= 20;
         _searching = false;
       });
     } on EasynewsException catch (e) {
@@ -94,6 +103,34 @@ class _UsenetScreenState extends State<UsenetScreen> {
         _results = const [];
         _error = 'Search failed ($e)';
         _searching = false;
+      });
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_loadingMore || _searching || !_hasMore) return;
+    setState(() => _loadingMore = true);
+    try {
+      final next = _page + 1;
+      final found = await EasynewsService.instance.search(
+        _lastQuery,
+        type: _type,
+        page: next,
+      );
+      if (!mounted) return;
+      final known = _results.map((r) => r.url).toSet();
+      final fresh = found.where((r) => !known.contains(r.url)).toList();
+      setState(() {
+        _page = next;
+        _results = _sorted([..._results, ...fresh], _sort);
+        _hasMore = fresh.isNotEmpty;
+        _loadingMore = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loadingMore = false;
+        _hasMore = false;
       });
     }
   }
@@ -125,17 +162,31 @@ class _UsenetScreenState extends State<UsenetScreen> {
   }
 
   Future<void> _play(EasynewsResult result) async {
-    final headers = await EasynewsService.instance.playbackHeaders();
-    if (!mounted) return;
-    await VideoPlayerLauncher.push(
-      context,
-      VideoPlayerLaunchArgs(
-        videoUrl: result.url,
-        title: result.title,
-        subtitle: result.sizeLabel.isEmpty ? null : result.sizeLabel,
-        httpHeaders: headers,
-      ),
-    );
+    if (_opening) return;
+    setState(() => _opening = true);
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    try {
+      final playback = await EasynewsService.instance.preparePlayback(result);
+      if (!mounted) return;
+      setState(() => _opening = false);
+      await VideoPlayerLauncher.push(
+        context,
+        VideoPlayerLaunchArgs(
+          videoUrl: playback.url,
+          title: result.title,
+          subtitle: result.sizeLabel.isEmpty ? null : result.sizeLabel,
+          httpHeaders: playback.headers,
+        ),
+      );
+    } on EasynewsException catch (e) {
+      if (!mounted) return;
+      setState(() => _opening = false);
+      messenger?.showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _opening = false);
+      messenger?.showSnackBar(SnackBar(content: Text('Could not open it ($e)')));
+    }
   }
 
   String _dateLabel(DateTime? date) {
@@ -239,11 +290,16 @@ class _UsenetScreenState extends State<UsenetScreen> {
           runSpacing: 8,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            FilterChip(
-              label: const Text('Video only'),
-              selected: _videoOnly,
-              onSelected: (v) => setState(() => _videoOnly = v),
-            ),
+            for (final t in EasynewsType.values)
+              ChoiceChip(
+                label: Text(t.label),
+                selected: _type == t,
+                onSelected: (_) {
+                  if (_type == t) return;
+                  setState(() => _type = t);
+                  if (_lastQuery.isNotEmpty) unawaited(_search());
+                },
+              ),
             const SizedBox(width: 4),
             const Text('Sort:', style: TextStyle(color: Colors.white70)),
             ChoiceChip(
@@ -269,6 +325,7 @@ class _UsenetScreenState extends State<UsenetScreen> {
           ],
         ),
         const SizedBox(height: 10),
+        if (_opening) const LinearProgressIndicator(minHeight: 2),
         Expanded(child: _buildResults()),
       ],
     );
@@ -304,8 +361,22 @@ class _UsenetScreenState extends State<UsenetScreen> {
       );
     }
     return ListView.builder(
-      itemCount: _results.length,
+      itemCount: _results.length + (_hasMore ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index >= _results.length) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Center(
+              child: _loadingMore
+                  ? const CircularProgressIndicator()
+                  : OutlinedButton.icon(
+                      onPressed: _loadMore,
+                      icon: const Icon(Icons.expand_more_rounded),
+                      label: const Text('Load more'),
+                    ),
+            ),
+          );
+        }
         final r = _results[index];
         final info = [
           if (r.sizeLabel.isNotEmpty) r.sizeLabel,
@@ -321,7 +392,25 @@ class _UsenetScreenState extends State<UsenetScreen> {
             tileColor: Colors.white.withValues(alpha: 0.06),
             focusColor: Colors.white.withValues(alpha: 0.18),
             hoverColor: Colors.white.withValues(alpha: 0.12),
-            leading: const Icon(Icons.play_circle_outline_rounded, size: 30),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: SizedBox(
+                width: 96,
+                height: 54,
+                child: r.thumbnailUrl == null
+                    ? const Icon(Icons.play_circle_outline_rounded, size: 30)
+                    : Image.network(
+                        r.thumbnailUrl!,
+                        headers: _imageHeaders,
+                        fit: BoxFit.cover,
+                        cacheWidth: 192,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.play_circle_outline_rounded,
+                          size: 30,
+                        ),
+                      ),
+              ),
+            ),
             title: Text(
               r.title,
               maxLines: 2,
