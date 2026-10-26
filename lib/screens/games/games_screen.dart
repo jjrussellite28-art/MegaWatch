@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../services/main_page_bridge.dart';
 import '../../services/playnite_service.dart';
 import '../../widgets/tv_text_field.dart';
 
@@ -21,6 +22,8 @@ class _GamesScreenState extends State<GamesScreen> {
   final TextEditingController _query = TextEditingController();
   final FocusNode _queryFocus = FocusNode(debugLabel: 'games-query');
 
+  final FocusNode _openFocus = FocusNode(debugLabel: 'games-open');
+  late final VoidCallback _contentFocus;
   bool _loading = true;
   String? _message;
   List<PlayniteGame>? _games;
@@ -28,12 +31,18 @@ class _GamesScreenState extends State<GamesScreen> {
   @override
   void initState() {
     super.initState();
+    _contentFocus = () {
+      if (mounted) _openFocus.requestFocus();
+    };
+    MainPageBridge.registerTvContentFocusHandler(20, _contentFocus);
     _query.addListener(() => setState(() {}));
     unawaited(_load());
   }
 
   @override
   void dispose() {
+    MainPageBridge.unregisterTvContentFocusHandler(20, _contentFocus);
+    _openFocus.dispose();
     _query.dispose();
     _queryFocus.dispose();
     super.dispose();
@@ -128,6 +137,7 @@ class _GamesScreenState extends State<GamesScreen> {
             ),
             const SizedBox(width: 10),
             FilledButton.icon(
+              focusNode: _openFocus,
               onPressed: _openPlaynite,
               icon: const Icon(Icons.sports_esports_rounded),
               label: const Text('Open Playnite'),

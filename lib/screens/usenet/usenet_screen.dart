@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import '../../services/easynews_service.dart';
+import '../../services/main_page_bridge.dart';
 import '../../services/video_player_launcher.dart';
 import '../../widgets/tv_text_field.dart';
 import '../settings/easynews_settings_page.dart';
@@ -34,6 +35,8 @@ class _UsenetScreenState extends State<UsenetScreen> {
   bool _loadingMore = false;
   bool _hasMore = false;
   bool _opening = false;
+  final FocusNode _setupFocus = FocusNode(debugLabel: 'usenet-setup');
+  late final VoidCallback _contentFocus;
 
   /// The result under the mouse or controller focus, shown big on the right.
   final ValueNotifier<EasynewsResult?> _preview = ValueNotifier(null);
@@ -46,6 +49,17 @@ class _UsenetScreenState extends State<UsenetScreen> {
   @override
   void initState() {
     super.initState();
+    // Controller: when the menu hands focus back to this tab, land on the
+    // search box (or the Connect button before a login exists).
+    _contentFocus = () {
+      if (!mounted) return;
+      if (_configured) {
+        _queryFocus.requestFocus();
+      } else {
+        _setupFocus.requestFocus();
+      }
+    };
+    MainPageBridge.registerTvContentFocusHandler(9, _contentFocus);
     EasynewsService.instance.changes.addListener(_refreshConfigured);
     _refreshConfigured();
   }
@@ -53,6 +67,8 @@ class _UsenetScreenState extends State<UsenetScreen> {
   @override
   void dispose() {
     EasynewsService.instance.changes.removeListener(_refreshConfigured);
+    MainPageBridge.unregisterTvContentFocusHandler(9, _contentFocus);
+    _setupFocus.dispose();
     _preview.dispose();
     _query.dispose();
     _queryFocus.dispose();
@@ -312,6 +328,7 @@ class _UsenetScreenState extends State<UsenetScreen> {
             const SizedBox(height: 22),
             FilledButton.icon(
               autofocus: true,
+              focusNode: _setupFocus,
               onPressed: _openSettings,
               icon: const Icon(Icons.login_rounded),
               label: const Text('Connect Easynews'),
