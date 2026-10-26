@@ -62,19 +62,6 @@ class WindowsGamepadService {
 
   bool _started = false;
   Timer? _timer;
-
-  /// The Xbox/Guide button (the big logo button). Windows hides it from the
-  /// normal XInput call, so it is read through the undocumented XInputGetStateEx.
-  static const int _guide = 0x0400;
-  int Function(int, Pointer<Uint8>)? _getStateEx;
-  Pointer<Uint8>? _exState;
-  bool _guideWasDown = false;
-  late final int Function(int, Pointer<Uint16>, int) _getClassName;
-  late final int Function(int, int, int, int) _postMessage;
-
-  /// Called after the Guide button closed the app that was in front. Use it to
-  /// bring the home screen back.
-  void Function()? onGuideClosedApp;
   Pointer<Uint8>? _state;
   int _lastScan = 0;
   List<int> _connected = const [];
@@ -128,41 +115,6 @@ class WindowsGamepadService {
           )
           .asFunction();
       _state = calloc<Uint8>(16);
-      _exState = calloc<Uint8>(16);
-      _getClassName = user32
-          .lookup<NativeFunction<Int32 Function(IntPtr, Pointer<Uint16>, Int32)>>(
-            'GetClassNameW',
-          )
-          .asFunction();
-      _postMessage = user32
-          .lookup<NativeFunction<Int32 Function(IntPtr, Uint32, IntPtr, IntPtr)>>(
-            'PostMessageW',
-          )
-          .asFunction();
-      try {
-        final kernel = DynamicLibrary.open('kernel32.dll');
-        final loadLib = kernel
-            .lookup<NativeFunction<IntPtr Function(Pointer<Utf8>)>>('LoadLibraryA')
-            .asFunction<int Function(Pointer<Utf8>)>();
-        final getProc = kernel
-            .lookup<NativeFunction<IntPtr Function(IntPtr, IntPtr)>>('GetProcAddress')
-            .asFunction<int Function(int, int)>();
-        for (final name in const ['xinput1_4.dll', 'xinput1_3.dll']) {
-          final n = name.toNativeUtf8();
-          final h = loadLib(n);
-          calloc.free(n);
-          if (h == 0) continue;
-          final addr = getProc(h, 100); // ordinal 100 = XInputGetStateEx
-          if (addr != 0) {
-            _getStateEx = Pointer<
-              NativeFunction<Uint32 Function(Uint32, Pointer<Uint8>)>
-            >.fromAddress(addr).asFunction();
-            break;
-          }
-        }
-      } catch (e) {
-        debugPrint('Guide button unavailable ($e)');
-      }
       try {
         final winmm = DynamicLibrary.open('winmm.dll');
         _joyGetPosEx = winmm
@@ -214,46 +166,6 @@ class WindowsGamepadService {
     return false;
   }
 
-  /// Guide button: when another app is in front, close it (politely) and ask
-  /// the home screen to come back. Does nothing while the home screen is
-  /// already in front, and never touches the Windows desktop itself.
-  void _checkGuide() {
-    final ex = _getStateEx;
-    if (ex == null || _connected.isEmpty) return;
-    var down = false;
-    for (final i in _connected) {
-      if (ex(i, _exState!) != 0) continue;
-      final b = ByteData.sublistView(_exState!.asTypedList(16))
-          .getUint16(4, Endian.little);
-      if (b & _guide != 0) down = true;
-    }
-    final pressed = down && !_guideWasDown;
-    _guideWasDown = down;
-    if (!pressed || _appIsActive) return;
-    final hwnd = _foregroundWindow();
-    if (hwnd == 0) return;
-    final buf = calloc<Uint16>(256);
-    String cls;
-    try {
-      _getClassName(hwnd, buf, 256);
-      cls = buf.cast<Utf16>().toDartString();
-    } finally {
-      calloc.free(buf);
-    }
-    const protectedClasses = {
-      'Progman',
-      'WorkerW',
-      'Shell_TrayWnd',
-      'Shell_SecondaryTrayWnd',
-      'XamlExplorerHostIslandWindow',
-      'Windows.UI.Core.CoreWindow',
-    };
-    if (!protectedClasses.contains(cls)) {
-      _postMessage(hwnd, 0x0010, 0, 0); // WM_CLOSE
-    }
-    onGuideClosedApp?.call();
-  }
-
   bool get _appIsActive {
     final hwnd = _foregroundWindow();
     if (hwnd == 0) return false;
@@ -302,8 +214,6 @@ class WindowsGamepadService {
       _lastJoyScan = nowMs;
       _scanJoysticks();
     }
-
-    _checkGuide();
 
     final wanted = <int>{};
     if (_connected.isEmpty && _joyConnected.isNotEmpty && _appIsActive) {

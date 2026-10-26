@@ -23,12 +23,6 @@ Future<void> main() async {
         await windowManager.focus();
       },
     );
-    WindowsGamepadService.instance.onGuideClosedApp = () async {
-      await Future<void>.delayed(const Duration(milliseconds: 400));
-      await windowManager.setFullScreen(true);
-      await windowManager.show();
-      await windowManager.focus();
-    };
     WindowsGamepadService.instance.start();
     CursorAutoHide.instance.start();
   }
