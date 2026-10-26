@@ -200,17 +200,17 @@ class _UsenetScreenState extends State<UsenetScreen> {
       testResult.value = 'Testing…';
       final out = StringBuffer();
       for (final url in r.thumbnailCandidates) {
-        for (final withLogin in [false, true]) {
+        for (final withReferer in [false, true]) {
           try {
             final res = await http
                 .get(
                   Uri.parse(url),
-                  headers: withLogin ? _imageHeaders : const {},
+                  headers: withReferer ? _imageHeaders : const {},
                 )
                 .timeout(const Duration(seconds: 10));
             out.writeln(
               '${res.statusCode} ${res.headers['content-type'] ?? ''} '
-              '${res.bodyBytes.length}B  ${withLogin ? 'login' : 'no login'}'
+              '${res.bodyBytes.length}B  ${withReferer ? 'referer' : 'plain'}'
               '  ${url.split('/').last}',
             );
           } catch (e) {
@@ -496,15 +496,12 @@ class _ResultThumbState extends State<_ResultThumb> {
   @override
   Widget build(BuildContext context) {
     const fallback = Icon(Icons.play_circle_outline_rounded, size: 30);
-    // Each address is tried twice: without the login first (the picture
-    // server is usually public), then with it.
-    if (_index >= widget.urls.length * 2) return fallback;
-    final url = widget.urls[_index ~/ 2];
-    final withLogin = _index.isOdd;
+    if (_index >= widget.urls.length) return fallback;
+    final url = widget.urls[_index];
     return Image.network(
       url,
-      key: ValueKey('$url|$withLogin'),
-      headers: withLogin ? widget.headers : const <String, String>{},
+      key: ValueKey(url),
+      headers: widget.headers,
       fit: BoxFit.cover,
       cacheWidth: 192,
       errorBuilder: (_, __, ___) {

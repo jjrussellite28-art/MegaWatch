@@ -287,7 +287,15 @@ class EasynewsService {
       uri.host == 'easynews.com' || uri.host.endsWith('.easynews.com');
 
   /// Headers for loading Easynews pictures.
-  Future<Map<String, String>> imageHeaders() => playbackHeaders();
+  /// The picture server refuses direct requests ("hotlink protection") and
+  /// rejects the Basic-auth login, so pictures are asked for the way the
+  /// Easynews website does: with the website as the referrer.
+  Future<Map<String, String>> imageHeaders() async => const {
+    'Referer': 'https://members.easynews.com/',
+    'Origin': 'https://members.easynews.com',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+  };
 
   /// Checks a result's link before playing: follows redirects, makes sure the
   /// login is accepted and the file still exists, and returns the final secure
