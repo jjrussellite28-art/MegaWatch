@@ -350,7 +350,8 @@ class EasynewsService {
         size = int.tryParse(_attribute(attrs, 'length') ?? '') ?? 0;
       }
       if (url.isEmpty) url = _tag(block, 'link');
-      url = secureUrl(url);
+      url = secureUrl(_decode(url));
+      if (!url.startsWith('https://')) continue;
       if (url.isEmpty || !seen.add(url)) continue;
 
       var name = '';
@@ -409,11 +410,28 @@ class EasynewsService {
   static String _plain(String html) =>
       html.replaceAll(RegExp(r'<[^>]*>'), ' ').replaceAll(RegExp(r'\s+'), ' ').trim();
 
-  static String _decode(String s) => s
-      .replaceAll('&lt;', '<')
-      .replaceAll('&gt;', '>')
-      .replaceAll('&quot;', '"')
-      .replaceAll('&apos;', "'")
-      .replaceAll('&#39;', "'")
-      .replaceAll('&amp;', '&');
+  static String _decode(String input) {
+    var s = input.trim();
+    if (s.startsWith('<![CDATA[') && s.endsWith(']]>')) {
+      s = s.substring(9, s.length - 3);
+    }
+    // Run twice so double-encoded text (&amp;#58;) also comes out right.
+    for (var pass = 0; pass < 2; pass++) {
+      s = s.replaceAllMapped(RegExp(r'&#(x[0-9a-fA-F]+|[0-9]+);'), (m) {
+        final g = m.group(1)!;
+        final code = g.startsWith('x') || g.startsWith('X')
+            ? int.tryParse(g.substring(1), radix: 16)
+            : int.tryParse(g);
+        if (code == null || code <= 0 || code > 0x10FFFF) return m.group(0)!;
+        return String.fromCharCode(code);
+      });
+      s = s
+          .replaceAll('&lt;', '<')
+          .replaceAll('&gt;', '>')
+          .replaceAll('&quot;', '"')
+          .replaceAll('&apos;', "'")
+          .replaceAll('&amp;', '&');
+    }
+    return s;
+  }
 }
