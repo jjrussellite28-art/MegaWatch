@@ -38,6 +38,22 @@ class EasynewsResult {
   /// Preview picture given by Easynews itself, when the feed has one.
   final String? picture;
 
+  /// Every picture address worth trying, best guess first.
+  List<String> get thumbnailCandidates {
+    final out = <String>[];
+    if (picture != null && picture!.isNotEmpty) out.add(picture!);
+    final id = fileId;
+    if (id != null) {
+      final ids = <String>{id, if (id.length > 40) id.substring(0, 40)};
+      for (final i in ids) {
+        for (final kind in const ['th', 'pr']) {
+          out.add('https://th.easynews.com/thumbnails-${i.substring(0, 3)}/$kind-$i.jpg');
+        }
+      }
+    }
+    return out;
+  }
+
   /// Preview picture, like the thumbnails on the Easynews website.
   String? get thumbnailUrl {
     if (picture != null && picture!.isNotEmpty) return picture;

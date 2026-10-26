@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import '../../services/easynews_service.dart';
 import '../../services/video_player_launcher.dart';
@@ -189,6 +190,32 @@ class _UsenetScreenState extends State<UsenetScreen> {
     }
   }
 
+  void _showDetails(EasynewsResult r) {
+    final link = r.url.replaceFirst(RegExp(r'//[^/@]*@'), '//');
+    final text = 'Name: ${r.title}\nLink: $link\n'
+        'Picture tries:\n${r.thumbnailCandidates.join('\n')}';
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Result details'),
+        content: SingleChildScrollView(child: SelectableText(text)),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: text));
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('Copy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   String _dateLabel(DateTime? date) {
     if (date == null) return '';
     final d = date.toLocal();
@@ -290,16 +317,6 @@ class _UsenetScreenState extends State<UsenetScreen> {
           runSpacing: 8,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            for (final t in EasynewsType.values)
-              ChoiceChip(
-                label: Text(t.label),
-                selected: _type == t,
-                onSelected: (_) {
-                  if (_type == t) return;
-                  setState(() => _type = t);
-                  if (_lastQuery.isNotEmpty) unawaited(_search());
-                },
-              ),
             const SizedBox(width: 4),
             const Text('Sort:', style: TextStyle(color: Colors.white70)),
             ChoiceChip(
@@ -397,18 +414,10 @@ class _UsenetScreenState extends State<UsenetScreen> {
               child: SizedBox(
                 width: 96,
                 height: 54,
-                child: r.thumbnailUrl == null
-                    ? const Icon(Icons.play_circle_outline_rounded, size: 30)
-                    : Image.network(
-                        r.thumbnailUrl!,
-                        headers: _imageHeaders,
-                        fit: BoxFit.cover,
-                        cacheWidth: 192,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.play_circle_outline_rounded,
-                          size: 30,
-                        ),
-                      ),
+                child: _ResultThumb(
+                  urls: r.thumbnailCandidates,
+                  headers: _imageHeaders,
+                ),
               ),
             ),
             title: Text(
@@ -422,8 +431,43 @@ class _UsenetScreenState extends State<UsenetScreen> {
               style: const TextStyle(color: Colors.white60, fontSize: 13),
             ),
             onTap: () => unawaited(_play(r)),
+            onLongPress: () => _showDetails(r),
           ),
         );
+      },
+    );
+  }
+}
+
+/// Shows a result's picture, trying each possible address until one loads.
+class _ResultThumb extends StatefulWidget {
+  const _ResultThumb({required this.urls, required this.headers});
+
+  final List<String> urls;
+  final Map<String, String> headers;
+
+  @override
+  State<_ResultThumb> createState() => _ResultThumbState();
+}
+
+class _ResultThumbState extends State<_ResultThumb> {
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    const fallback = Icon(Icons.play_circle_outline_rounded, size: 30);
+    if (_index >= widget.urls.length) return fallback;
+    return Image.network(
+      widget.urls[_index],
+      key: ValueKey(widget.urls[_index]),
+      headers: widget.headers,
+      fit: BoxFit.cover,
+      cacheWidth: 192,
+      errorBuilder: (_, __, ___) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() => _index++);
+        });
+        return fallback;
       },
     );
   }
