@@ -34,6 +34,9 @@ class _UsenetScreenState extends State<UsenetScreen> {
   bool _loadingMore = false;
   bool _hasMore = false;
   bool _opening = false;
+
+  /// The result under the mouse or controller focus, shown big on the right.
+  final ValueNotifier<EasynewsResult?> _preview = ValueNotifier(null);
   Map<String, String> _imageHeaders = const {};
   String? _error;
   String _lastQuery = '';
@@ -50,6 +53,7 @@ class _UsenetScreenState extends State<UsenetScreen> {
   @override
   void dispose() {
     EasynewsService.instance.changes.removeListener(_refreshConfigured);
+    _preview.dispose();
     _query.dispose();
     _queryFocus.dispose();
     super.dispose();
@@ -417,7 +421,7 @@ class _UsenetScreenState extends State<UsenetScreen> {
         ),
       );
     }
-    return ListView.builder(
+    final list = ListView.builder(
       itemCount: _results.length + (_hasMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index >= _results.length) {
@@ -442,7 +446,12 @@ class _UsenetScreenState extends State<UsenetScreen> {
         ].join('  ·  ');
         return Padding(
           padding: const EdgeInsets.only(bottom: 6),
-          child: ListTile(
+          child: MouseRegion(
+            onEnter: (_) => _preview.value = r,
+            onExit: (_) {
+              if (_preview.value?.url == r.url) _preview.value = null;
+            },
+            child: ListTile(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -472,19 +481,93 @@ class _UsenetScreenState extends State<UsenetScreen> {
             ),
             onTap: () => unawaited(_play(r)),
             onLongPress: () => _showDetails(r),
+            onFocusChange: (focused) {
+              if (focused) {
+                _preview.value = r;
+              } else if (_preview.value?.url == r.url) {
+                _preview.value = null;
+              }
+            },
+          ),
           ),
         );
       },
+    );
+    // Big, clear picture of whatever you hover or focus (mouse or controller).
+    return Stack(
+      children: [
+        list,
+        Positioned(
+          right: 12,
+          top: 4,
+          child: IgnorePointer(
+            child: ValueListenableBuilder<EasynewsResult?>(
+              valueListenable: _preview,
+              builder: (context, item, _) {
+                if (item == null || MediaQuery.sizeOf(context).width < 900) {
+                  return const SizedBox.shrink();
+                }
+                return Container(
+                  width: 480,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xEE0B0F1A),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.white24),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: AspectRatio(
+                          aspectRatio: 2,
+                          child: ColoredBox(
+                            color: Colors.black,
+                            child: _ResultThumb(
+                              key: ValueKey(item.url),
+                              urls: item.thumbnailCandidates,
+                              headers: _imageHeaders,
+                              cacheWidth: 960,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        item.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
 /// Shows a result's picture, trying each possible address until one loads.
 class _ResultThumb extends StatefulWidget {
-  const _ResultThumb({required this.urls, required this.headers});
+  const _ResultThumb({
+    super.key,
+    required this.urls,
+    required this.headers,
+    this.cacheWidth = 192,
+    this.fit = BoxFit.cover,
+  });
 
   final List<String> urls;
   final Map<String, String> headers;
+  final int cacheWidth;
+  final BoxFit fit;
 
   @override
   State<_ResultThumb> createState() => _ResultThumbState();
@@ -502,8 +585,8 @@ class _ResultThumbState extends State<_ResultThumb> {
       url,
       key: ValueKey(url),
       headers: widget.headers,
-      fit: BoxFit.cover,
-      cacheWidth: 192,
+      fit: widget.fit,
+      cacheWidth: widget.cacheWidth,
       errorBuilder: (_, __, ___) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) setState(() => _index++);
