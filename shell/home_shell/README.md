@@ -20,6 +20,9 @@ flutter run -d windows --release
 | Edit tile | Start | F2 / right-click |
 | Power menu | B / Back | Esc / F10 |
 
+**Guide / Xbox button:** while another app (Debrify, Playnite, a game...) is in front, it closes that app and brings Home Shell back.
+If the Windows Game Bar pops up instead, turn off Settings > Gaming > Game Bar > "Open Game Bar using this button on a controller".
+
 Tiles are saved in `%APPDATA%\HomeShell\tiles.json`. Use **Add** to make your own tile
 (a program path or a link like `steam://open/bigpicture`).
 
