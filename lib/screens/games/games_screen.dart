@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../services/game_library_service.dart';
+import '../../services/igdb_service.dart';
+import 'game_details_screen.dart';
 import '../../services/main_page_bridge.dart';
 import '../../widgets/tv_text_field.dart';
 
@@ -38,6 +40,9 @@ class _GamesScreenState extends State<GamesScreen> {
     };
     MainPageBridge.registerTvContentFocusHandler(20, _contentFocus);
     _query.addListener(() => setState(() {}));
+    unawaited(IgdbService.instance.load().then((_) {
+      if (mounted) setState(() {});
+    }));
     unawaited(_load());
   }
 
@@ -101,6 +106,91 @@ class _GamesScreenState extends State<GamesScreen> {
     await _load();
   }
 
+  Map<String, LibraryGame> get _ownedMap => {for (final g in _games) normGameName(g.name): g};
+
+  Future<void> _details(LibraryGame g) async {
+    if (!IgdbService.instance.configured) {
+      await _setupKeys();
+      return;
+    }
+    setState(() => _message = 'Looking up ${g.name}...');
+    final match = await IgdbService.instance.quick(g.name);
+    if (!mounted) return;
+    setState(() => _message = null);
+    if (match == null) {
+      setState(() => _message = 'No game info found for ${g.name}.');
+      return;
+    }
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => GameDetailsScreen(igdbId: match.id, owned: _ownedMap),
+    ));
+  }
+
+  Future<void> _find() async {
+    if (!IgdbService.instance.configured) {
+      await _setupKeys();
+      if (!IgdbService.instance.configured) return;
+    }
+    if (!mounted) return;
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => GameFinderScreen(owned: _ownedMap),
+    ));
+  }
+
+  Future<void> _setupKeys() async {
+    final id = TextEditingController(text: IgdbService.instance.clientId);
+    final secret = TextEditingController();
+    String? result;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setD) => AlertDialog(
+          title: const Text('Game info (IGDB) — one-time setup'),
+          content: SizedBox(
+            width: 560,
+            child: SingleChildScrollView(
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text(
+                  '1. Go to dev.twitch.tv/console and sign in (turn on two-factor sign-in on your Twitch account if asked).\n'
+                  '2. Register Your Application: any name, OAuth Redirect URL http://localhost , Category: Application Integration, Client Type: Confidential.\n'
+                  '3. Open the app, copy the Client ID, click New Secret and copy the Client Secret.\n'
+                  'The keys stay on this PC and are used only to ask IGDB for game info.',
+                  style: TextStyle(fontSize: 14, height: 1.4),
+                ),
+                const SizedBox(height: 14),
+                TvTextField(controller: id, labelText: 'Client ID'),
+                const SizedBox(height: 10),
+                TvTextField(controller: secret, labelText: 'Client Secret'),
+                if (result != null) Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(result!, style: const TextStyle(color: Color(0xFFFFC857))),
+                ),
+              ]),
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+            FilledButton(
+              onPressed: () async {
+                await IgdbService.instance.saveKeys(id.text, secret.text);
+                final err = await IgdbService.instance.test();
+                if (err == null) {
+                  if (ctx.mounted) Navigator.pop(ctx);
+                } else {
+                  setD(() => result = err);
+                }
+              },
+              child: const Text('Save and test'),
+            ),
+          ],
+        ),
+      ),
+    );
+    id.dispose();
+    secret.dispose();
+    if (mounted) setState(() {});
+  }
+
   Future<void> _add() async {
     final added = await showDialog<bool>(context: context, builder: (_) => const _AddGameDialog());
     if (added == true) await _load();
@@ -124,25 +214,44 @@ class _GamesScreenState extends State<GamesScreen> {
                     Row(children: [
                       const Text('Games',
                           style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
-                      const Spacer(),
-                      OutlinedButton.icon(
-                        onPressed: _load,
-                        icon: const Icon(Icons.refresh_rounded),
-                        label: const Text('Refresh'),
-                      ),
-                      const SizedBox(width: 10),
-                      FilledButton.icon(
-                        focusNode: _addFocus,
-                        onPressed: _add,
-                        icon: const Icon(Icons.add_rounded),
-                        label: const Text('Add a game'),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Wrap(spacing: 10, runSpacing: 8, children: [
+                            OutlinedButton.icon(
+                              onPressed: _find,
+                              icon: const Icon(Icons.travel_explore_rounded),
+                              label: const Text('Find games'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: _setupKeys,
+                              icon: const Icon(Icons.key_rounded),
+                              label: Text(IgdbService.instance.configured ? 'Game info: on' : 'Game info setup'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: _load,
+                              icon: const Icon(Icons.refresh_rounded),
+                              label: const Text('Refresh'),
+                            ),
+                            FilledButton.icon(
+                              focusNode: _addFocus,
+                              onPressed: _add,
+                              icon: const Icon(Icons.add_rounded),
+                              label: const Text('Add a game'),
+                            ),
+                          ]),
+                        ),
                       ),
                     ]),
                     if (_message != null) ...[
                       const SizedBox(height: 8),
                       Text(_message!, style: const TextStyle(color: Color(0xFFFFC857), fontSize: 14)),
                     ],
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 6),
+                    const Text('A play   ·   Y details & series   ·   X remove (games you added)',
+                        style: TextStyle(color: Colors.white54, fontSize: 13)),
+                    const SizedBox(height: 10),
                     Wrap(spacing: 8, runSpacing: 8, children: [
                       for (final f in const ['All', 'Recent', 'Steam', 'Epic', 'My games'])
                         ChoiceChip(
@@ -182,29 +291,153 @@ class _GamesScreenState extends State<GamesScreen> {
         ),
       );
     }
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 190,
-        childAspectRatio: 2 / 3,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
+    final showHero = _filter == 'All' && _query.text.trim().isEmpty;
+    final hero = [..._games]..sort((a, b) {
+        final c = b.lastPlayed.compareTo(a.lastPlayed);
+        return c != 0 ? c : a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      });
+    return CustomScrollView(slivers: [
+      if (showHero && hero.isNotEmpty)
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 18),
+            child: SizedBox(
+              height: 230,
+              child: ListView(scrollDirection: Axis.horizontal, children: [
+                for (final g in hero.take(8))
+                  _HeroCard(game: g, onPlay: () => _play(g), onDetails: () => _details(g)),
+              ]),
+            ),
+          ),
+        ),
+      SliverGrid(
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 190,
+          childAspectRatio: 2 / 3,
+          crossAxisSpacing: 14,
+          mainAxisSpacing: 14,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (_, i) => _GameCard(
+            key: ValueKey(list[i].id),
+            game: list[i],
+            onPlay: () => _play(list[i]),
+            onOptions: () => _remove(list[i]),
+            onDetails: () => _details(list[i]),
+          ),
+          childCount: list.length,
+        ),
       ),
-      itemCount: list.length,
-      itemBuilder: (_, i) => _GameCard(
-        key: ValueKey(list[i].id),
-        game: list[i],
-        onPlay: () => _play(list[i]),
-        onOptions: () => _remove(list[i]),
+    ]);
+  }
+}
+
+/// Big wide card (like the "Popular Movies" row): picture, title and a short
+/// description when game info is set up.
+class _HeroCard extends StatefulWidget {
+  const _HeroCard({required this.game, required this.onPlay, required this.onDetails});
+  final LibraryGame game;
+  final VoidCallback onPlay;
+  final VoidCallback onDetails;
+
+  @override
+  State<_HeroCard> createState() => _HeroCardState();
+}
+
+class _HeroCardState extends State<_HeroCard> {
+  bool _focused = false;
+  IgdbGame? _info;
+
+  @override
+  void initState() {
+    super.initState();
+    if (IgdbService.instance.configured) {
+      IgdbService.instance.quick(widget.game.name).then((v) {
+        if (mounted) setState(() => _info = v);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final g = widget.game;
+    final pic = _info?.wide() ?? g.fallbackCoverUrl ?? g.coverUrl;
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Focus(
+        onFocusChange: (f) {
+          setState(() => _focused = f);
+          if (f) Scrollable.ensureVisible(context, duration: const Duration(milliseconds: 120), alignment: 0.5);
+        },
+        onKeyEvent: (_, e) {
+          if (e is! KeyDownEvent) return KeyEventResult.ignored;
+          final k = e.logicalKey;
+          if (k == LogicalKeyboardKey.enter || k == LogicalKeyboardKey.numpadEnter || k == LogicalKeyboardKey.select || k == LogicalKeyboardKey.gameButtonA) {
+            widget.onPlay();
+            return KeyEventResult.handled;
+          }
+          if (k == LogicalKeyboardKey.f3 || k == LogicalKeyboardKey.gameButtonY) {
+            widget.onDetails();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: GestureDetector(
+          onTap: widget.onPlay,
+          onSecondaryTap: widget.onDetails,
+          child: AnimatedScale(
+            scale: _focused ? 1.03 : 1.0,
+            duration: const Duration(milliseconds: 110),
+            child: Container(
+              width: 440,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: _focused ? Colors.white : Colors.transparent, width: 3),
+                color: const Color(0xFF1B2133),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(fit: StackFit.expand, children: [
+                if (pic != null) Image.network(pic, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox()),
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent, Color(0xE6000000)],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: 14,
+                  child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(g.name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white)),
+                    const SizedBox(height: 4),
+                    Text(
+                      _info?.summary ?? (g.lastPlayed > 0 ? 'Played recently — press A to continue' : g.source),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 13, height: 1.3, color: Colors.white70),
+                    ),
+                  ]),
+                ),
+              ]),
+            ),
+          ),
+        ),
       ),
     );
   }
 }
 
 class _GameCard extends StatefulWidget {
-  const _GameCard({super.key, required this.game, required this.onPlay, required this.onOptions});
+  const _GameCard({super.key, required this.game, required this.onPlay, required this.onOptions, required this.onDetails});
   final LibraryGame game;
   final VoidCallback onPlay;
   final VoidCallback onOptions;
+  final VoidCallback onDetails;
 
   @override
   State<_GameCard> createState() => _GameCardState();
@@ -266,6 +499,10 @@ class _GameCardState extends State<_GameCard> {
             k == LogicalKeyboardKey.select ||
             k == LogicalKeyboardKey.gameButtonA) {
           widget.onPlay();
+          return KeyEventResult.handled;
+        }
+        if (k == LogicalKeyboardKey.f3 || k == LogicalKeyboardKey.gameButtonY) {
+          widget.onDetails();
           return KeyEventResult.handled;
         }
         if (k == LogicalKeyboardKey.contextMenu ||
