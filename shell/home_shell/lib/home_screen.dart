@@ -128,14 +128,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _menuItem(BuildContext ctx, String value, IconData icon, String label,
       {bool first = false}) {
-    return SimpleDialogOption(
+    return ListTile(
       autofocus: first,
-      onPressed: () => Navigator.pop(ctx, value),
-      child: Row(children: [
-        Icon(icon),
-        const SizedBox(width: 16),
-        Text(label, style: const TextStyle(fontSize: 20)),
-      ]),
+      leading: Icon(icon),
+      title: Text(label, style: const TextStyle(fontSize: 20)),
+      onTap: () => Navigator.pop(ctx, value),
     );
   }
 
