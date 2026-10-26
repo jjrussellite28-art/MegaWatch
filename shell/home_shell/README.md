@@ -22,6 +22,9 @@ flutter run -d windows --release
 
 **Open now row:** apps that are already running appear at the top. Select one to switch to it (Start / right-click closes it).
 
+**Home gesture (from any app):** HOLD the Xbox Guide button for 1 second, or press Ctrl+Alt+H, and Home Shell comes forward. Nothing gets closed, and a quick tap of Guide still works in the other app (Playnite, Steam).
+If the Windows Game Bar pops up on Guide, turn it off in Settings > Gaming > Game Bar.
+
 Tiles are saved in `%APPDATA%\HomeShell\tiles.json`. Use **Add** to make your own tile
 (a program path or a link like `steam://open/bigpicture`).
 

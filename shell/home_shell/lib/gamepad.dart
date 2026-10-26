@@ -69,12 +69,9 @@ class WindowsGamepadService {
   int Function(int, Pointer<Uint8>)? _getStateEx;
   Pointer<Uint8>? _exState;
   bool _guideWasDown = false;
-  late final int Function(int, Pointer<Uint16>, int) _getClassName;
-  late final int Function(int, int, int, int) _postMessage;
 
-  /// Called after the Guide button closed the app that was in front. Use it to
-  /// bring the home screen back.
-  void Function()? onGuideClosedApp;
+  /// Called when the Home gesture is used while another app is in front.
+  void Function()? onHomeRequested;
   Pointer<Uint8>? _state;
   int _lastScan = 0;
   List<int> _connected = const [];
@@ -129,15 +126,8 @@ class WindowsGamepadService {
           .asFunction();
       _state = calloc<Uint8>(16);
       _exState = calloc<Uint8>(16);
-      _getClassName = user32
-          .lookup<NativeFunction<Int32 Function(IntPtr, Pointer<Uint16>, Int32)>>(
-            'GetClassNameW',
-          )
-          .asFunction();
-      _postMessage = user32
-          .lookup<NativeFunction<Int32 Function(IntPtr, Uint32, IntPtr, IntPtr)>>(
-            'PostMessageW',
-          )
+      _asyncKey = user32
+          .lookup<NativeFunction<Int16 Function(Int32)>>('GetAsyncKeyState')
           .asFunction();
       try {
         final kernel = DynamicLibrary.open('kernel32.dll');
@@ -214,44 +204,50 @@ class WindowsGamepadService {
     return false;
   }
 
-  /// Guide button: when another app is in front, close it (politely) and ask
-  /// the home screen to come back. Does nothing while the home screen is
-  /// already in front, and never touches the Windows desktop itself.
+  int _guideHeldSince = -1;
+  bool _guideFired = false;
+  bool _hotkeyWasDown = false;
+  int Function(int)? _asyncKey;
+
+  /// "Home" gesture: HOLD the Guide button for one second (or press
+  /// Ctrl+Alt+H) from any app to bring the home screen forward. Nothing is
+  /// closed, and a quick tap of Guide still goes to the other app untouched
+  /// (Playnite, Steam, Game Bar), because this only watches the button.
   void _checkGuide() {
+    final nowMs = _clock.elapsedMilliseconds;
+    var wantHome = false;
+
     final ex = _getStateEx;
-    if (ex == null || _connected.isEmpty) return;
-    var down = false;
-    for (final i in _connected) {
-      if (ex(i, _exState!) != 0) continue;
-      final b = ByteData.sublistView(_exState!.asTypedList(16))
-          .getUint16(4, Endian.little);
-      if (b & _guide != 0) down = true;
+    if (ex != null && _connected.isNotEmpty) {
+      var down = false;
+      for (final i in _connected) {
+        if (ex(i, _exState!) != 0) continue;
+        final b = ByteData.sublistView(_exState!.asTypedList(16))
+            .getUint16(4, Endian.little);
+        if (b & _guide != 0) down = true;
+      }
+      if (down) {
+        if (_guideHeldSince < 0) _guideHeldSince = nowMs;
+        if (!_guideFired && nowMs - _guideHeldSince >= 1000) {
+          _guideFired = true;
+          wantHome = true;
+        }
+      } else {
+        _guideHeldSince = -1;
+        _guideFired = false;
+      }
     }
-    final pressed = down && !_guideWasDown;
-    _guideWasDown = down;
-    if (!pressed || _appIsActive) return;
-    final hwnd = _foregroundWindow();
-    if (hwnd == 0) return;
-    final buf = calloc<Uint16>(256);
-    String cls;
-    try {
-      _getClassName(hwnd, buf, 256);
-      cls = buf.cast<Utf16>().toDartString();
-    } finally {
-      calloc.free(buf);
+
+    final key = _asyncKey;
+    if (key != null) {
+      final combo = key(0x11) & 0x8000 != 0 &&
+          key(0x12) & 0x8000 != 0 &&
+          key(0x48) & 0x8000 != 0;
+      if (combo && !_hotkeyWasDown) wantHome = true;
+      _hotkeyWasDown = combo;
     }
-    const protectedClasses = {
-      'Progman',
-      'WorkerW',
-      'Shell_TrayWnd',
-      'Shell_SecondaryTrayWnd',
-      'XamlExplorerHostIslandWindow',
-      'Windows.UI.Core.CoreWindow',
-    };
-    if (!protectedClasses.contains(cls)) {
-      _postMessage(hwnd, 0x0010, 0, 0); // WM_CLOSE
-    }
-    onGuideClosedApp?.call();
+
+    if (wantHome && !_appIsActive) onHomeRequested?.call();
   }
 
   bool get _appIsActive {
