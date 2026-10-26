@@ -16,6 +16,8 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/iptv_playlist.dart';
+import '../../services/iptv_language_filter.dart';
+import 'hide_foreign_dialog.dart';
 import '../../services/debrify_image_cache.dart';
 import '../browse/brand_accent.dart';
 import '../browse/browse_results_focus.dart';
@@ -3262,6 +3264,20 @@ class IptvResultsViewState extends State<IptvResultsView>
               ),
               onTap: () => Navigator.of(dialogContext).pop('hide'),
             ),
+            ListTile(
+              leading: Icon(Icons.translate_rounded, color: app.core.tx),
+              title: Text(
+                'Hide all non-English categories…',
+                style: TextStyle(color: app.core.tx),
+              ),
+              subtitle: Text(
+                'Skips loading other-language groups so IPTV opens faster',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: app.core.tx.withAlpha(0xB3)),
+              ),
+              onTap: () => Navigator.of(dialogContext).pop('hideForeign'),
+            ),
           ],
         ),
       ),
@@ -3298,7 +3314,34 @@ class IptvResultsViewState extends State<IptvResultsView>
         }
       case 'hide':
         await _promptHideCategory(category);
+      case 'hideForeign':
+        await _hideNonEnglishCategories();
     }
+  }
+
+  /// Hides every category of this source whose name looks non-English, after
+  /// showing the list and confirming.
+  Future<void> _hideNonEnglishCategories() async {
+    final snap = _dbSnapshot;
+    if (snap == null) return;
+    final names = IptvLanguageFilter.findNonEnglish(_dbGroupCounts.keys);
+    final ok = await confirmHideNonEnglish(context, names);
+    if (!ok || !mounted) return;
+    if (!IptvCatalogDb.hideGroups(snap.catalogKey, names)) {
+      _showChip(
+        _CatalogChipState.failure,
+        'Couldn\'t hide them — try again',
+        autoHide: const Duration(milliseconds: 3500),
+      );
+      return;
+    }
+    await _refreshAfterHiddenChange();
+    if (!mounted) return;
+    _showChip(
+      _CatalogChipState.success,
+      'Hid ${names.length} categor${names.length == 1 ? 'y' : 'ies'}',
+      autoHide: const Duration(milliseconds: 2600),
+    );
   }
 
   /// Hide [category] from this source, after confirming.

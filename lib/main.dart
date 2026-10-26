@@ -3080,11 +3080,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   /// lands right after Discover (18) — the same visual slot — so the tab is
   /// always in a consistent place. Mutates [indices] in place.
   void _insertTraktCalendarTab(List<int> indices, bool authed) {
-    // Games (Playnite) sits just before Addons, on Windows only.
-    if (!kIsWeb && Platform.isWindows && !indices.contains(MainTab.games)) {
-      final at = indices.indexOf(MainTab.addons);
-      indices.insert(at >= 0 ? at : indices.length, MainTab.games);
-    }
+    // The Games (Playnite) tab was removed from the menu on purpose.
+    indices.remove(MainTab.games);
     if (!authed || indices.contains(19)) return;
     var pos = indices.indexOf(2);
     if (pos < 0) {

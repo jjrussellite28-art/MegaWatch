@@ -100,13 +100,6 @@ const List<SidebarDestination> sidebarDestinations = <SidebarDestination>[
     icon: Icons.newspaper_rounded,
   ),
   SidebarDestination(
-    id: 'games',
-    tabIndex: MainTab.games,
-    defaultLabel: 'Games',
-    section: 'Browse',
-    icon: Icons.sports_esports_rounded,
-  ),
-  SidebarDestination(
     id: 'addons',
     tabIndex: MainTab.addons,
     defaultLabel: 'Addons',
