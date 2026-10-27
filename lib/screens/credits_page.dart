@@ -44,6 +44,15 @@ class CreditsPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: Text(
+              'MegaWatch is free, open-source software (AGPL-3.0) made by '
+              'jjrussellite28-art. If you are credited here and want something '
+              'changed or removed, open an issue on GitHub and it will be '
+              'handled promptly.',
+            ),
+          ),
           for (final e in _entries)
             Card(
               child: ListTile(
@@ -58,6 +67,30 @@ class CreditsPage extends StatelessWidget {
                         ),
               ),
             ),
+          Card(
+            child: ListTile(
+              title: const Text('Source code'),
+              subtitle: const Text(
+                'github.com/jjrussellite28-art/debrifyy (AGPL-3.0)',
+              ),
+              trailing: const Icon(Icons.open_in_new),
+              onTap: () => launchUrl(
+                Uri.parse('https://github.com/jjrussellite28-art/debrifyy'),
+                mode: LaunchMode.externalApplication,
+              ),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: const Text('Open-source licences'),
+              subtitle: const Text('Licences of the libraries MegaWatch uses'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => showLicensePage(
+                context: context,
+                applicationName: 'MegaWatch',
+              ),
+            ),
+          ),
         ],
       ),
     );

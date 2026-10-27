@@ -5,6 +5,7 @@
 <h1 align="center">Debrify</h1>
 
 > **MegaWatch** is an independent fork of [Debrify](https://github.com/varunsalian/debrify) by Varun Salian and contributors, used under the AGPL-3.0 licence. It is not made or endorsed by the Debrify project.
+> Full credits, licences and the take-down policy are in [CREDITS.md](CREDITS.md). If you are credited and want something changed or removed, please open an issue.
 > Watch order data comes from the public Watch Order Stremio add-on by u/demon-myth. Thanks also to RobbdeezeNutz for the live sports, IPTV and direct-link ideas, and to TMDB and Stremio Cinemeta for metadata.
 
 

@@ -21,10 +21,20 @@ jobs:
         with:
           channel: stable
       - name: Build Windows app
+        shell: pwsh
+        env:
+          TRAKT_CLIENT_ID: ${{ secrets.TRAKT_CLIENT_ID }}
+          TRAKT_CLIENT_SECRET: ${{ secrets.TRAKT_CLIENT_SECRET }}
+          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
         run: |
           flutter config --enable-windows-desktop
           flutter pub get
-          flutter build windows --release
+          $defs = @()
+          foreach ($n in 'TRAKT_CLIENT_ID','TRAKT_CLIENT_SECRET','SIMKL_CLIENT_ID') {
+            $v = [Environment]::GetEnvironmentVariable($n)
+            if ($v) { $defs += "--dart-define=$n=$v" }
+          }
+          flutter build windows --release @defs
       - name: Install Inno Setup
         run: choco install innosetup --no-progress --yes
       - name: Build installer
