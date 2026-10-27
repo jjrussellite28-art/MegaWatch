@@ -1028,6 +1028,34 @@ class _DebrifyAppState extends State<DebrifyApp> {
     // recompute happened once, inside the controller, when the change fired.
     AppThemeController.instance.addListener(_onAppThemeChanged);
     Future<void>.delayed(const Duration(seconds: 6), _safetyCheck);
+    SafetyGateService.blockedNotice.addListener(_onTorrentAddonBlocked);
+  }
+
+  bool _noticeShowing = false;
+
+  Future<void> _onTorrentAddonBlocked() async {
+    final ctx = _navigatorKey.currentContext;
+    if (_noticeShowing || !mounted || ctx == null || !ctx.mounted) return;
+    _noticeShowing = true;
+    await showDialog<void>(
+      context: ctx,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Warning: IP exposed'),
+        content: const Text(SafetyGateService.torrentAddonMessage),
+        actions: [
+          TextButton(
+            onPressed: () => exit(0),
+            child: const Text('Close app'),
+          ),
+          FilledButton(
+            autofocus: true,
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+    _noticeShowing = false;
   }
 
   Future<void> _safetyCheck() async {
@@ -1074,6 +1102,7 @@ class _DebrifyAppState extends State<DebrifyApp> {
   void dispose() {
     TextBrightnessController.notifier.removeListener(_onTextBrightnessChanged);
     AppThemeController.instance.removeListener(_onAppThemeChanged);
+    SafetyGateService.blockedNotice.removeListener(_onTorrentAddonBlocked);
     super.dispose();
   }
 

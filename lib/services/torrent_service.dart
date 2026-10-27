@@ -736,6 +736,24 @@ class TorrentService {
 
       // Use explicit contentType if provided, otherwise infer from isMovie
       final type = contentType ?? (isMovie ? 'movie' : 'series');
+      // Raw torrents (not direct/protected links) need a debrid service.
+      final lockTorrents = await SafetyGateService.torrentAddonsLocked();
+      var droppedTorrents = false;
+      List<Torrent> safeOnly(List<Torrent> list) {
+        if (!lockTorrents) return list;
+        final kept = list
+            .where((t) => t.streamType != StreamType.torrent)
+            .toList();
+        if (kept.length != list.length) droppedTorrents = true;
+        return kept;
+      }
+
+      final SearchBatchCallback? safeBatch = onBatch == null || !lockTorrents
+          ? onBatch
+          : (source, batch) {
+              final kept = safeOnly(batch);
+              if (kept.isNotEmpty) onBatch(source, kept);
+            };
       final result = await stremioService.searchStreams(
         type: type,
         imdbId: imdbId,
@@ -744,13 +762,15 @@ class TorrentService {
         availableSeasons: availableSeasons,
         timeout: timeout,
         preserveOrder: preserveOrder,
-        onBatch: onBatch,
+        onBatch: safeBatch,
         originAddonKey: originAddonKey,
         originVideoId: originVideoId,
       );
 
+      final safeTorrents = safeOnly(result['torrents'] as List<Torrent>? ?? []);
+      if (droppedTorrents) SafetyGateService.blockedNotice.value++;
       return {
-        'torrents': result['torrents'] as List<Torrent>? ?? [],
+        'torrents': safeTorrents,
         'addonCounts': result['addonCounts'] as Map<String, int>? ?? {},
         'addonErrors': result['addonErrors'] as Map<String, String>? ?? {},
         'addonStatuses':

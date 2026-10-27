@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'storage_service.dart';
@@ -19,6 +20,21 @@ class SafetyGateService {
       'service (TorBox, Real-Debrid, PikPak) is connected, so your IP address '
       'could be exposed. Turn on your VPN or connect a debrid service, then '
       'search again.';
+
+  static const torrentAddonMessage =
+      'WARNING: This would expose your IP address. Some add-on results are '
+      'raw torrents, and they only unlock when a debrid service (TorBox, '
+      'Real-Debrid or PikPak) is set up in the app. We are not letting you '
+      'proceed with those. Direct links and protected streams still work.';
+
+  /// Set when torrent add-on results were hidden; the app shows a warning.
+  static final ValueNotifier<int> blockedNotice = ValueNotifier<int>(0);
+
+  /// True when raw-torrent add-on results must be hidden (no debrid set up).
+  static Future<bool> torrentAddonsLocked() async {
+    if (!await isEnabled()) return false;
+    return !await hasDebrid();
+  }
 
   static Future<bool> isEnabled() async {
     try {
