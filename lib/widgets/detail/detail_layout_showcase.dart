@@ -946,7 +946,21 @@ class _DetailShowcaseState extends State<DetailShowcase> {
     return g != null && !g.isEmpty;
   }
 
-  List<UniverseTitle> get _universe => _x?.universe ?? const [];
+  /// Universe order: false = as IMDb lists them, true = oldest to newest.
+  bool _uniByRelease = false;
+
+  List<UniverseTitle> get _universe {
+    final list = _x?.universe ?? const <UniverseTitle>[];
+    if (!_uniByRelease) return list;
+    final sorted = List<UniverseTitle>.of(list);
+    // Dart's sort is not stable, so break ties by the original position.
+    final pos = {for (var i = 0; i < list.length; i++) list[i].imdbId: i};
+    sorted.sort((a, b) {
+      final c = (a.year ?? 9999).compareTo(b.year ?? 9999);
+      return c != 0 ? c : pos[a.imdbId]!.compareTo(pos[b.imdbId]!);
+    });
+    return sorted;
+  }
 
   /// The band mounts only when at least one READABLE entry survived the
   /// spoiler filter — a rail holding nothing but a "+N on IMDb" card would be
@@ -1404,6 +1418,9 @@ class _DetailShowcaseState extends State<DetailShowcase> {
                         onOpen: m.onRecommendationTap != null
                             ? _openUniverse
                             : null,
+                        byRelease: _uniByRelease,
+                        onToggleOrder: () =>
+                            setState(() => _uniByRelease = !_uniByRelease),
                       ),
                     ),
                   if (_dyk.isNotEmpty)

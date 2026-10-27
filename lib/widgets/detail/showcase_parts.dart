@@ -2860,11 +2860,17 @@ class ShowcaseUniverse extends StatelessWidget {
   final List<FocusNode> nodes;
   final void Function(UniverseTitle)? onOpen;
 
+  /// True = sorted oldest to newest; false = the order IMDb lists them.
+  final bool byRelease;
+  final VoidCallback? onToggleOrder;
+
   const ShowcaseUniverse({
     super.key,
     required this.items,
     required this.nodes,
     required this.onOpen,
+    this.byRelease = false,
+    this.onToggleOrder,
   });
 
   @override
@@ -2873,6 +2879,17 @@ class ShowcaseUniverse extends StatelessWidget {
     final capH = m.compact ? 52.0 : 42.0 * m.k;
     return _Band(
       title: 'Universe',
+      trailing: onToggleOrder == null
+          ? null
+          : TextButton.icon(
+              onPressed: onToggleOrder,
+              icon: const Icon(Icons.swap_vert_rounded, size: 16),
+              label: Text(byRelease ? 'Release date' : 'Related order'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white70,
+                visualDensity: VisualDensity.compact,
+              ),
+            ),
       height: m.posterH * 1.10 + 24 + capH,
       child: ListView.separated(
         clipBehavior: Clip.none,
@@ -3204,11 +3221,15 @@ class _Band extends StatelessWidget {
   /// A quiet count line after the title ("142 trivia · 9 goofs · 26 quotes").
   final String? subtitle;
 
+  /// Optional control shown after the title (e.g. an order switch).
+  final Widget? trailing;
+
   const _Band({
     required this.title,
     required this.height,
     required this.child,
     this.subtitle,
+    this.trailing,
   });
 
   @override
@@ -3246,6 +3267,10 @@ class _Band extends StatelessWidget {
                     a: 0.35,
                   ),
                 ),
+              ],
+              if (trailing != null) ...[
+                const SizedBox(width: 14),
+                trailing!,
               ],
             ],
           ),

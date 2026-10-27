@@ -2149,10 +2149,6 @@ class SpotlightBoardState extends State<SpotlightBoard> with MetadataPresentatio
         _jumpTo((_heroIndex + (v < 0 ? 1 : -1) + widget.hero.length) %
             widget.hero.length);
       },
-      onTap: () {
-        final addon = widget.heroAddon;
-        if (addon != null) _openHero();
-      },
       child: wide,
     );
   }
@@ -2468,6 +2464,16 @@ class SpotlightBoardState extends State<SpotlightBoard> with MetadataPresentatio
               height: 1.42,
               color: Colors.white.withValues(alpha: 0.74),
             ),
+          ),
+        ],
+        // Desktop / tablet: a real button instead of "click anywhere".
+        if (!widget.dpad) ...[
+          const SizedBox(height: 12),
+          _HeroOpenPill(
+            onTap: () {
+              final addon = widget.heroAddon;
+              if (addon != null) _openHero();
+            },
           ),
         ],
       ],
