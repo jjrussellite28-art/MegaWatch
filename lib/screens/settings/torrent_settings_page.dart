@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'custom_switches.dart';
 import '../../services/analytics_service.dart';
 import '../../utils/platform_util.dart';
 import 'indexer_managers_settings_page.dart';
@@ -55,6 +56,8 @@ class _TorrentSettingsPageState extends State<TorrentSettingsPage> {
                 ),
 
                 const SizedBox(height: 24),
+                const SafetyLockSwitch(),
+                const SizedBox(height: 8),
 
                 SettingsSection(
                   title: '',

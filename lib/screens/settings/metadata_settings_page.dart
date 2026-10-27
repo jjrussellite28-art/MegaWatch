@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'custom_switches.dart';
 
 import '../../models/metadata_preferences.dart';
 import '../../models/stremio_addon.dart';
@@ -309,6 +310,7 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
                     ],
                   ),
                 ),
+                const WatchOrderSwitch(),
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.all(16),

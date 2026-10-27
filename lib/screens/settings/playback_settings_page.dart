@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'custom_switches.dart';
 
 import '../../services/analytics_service.dart';
 import '../../utils/platform_util.dart';
@@ -55,6 +56,8 @@ class _PlaybackSettingsPageState extends State<PlaybackSettingsPage> {
                 subtitle: 'Player, video, audio and subtitles',
               ),
               const SizedBox(height: 24),
+              const SeekLockSwitch(),
+              const SizedBox(height: 8),
               SettingsSection(
                 title: '',
                 children: [
