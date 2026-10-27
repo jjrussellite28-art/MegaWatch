@@ -5406,6 +5406,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return;
     }
 
+    // Premature end guard: a flaky stream / mpv EOF well before the real end
+    // must never mark the episode watched or jump to the next one (this was
+    // the "skips an episode" bug). Only advance if we truly reached the end.
+    final totalMs = _duration.inMilliseconds;
+    if (totalMs > 120000 && _position.inMilliseconds < totalMs - 30000) {
+      debugPrint('Player: ignoring early EOF at '
+          '${_position.inSeconds}s of ${_duration.inSeconds}s');
+      return;
+    }
+
     // Scrobble stop to Trakt when movie finishes
     _stopTraktHeartbeat();
     _traktScrobble('stop');
