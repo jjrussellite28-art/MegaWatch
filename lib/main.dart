@@ -1,4 +1,5 @@
 import 'services/tmdb_metadata_repository.dart';
+import 'services/safety_gate_service.dart';
 import 'services/webdav_sync/webdav_log_upload.dart';
 import 'services/cache_scratch_cleanup.dart';
 import 'services/debrify_image_cache.dart';
@@ -1026,6 +1027,39 @@ class _DebrifyAppState extends State<DebrifyApp> {
     // ThemeData/AppTheme pair, so this rebuild only ever READS them — the
     // recompute happened once, inside the controller, when the change fired.
     AppThemeController.instance.addListener(_onAppThemeChanged);
+    Future<void>.delayed(const Duration(seconds: 6), _safetyCheck);
+  }
+
+  Future<void> _safetyCheck() async {
+    if (!mounted) return;
+    final reason = await SafetyGateService.blockReason();
+    final ctx = _navigatorKey.currentContext;
+    if (reason == null || ctx == null || !ctx.mounted) return;
+    await showDialog<void>(
+      context: ctx,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Not protected'),
+        content: const Text(
+          'No VPN was detected and no debrid service (TorBox, Real-Debrid, '
+          'PikPak) is connected, so your IP address could be exposed to the '
+          'sites that search scrapers contact. Torrent search is locked until '
+          'you are protected.\n\nClose the app, turn on your VPN or connect a '
+          'debrid service, then open it again.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Keep going (search stays locked)'),
+          ),
+          FilledButton(
+            autofocus: true,
+            onPressed: () => exit(0),
+            child: const Text('Close app'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onTextBrightnessChanged() {
