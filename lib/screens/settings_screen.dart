@@ -1899,7 +1899,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         () => pushSettingsPage(context, const CustomSettingsPage()),
         keywords: const [
           'safety',
-          'vpn',
           'watch order',
           'credits',
           'seek lock',

@@ -55,9 +55,9 @@ class SafetyLockSwitch extends StatelessWidget {
     title: 'Safety lock for search (custom)',
     subtitle:
         'Torrent search engines only run when a debrid service (TorBox, '
-        'Real-Debrid, PikPak) is connected or a VPN is detected, so your IP is '
+        'Real-Debrid, PikPak) is connected, so your IP is '
         'not exposed. Raw-torrent add-on results stay hidden until a debrid '
-        'service is set up. VPN detection is a best guess.',
+        'service is set up. Plain http links from add-ons are blocked too.',
     load: SafetyGateService.isEnabled,
     save: SafetyGateService.setEnabled,
   );

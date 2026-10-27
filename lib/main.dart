@@ -1050,8 +1050,8 @@ class _DebrifyAppState extends State<DebrifyApp> {
             title: const Text('Closing to keep you safe'),
             content: const Text(
               'This would expose your IP address, so the app is closing. '
-              'Connect a debrid service (TorBox, Real-Debrid, PikPak) or turn '
-              'on your VPN, then open it again.',
+              'Connect a debrid service (TorBox, Real-Debrid, PikPak), '
+              'then open it again.',
             ),
             actions: [
               FilledButton(
@@ -1097,10 +1097,10 @@ class _DebrifyAppState extends State<DebrifyApp> {
       builder: (dialogContext) => AlertDialog(
         title: const Text('Not protected'),
         content: const Text(
-          'No VPN was detected and no debrid service (TorBox, Real-Debrid, '
+          'No debrid service (TorBox, Real-Debrid, '
           'PikPak) is connected, so your IP address could be exposed to the '
           'sites that search scrapers contact. Torrent search is locked until '
-          'you are protected.\n\nClose the app, turn on your VPN or connect a '
+          'you are protected.\n\nClose the app, connect a '
           'debrid service, then open it again.',
         ),
         actions: [

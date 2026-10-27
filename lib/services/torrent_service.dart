@@ -736,19 +736,30 @@ class TorrentService {
 
       // Use explicit contentType if provided, otherwise infer from isMovie
       final type = contentType ?? (isMovie ? 'movie' : 'series');
-      // Raw torrents (not direct/protected links) need a debrid service.
+      // Raw torrents need a debrid service. Direct links must be https
+      // (encrypted); plain http links are hidden while the safety lock is on.
+      final safetyOn = await SafetyGateService.isEnabled();
       final lockTorrents = await SafetyGateService.torrentAddonsLocked();
       var droppedTorrents = false;
       List<Torrent> safeOnly(List<Torrent> list) {
-        if (!lockTorrents) return list;
-        final kept = list
-            .where((t) => t.streamType != StreamType.torrent)
-            .toList();
-        if (kept.length != list.length) droppedTorrents = true;
+        if (!safetyOn) return list;
+        final kept = <Torrent>[];
+        for (final t in list) {
+          if (t.streamType == StreamType.torrent) {
+            if (lockTorrents) {
+              droppedTorrents = true;
+              continue;
+            }
+          } else {
+            final scheme = Uri.tryParse(t.directUrl?.trim() ?? '')?.scheme;
+            if (scheme != 'https') continue;
+          }
+          kept.add(t);
+        }
         return kept;
       }
 
-      final SearchBatchCallback? safeBatch = onBatch == null || !lockTorrents
+      final SearchBatchCallback? safeBatch = onBatch == null || !safetyOn
           ? onBatch
           : (source, batch) {
               final kept = safeOnly(batch);
