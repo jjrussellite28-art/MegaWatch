@@ -399,7 +399,7 @@ const List<_Category> _kCategories = [
   _Category(
     Icons.warning_amber_rounded,
     'Danger Zone',
-    'Reset Debrify',
+    'Reset MegaWatch',
     'Start over, deliberately.',
     'Destructive actions stay isolated and explain what they remove.',
   ),

@@ -1770,7 +1770,7 @@ class RemoteCommandRouter {
               'not overwritten; only the unused automatic setup profile is '
               'removed. Profiles keep their PINs when the transfer '
               'carries them.'
-              '${debrifyTvOmission?.isEmpty == false ? '\n\nDebrify TV was '
+              '${debrifyTvOmission?.isEmpty == false ? '\n\nMegaWatch TV was '
                         'excluded when this transfer was compacted '
                         '(${debrifyTvOmission!.contentsLabel}). No empty '
                         'channels will be created. After importing, restore '

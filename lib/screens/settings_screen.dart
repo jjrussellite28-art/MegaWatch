@@ -7608,7 +7608,7 @@ const List<SettingsCategoryDefinition> _kAdaptiveSettingsCategories = [
   SettingsCategoryDefinition(
     icon: Icons.warning_amber_rounded,
     label: 'Danger Zone',
-    subtitle: 'Reset Debrify',
+    subtitle: 'Reset MegaWatch',
     eyebrow: 'Danger Zone',
     title: 'Start over, deliberately.',
     description:
