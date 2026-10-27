@@ -54,7 +54,14 @@ List<ShowcaseAvailabilityRow> showcaseAvailabilityRows(
       const ShowcaseAvailabilityRow(
         'availability-retry',
         'Studios & availability',
-        [ShowcaseAvailabilityEntry('Could not load. Retry', kind: 'retry')],
+        [
+          ShowcaseAvailabilityEntry(
+            TmdbMetadataRepository.instance.configured
+                ? 'Could not load. Retry'
+                : 'Add your free TMDB token in Settings › Metadata, then retry',
+            kind: 'retry',
+          ),
+        ],
         wide: true,
       ),
     ];
