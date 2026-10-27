@@ -51,7 +51,7 @@ List<ShowcaseAvailabilityRow> showcaseAvailabilityRows(
   if (!companies && !availability) return [];
   if (failed) {
     return [
-      const ShowcaseAvailabilityRow(
+      ShowcaseAvailabilityRow(
         'availability-retry',
         'Studios & availability',
         [
