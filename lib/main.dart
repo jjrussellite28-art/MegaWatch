@@ -1100,7 +1100,7 @@ class _DebrifyAppState extends State<DebrifyApp> {
       navigatorKey: _navigatorKey,
       scaffoldMessengerKey: _scaffoldMessengerKey,
       navigatorObservers: [appRouteObserver, AppSurfaceRouteObserver()],
-      title: 'Debrify',
+      title: 'MegaWatch',
       debugShowCheckedModeBanner: false,
       // Performance optimizations for TV with TV-aware text scaling
       builder: (context, child) {

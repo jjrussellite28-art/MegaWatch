@@ -240,6 +240,7 @@ flutter:
     - pubspec.yaml
     - assets/app_icon.png
     - assets/app_icon_foreground.png
+    - assets/megawatch_logo.png
     - assets/images/profile_gate_lighthouse.png
     - assets/images/home_snowy_mountain.jpg
     - assets/images/home_midnight_rain.jpg
