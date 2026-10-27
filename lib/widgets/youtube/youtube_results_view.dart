@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../screens/youtube_web_fallback_page.dart';
 import '../../models/playlist_view_mode.dart';
 import '../../models/stremio_subtitle.dart';
 import '../../models/torrent.dart';
@@ -227,6 +228,12 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
 
     final playUrl = streams?.playUrl;
     if (playUrl == null || playUrl.isEmpty) {
+      // YouTube often blocks the normal loader ("confirm you're not a bot").
+      // On Windows, fall back to YouTube's own player in an in-app browser.
+      if (YoutubeWebFallbackPage.supported) {
+        await YoutubeWebFallbackPage.open(context, video.id, title: video.title);
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not load this video')),
       );
