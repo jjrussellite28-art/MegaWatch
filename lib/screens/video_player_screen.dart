@@ -1698,13 +1698,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   // Seek lock: stray remote / keyboard fast-forward and swipe-seeks are
   // ignored while it is on. Press L to turn it off or on.
-  bool _seekLocked = true;
+  bool _seekLocked = false;
   DateTime _seekLockToast = DateTime.fromMillisecondsSinceEpoch(0);
 
   Future<void> _loadSeekLock() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final v = prefs.getBool('player_seek_lock') ?? true;
+      final v = prefs.getBool('player_seek_lock') ?? false;
       if (mounted) setState(() => _seekLocked = v);
     } catch (_) {}
   }

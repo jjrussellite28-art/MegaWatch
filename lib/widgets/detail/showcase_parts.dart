@@ -1,3 +1,4 @@
+import '../../services/tv_status_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -2931,6 +2932,17 @@ class _UniverseCard extends StatefulWidget {
 
 class _UniverseCardState extends State<_UniverseCard> {
   bool _f = false;
+  String? _status;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.item.isSeries) {
+      TvStatusService.instance.statusFor(widget.item.imdbId).then((v) {
+        if (mounted && v != _status) setState(() => _status = v);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -2960,7 +2972,8 @@ class _UniverseCardState extends State<_UniverseCard> {
                   ParallaxFocus(
                     focused: _f || hovered,
                     radius: BorderRadius.circular(7),
-                    child: ClipRRect(
+                    child: Stack(children: [
+                    ClipRRect(
                       borderRadius: BorderRadius.circular(7),
                       child: SizedBox(
                         width: widget.width,
@@ -2978,6 +2991,31 @@ class _UniverseCardState extends State<_UniverseCard> {
                             : ColoredBox(color: slot),
                       ),
                     ),
+                    if (TvStatusService.badge(_status) case final b?)
+                      Positioned(
+                        top: 6,
+                        left: 6,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: b.color,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            b.label,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: .4,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]),
                   ),
                   SizedBox(height: m.compact ? 8 : 7),
                   Text(
