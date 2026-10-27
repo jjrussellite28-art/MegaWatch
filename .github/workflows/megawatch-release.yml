@@ -30,7 +30,7 @@ jobs:
       - name: Build installer
         shell: pwsh
         run: |
-          $ver = (Get-Content MEGAWATCH_RELEASE -Raw).Trim()
+          $ver = ((Get-Content MEGAWATCH_RELEASE -TotalCount 1)).Trim()
           "MEGAWATCH_VER=$ver" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           $env:MEGAWATCH_VERSION = $ver
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" windows\installer-megawatch.iss
