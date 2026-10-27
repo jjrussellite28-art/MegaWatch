@@ -24,6 +24,8 @@ enum PlayerMenuSection {
   subtitles,
   style,
   sync,
+  audioSync,
+  driftFix,
   speed,
   aspect,
   sleep,
@@ -101,6 +103,10 @@ class PlayerMenuPanel extends StatefulWidget {
   // ── Sync (action row: closes the panel into the sync overlay) ──
   final VoidCallback? onSyncRequested;
 
+  // ── Audio delay and two-step drift fix (action rows) ──
+  final VoidCallback? onAudioSyncRequested;
+  final VoidCallback? onDriftFixRequested;
+
   // ── Speed ──
   final bool showSpeed;
   final double speed;
@@ -148,6 +154,8 @@ class PlayerMenuPanel extends StatefulWidget {
     this.subtitleIdentityLabel,
     this.onSubtitleStyleChanged,
     this.onSyncRequested,
+    this.onAudioSyncRequested,
+    this.onDriftFixRequested,
     this.showSpeed = true,
     required this.speed,
     required this.onSpeedSelected,
@@ -429,6 +437,20 @@ class PlayerMenuPanelState extends State<PlayerMenuPanel>
         'Sync',
         isAction: true,
       ),
+    if (w.onAudioSyncRequested != null)
+      const _SectionDef(
+        PlayerMenuSection.audioSync,
+        Icons.graphic_eq_rounded,
+        'Audio sync',
+        isAction: true,
+      ),
+    if (w.onDriftFixRequested != null)
+      const _SectionDef(
+        PlayerMenuSection.driftFix,
+        Icons.timeline_rounded,
+        'Fix drift',
+        isAction: true,
+      ),
     if (w.showSpeed)
       const _SectionDef(PlayerMenuSection.speed, Icons.speed_rounded, 'Speed'),
     const _SectionDef(
@@ -477,6 +499,9 @@ class PlayerMenuPanelState extends State<PlayerMenuPanel>
       case PlayerMenuSection.sync:
         final label = _style?.syncOffsetLabel ?? '0';
         return label == '0' ? 'In sync' : label;
+      case PlayerMenuSection.audioSync:
+      case PlayerMenuSection.driftFix:
+        return '';
       case PlayerMenuSection.speed:
         return _speedLabel(widget.speed);
       case PlayerMenuSection.aspect:
@@ -723,6 +748,8 @@ class PlayerMenuPanelState extends State<PlayerMenuPanel>
       case PlayerMenuSection.style:
         return _styleRows();
       case PlayerMenuSection.sync:
+      case PlayerMenuSection.audioSync:
+      case PlayerMenuSection.driftFix:
         return const [];
       case PlayerMenuSection.speed:
         return [
@@ -1162,6 +1189,12 @@ class PlayerMenuPanelState extends State<PlayerMenuPanel>
       if (section.id == PlayerMenuSection.sync) {
         widget.onClose();
         widget.onSyncRequested?.call();
+      } else if (section.id == PlayerMenuSection.audioSync) {
+        widget.onClose();
+        widget.onAudioSyncRequested?.call();
+      } else if (section.id == PlayerMenuSection.driftFix) {
+        widget.onClose();
+        widget.onDriftFixRequested?.call();
       }
       return;
     }

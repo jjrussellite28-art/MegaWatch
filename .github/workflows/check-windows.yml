@@ -2,7 +2,7 @@ name: Check Windows build
 
 on:
   push:
-    branches: [controller-and-iptv-update2, og-clean]
+    branches: [controller-and-iptv-update2, og-clean, og-player]
   workflow_dispatch:
 
 jobs:

@@ -19,11 +19,27 @@ class SyncStepperOverlay extends StatefulWidget {
   final ValueChanged<int> onOffsetChanged;
   final VoidCallback onDismiss;
 
+  /// Heading shown in the pill ("SUBTITLE SYNC", "AUDIO SYNC", ...).
+  final String title;
+
+  /// One line under the pill (keyboard / touch help or a step instruction).
+  final String? hint;
+
+  /// Range and step of the adjustment, in milliseconds.
+  final int minMs;
+  final int maxMs;
+  final int stepMs;
+
   const SyncStepperOverlay({
     super.key,
     required this.offsetMs,
     required this.onOffsetChanged,
     required this.onDismiss,
+    this.title = 'SUBTITLE SYNC',
+    this.hint,
+    this.minMs = SubtitleSettingsService.syncOffsetMinMs,
+    this.maxMs = SubtitleSettingsService.syncOffsetMaxMs,
+    this.stepMs = SubtitleSettingsService.syncOffsetStepMs,
   });
 
   @override
@@ -33,7 +49,7 @@ class SyncStepperOverlay extends StatefulWidget {
 class _SyncStepperOverlayState extends State<SyncStepperOverlay> {
   static const _ink = Colors.white;
   static const _glass = Color(0xFF101012);
-  static const _stepMs = SubtitleSettingsService.syncOffsetStepMs;
+  int get _stepMs => widget.stepMs;
 
   /// Repeats before a held key switches to the coarse step.
   static const _accelAfterRepeats = 8;
@@ -71,8 +87,8 @@ class _SyncStepperOverlayState extends State<SyncStepperOverlay> {
         ? _stepMs * _coarseFactor
         : _stepMs;
     final next = (widget.offsetMs + direction * step).clamp(
-      SubtitleSettingsService.syncOffsetMinMs,
-      SubtitleSettingsService.syncOffsetMaxMs,
+      widget.minMs,
+      widget.maxMs,
     );
     widget.onOffsetChanged(next);
     setState(() => _flash = direction);
@@ -145,9 +161,10 @@ class _SyncStepperOverlayState extends State<SyncStepperOverlay> {
             Center(child: _buildPill(onTv)),
             const SizedBox(height: 10),
             Text(
-              onTv
-                  ? '◀ ▶ adjust · hold for bigger steps · OK reset · BACK done'
-                  : 'Adjust until the words match the voices',
+              widget.hint ??
+                  (onTv
+                      ? '◀ ▶ adjust · hold for bigger steps · OK reset · BACK done'
+                      : 'Adjust until the words match the voices'),
               style: TextStyle(
                 color: _ink.withValues(alpha: 0.40),
                 fontSize: 11,
@@ -181,7 +198,7 @@ class _SyncStepperOverlayState extends State<SyncStepperOverlay> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'SUBTITLE SYNC',
+            widget.title,
             style: TextStyle(
               color: _ink.withValues(alpha: 0.50),
               fontSize: 11,

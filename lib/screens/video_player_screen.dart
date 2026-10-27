@@ -141,6 +141,9 @@ import '../utils/tv_search_focus_handoff.dart';
 export 'video_player/models/playlist_entry.dart';
 export 'video_player/models/channel_entry.dart';
 
+/// What the player's sync overlay is adjusting.
+enum _SyncMode { subtitle, audio, driftFirst, driftSecond }
+
 class _ManualSourceValidationFailure implements Exception {
   const _ManualSourceValidationFailure();
 }
@@ -714,6 +717,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   // Channel guide state
   bool _showChannelGuide = false;
   bool _showSyncOverlay = false;
+
+  // What the sync overlay is adjusting right now.
+  _SyncMode _syncMode = _SyncMode.subtitle;
+
+  /// Audio delay in milliseconds (mpv `audio-delay`), reset for every item.
+  int _audioDelayMs = 0;
+
+  // Two-step drift fix: subtitles that start in sync and slowly slide away.
+  // Step 1 is lined up early in the video, step 2 much later; the pair gives
+  // a delay and a speed factor (mpv `sub-delay` and `sub-speed`).
+  int _driftStage = 0;
+  Duration? _driftPos1;
+  int _driftDelay1 = 0;
   List<ChannelEntry> _channelEntries = [];
 
   // IPTV channel sheet state
@@ -4994,6 +5010,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       } catch (e) {
         debugPrint('Player: fast-start probe settings failed: $e');
       }
+      // Keep sound and picture together over a long watch: mpv gently corrects
+      // small audio/video drift (autosync) instead of letting it pile up.
+      try {
+        await platform.setProperty('autosync', '30');
+      } catch (e) {
+        debugPrint('Player: autosync set failed: $e');
+      }
       await _applyNetworkTuning(
         platform,
         tuning,
@@ -6665,6 +6688,109 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  void _applySubtitleSpeed(double speed) {
+    final platform = _player.platform;
+    if (platform is mk.NativePlayer) {
+      platform.setProperty('sub-speed', speed.toStringAsFixed(6));
+    }
+  }
+
+  void _applyAudioDelay(int ms) {
+    _audioDelayMs = ms;
+    final platform = _player.platform;
+    if (platform is mk.NativePlayer) {
+      platform.setProperty('audio-delay', (ms / 1000.0).toStringAsFixed(3));
+    }
+  }
+
+  void _showAudioSyncPanel() {
+    _tvReleaseFocusForOverlay();
+    setState(() {
+      _syncMode = _SyncMode.audio;
+      _showSyncOverlay = true;
+      _controlsVisible.value = false;
+    });
+  }
+
+  /// "Fix drift": two lined-up points -> delay + speed.
+  void _startDriftFix() {
+    _tvReleaseFocusForOverlay();
+    if (_driftStage == 0) {
+      _applySubtitleSpeed(1.0);
+      _driftPos1 = null;
+    }
+    setState(() {
+      _syncMode = _driftStage == 0 ? _SyncMode.driftFirst : _SyncMode.driftSecond;
+      _showSyncOverlay = true;
+      _controlsVisible.value = false;
+    });
+  }
+
+  void _cancelDriftFix() {
+    _driftStage = 0;
+    _driftPos1 = null;
+  }
+
+  void _finishDriftStep() {
+    final offset = _subtitleSettings?.syncOffsetMs ?? 0;
+    final pos = _player.state.position;
+    if (_syncMode == _SyncMode.driftFirst) {
+      _driftPos1 = pos;
+      _driftDelay1 = offset;
+      _driftStage = 1;
+      _toastDrift(
+        'Step 1 saved. Skip ahead 30+ minutes (the further the better), '
+        'open Menu > Fix drift, and line the subtitles up again.',
+      );
+      return;
+    }
+    final pos1 = _driftPos1;
+    if (pos1 == null) {
+      _cancelDriftFix();
+      return;
+    }
+    final v1 = pos1.inMilliseconds / 1000.0;
+    final v2 = pos.inMilliseconds / 1000.0;
+    if (v2 - v1 < 600) {
+      _toastDrift('Too close to step 1. Skip further ahead (10+ minutes) and try again.');
+      return;
+    }
+    // Subtitle timestamps a = v - d (measured while the speed was 1).
+    final a1 = v1 - _driftDelay1 / 1000.0;
+    final a2 = v2 - offset / 1000.0;
+    if (a2 - a1 <= 1) {
+      _toastDrift('Those two points do not fit together. Try again.');
+      _cancelDriftFix();
+      return;
+    }
+    final speed = (v2 - v1) / (a2 - a1);
+    if (speed < 0.9 || speed > 1.1) {
+      _toastDrift('That would be a big change in speed. Check the two points and try again.');
+      _cancelDriftFix();
+      return;
+    }
+    final delay = v1 - speed * a1;
+    final delayMs = (delay * 1000)
+        .round()
+        .clamp(
+          SubtitleSettingsService.syncOffsetMinMs,
+          SubtitleSettingsService.syncOffsetMaxMs,
+        );
+    _applySubtitleSpeed(speed);
+    _applySubtitleSyncOffset(delayMs);
+    SubtitleSettingsService.instance.setSyncOffsetMs(delayMs);
+    _subtitleSettings = _subtitleSettings?.copyWith(syncOffsetMs: delayMs);
+    _cancelDriftFix();
+    _toastDrift('Drift fixed. The subtitles now stay in sync.');
+  }
+
+  void _toastDrift(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(duration: const Duration(seconds: 8), content: Text(message)),
+    );
+  }
+
   /// Reset the sync offset to 0. The offset belongs to the specific subtitle it
   /// was dialed in against, so it must reset whenever the subtitle or the
   /// content changes. mpv's `sub-delay` is push-based, so zero it explicitly
@@ -6675,6 +6801,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // on these transitions and no style rendering depends on the offset).
     _subtitleSettings = _subtitleSettings?.copyWith(syncOffsetMs: 0);
     _applySubtitleSyncOffset(0);
+    _applySubtitleSpeed(1.0);
+    _cancelDriftFix();
   }
 
   /// Overlays inside the player share its route scope, which already has a
@@ -6689,18 +6817,40 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _showSyncOverlayPanel() {
     _tvReleaseFocusForOverlay();
     setState(() {
+      _syncMode = _SyncMode.subtitle;
       _showSyncOverlay = true;
       _controlsVisible.value = false;
     });
   }
 
   void _hideSyncOverlay() {
+    final mode = _syncMode;
     setState(() => _showSyncOverlay = false);
+    if (mode == _SyncMode.driftFirst || mode == _SyncMode.driftSecond) {
+      _finishDriftStep();
+    }
+    _syncMode = _SyncMode.subtitle;
   }
 
   Widget _buildSyncOverlay() {
+    if (_syncMode == _SyncMode.audio) {
+      return SyncStepperOverlay(
+        title: 'AUDIO SYNC',
+        hint:
+            'Sound ahead of the picture: make it later (+). Sound late: make it earlier (−).',
+        offsetMs: _audioDelayMs,
+        minMs: -5000,
+        maxMs: 5000,
+        stepMs: 50,
+        onOffsetChanged: (ms) {
+          _applyAudioDelay(ms.clamp(-5000, 5000));
+          if (mounted) setState(() {});
+        },
+        onDismiss: _hideSyncOverlay,
+      );
+    }
     final externalPath = _activeExternalSubtitlePath;
-    if (externalPath != null) {
+    if (externalPath != null && _syncMode == _SyncMode.subtitle) {
       return SubtitleLinePickerOverlay(
         subtitleFilePath: externalPath,
         getCurrentPositionMs: () => _player.state.position.inMilliseconds,
@@ -6724,7 +6874,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Widget _buildSliderSyncOverlay() {
+    final drift = _syncMode == _SyncMode.driftFirst ||
+        _syncMode == _SyncMode.driftSecond;
     return SyncStepperOverlay(
+      title: _syncMode == _SyncMode.driftFirst
+          ? 'FIX DRIFT · STEP 1 OF 2'
+          : _syncMode == _SyncMode.driftSecond
+          ? 'FIX DRIFT · STEP 2 OF 2'
+          : 'SUBTITLE SYNC',
+      hint: drift
+          ? 'Line the words up with the voices right now, then press Done / Back.'
+          : null,
       offsetMs: _subtitleSettings?.syncOffsetMs ?? 0,
       onOffsetChanged: (ms) async {
         final clamped = ms.clamp(
@@ -17281,6 +17441,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       subtitleIdentityLabel: _subtitleIdentityLabelForSheet(),
       onSubtitleStyleChanged: _onSubtitleStyleChanged,
       onSyncRequested: _showSyncOverlayPanel,
+      onAudioSyncRequested: _showAudioSyncPanel,
+      onDriftFixRequested: _startDriftFix,
       showSpeed: !_iptvZapBannerOwnsIdentity,
       speed: _playbackSpeed,
       onSpeedSelected: _setPlaybackSpeed,
@@ -17329,6 +17491,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _showPlayerMenu = false;
     // Content changed: the previous item's sync offset no longer applies.
     _resetSubtitleSyncOffset();
+    _applyAudioDelay(0);
   }
 
   /// Restore audio and subtitle track preferences
