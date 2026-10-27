@@ -103,13 +103,27 @@ class _WatchOrderTimelinePageState extends State<WatchOrderTimelinePage> {
         for (final i in items)
           if (i.canOpen && seen.add('${i.type}:${i.id}')) i,
       ];
+      // Look up each title's real name and poster first (a few at a time).
+      final metas = <String, ({String type, String name, String? poster, String? year})?>{};
+      for (var k = 0; k < unique.length; k += 6) {
+        final chunk = unique.skip(k).take(6).toList();
+        final found = await Future.wait([
+          for (final i in chunk)
+            WatchOrderService.instance.metaFor(i.id!, i.type),
+        ]);
+        for (var j = 0; j < chunk.length; j++) {
+          metas['${chunk[j].type}:${chunk[j].id}'] = found[j];
+        }
+      }
       for (final i in unique.reversed) {
+        final m = metas['${i.type}:${i.id}'];
         final meta = StremioMeta(
           id: i.id!,
           imdbId: i.id,
-          type: i.type!,
-          name: i.title.split(' — ').first,
-          year: i.year,
+          type: m?.type ?? i.type!,
+          name: m?.name ?? i.title.split(' — ').first,
+          poster: m?.poster,
+          year: m?.year ?? i.year,
         );
         try {
           await StorageService.setMyWatchlistItem(meta, true);

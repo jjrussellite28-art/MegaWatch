@@ -549,7 +549,7 @@ class _M {
   /// context (season/episode) and ratings. The compact renderer used to
   /// reserve and paint only the title, silently dropping that metadata even
   /// though the same card showed it in the wide layout.
-  double get captionBlock => compact ? 40.0 : 0;
+  double get captionBlock => compact ? 43.0 : 0;
 }
 
 class SpotlightBoardState extends State<SpotlightBoard> with MetadataPresentationMixin<SpotlightBoard> {

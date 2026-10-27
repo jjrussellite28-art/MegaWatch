@@ -122,6 +122,43 @@ class WatchOrderService {
     }
   }
 
+  final Map<String, ({String type, String name, String? poster, String? year})>
+  _metaCache = {};
+
+  /// Name, poster and year for one title from Cinemeta, trying [guess] first.
+  /// Null when it can't be found.
+  Future<({String type, String name, String? poster, String? year})?> metaFor(
+    String imdbId,
+    String? guess,
+  ) async {
+    final cached = _metaCache[imdbId];
+    if (cached != null) return cached;
+    final order = guess == 'series' ? ['series', 'movie'] : ['movie', 'series'];
+    for (final type in order) {
+      try {
+        final res = await http
+            .get(Uri.parse('https://v3-cinemeta.strem.io/meta/$type/$imdbId.json'))
+            .timeout(_timeout);
+        if (res.statusCode != 200) continue;
+        final meta = (jsonDecode(res.body) as Map?)?['meta'];
+        if (meta is! Map) continue;
+        final name = (meta['name'] ?? '').toString();
+        if (name.isEmpty) continue;
+        final poster = meta['poster']?.toString();
+        final year = (meta['year'] ?? meta['releaseInfo'])?.toString();
+        final out = (
+          type: type,
+          name: name,
+          poster: poster != null && poster.startsWith('http') ? poster : null,
+          year: year != null && year.length >= 4 ? year.substring(0, 4) : null,
+        );
+        _typeCache[imdbId] = type;
+        return _metaCache[imdbId] = out;
+      } catch (_) {}
+    }
+    return null;
+  }
+
   final Map<String, String> _typeCache = {};
 
   /// The timeline lists films and episodes alike, so ask Cinemeta which one
