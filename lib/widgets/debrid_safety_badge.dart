@@ -66,7 +66,7 @@ class DebridSafetyBadge extends StatelessWidget {
       title = '$service connected';
       detail = 'Link is not encrypted: your ISP can see it';
     } else if (secure) {
-      color = const Color(0xFFFFB020);
+      color = const Color(0xFF4DA3FF);
       title = 'Not through debrid';
       detail = 'Direct link, encrypted. The site can see your IP';
     } else {
