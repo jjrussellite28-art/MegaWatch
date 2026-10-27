@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/playback_startup_view.dart';
 import '../utils/episode_playback_request.dart';
 import '../utils/show_shuffle.dart';
@@ -1695,9 +1696,58 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return ms > 0 ? Duration(milliseconds: ms) : null;
   }
 
+  // Seek lock: stray remote / keyboard fast-forward and swipe-seeks are
+  // ignored while it is on. Press L to turn it off or on.
+  bool _seekLocked = true;
+  DateTime _seekLockToast = DateTime.fromMillisecondsSinceEpoch(0);
+
+  Future<void> _loadSeekLock() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final v = prefs.getBool('player_seek_lock') ?? true;
+      if (mounted) setState(() => _seekLocked = v);
+    } catch (_) {}
+  }
+
+  Future<void> _setSeekLock(bool v) async {
+    setState(() => _seekLocked = v);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('player_seek_lock', v);
+    } catch (_) {}
+    if (!mounted) return;
+    ScaffoldMessenger.maybeOf(context)
+      ?..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 2),
+          content: Text(v ? 'Seek lock on (press L to unlock)' : 'Seek lock off'),
+        ),
+      );
+  }
+
+  /// True when a stray seek should be ignored (and tells the viewer why).
+  bool _blockSeek() {
+    if (!_seekLocked) return false;
+    final now = DateTime.now();
+    if (now.difference(_seekLockToast) > const Duration(seconds: 4)) {
+      _seekLockToast = now;
+      ScaffoldMessenger.maybeOf(context)
+        ?..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 2),
+            content: Text('Seek lock is on. Press L to unlock.'),
+          ),
+        );
+    }
+    return true;
+  }
+
   @override
   void initState() {
     super.initState();
+    unawaited(_loadSeekLock());
     FocusManager.instance.addListener(_trackTvBarFocus);
     _continuousShuffleEnabled = widget.initialContinuousShuffle;
     _activeHttpHeaders = widget.httpHeaders;
@@ -13988,6 +14038,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _onPanEnd(DragEndDetails details) {
     if (_panIgnore) return;
+    if (_mode == GestureMode.seek && _seekLocked) {
+      _seekHud.value = null;
+      _blockSeek();
+      return;
+    }
     if (_mode == GestureMode.seek && _seekHud.value != null) {
       final target = _seekHud.value!.target;
       _player.seek(target);
@@ -15279,7 +15334,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               }
             }
 
+            if (key == LogicalKeyboardKey.keyL) {
+              _setSeekLock(!_seekLocked);
+              return KeyEventResult.handled;
+            }
+
             // DPAD left/right seek 10s
+            if ((key == LogicalKeyboardKey.arrowLeft ||
+                    key == LogicalKeyboardKey.mediaRewind) &&
+                _blockSeek()) {
+              return KeyEventResult.handled;
+            }
+            if ((key == LogicalKeyboardKey.arrowRight ||
+                    key == LogicalKeyboardKey.mediaFastForward) &&
+                _blockSeek()) {
+              return KeyEventResult.handled;
+            }
             if (key == LogicalKeyboardKey.arrowLeft ||
                 key == LogicalKeyboardKey.mediaRewind) {
               final candidate =
