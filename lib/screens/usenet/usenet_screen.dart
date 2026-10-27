@@ -45,6 +45,7 @@ class _UsenetScreenState extends State<UsenetScreen> {
   String _lastQuery = '';
   List<EasynewsResult> _results = const [];
   _UsenetSort _sort = _UsenetSort.newest;
+  bool _singleFrame = true;
 
   @override
   void initState() {
@@ -395,6 +396,11 @@ class _UsenetScreenState extends State<UsenetScreen> {
               selected: _sort == _UsenetSort.name,
               onSelected: (_) => _setSort(_UsenetSort.name),
             ),
+            FilterChip(
+              label: const Text('One picture'),
+              selected: _singleFrame,
+              onSelected: (v) => setState(() => _singleFrame = v),
+            ),
             TextButton.icon(
               onPressed: _openSettings,
               icon: const Icon(Icons.settings_rounded, size: 18),
@@ -438,135 +444,161 @@ class _UsenetScreenState extends State<UsenetScreen> {
         ),
       );
     }
-    final list = ListView.builder(
-      itemCount: _results.length + (_hasMore ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index >= _results.length) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Center(
-              child: _loadingMore
-                  ? const CircularProgressIndicator()
-                  : OutlinedButton.icon(
-                      onPressed: _loadMore,
-                      icon: const Icon(Icons.expand_more_rounded),
-                      label: const Text('Load more'),
-                    ),
-            ),
-          );
-        }
-        final r = _results[index];
-        final info = [
-          if (r.sizeLabel.isNotEmpty) r.sizeLabel,
-          if (r.published != null) _dateLabel(r.published),
-          if (r.extension.isNotEmpty) r.extension.replaceFirst('.', '').toUpperCase(),
-        ].join('  ·  ');
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 6),
-          child: MouseRegion(
-            onEnter: (_) => _preview.value = r,
-            onExit: (_) {
-              if (_preview.value?.url == r.url) _preview.value = null;
-            },
-            child: ListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            tileColor: Colors.white.withValues(alpha: 0.06),
-            focusColor: Colors.white.withValues(alpha: 0.18),
-            hoverColor: Colors.white.withValues(alpha: 0.12),
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: SizedBox(
-                width: 96,
-                height: 54,
-                child: _ResultThumb(
-                  urls: r.thumbnailCandidates,
-                  headers: _imageHeaders,
-                ),
-              ),
-            ),
-            title: Text(
-              r.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.white, fontSize: 15),
-            ),
-            subtitle: Text(
-              info,
-              style: const TextStyle(color: Colors.white60, fontSize: 13),
-            ),
-            onTap: () => unawaited(_play(r)),
-            onLongPress: () => _showDetails(r),
-            onFocusChange: (focused) {
-              if (focused) {
-                _preview.value = r;
-              } else if (_preview.value?.url == r.url) {
-                _preview.value = null;
-              }
-            },
+    // Big cards, one picture each. The picture is a single frame cut from the
+    // Easynews contact sheet, so no extra download or memory per card.
+    return LayoutBuilder(
+      builder: (context, box) {
+        final cols = (box.maxWidth / 330).floor().clamp(1, 6);
+        final count = _results.length + (_hasMore ? 1 : 0);
+        return GridView.builder(
+          padding: const EdgeInsets.only(bottom: 16),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: cols,
+            mainAxisSpacing: 14,
+            crossAxisSpacing: 14,
+            childAspectRatio: 1.18,
           ),
-          ),
+          itemCount: count,
+          itemBuilder: (context, index) {
+            if (index >= _results.length) {
+              return Center(
+                child: _loadingMore
+                    ? const CircularProgressIndicator()
+                    : OutlinedButton.icon(
+                        onPressed: _loadMore,
+                        icon: const Icon(Icons.expand_more_rounded),
+                        label: const Text('Load more'),
+                      ),
+              );
+            }
+            final r = _results[index];
+            final info = [
+              if (r.sizeLabel.isNotEmpty) r.sizeLabel,
+              if (r.published != null) _dateLabel(r.published),
+              if (r.extension.isNotEmpty)
+                r.extension.replaceFirst('.', '').toUpperCase(),
+            ].join('  ·  ');
+            return _UsenetCard(
+              result: r,
+              info: info,
+              headers: _imageHeaders,
+              singleFrame: _singleFrame,
+              onPlay: () => unawaited(_play(r)),
+              onDetails: () => _showDetails(r),
+            );
+          },
         );
       },
     );
-    // Big, clear picture of whatever you hover or focus (mouse or controller).
-    return Stack(
-      children: [
-        list,
-        Positioned(
-          right: 12,
-          top: 4,
-          child: IgnorePointer(
-            child: ValueListenableBuilder<EasynewsResult?>(
-              valueListenable: _preview,
-              builder: (context, item, _) {
-                if (item == null || MediaQuery.sizeOf(context).width < 900) {
-                  return const SizedBox.shrink();
-                }
-                return Container(
-                  width: 480,
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xEE0B0F1A),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.white24),
+  }
+}
+
+/// One big result card: a single frame of the video, the name and the size.
+/// Hover or focus it and the picture steps through the sheet's other frames.
+class _UsenetCard extends StatefulWidget {
+  const _UsenetCard({
+    required this.result,
+    required this.info,
+    required this.headers,
+    required this.singleFrame,
+    required this.onPlay,
+    required this.onDetails,
+  });
+
+  final EasynewsResult result;
+  final String info;
+  final Map<String, String> headers;
+  final bool singleFrame;
+  final VoidCallback onPlay;
+  final VoidCallback onDetails;
+
+  @override
+  State<_UsenetCard> createState() => _UsenetCardState();
+}
+
+class _UsenetCardState extends State<_UsenetCard> {
+  static const _firstFrame = 6;
+  Timer? _timer;
+  int _frame = _firstFrame;
+  bool _active = false;
+
+  void _setActive(bool value) {
+    if (_active == value) return;
+    _active = value;
+    _timer?.cancel();
+    if (value && widget.singleFrame) {
+      _timer = Timer.periodic(const Duration(milliseconds: 900), (_) {
+        if (!mounted) return;
+        // Frames 2..17: skips the first and last, which are often black.
+        setState(() => _frame = _frame >= 17 ? 2 : _frame + 1);
+      });
+    } else if (mounted) {
+      setState(() => _frame = _firstFrame);
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final r = widget.result;
+    return Material(
+      color: Colors.white.withValues(alpha: 0.06),
+      borderRadius: BorderRadius.circular(14),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: widget.onPlay,
+        onLongPress: widget.onDetails,
+        onHover: _setActive,
+        onFocusChange: _setActive,
+        focusColor: Colors.white.withValues(alpha: 0.18),
+        hoverColor: Colors.white.withValues(alpha: 0.08),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ColoredBox(
+                color: Colors.black,
+                child: SizedBox.expand(
+                  child: _ResultThumb(
+                    key: ValueKey('${r.url}-${widget.singleFrame}'),
+                    urls: r.thumbnailCandidates,
+                    headers: widget.headers,
+                    cacheWidth: 720,
+                    sheetCols: widget.singleFrame ? 4 : 1,
+                    sheetRows: widget.singleFrame ? 5 : 1,
+                    frame: _frame,
+                    fit: widget.singleFrame ? BoxFit.cover : BoxFit.contain,
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: AspectRatio(
-                          aspectRatio: 2,
-                          child: ColoredBox(
-                            color: Colors.black,
-                            child: _ResultThumb(
-                              key: ValueKey(item.url),
-                              urls: item.thumbnailCandidates,
-                              headers: _imageHeaders,
-                              cacheWidth: 960,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        item.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.white, fontSize: 13),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                ),
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    r.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.white, fontSize: 15),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    widget.info,
+                    style: const TextStyle(color: Colors.white60, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
@@ -579,12 +611,21 @@ class _ResultThumb extends StatefulWidget {
     required this.headers,
     this.cacheWidth = 192,
     this.fit = BoxFit.cover,
+    this.sheetCols = 1,
+    this.sheetRows = 1,
+    this.frame = 0,
   });
 
   final List<String> urls;
   final Map<String, String> headers;
   final int cacheWidth;
   final BoxFit fit;
+
+  /// The picture is a contact sheet of cols x rows frames; show frame number
+  /// [frame] only (row by row). 1 x 1 shows the whole picture.
+  final int sheetCols;
+  final int sheetRows;
+  final int frame;
 
   @override
   State<_ResultThumb> createState() => _ResultThumbState();
@@ -598,7 +639,7 @@ class _ResultThumbState extends State<_ResultThumb> {
     const fallback = Icon(Icons.play_circle_outline_rounded, size: 30);
     if (_index >= widget.urls.length) return fallback;
     final url = widget.urls[_index];
-    return Image.network(
+    final image = Image.network(
       url,
       key: ValueKey(url),
       headers: widget.headers,
@@ -610,6 +651,39 @@ class _ResultThumbState extends State<_ResultThumb> {
         });
         return fallback;
       },
+    );
+    final cols = widget.sheetCols, rows = widget.sheetRows;
+    if (cols * rows <= 1) return image;
+    // Cut one frame out of the contact sheet.
+    final f = widget.frame % (cols * rows);
+    final c = f % cols, r = f ~/ cols;
+    return ClipRect(
+      child: FittedBox(
+        fit: BoxFit.cover,
+        clipBehavior: Clip.hardEdge,
+        child: ClipRect(
+          child: Align(
+            alignment: Alignment(
+              cols == 1 ? 0 : -1 + 2 * c / (cols - 1),
+              rows == 1 ? 0 : -1 + 2 * r / (rows - 1),
+            ),
+            widthFactor: 1 / cols,
+            heightFactor: 1 / rows,
+            child: Image.network(
+              url,
+              key: ValueKey(url),
+              headers: widget.headers,
+              cacheWidth: widget.cacheWidth,
+              errorBuilder: (_, __, ___) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) setState(() => _index++);
+                });
+                return fallback;
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
