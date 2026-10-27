@@ -1,3 +1,4 @@
+import '../widgets/debrid_safety_badge.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/playback_startup_view.dart';
 import '../utils/episode_playback_request.dart';
@@ -15704,6 +15705,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 UsenetSafetyBadge(
                   url: _activeUrlForBadge,
                   controlsVisible: _controlsVisible,
+                ),
+                // Debrid: is this playing through a debrid service, encrypted.
+                DebridSafetyBadge(
+                  url: _activeUrlForBadge,
+                  controlsVisible: _controlsVisible,
+                  hidden: _currentIptvChannel?.isLive ?? false,
                 ),
                 // Buffering indicator (OTT-style centered spinner)
                 ValueListenableBuilder<bool>(
