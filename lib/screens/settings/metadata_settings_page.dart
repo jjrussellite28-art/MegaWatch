@@ -5,6 +5,7 @@ import '../../models/stremio_addon.dart';
 import '../../services/metadata_preferences_service.dart';
 import '../../services/stremio_service.dart';
 import '../../services/tmdb_metadata_repository.dart';
+import '../../services/watch_order_service.dart';
 import '../../services/profiles/profile_runtime.dart';
 import '../../services/metadata_details_service.dart';
 import '../../widgets/collections/tmdb_attribution.dart';
@@ -30,6 +31,7 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
   Map<String, String>? _regionOptions;
   final TextEditingController _tokenController = TextEditingController();
   bool _tokenSaved = false;
+  bool _watchOrderOn = true;
 
   @override
   void initState() {
@@ -38,6 +40,9 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
     MetadataPreferencesService.revision.addListener(_load);
     _load();
     _loadConfiguration();
+    WatchOrderService.instance.isEnabled().then((v) {
+      if (mounted) setState(() => _watchOrderOn = v);
+    });
   }
 
   @override
@@ -308,6 +313,18 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
                         ),
                     ],
                   ),
+                ),
+                SwitchListTile(
+                  title: const Text('Watch order'),
+                  subtitle: const Text(
+                    'Shows what to watch before and next in a franchise, and its full timeline. '
+                    'Data from the Watch Order add-on by u/demon-myth.',
+                  ),
+                  value: _watchOrderOn,
+                  onChanged: (v) async {
+                    setState(() => _watchOrderOn = v);
+                    await WatchOrderService.instance.setEnabled(v);
+                  },
                 ),
                 if (_error != null)
                   Padding(

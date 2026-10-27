@@ -1,3 +1,5 @@
+import '../../screens/watch_order_timeline_page.dart';
+import '../../services/watch_order_service.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
 import '../../services/metadata_explore_service.dart';
@@ -253,6 +255,53 @@ class _DetailShowcaseState extends State<DetailShowcase> {
         oldWidget.exploreService != widget.exploreService) {
       _loadExplore();
     }
+    if (oldWidget.model.item.id != widget.model.item.id ||
+        oldWidget.model.item.type != widget.model.item.type) {
+      _loadWatchOrder();
+    }
+  }
+
+  WatchOrderInfo? _watchOrder;
+  int _woGeneration = 0;
+
+  void _loadWatchOrder() {
+    final gen = ++_woGeneration;
+    final item = widget.model.item;
+    final id = (item.imdbId?.startsWith('tt') ?? false) ? item.imdbId! : item.id;
+    if (_watchOrder != null) setState(() => _watchOrder = null);
+    unawaited(() async {
+      final info = await WatchOrderService.instance.forTitle(item.type, id);
+      if (mounted && gen == _woGeneration) setState(() => _watchOrder = info);
+    }());
+  }
+
+  void _openWatchOrderEntry(WatchOrderEntry e) {
+    final open = widget.model.onRecommendationTap;
+    if (open == null || !e.canOpen) return;
+    open(StremioMeta(id: e.id!, imdbId: e.id, type: e.type!, name: e.title));
+  }
+
+  void _openWatchOrderTimeline() {
+    final info = _watchOrder;
+    final open = widget.model.onRecommendationTap;
+    if (info?.timelineId == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => WatchOrderTimelinePage(
+          universeId: info!.timelineId!,
+          title: info.timelineLabel ?? info.universe ?? 'Watch order',
+          onOpen: (item) {
+            if (open == null || !item.canOpen) return;
+            open(StremioMeta(
+              id: item.id!,
+              imdbId: item.id,
+              type: item.type!,
+              name: item.title,
+            ));
+          },
+        ),
+      ),
+    );
   }
 
   void _loadExplore() {
@@ -446,6 +495,7 @@ class _DetailShowcaseState extends State<DetailShowcase> {
     if (!widget.dpad) _scroll.addListener(_onScrollDepth);
     ProfileRuntime.scope.addListener(_scopeChanged);
     _loadExplore();
+    _loadWatchOrder();
     if (widget.dpad && PlatformUtil.isAndroidTvCached) {
       developer.Timeline.instantSync('Showcase.mounted');
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1404,6 +1454,17 @@ class _DetailShowcaseState extends State<DetailShowcase> {
                       onStudio: m.onRecommendationTap == null ? null : _openStudio,
                       onRetry: () => setState(_loadExplore),
                     )),
+                  if (_watchOrder != null)
+                    _band(
+                      'watchorder',
+                      ShowcaseWatchOrder(
+                        info: _watchOrder!,
+                        onOpen: m.onRecommendationTap != null
+                            ? _openWatchOrderEntry
+                            : null,
+                        onTimeline: _openWatchOrderTimeline,
+                      ),
+                    ),
                   if (_universe.isNotEmpty)
                     _band(
                       'universe',

@@ -7,6 +7,7 @@ import '../../services/debrify_image_cache.dart';
 import '../../services/imdb_enrichment_service.dart';
 import '../../services/imdb_parents_guide_service.dart';
 import '../../services/series_source_service.dart';
+import '../../services/watch_order_service.dart';
 import '../../services/trakt/trakt_episode_model.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/app_theme_scope.dart';
@@ -3413,6 +3414,103 @@ class ShowcaseDetails extends StatelessWidget {
             Text(awards!, style: _t(10 * m.k, a: 0.6)),
           ],
         ],
+      ),
+    );
+  }
+}
+
+// ── watch order ────────────────────────────────────────────────────────────
+
+/// Where this title sits in its universe: what to watch before and next, and
+/// a button for the full timeline. Data: the "Watch Order" add-on by
+/// u/demon-myth, read live (see WatchOrderService); credited under the cards.
+class ShowcaseWatchOrder extends StatelessWidget {
+  final WatchOrderInfo info;
+  final void Function(WatchOrderEntry)? onOpen;
+  final VoidCallback? onTimeline;
+
+  const ShowcaseWatchOrder({
+    super.key,
+    required this.info,
+    required this.onOpen,
+    required this.onTimeline,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final m = ShowcaseMetrics.of(context);
+    Widget card(String eyebrow, String title, String? sub, VoidCallback? tap) {
+      return Expanded(
+        child: GestureDetector(
+          onTap: tap,
+          child: MouseRegion(
+            cursor: tap == null ? MouseCursor.defer : SystemMouseCursors.click,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.07),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    eyebrow,
+                    style: _t(m.compact ? 10 : 8 * m.k, w: FontWeight.w700, a: 0.45)
+                        .copyWith(letterSpacing: 1.0),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: _t(m.compact ? 13 : 11 * m.k, w: FontWeight.w600, a: 0.92),
+                  ),
+                  if (sub != null && sub.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      sub,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: _t(m.compact ? 11 : 9 * m.k, a: 0.5),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final cards = <Widget>[
+      if (info.before != null)
+        card('WATCH BEFORE', info.before!.title, info.before!.detail,
+            info.before!.canOpen && onOpen != null ? () => onOpen!(info.before!) : null),
+      if (info.position != null)
+        card('YOU ARE HERE', info.universe ?? '', info.position, null),
+      if (info.next != null)
+        card('WATCH NEXT', info.next!.title, info.next!.detail,
+            info.next!.canOpen && onOpen != null ? () => onOpen!(info.next!) : null),
+      if (info.timelineId != null && onTimeline != null)
+        card('FULL TIMELINE', info.timelineLabel ?? 'Open timeline', null, onTimeline),
+    ];
+    final cardH = m.compact ? 96.0 : 80.0 * m.k;
+    return _Band(
+      title: 'Watch order',
+      subtitle: 'by u/demon-myth',
+      height: cardH,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: m.gutter),
+        child: Row(
+          children: [
+            for (var i = 0; i < cards.length; i++) ...[
+              if (i > 0) const SizedBox(width: 10),
+              cards[i],
+            ],
+          ],
+        ),
       ),
     );
   }
