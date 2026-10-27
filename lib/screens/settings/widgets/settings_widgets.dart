@@ -98,6 +98,11 @@ abstract final class SettingsRows {
     title: 'Metadata',
     subtitle: 'Providers, artwork, languages & discovery',
   );
+  static const custom = SettingsRowContent(
+    icon: Icons.auto_awesome_rounded,
+    title: 'Custom (made by the creator)',
+    subtitle: 'Safety lock, watch order, credits & other extras',
+  );
   static const homePage = SettingsRowContent(
     icon: Icons.home_rounded,
     title: 'Home Screen',

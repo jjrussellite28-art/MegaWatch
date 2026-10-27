@@ -1,5 +1,6 @@
 import 'settings/tv_collection_list_style_page.dart';
 import 'settings/metadata_settings_page.dart';
+import 'settings/custom_settings_page.dart';
 import 'settings/easynews_settings_page.dart';
 import '../services/easynews_service.dart';
 import '../widgets/collections/tmdb_attribution.dart';
@@ -1892,6 +1893,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
 
+      nav(
+        SettingsRows.custom,
+        'Metadata',
+        () => pushSettingsPage(context, const CustomSettingsPage()),
+        keywords: const [
+          'safety',
+          'vpn',
+          'watch order',
+          'credits',
+          'seek lock',
+          'custom',
+        ],
+      ),
       nav(
         SettingsRows.metadata,
         'Metadata',
@@ -7941,6 +7955,10 @@ class _SettingsLayout extends StatelessWidget {
               SettingsRows.metadata,
               onTap: onOpenMetadataSettings,
             ),
+            SettingsTile.spec(
+              SettingsRows.custom,
+              onTap: () => pushSettingsPage(context, const CustomSettingsPage()),
+            ),
           ],
         );
       case 6:
@@ -8354,6 +8372,17 @@ class _SettingsLayout extends StatelessWidget {
                     SettingsTile.spec(
                       SettingsRows.metadata,
                       onTap: onOpenMetadataSettings,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                SettingsSection(
+                  title: 'Custom',
+                  children: [
+                    SettingsTile.spec(
+                      SettingsRows.custom,
+                      onTap: () =>
+                          pushSettingsPage(context, const CustomSettingsPage()),
                     ),
                   ],
                 ),

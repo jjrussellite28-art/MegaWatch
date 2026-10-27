@@ -1,5 +1,3 @@
-import '../../services/safety_gate_service.dart';
-import '../credits_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/metadata_preferences.dart';
@@ -7,7 +5,6 @@ import '../../models/stremio_addon.dart';
 import '../../services/metadata_preferences_service.dart';
 import '../../services/stremio_service.dart';
 import '../../services/tmdb_metadata_repository.dart';
-import '../../services/watch_order_service.dart';
 import '../../services/profiles/profile_runtime.dart';
 import '../../services/metadata_details_service.dart';
 import '../../widgets/collections/tmdb_attribution.dart';
@@ -33,8 +30,6 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
   Map<String, String>? _regionOptions;
   final TextEditingController _tokenController = TextEditingController();
   bool _tokenSaved = false;
-  bool _watchOrderOn = true;
-  bool _safetyOn = true;
 
   @override
   void initState() {
@@ -43,12 +38,6 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
     MetadataPreferencesService.revision.addListener(_load);
     _load();
     _loadConfiguration();
-    SafetyGateService.isEnabled().then((v) {
-      if (mounted) setState(() => _safetyOn = v);
-    });
-    WatchOrderService.instance.isEnabled().then((v) {
-      if (mounted) setState(() => _watchOrderOn = v);
-    });
   }
 
   @override
@@ -319,39 +308,6 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
                         ),
                     ],
                   ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.favorite_outline),
-                  title: const Text('Credits'),
-                  subtitle: const Text('Debrify, u/demon-myth, TMDB and more'),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => const CreditsPage()),
-                  ),
-                ),
-                SwitchListTile(
-                  title: const Text('Safety lock for search'),
-                  subtitle: const Text(
-                    'Torrent search engines only run when a VPN is detected or a debrid '
-                    'service (TorBox, Real-Debrid, PikPak) is connected, so your IP '
-                    'is not exposed. VPN detection is a best guess from your network adapters.',
-                  ),
-                  value: _safetyOn,
-                  onChanged: (v) async {
-                    setState(() => _safetyOn = v);
-                    await SafetyGateService.setEnabled(v);
-                  },
-                ),
-                SwitchListTile(
-                  title: const Text('Watch order'),
-                  subtitle: const Text(
-                    'Shows what to watch before and next in a franchise, and its full timeline. '
-                    'Data from the Watch Order add-on by u/demon-myth.',
-                  ),
-                  value: _watchOrderOn,
-                  onChanged: (v) async {
-                    setState(() => _watchOrderOn = v);
-                    await WatchOrderService.instance.setEnabled(v);
-                  },
                 ),
                 if (_error != null)
                   Padding(

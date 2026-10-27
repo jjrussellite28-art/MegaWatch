@@ -12,6 +12,7 @@ import '../../theme/app_focus.dart';
 import '../../theme/widgets/parallax_focus.dart';
 import 'settings_spotlight_shell.dart';
 import 'widgets/settings_widgets.dart';
+import 'custom_settings_page.dart';
 import '../../theme/app_theme_scope.dart';
 
 /// TV-only two-pane Settings shell (the "Mock 1" layout): a category rail on
@@ -1000,6 +1001,11 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
                 SettingsRows.metadata,
                 onTap: widget.onOpenMetadataSettings,
                 focusNode: _paneNodes[0],
+              ),
+              SettingsTile.spec(
+                SettingsRows.custom,
+                onTap: () =>
+                    pushSettingsPage(context, const CustomSettingsPage()),
               ),
             ],
           ),
