@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-const String _kGithubOwner = 'varunsalian';
-const String _kGithubRepo = 'debrify';
+const String _kGithubOwner = 'jjrussellite28-art';
+const String _kGithubRepo = 'debrifyy';
 const String _kReleasesPage =
     'https://github.com/$_kGithubOwner/$_kGithubRepo/releases';
 
@@ -47,7 +47,7 @@ class UpdateService {
       includePrereleases ? _releasesUri : _latestReleaseUri,
       headers: const {
         'Accept': 'application/vnd.github+json',
-        'User-Agent': 'debrify-app',
+        'User-Agent': 'megawatch-app',
       },
     );
 
@@ -206,7 +206,10 @@ class AppRelease {
     }
 
     return AppRelease(
-      versionLabel: tag.isNotEmpty ? tag : releaseName,
+      versionLabel: (tag.isNotEmpty ? tag : releaseName).replaceFirst(
+        RegExp(r'^megawatch-v?', caseSensitive: false),
+        '',
+      ),
       tagName: tag,
       name: releaseName,
       body: json['body']?.toString() ?? '',

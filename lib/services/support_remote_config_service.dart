@@ -208,13 +208,17 @@ class SupportRemoteConfigService {
   static const String _fallbackAssetPath =
       'assets/config/app_remote_config.json';
 
-  Future<SupportRemoteConfig> loadCachedOrFallback() async {
-    final cached = await _loadCached();
-    if (cached != null) return cached;
-    return _loadFallback();
-  }
+  // MegaWatch is an independent fork: it never shows the original project's
+  // donation links or campaigns, and never contacts its remote config.
+  Future<SupportRemoteConfig> loadCachedOrFallback() async =>
+      SupportRemoteConfig.fallback;
 
   Future<SupportRemoteConfig> loadConfig() async {
+    return SupportRemoteConfig.fallback;
+  }
+
+  // ignore: unused_element
+  Future<SupportRemoteConfig> _loadRemoteUnused() async {
     final baseline = await loadCachedOrFallback();
     try {
       final response = await http.get(Uri.parse(_remoteConfigUrl));

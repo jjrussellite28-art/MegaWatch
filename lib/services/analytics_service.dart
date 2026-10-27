@@ -16,8 +16,12 @@ class AnalyticsService {
 
   static bool _initialized = false;
 
+  /// Usage statistics are switched off in MegaWatch: nothing is sent to the
+  /// original project's analytics account.
+  static const bool _enabled = false;
+
   static Future<void> init() async {
-    if (_initialized) return;
+    if (!_enabled || _initialized) return;
 
     try {
       await Pug.init(

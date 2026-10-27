@@ -425,26 +425,26 @@ abstract final class SettingsRows {
   );
   static const supportDebrify = SettingsRowContent(
     icon: Icons.favorite_rounded,
-    title: 'Support Debrify',
+    title: 'Support MegaWatch',
     subtitle: '',
   );
   static const reddit = SettingsRowContent(
     icon: Icons.forum_rounded,
-    title: 'Reddit Community',
-    subtitle: 'r/debrify - Questions, tips, and discussion',
-    url: 'https://www.reddit.com/r/debrify/',
+    title: 'Original Debrify project',
+    subtitle: 'MegaWatch is an independent fork of Debrify (not endorsed by it)',
+    url: 'https://github.com/varunsalian/debrify',
   );
   static const discord = SettingsRowContent(
     icon: Icons.chat_rounded,
-    title: 'Discord',
-    subtitle: 'Join for help, updates, and discussion',
-    url: 'https://discord.gg/xuAc4Q2c9G',
+    title: 'Report a problem',
+    subtitle: 'Send feedback or bug reports on GitHub',
+    url: 'https://github.com/jjrussellite28-art/debrifyy/issues',
   );
   static const github = SettingsRowContent(
     icon: Icons.code_rounded,
-    title: 'GitHub',
-    subtitle: 'Source code and contributions',
-    url: 'https://github.com/varunsalian/debrify',
+    title: 'MegaWatch on GitHub',
+    subtitle: 'Source code (AGPL-3.0) and releases',
+    url: 'https://github.com/jjrussellite28-art/debrifyy',
   );
   static const version = SettingsRowContent(
     icon: Icons.info_outline_rounded,
