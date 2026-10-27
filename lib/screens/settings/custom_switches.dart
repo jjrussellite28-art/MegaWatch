@@ -57,22 +57,9 @@ class SafetyLockSwitch extends StatelessWidget {
         'Torrent search engines only run when a debrid service (TorBox, '
         'Real-Debrid, PikPak) is connected, so your IP is '
         'not exposed. Raw-torrent add-on results stay hidden until a debrid '
-        'service is set up. Plain http links from add-ons are blocked too.',
+        'service is set up, the same way the original app works.',
     load: SafetyGateService.isEnabled,
     save: SafetyGateService.setEnabled,
-  );
-}
-
-class StrictModeSwitch extends StatelessWidget {
-  const StrictModeSwitch({super.key});
-  @override
-  Widget build(BuildContext context) => _CustomSwitch(
-    title: 'Strict mode (custom)',
-    subtitle:
-        'If something would expose your IP address, the app shows a warning '
-        'and closes right away. Safe links still play. On by default.',
-    load: SafetyGateService.strictEnabled,
-    save: SafetyGateService.setStrict,
   );
 }
 

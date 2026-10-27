@@ -736,8 +736,8 @@ class TorrentService {
 
       // Use explicit contentType if provided, otherwise infer from isMovie
       final type = contentType ?? (isMovie ? 'movie' : 'series');
-      // Raw torrents need a debrid service. Direct links must be https
-      // (encrypted); plain http links are hidden while the safety lock is on.
+      // Raw torrents need a debrid service (the original app can't play them
+      // without one), so hide them when none is set up.
       final safetyOn = await SafetyGateService.isEnabled();
       final lockTorrents = await SafetyGateService.torrentAddonsLocked();
       var droppedTorrents = false;
@@ -750,9 +750,6 @@ class TorrentService {
               droppedTorrents = true;
               continue;
             }
-          } else {
-            final scheme = Uri.tryParse(t.directUrl?.trim() ?? '')?.scheme;
-            if (scheme != 'https') continue;
           }
           kept.add(t);
         }
