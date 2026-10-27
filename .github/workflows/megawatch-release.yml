@@ -1,10 +1,12 @@
 name: MegaWatch Windows release
 
-# Push a tag like megawatch-v0.1.0 (or run this by hand) to build the Windows
-# installer and attach it to a GitHub Release.
+# To publish an update: change the version in MEGAWATCH_RELEASE (for example
+# 0.1.1) and push. This builds the Windows installer and attaches it to a new
+# GitHub Release named megawatch-v<version>.
 on:
   push:
-    tags: ['megawatch-v*']
+    branches: [og-player]
+    paths: ['MEGAWATCH_RELEASE']
   workflow_dispatch:
 
 permissions:
@@ -28,15 +30,17 @@ jobs:
       - name: Build installer
         shell: pwsh
         run: |
-          $tag = '${{ github.ref_name }}'
-          $ver = if ($tag -like 'megawatch-v*') { $tag.Substring(11) } else { 'dev' }
+          $ver = (Get-Content MEGAWATCH_RELEASE -Raw).Trim()
+          "MEGAWATCH_VER=$ver" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           $env:MEGAWATCH_VERSION = $ver
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" windows\installer-megawatch.iss
       - name: Upload to Release
-        if: startsWith(github.ref, 'refs/tags/')
+        if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
         with:
-          name: MegaWatch ${{ github.ref_name }}
+          tag_name: megawatch-v${{ env.MEGAWATCH_VER }}
+          target_commitish: ${{ github.sha }}
+          name: MegaWatch ${{ env.MEGAWATCH_VER }}
           files: build/windows/installer/megawatch-*-setup.exe
           prerelease: true
       - name: Upload as artifact (manual run)
