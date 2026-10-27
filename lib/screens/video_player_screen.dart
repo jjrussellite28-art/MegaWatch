@@ -5807,6 +5807,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
       // Get the next episode from the sorted list
       final nextEpisode = seriesPlaylist.allEpisodes[currentEpisodeIndex + 1];
+      // A season pack with a missing file would silently jump 4 -> 6. If the
+      // next file is not the true next episode, hand over to the episode
+      // fetcher (when available) so the real next episode is found.
+      final curSe = currentEpisode.seriesInfo;
+      final nextSe = nextEpisode.seriesInfo;
+      if (curSe.season != null &&
+          curSe.episode != null &&
+          nextSe.season == curSe.season &&
+          nextSe.episode != null &&
+          nextSe.episode! > curSe.episode! + 1 &&
+          _canFetchEpisodes) {
+        debugPrint(
+          'Player: pack gap after E${curSe.episode} (next file is '
+          'E${nextSe.episode}); fetching the real next episode',
+        );
+        return -1;
+      }
       return nextEpisode.originalIndex;
     } catch (e) {
       return -1;
