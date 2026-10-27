@@ -4,6 +4,7 @@ import '../../models/engine_config/engine_config.dart';
 import '../../models/torrent.dart';
 import '../../models/profiles/profile_policy.dart';
 import '../profiles/profile_async_authorization.dart';
+import '../safety_gate_service.dart';
 import '../search_engine.dart';
 import 'engine_executor.dart';
 
@@ -439,6 +440,7 @@ class DynamicEngine extends SearchEngine {
   Future<List<Torrent>> _guardSearch(
     Future<List<Torrent>> Function() operation,
   ) async {
+    if (await SafetyGateService.blockReason() != null) return <Torrent>[];
     final capability = await ProfileAsyncAuthorization.capture(
       ProfileFeature.torrentSearch,
     );

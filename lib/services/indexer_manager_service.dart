@@ -12,6 +12,7 @@ import '../models/profiles/connection_resource.dart';
 import '../models/profiles/profile_policy.dart';
 import '../models/torrent.dart';
 import 'profiles/profile_collection_resource_facade.dart';
+import 'safety_gate_service.dart';
 import 'storage_service.dart';
 
 class IndexerManagerTestResult {
@@ -72,6 +73,7 @@ class IndexerManagerService {
     int? maxResults,
   }) async {
     if (query.trim().isEmpty) return [];
+    if (await SafetyGateService.blockReason() != null) return [];
     await _authorize(config);
 
     final List<Torrent> result;
@@ -100,6 +102,7 @@ class IndexerManagerService {
     int? episode,
     int? maxResults,
   }) async {
+    if (await SafetyGateService.blockReason() != null) return [];
     final normalizedImdb = _normalizeImdbId(imdbId);
     if (normalizedImdb.isEmpty) return [];
     await _authorize(config);
