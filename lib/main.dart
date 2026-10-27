@@ -1,3 +1,4 @@
+import 'services/tmdb_metadata_repository.dart';
 import 'services/webdav_sync/webdav_log_upload.dart';
 import 'services/cache_scratch_cleanup.dart';
 import 'services/debrify_image_cache.dart';
@@ -776,6 +777,7 @@ Future<void> _continueApplicationStartup() async {
   unawaited(_cleanupPlaybackState());
   // NB: no manual app_open — Pug's autoTrack fires app_open/app_close from the
   // app lifecycle automatically (see AnalyticsService.init / PugOptions).
+  await TmdbMetadataRepository.loadSavedToken();
   runApp(const DebrifyApp());
   unawaited(DebrifyImageCache.maintainDiskCaches());
   applicationReady.complete();

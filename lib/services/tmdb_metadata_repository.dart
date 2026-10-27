@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import '../utils/json_isolate.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/stremio_addon.dart';
 import 'tmdb_http_client.dart';
@@ -35,7 +36,7 @@ class TmdbMetadataRepository {
 
   static final instance = TmdbMetadataRepository();
   static final _dnsCache = TmdbDnsCache();
-  final String _token;
+  String _token;
   final http.Client Function() _clientFactory;
   final DateTime Function() _now;
   final Duration timeout;
@@ -54,6 +55,37 @@ class TmdbMetadataRepository {
   DateTime? _retryAfter;
 
   bool get configured => _token.trim().isNotEmpty;
+
+  static const _tokenPrefKey = 'tmdb_user_token';
+
+  /// Use this token from now on (e.g. one the user pasted into Settings).
+  void setToken(String token) {
+    _token = token.trim();
+    _cache.clear();
+    _cacheBytes = 0;
+  }
+
+  /// A token the user saved in Settings wins over the build-time one.
+  static Future<void> loadSavedToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final saved = prefs.getString(_tokenPrefKey)?.trim();
+      if (saved != null && saved.isNotEmpty) instance.setToken(saved);
+    } catch (_) {
+      // Storage unavailable: keep whatever token the build has.
+    }
+  }
+
+  static Future<void> saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = token.trim();
+    if (value.isEmpty) {
+      await prefs.remove(_tokenPrefKey);
+    } else {
+      await prefs.setString(_tokenPrefKey, value);
+    }
+    instance.setToken(value);
+  }
 
   Future<Map<String, dynamic>> get(
     String path, [

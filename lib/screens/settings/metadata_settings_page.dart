@@ -28,6 +28,8 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
   int? _loadedRevision;
   Map<String, String> _languageOptions = {..._languages};
   Map<String, String>? _regionOptions;
+  final TextEditingController _tokenController = TextEditingController();
+  bool _tokenSaved = false;
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
 
   @override
   void dispose() {
+    _tokenController.dispose();
     ProfileRuntime.scope.removeListener(_load);
     MetadataPreferencesService.revision.removeListener(_load);
     super.dispose();
@@ -256,6 +259,54 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
                   child: Text(
                     'Choose who supplies each part of a title. Current behaviour keeps your existing setup. '
                     'These choices do not change playback or watched progress.',
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _repository.configured
+                            ? 'TMDB access token: set'
+                            : 'TMDB access token: not set (needed for studios, availability and more)',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _tokenController,
+                              obscureText: true,
+                              decoration: const InputDecoration(
+                                hintText:
+                                    'Paste your free TMDB "API Read Access Token"',
+                                isDense: true,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton(
+                            onPressed: () async {
+                              await TmdbMetadataRepository.saveToken(
+                                _tokenController.text,
+                              );
+                              if (!mounted) return;
+                              _tokenController.clear();
+                              setState(() => _tokenSaved = true);
+                              _loadConfiguration();
+                            },
+                            child: const Text('Save'),
+                          ),
+                        ],
+                      ),
+                      if (_tokenSaved)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 6),
+                          child: Text('Saved. Reopen a title to see it.'),
+                        ),
+                    ],
                   ),
                 ),
                 if (_error != null)
