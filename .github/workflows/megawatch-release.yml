@@ -1,0 +1,47 @@
+name: MegaWatch Windows release
+
+# Push a tag like megawatch-v0.1.0 (or run this by hand) to build the Windows
+# installer and attach it to a GitHub Release.
+on:
+  push:
+    tags: ['megawatch-v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Build Windows app
+        run: |
+          flutter config --enable-windows-desktop
+          flutter pub get
+          flutter build windows --release
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress --yes
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $tag = '${{ github.ref_name }}'
+          $ver = if ($tag -like 'megawatch-v*') { $tag.Substring(11) } else { 'dev' }
+          $env:MEGAWATCH_VERSION = $ver
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" windows\installer-megawatch.iss
+      - name: Upload to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: MegaWatch ${{ github.ref_name }}
+          files: build/windows/installer/megawatch-*-setup.exe
+          prerelease: true
+      - name: Upload as artifact (manual run)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: megawatch-windows
+          path: build/windows/installer/megawatch-*-setup.exe
