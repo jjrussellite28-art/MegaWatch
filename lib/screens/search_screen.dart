@@ -12478,6 +12478,16 @@ class _SearchScreenState extends State<SearchScreen>
       }
       // Every source errored and nothing came back → surface the failure
       // instead of a misleading "No results" (searchAllEngines fails soft).
+      if (torrents.isEmpty &&
+          engineErrors is Map &&
+          engineErrors['safety'] is String) {
+        _searchSubmitFocus.cancel();
+        setState(() {
+          _kwError = engineErrors['safety'] as String;
+          _kwLoading = false;
+        });
+        return;
+      }
       if (torrents.isEmpty && engineErrors is Map && engineErrors.isNotEmpty) {
         _searchSubmitFocus.cancel();
         setState(() {

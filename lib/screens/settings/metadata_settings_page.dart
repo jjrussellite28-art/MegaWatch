@@ -1,3 +1,4 @@
+import '../../services/safety_gate_service.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/metadata_preferences.dart';
@@ -32,6 +33,7 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
   final TextEditingController _tokenController = TextEditingController();
   bool _tokenSaved = false;
   bool _watchOrderOn = true;
+  bool _safetyOn = true;
 
   @override
   void initState() {
@@ -40,6 +42,9 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
     MetadataPreferencesService.revision.addListener(_load);
     _load();
     _loadConfiguration();
+    SafetyGateService.isEnabled().then((v) {
+      if (mounted) setState(() => _safetyOn = v);
+    });
     WatchOrderService.instance.isEnabled().then((v) {
       if (mounted) setState(() => _watchOrderOn = v);
     });
@@ -313,6 +318,19 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
                         ),
                     ],
                   ),
+                ),
+                SwitchListTile(
+                  title: const Text('Safety lock for search'),
+                  subtitle: const Text(
+                    'Torrent search engines only run when a VPN is detected or a debrid '
+                    'service (TorBox, Real-Debrid, PikPak) is connected, so your IP '
+                    'is not exposed. VPN detection is a best guess from your network adapters.',
+                  ),
+                  value: _safetyOn,
+                  onChanged: (v) async {
+                    setState(() => _safetyOn = v);
+                    await SafetyGateService.setEnabled(v);
+                  },
                 ),
                 SwitchListTile(
                   title: const Text('Watch order'),

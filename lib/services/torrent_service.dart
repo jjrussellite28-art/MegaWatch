@@ -11,6 +11,7 @@ import 'indexer_manager_service.dart';
 import 'profiles/profile_async_authorization.dart';
 import 'stremio_service.dart';
 import 'media_server_service.dart';
+import 'safety_gate_service.dart';
 
 /// Streaming-search hook: fired once per source (engine / addon batch) that
 /// returned results, AS it completes — long before the slowest engine's
@@ -85,6 +86,10 @@ class TorrentService {
     final capability = await ProfileAsyncAuthorization.capture(
       ProfileFeature.torrentSearch,
     );
+    if (await SafetyGateService.blockReason() != null) {
+      debugPrint('TorrentService: search blocked by safety lock');
+      return <Torrent>[];
+    }
     await ensureInitialized();
 
     try {
@@ -172,6 +177,15 @@ class TorrentService {
     final capability = await ProfileAsyncAuthorization.capture(
       ProfileFeature.torrentSearch,
     );
+    final blocked = await SafetyGateService.blockReason();
+    if (blocked != null) {
+      debugPrint('TorrentService: search blocked by safety lock');
+      return {
+        'torrents': <Torrent>[],
+        'engineCounts': <String, int>{},
+        'engineErrors': <String, String>{'safety': blocked},
+      };
+    }
     await ensureInitialized();
 
     final Map<String, int> engineCounts = {};
@@ -307,6 +321,15 @@ class TorrentService {
     final capability = await ProfileAsyncAuthorization.capture(
       ProfileFeature.torrentSearch,
     );
+    final blocked = await SafetyGateService.blockReason();
+    if (blocked != null) {
+      debugPrint('TorrentService: search blocked by safety lock');
+      return {
+        'torrents': <Torrent>[],
+        'engineCounts': <String, int>{},
+        'engineErrors': <String, String>{'safety': blocked},
+      };
+    }
     await ensureInitialized();
 
     final Map<String, int> engineCounts = {};
