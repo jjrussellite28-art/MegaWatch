@@ -64,15 +64,15 @@ class DebridSafetyBadge extends StatelessWidget {
     } else if (service != null) {
       color = const Color(0xFFFF5C6C);
       title = '$service connected';
-      detail = 'Link is not encrypted: your ISP can see it';
+      detail = 'IP EXPOSED: stop and pick another source';
     } else if (secure) {
       color = const Color(0xFF4DA3FF);
       title = 'Not through debrid';
       detail = 'Direct link, encrypted. The site can see your IP';
     } else {
       color = const Color(0xFFFF5C6C);
-      title = 'Not safe';
-      detail = 'Not encrypted: your ISP can see what you watch';
+      title = 'Not safe: stop now';
+      detail = 'IP EXPOSED: your ISP can see this. Pick another source';
     }
     return ValueListenableBuilder<bool>(
       valueListenable: controlsVisible,
