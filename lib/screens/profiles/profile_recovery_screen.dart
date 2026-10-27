@@ -121,7 +121,7 @@ class _ProfileRecoveryScreenState extends State<ProfileRecoveryScreen> {
   Future<void> _restoreBackup() async {
     await _run(() async {
       final pick = await FilePicker.platform.pickFiles(
-        dialogTitle: 'Choose a Debrify backup',
+        dialogTitle: 'Choose a MegaWatch backup',
         type: FileType.any,
         withData: false,
       );
@@ -155,7 +155,7 @@ class _ProfileRecoveryScreenState extends State<ProfileRecoveryScreen> {
           if (!mounted) return 'Restore cancelled.';
           final passphrase = await _promptSecret(
             'Backup passphrase',
-            'Enter the passphrase used by the older Debrify backup.',
+            'Enter the passphrase used by the older MegaWatch backup.',
           );
           if (passphrase == null) return 'Restore cancelled.';
           legacy = await BackupRestoreService.decryptBackup(legacy, passphrase);
@@ -279,10 +279,10 @@ class _ProfileRecoveryScreenState extends State<ProfileRecoveryScreen> {
                 const SizedBox(height: 12),
                 Text(
                   _deviceVaultRequiresReset
-                      ? 'Debrify cannot open the secure device vault. Existing credentials, addons, and sync bindings will not be mounted. Restart the device once; if the problem continues, erase private app data and reconnect this device.'
+                      ? 'MegaWatch cannot open the secure device vault. Existing credentials, addons, and sync bindings will not be mounted. Restart the device once; if the problem continues, erase private app data and reconnect this device.'
                       : _hasDeviceVaultFailure
-                      ? 'The secure device vault is temporarily unavailable. Your profiles, credentials, addons, and sync bindings have not been changed. Close Debrify, restart the device, and try again.'
-                      : 'Debrify could not safely open the committed profile registry. Legacy data will not be mounted. A damaged registry is moved aside when you begin recovery, so it remains available for diagnostics.',
+                      ? 'The secure device vault is temporarily unavailable. Your profiles, credentials, addons, and sync bindings have not been changed. Close MegaWatch, restart the device, and try again.'
+                      : 'MegaWatch could not safely open the committed profile registry. Legacy data will not be mounted. A damaged registry is moved aside when you begin recovery, so it remains available for diagnostics.',
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 28),

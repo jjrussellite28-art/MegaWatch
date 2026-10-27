@@ -7994,7 +7994,7 @@ class _SearchScreenState extends State<SearchScreen>
       case _FavKind.debrify:
         return SpotlightShelf(
           id: id,
-          title: 'Debrify TV',
+          title: 'MegaWatch TV',
           nodes: nodes,
           items: [
             for (final ch in _tvFavChannels)
@@ -8433,7 +8433,7 @@ class _SearchScreenState extends State<SearchScreen>
       case _FavKind.iptv:
         return 'IPTV Favorites';
       case _FavKind.debrify:
-        return 'Debrify TV';
+        return 'MegaWatch TV';
       case _FavKind.stremio:
         return 'Stremio TV';
       case _FavKind.playlist:
@@ -20633,7 +20633,7 @@ class _SearchScreenState extends State<SearchScreen>
   Widget _buildTvFavRow(String homeRowId) {
     final tv = widget.isTelevision;
     return _buildFavRowShell(
-      title: 'Debrify TV',
+      title: 'MegaWatch TV',
       tags: const [
         _CategoryTag('Channels'),
         // Make it explicit this row is the user's STARRED channels, not every

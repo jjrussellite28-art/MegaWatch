@@ -6396,7 +6396,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               provider.toLowerCase() == 'pikpak' || pikpakFileId.isNotEmpty;
           if (isPikPak) {
             debugPrint(
-              'Player: Detected PikPak video from Debrify TV, using retry logic',
+              'Player: Detected PikPak video from MegaWatch TV, using retry logic',
             );
             // _playPikPakVideoWithRetry will increment _pikPakRetryId to cancel previous retries
             await _playPikPakVideoWithRetry(
@@ -11569,7 +11569,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
             if (isDebrifyTV) {
               // Auto-skip for Debrify TV
-              print('PikPak: Auto-advancing to next video in Debrify TV queue');
+              print('PikPak: Auto-advancing to next video in MegaWatch TV queue');
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
@@ -11672,7 +11672,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
             if (isDebrifyTV) {
               // Auto-skip for Debrify TV
-              print('PikPak: Auto-advancing to next video in Debrify TV queue');
+              print('PikPak: Auto-advancing to next video in MegaWatch TV queue');
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(

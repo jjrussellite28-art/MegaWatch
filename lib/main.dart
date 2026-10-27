@@ -456,7 +456,7 @@ class _StartupFailureApp extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  'Debrify could not start safely. Close the app and try again. '
+                  'MegaWatch could not start safely. Close the app and try again. '
                   'If this continues, restart the device before changing any data.',
                   textAlign: TextAlign.center,
                 ),
@@ -539,7 +539,7 @@ class _MigrationUpdateScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'Debrify is upgrading your library for this new version. '
+                    'MegaWatch is upgrading your library for this new version. '
                     'This launch can take up to 5 minutes on large setups — '
                     'please don’t close the app or turn off the device. '
                     'This only happens once.',
@@ -1027,7 +1027,6 @@ class _DebrifyAppState extends State<DebrifyApp> {
     // ThemeData/AppTheme pair, so this rebuild only ever READS them — the
     // recompute happened once, inside the controller, when the change fired.
     AppThemeController.instance.addListener(_onAppThemeChanged);
-    Future<void>.delayed(const Duration(seconds: 6), _safetyCheck);
     SafetyGateService.blockedNotice.addListener(_onTorrentAddonBlocked);
   }
 
@@ -1056,38 +1055,6 @@ class _DebrifyAppState extends State<DebrifyApp> {
       ),
     );
     _noticeShowing = false;
-  }
-
-  Future<void> _safetyCheck() async {
-    if (!mounted) return;
-    final reason = await SafetyGateService.blockReason(report: false);
-    final ctx = _navigatorKey.currentContext;
-    if (reason == null || ctx == null || !ctx.mounted) return;
-    await showDialog<void>(
-      context: ctx,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Not protected'),
-        content: const Text(
-          'No debrid service (TorBox, Real-Debrid, '
-          'PikPak) is connected, so your IP address could be exposed to the '
-          'sites that search scrapers contact. Torrent search is locked until '
-          'you are protected.\n\nClose the app, connect a '
-          'debrid service, then open it again.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Keep going (search stays locked)'),
-          ),
-          FilledButton(
-            autofocus: true,
-            onPressed: () => exit(0),
-            child: const Text('Close app'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _onTextBrightnessChanged() {
@@ -1579,7 +1546,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     // and never selected. The new Stremio board at index 15 is now "Home".)
     const PlaylistScreen(), // 1: Playlist
     const DownloadsScreen(), // 2: Downloads
-    const DebrifyTVScreen(), // 3: Debrify TV
+    const DebrifyTVScreen(), // 3: MegaWatch TV
     const DebridDownloadsScreen(), // 4: Real Debrid
     const TorboxDownloadsScreen(), // 5: Torbox
     const PikPakFilesScreen(), // 6: PikPak
@@ -1599,7 +1566,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     'Home (deprecated)', // 0: old board, hidden from nav (index kept as a slot)
     'Playlist',
     'Downloads',
-    'Debrify TV',
+    'MegaWatch TV',
     'Real Debrid',
     'Torbox',
     'PikPak',
@@ -2107,7 +2074,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       // Priority: 1. User-set custom name, 2. Actual device name, 3. Fallback
       var deviceName = await StorageService.getRemoteTvDeviceName();
       deviceName ??= await PlatformUtil.getDeviceName();
-      deviceName ??= 'Debrify TV';
+      deviceName ??= 'MegaWatch TV';
       await RemoteControlState().startTvListener(deviceName);
     } else {
       // Non-TV: Start scanning for TVs
@@ -2736,7 +2703,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     if (result.isGranted) return true;
     if (result.isPermanentlyDenied || result.isRestricted) {
       _showAutoUpdateSnack(
-        'Allow Debrify to install apps from system settings.',
+        'Allow MegaWatch to install apps from system settings.',
       );
       unawaited(openAppSettings());
     } else {
@@ -3267,7 +3234,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       case 14: // YouTube
       case 20: // Streaming
         return 'Browse';
-      case 3: // Debrify TV
+      case 3: // MegaWatch TV
       case 9: // Stremio TV
         return 'TV';
       case 16: // Cloud (consolidated provider hub)

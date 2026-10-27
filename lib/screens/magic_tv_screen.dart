@@ -1863,7 +1863,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         ),
         const SizedBox(height: 2),
         Text(
-          'Applies to channels and quick play. If nothing matches, Debrify TV '
+          'Applies to channels and quick play. If nothing matches, MegaWatch TV '
           'plays what it can rather than showing an empty channel.',
           style: labelStyle,
         ),
@@ -1942,7 +1942,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       required String unavailableMessage,
     }) {
       return Tooltip(
-        message: available ? 'Use $label for Debrify TV' : unavailableMessage,
+        message: available ? 'Use $label for MegaWatch TV' : unavailableMessage,
         child: _SpotlightChoiceChip(
           label: label,
           selected: currentProvider == value,
@@ -2137,7 +2137,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                     : 'Channel editor · ${existing.channelNumber.toString().padLeft(2, '0')}',
                 title: existing == null ? 'Create a channel' : 'Edit channel',
                 subtitle:
-                    'Keywords are search terms. Add one or several and Debrify will pool the results.',
+                    'Keywords are search terms. Add one or several and MegaWatch will pool the results.',
                 icon: Icons.tv_rounded,
                 maxWidth: 720,
                 child: Column(
@@ -2432,8 +2432,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           eyebrow: 'Channel export · Apple TV',
           title: 'Export from another device',
           subtitle:
-              'Apple TV does not expose a location where Debrify can save a '
-              'portable ZIP. Export the channels from Debrify on a phone or '
+              'Apple TV does not expose a location where MegaWatch can save a '
+              'portable ZIP. Export the channels from MegaWatch on a phone or '
               'computer, or send them through Remote.',
           icon: Icons.tv_rounded,
           maxWidth: 580,
@@ -3108,7 +3108,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
     // Validate debrify link format
     if (!MagnetYamlService.isMagnetLink(content)) {
-      throw const FormatException('Not a valid Debrify link.');
+      throw const FormatException('Not a valid MegaWatch link.');
     }
 
     if (showDialog) {
@@ -3253,7 +3253,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                     keyboardInk: app.core.tx,
                     keyboardInkOnAccent: app.inkOn(app.settings.accent),
                     decoration: InputDecoration(
-                      labelText: 'Debrify link or file URL',
+                      labelText: 'MegaWatch link or file URL',
                       hintText: 'debrify://channel?... or https://...',
                       errorText: errorText,
                     ),
@@ -3738,7 +3738,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 'Share channel · ${channel.channelNumber.toString().padLeft(2, '0')}',
             title: channel.name,
             subtitle:
-                'Anyone on Debrify can paste this link to import the channel and its saved pool.',
+                'Anyone on MegaWatch can paste this link to import the channel and its saved pool.',
             icon: Icons.share_rounded,
             maxWidth: 720,
             child: Column(
@@ -4374,11 +4374,11 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       if (mounted) {
         setState(() {
           _status =
-              'Connect Real Debrid, Torbox, Premiumize, AllDebrid, or PikPak in Settings to use Debrify TV.';
+              'Connect Real Debrid, Torbox, Premiumize, AllDebrid, or PikPak in Settings to use MegaWatch TV.';
         });
       }
       _showSnack(
-        'Connect Real Debrid, Torbox, Premiumize, AllDebrid, or PikPak in Settings to use Debrify TV.',
+        'Connect Real Debrid, Torbox, Premiumize, AllDebrid, or PikPak in Settings to use MegaWatch TV.',
         color: Colors.orange,
       );
       return;
@@ -4449,7 +4449,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           eyebrow: 'Quick play · $providerLabel',
           title: 'Searching for something to play',
           subtitle:
-              'Debrify is searching your keywords, applying filters, and checking $providerLabel.',
+              'MegaWatch is searching your keywords, applying filters, and checking $providerLabel.',
           onCancel: () => _cancelActiveWatch(dialogContext: ctx),
         );
       },
@@ -9524,7 +9524,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return DebrifyTvSpotlightDialog(
-              eyebrow: 'Debrify TV · applies to every channel',
+              eyebrow: 'MegaWatch TV · applies to every channel',
               title: 'Channel playback',
               subtitle:
                   'Choose the provider, filters, and starting behavior used when a channel tunes.',

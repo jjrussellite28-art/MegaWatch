@@ -357,7 +357,7 @@ const List<_Category> _kCategories = [
   _Category(
     Icons.fiber_dvr_rounded,
     'Live TV & DVR',
-    'Debrify TV, recordings & IPTV',
+    'MegaWatch TV, recordings & IPTV',
     'Live television, organized.',
     'Manage channel sources, recordings, and the on-screen guide.',
   ),
@@ -393,7 +393,7 @@ const List<_Category> _kCategories = [
     Icons.info_outline_rounded,
     'About',
     'Updates, version & community',
-    'Debrify, up to date.',
+    'MegaWatch, up to date.',
     'Version, release checks, and the places where the community meets.',
   ),
   _Category(

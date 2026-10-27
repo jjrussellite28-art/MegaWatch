@@ -299,7 +299,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _desktopSidebarStyle = 'rail';
   String _textBrightness = 'bright';
   String _launchAnimation = 'trace';
-  String _downloadLocationSubtitle = 'Downloads/Debrify (default)';
+  String _downloadLocationSubtitle = 'Downloads/MegaWatch (default)';
   SupportDonationConfig _supportDonation = SupportDonationConfig.empty;
   String _supportSettingsLabel = 'Support Debrify';
   String _supportSettingsSubtitle = 'Help fund development with a donation';
@@ -601,7 +601,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _desktopSidebarStyle,
       ),
       summaries.read(
-        'Debrify TV',
+        'MegaWatch TV',
         () => StorageService.getDebrifyTvStyle(),
         _debrifyTvStyle,
       ),
@@ -2959,7 +2959,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'Sidebar': Icons.view_sidebar_rounded,
       'Profile Picker': Icons.switch_account_rounded,
       'Playback': Icons.open_in_new_rounded,
-      'Debrify TV': Icons.live_tv_rounded,
+      'MegaWatch TV': Icons.live_tv_rounded,
       'Stremio TV': Icons.smart_display_rounded,
       'IPTV Playlists': Icons.playlist_play_rounded,
       'Recordings': Icons.fiber_dvr_rounded,
@@ -2988,7 +2988,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'Sidebar': _openSidebarCustomization,
       'Profile Picker': _openProfileAppearance,
       'Playback': _openExternalPlayerSettings,
-      'Debrify TV': _openDebrifyTvSettings,
+      'MegaWatch TV': _openDebrifyTvSettings,
       'Stremio TV': _openStremioTvSettings,
       'IPTV Playlists': _openIptvSettings,
       'Recordings': _openRecordings,
@@ -4411,37 +4411,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       // Debrify TV
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Keyword Threshold',
-        'Choose when Debrify TV fetches more or fewer results per keyword',
+        'Choose when MegaWatch TV fetches more or fewer results per keyword',
         const ['keyword', 'threshold', 'results', 'fetch', 'global tv mode'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Batch Size',
         'Number of keywords processed in each batch',
         const ['batch', 'keywords', 'performance', 'global tv mode'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Min Torrents Per Keyword',
         'Skip keywords with fewer torrent results',
         const ['minimum', 'torrents', 'keyword', 'skip', 'result count'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Max Keywords (Quick Play)',
         'Limit the keywords used in Quick Play mode',
         const ['maximum', 'keyword limit', 'quick play', 'performance'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Avoid NSFW Content',
-        'Filter adult content out of Debrify TV results',
+        'Filter adult content out of MegaWatch TV results',
         const ['nsfw', 'adult', 'safe', 'filter', 'content'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Prepare Torrents in Background',
         'Pre-add upcoming Real-Debrid and AllDebrid torrents',
         const [
@@ -4455,33 +4455,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Engine TV Mode',
-        'Enable or disable each search engine for Debrify TV',
+        'Enable or disable each search engine for MegaWatch TV',
         const ['engine', 'tv mode enabled', 'tv mode disabled', 'toggle'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Small Channel Limit',
         'Maximum results for each engine in small channel mode',
         const ['small channel', 'result limit', 'max results', 'engine'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Large Channel Limit',
         'Maximum results for each engine in large channel mode',
         const ['large channel', 'result limit', 'max results', 'engine'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Quick Play Limit',
         'Maximum results for each engine in Quick Play mode',
         const ['quick play', 'result limit', 'max results', 'engine'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Reset to Defaults',
-        'Restore the default Debrify TV engine settings',
+        'Restore the default MegaWatch TV engine settings',
         const ['reset', 'defaults', 'restore', 'engines'],
       ),
 
@@ -4701,7 +4701,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       leaf(
         'IPTV Playlists',
         'Start on a channel',
-        'Open straight into live TV when Debrify starts',
+        'Open straight into live TV when MegaWatch starts',
         const [
           'startup channel',
           'startup',
@@ -4770,7 +4770,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leaf(
           'IPTV Playlists',
           'Battery optimization',
-          'Exclude Debrify so recordings survive doze',
+          'Exclude MegaWatch so recordings survive doze',
           const [
             'battery',
             'doze',
@@ -4820,7 +4820,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leaf(
           'Profiles',
           'Ask who\'s watching at startup',
-          'Show the profile picker whenever Debrify opens',
+          'Show the profile picker whenever MegaWatch opens',
           const [
             'always ask',
             'profile behavior',
@@ -5931,7 +5931,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // devices, leaving the backup unselectable. The contents are validated by
       // BackupRestoreService.parse below, so no extension filter is needed.
       pick = await FilePicker.platform.pickFiles(
-        dialogTitle: 'Choose Debrify backup file',
+        dialogTitle: 'Choose MegaWatch backup file',
         type: FileType.any,
         withData: false,
       );
@@ -5955,7 +5955,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('That file is too large to be a Debrify backup.'),
+          content: Text('That file is too large to be a MegaWatch backup.'),
         ),
       );
       return;
@@ -6312,7 +6312,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   String get _defaultDownloadLocationLabel {
     if (_downloadLocationUsesSaf || Platform.isWindows) {
-      return 'Downloads/Debrify (default)';
+      return 'Downloads/MegaWatch (default)';
     }
     // Linux: getDownloadsDirectory isn't used there — the app writes under
     // its documents dir (see DownloadService._appDownloadsSubdir fallback).
@@ -6594,7 +6594,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final action = await showSettingsDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(profileMode ? 'Reset this profile?' : 'Reset Debrify?'),
+        title: Text(profileMode ? 'Reset this profile?' : 'Reset MegaWatch?'),
         content: Text(
           profileMode
               ? 'This clears this profile\'s settings, history, playlists, and private app data. The profile, PIN, shared connections, active jobs, downloads, and recordings remain untouched.'
@@ -6631,7 +6631,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         context: context,
         builder: (dialogContext) => StatefulBuilder(
           builder: (context, setDialogState) => AlertDialog(
-            title: const Text('Reset this Debrify installation?'),
+            title: const Text('Reset this MegaWatch installation?'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -7409,7 +7409,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final result = await Permission.requestInstallPackages.request();
     if (result.isGranted) return true;
     if (result.isPermanentlyDenied || result.isRestricted) {
-      _showSnack('Allow Debrify to install apps from your settings.');
+      _showSnack('Allow MegaWatch to install apps from your settings.');
       unawaited(openAppSettings());
     } else {
       _showSnack('Permission required to install the downloaded update.');
@@ -7601,7 +7601,7 @@ const List<SettingsCategoryDefinition> _kAdaptiveSettingsCategories = [
     label: 'About',
     subtitle: 'Updates, version & community',
     eyebrow: 'About',
-    title: 'Debrify, up to date.',
+    title: 'MegaWatch, up to date.',
     description:
         'Version, release checks, and the places where the community meets.',
   ),

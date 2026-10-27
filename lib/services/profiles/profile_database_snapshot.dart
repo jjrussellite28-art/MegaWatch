@@ -178,7 +178,7 @@ class ProfileDatabaseSnapshot {
   }) async {
     if (fileSink != null && compact) {
       throw ArgumentError(
-        'File-backed exports never omit Debrify TV; use '
+        'File-backed exports never omit MegaWatch TV; use '
         'pruneRebuildableCaches instead of compact',
       );
     }

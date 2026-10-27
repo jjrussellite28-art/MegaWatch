@@ -850,7 +850,7 @@ final class WebDavSyncRuntime
             .readWebDavTvSyncMetadata();
       } catch (error) {
         recordWebDavSyncDiagnostic(
-          'Could not read Debrify TV manual sync status',
+          'Could not read MegaWatch TV manual sync status',
           error,
         );
       }

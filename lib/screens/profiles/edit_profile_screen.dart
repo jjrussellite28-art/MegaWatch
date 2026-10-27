@@ -1768,7 +1768,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 group('SOURCE PAGES'),
                 tile(
                   ProfileFeature.debrifyTv,
-                  'Debrify TV',
+                  'MegaWatch TV',
                   'Channels curated on this device.',
                 ),
                 tile(
@@ -1788,7 +1788,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 tile(
                   ProfileFeature.remoteControl,
                   'Remote',
-                  'Control other Debrify devices and send this setup to '
+                  'Control other MegaWatch devices and send this setup to '
                       'them.',
                 ),
                 tile(

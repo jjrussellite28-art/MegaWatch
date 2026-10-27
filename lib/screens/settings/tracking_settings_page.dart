@@ -143,7 +143,7 @@ class _TrackingSettingsPageState extends State<TrackingSettingsPage> {
   Widget _scrobbleSection() => SettingsSection(
     title: 'Scrobble',
     blurb:
-        'Which services record what you watch. Debrify always keeps its own progress.',
+        'Which services record what you watch. MegaWatch always keeps its own progress.',
     children: [
       for (final source in TrackingSource.values)
         CheckboxListTile(
@@ -154,7 +154,7 @@ class _TrackingSettingsPageState extends State<TrackingSettingsPage> {
           title: Text(_label(source)),
           subtitle: Text(
             source == TrackingSource.local
-                ? 'Always on — Debrify keeps its own watch history (resume '
+                ? 'Always on — MegaWatch keeps its own watch history (resume '
                       'positions, episode progress, watched marks). On Home, '
                       'a title\'s Continue Watching card lives under the one '
                       'service that tracks it, so it isn\'t listed twice.'
@@ -201,7 +201,7 @@ class _TrackingSettingsPageState extends State<TrackingSettingsPage> {
             'Everything combined — this device and your connected trackers. '
                 'The most recent activity wins.',
           WatchProgressSource.local =>
-            'Only what you watch in Debrify counts: resume, episode lists '
+            'Only what you watch in MegaWatch counts: resume, episode lists '
                 'and Continue Watching use this device and your watched-at '
                 'setting.',
           _ =>

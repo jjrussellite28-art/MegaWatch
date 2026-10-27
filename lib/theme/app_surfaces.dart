@@ -20,7 +20,7 @@ abstract final class AppSurfaces {
     0: SurfaceKind.frozen, //  inert slot (deprecated old Home)
     1: SurfaceKind.themed, //  Playlist
     2: SurfaceKind.themed, //  Downloads
-    3: SurfaceKind.themed, //  Debrify TV
+    3: SurfaceKind.themed, //  MegaWatch TV
     4: SurfaceKind.themed, //  Real-Debrid     (Cloud family)
     5: SurfaceKind.themed, //  TorBox          (Cloud family)
     6: SurfaceKind.themed, //  PikPak          (Cloud family)

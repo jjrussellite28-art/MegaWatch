@@ -43,7 +43,7 @@ class CustomSettingsPage extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.favorite_outline),
             title: const Text('Credits'),
-            subtitle: const Text('Debrify, u/demon-myth, TMDB and more'),
+            subtitle: const Text('MegaWatch, u/demon-myth, TMDB and more'),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(builder: (_) => const CreditsPage()),
             ),

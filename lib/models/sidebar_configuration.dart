@@ -88,7 +88,7 @@ const List<SidebarDestination> sidebarDestinations = <SidebarDestination>[
   SidebarDestination(
     id: 'debrify_tv',
     tabIndex: MainTab.debrifyTv,
-    defaultLabel: 'Debrify TV',
+    defaultLabel: 'MegaWatch TV',
     section: 'TV',
     icon: Icons.tv_rounded,
   ),

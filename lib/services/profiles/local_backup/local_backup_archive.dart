@@ -523,7 +523,7 @@ class LocalBackupExporter {
               ),
       );
       if (DebrifyTvBackupOmission.fromOmissions(package.omissions) != null) {
-        throw StateError('Local archives must never omit Debrify TV');
+        throw StateError('Local archives must never omit MegaWatch TV');
       }
       cancellation?.throwIfCancelled();
 

@@ -1968,7 +1968,7 @@ class IptvChannelSheetState extends State<IptvChannelSheet>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text(
-            'Allow "Alarms & reminders" for Debrify to schedule recordings',
+            'Allow "Alarms & reminders" for MegaWatch to schedule recordings',
           ),
           action: SnackBarAction(
             label: 'Settings',

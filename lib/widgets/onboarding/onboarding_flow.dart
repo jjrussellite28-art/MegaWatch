@@ -850,7 +850,7 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
     try {
       var name = await StorageService.getRemoteTvDeviceName();
       name ??= await PlatformUtil.getDeviceName();
-      name ??= _isTelevision ? 'Debrify TV' : 'This device';
+      name ??= _isTelevision ? 'MegaWatch TV' : 'This device';
       if (!mounted ||
           attempt != _importAttempt ||
           _step != OnboardStep.importing) {

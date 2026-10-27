@@ -424,7 +424,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
         // The registry's admin invariant is the one failure retrying can't
         // fix — name it instead of the generic line.
         _error = error is StateError
-            ? 'Debrify needs at least one Admin who can manage profiles — '
+            ? 'MegaWatch needs at least one Admin who can manage profiles — '
                   'this change would remove the last one.'
             : 'Could not save this profile. Try again.';
       });
@@ -943,7 +943,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
       children: [
         tile(
           0,
-          'Debrify TV',
+          'MegaWatch TV',
           'Channels curated on this device',
           _debrifyTv,
           (v) => _debrifyTv = v,
@@ -1005,7 +1005,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
         tile(
           1,
           'Remote',
-          'Control other Debrify devices and send this setup to them.',
+          'Control other MegaWatch devices and send this setup to them.',
           _remote,
           (v) => _remote = v,
         ),
@@ -1051,7 +1051,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
       'Home shelves',
       'Search by title',
       if (can(ProfileFeature.keywordSearch)) 'Keyword search',
-      if (can(ProfileFeature.debrifyTv)) 'Debrify TV',
+      if (can(ProfileFeature.debrifyTv)) 'MegaWatch TV',
       if (can(ProfileFeature.stremioTv)) 'Stremio TV',
       if (can(ProfileFeature.iptv)) 'Live TV',
       if (can(ProfileFeature.youtube)) 'YouTube',
@@ -1062,7 +1062,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
     ];
     final cantChips = <String>[
       if (!can(ProfileFeature.keywordSearch)) 'Keyword search',
-      if (!can(ProfileFeature.debrifyTv)) 'Debrify TV',
+      if (!can(ProfileFeature.debrifyTv)) 'MegaWatch TV',
       if (!can(ProfileFeature.stremioTv)) 'Stremio TV',
       if (!can(ProfileFeature.iptv)) 'Live TV',
       if (!can(ProfileFeature.youtube)) 'YouTube',

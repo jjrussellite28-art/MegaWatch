@@ -1774,9 +1774,9 @@ class RemoteCommandRouter {
                         'excluded when this transfer was compacted '
                         '(${debrifyTvOmission!.contentsLabel}). No empty '
                         'channels will be created. After importing, restore '
-                        'a channel ZIP from Debrify TV → Import → From '
+                        'a channel ZIP from MegaWatch TV → Import → From '
                         'storage, or send them separately with Remote → '
-                        'Debrify TV Channels.' : ''}'
+                        'MegaWatch TV Channels.' : ''}'
               '${rebuildableCachesOmitted ? '\n\nRebuildable catalog and EPG '
                         'caches were compacted for transport. Playlists, '
                         'favorites, history, numbering, and settings are '
@@ -1936,7 +1936,7 @@ class RemoteCommandRouter {
             'TV imported ${report.profilesImported} profiles and '
             '${report.resourcesImported} connections'
             '${syncRestorePending ? '; WebDAV sync reconnection is pending' : ''}'
-            '${debrifyTvOmission?.isEmpty == false ? '; Debrify TV channels were not included' : ''}',
+            '${debrifyTvOmission?.isEmpty == false ? '; MegaWatch TV channels were not included' : ''}',
       );
       if (!acknowledged) {
         RemoteTransferDiagnostics.record(
@@ -1970,7 +1970,7 @@ class RemoteCommandRouter {
         'Imported ${report.profilesImported} profiles and '
         '${report.resourcesImported} connections from $sender.'
         '${report.pinResetsRequired == 0 ? '' : ' ${report.pinResetsRequired} profile(s) need a new PIN.'}'
-        '${debrifyTvOmission?.isEmpty == false ? ' Debrify TV channels were not included; import a channel ZIP or send them separately from Remote.' : ''}',
+        '${debrifyTvOmission?.isEmpty == false ? ' MegaWatch TV channels were not included; import a channel ZIP or send them separately from Remote.' : ''}',
       );
       if (receivingDuringOnboarding) {
         try {
@@ -4315,7 +4315,7 @@ class RemoteCommandRouter {
       return;
     }
     try {
-      debugPrint('RemoteCommandRouter: Importing Debrify TV channel...');
+      debugPrint('RemoteCommandRouter: Importing MegaWatch TV channel...');
 
       final channelArchive = context.channelArchive;
       if (channelArchive != null) {

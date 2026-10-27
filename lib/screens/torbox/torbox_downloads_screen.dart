@@ -458,7 +458,7 @@ class _TorboxDownloadsScreenState extends State<TorboxDownloadsScreen> {
       _showSnackBar(e.message);
     } catch (e) {
       if (!mounted) return;
-      _showSnackBar('Failed to add torrent to Debrify TV: $e');
+      _showSnackBar('Failed to add torrent to MegaWatch TV: $e');
     }
   }
 
@@ -543,7 +543,7 @@ class _TorboxDownloadsScreenState extends State<TorboxDownloadsScreen> {
       ),
       _TorboxMoreOption(
         icon: Icons.live_tv_rounded,
-        label: 'Add to Debrify TV',
+        label: 'Add to MegaWatch TV',
         onTap: () => _handleAddToDebrifyTv(torrent),
       ),
       _TorboxMoreOption(
@@ -6526,7 +6526,7 @@ class _TorboxDownloadsScreenState extends State<TorboxDownloadsScreen> {
         ),
       CloudRowAction(
         icon: Icons.live_tv_rounded,
-        label: 'Add to Debrify TV',
+        label: 'Add to MegaWatch TV',
         onSelected: () => _handleAddToDebrifyTv(torrent),
       ),
       CloudRowAction(

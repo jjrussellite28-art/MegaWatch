@@ -2243,7 +2243,7 @@ class _ExternalPlayerSettingsPageState
       if (_isAndroidTv)
         SettingsTile.spec(
           SettingsRows.debrifyTvPlayer,
-          subtitle: 'Debrify TV playback-screen style',
+          subtitle: 'MegaWatch TV playback-screen style',
           onTap: () async {
             await pushSettingsPage(context, const DebrifyTvPlayerStylePage());
           },
@@ -2290,7 +2290,7 @@ class _ExternalPlayerSettingsPageState
               _buildPlayerModeOption(
                 context,
                 value: 'debrify',
-                title: 'Debrify Player',
+                title: 'MegaWatch Player',
                 subtitle: 'Use the built-in video player',
                 icon: Icons.play_circle_filled_rounded,
                 recommended: true,
@@ -4251,7 +4251,7 @@ class _ExternalPlayerSettingsPageState
                   if (managedExternally) ...[
                     SettingsInfoBanner(
                       text:
-                          '${_defaultPlayerMode == 'deovr' ? 'DeoVR' : 'Your external player'} manages these settings. Choose Debrify Player to configure its defaults.',
+                          '${_defaultPlayerMode == 'deovr' ? 'DeoVR' : 'Your external player'} manages these settings. Choose MegaWatch Player to configure its defaults.',
                     ),
                     const SizedBox(height: 16),
                     SettingsSection(

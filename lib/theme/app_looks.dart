@@ -142,7 +142,7 @@ abstract final class LookKeys {
 
   static final debrifyTvStyle = LookKey(
     id: 'debrify_tv_style',
-    label: 'Debrify TV',
+    label: 'MegaWatch TV',
     read: () => StorageService.debrifyTvStyleCached,
     write: StorageService.setDebrifyTvStyle,
     // No notify, like iptv_style: tabs are keyed by index and rebuilt on
@@ -255,7 +255,7 @@ abstract final class AppLooks {
   static const List<AppLook> all = [
     AppLook(
       id: 'classic',
-      label: 'Debrify Classic',
+      label: 'MegaWatch Classic',
       blurb: 'The app exactly as it has always looked.',
       values: {
         'app_theme': 'legacy',
