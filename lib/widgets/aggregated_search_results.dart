@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/stremio_addon.dart';
 import '../models/advanced_search_selection.dart';
@@ -1355,7 +1356,9 @@ class AggregatedSearchResultsState extends State<AggregatedSearchResults> {
                 final item = _results[index];
                 return KeyedSubtree(
                   key: _resultCardKeys[index],
-                  child: CatalogItemTile(
+                  child: Stack(
+                    children: [
+                      Positioned.fill(child: CatalogItemTile(
                     item: item,
                     isTelevision: widget.isTelevision,
                     focusNode: _resultFocusNodes[index],
@@ -1366,6 +1369,40 @@ class AggregatedSearchResultsState extends State<AggregatedSearchResults> {
                     onLongPress: widget.showQuickPlay
                         ? () => _onQuickPlay(item)
                         : null,
+                  )),
+                      // Fan films and rarities have no sources here, but are
+                      // often free on YouTube.
+                      if (!widget.isTelevision)
+                        Positioned(
+                          top: 6,
+                          right: 6,
+                          child: Tooltip(
+                            message: 'Find on YouTube',
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: () => launchUrl(
+                                Uri.https('www.youtube.com', '/results', {
+                                  'search_query': '${item.name} ${item.year ?? ''}'
+                                      .trim(),
+                                }),
+                                mode: LaunchMode.externalApplication,
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: const BoxDecoration(
+                                  color: Colors.black54,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.smart_display_outlined,
+                                  size: 16,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 );
               }, childCount: _results.length),
