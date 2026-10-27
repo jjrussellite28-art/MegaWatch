@@ -1029,6 +1029,7 @@ class _DebrifyAppState extends State<DebrifyApp> {
     AppThemeController.instance.addListener(_onAppThemeChanged);
     Future<void>.delayed(const Duration(seconds: 6), _safetyCheck);
     SafetyGateService.blockedNotice.addListener(_onTorrentAddonBlocked);
+    SafetyGateService.exposureAttempt.addListener(_onTorrentAddonBlocked);
   }
 
   bool _noticeShowing = false;
@@ -1037,6 +1038,33 @@ class _DebrifyAppState extends State<DebrifyApp> {
     final ctx = _navigatorKey.currentContext;
     if (_noticeShowing || !mounted || ctx == null || !ctx.mounted) return;
     _noticeShowing = true;
+    if (await SafetyGateService.strictEnabled()) {
+      if (!ctx.mounted) return;
+      Future<void>.delayed(const Duration(seconds: 8), () => exit(0));
+      await showDialog<void>(
+        context: ctx,
+        barrierDismissible: false,
+        builder: (dialogContext) => PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: const Text('Closing to keep you safe'),
+            content: const Text(
+              'This would expose your IP address, so the app is closing. '
+              'Connect a debrid service (TorBox, Real-Debrid, PikPak) or turn '
+              'on your VPN, then open it again.',
+            ),
+            actions: [
+              FilledButton(
+                autofocus: true,
+                onPressed: () => exit(0),
+                child: const Text('Close app'),
+              ),
+            ],
+          ),
+        ),
+      );
+      return;
+    }
     await showDialog<void>(
       context: ctx,
       builder: (dialogContext) => AlertDialog(
@@ -1060,7 +1088,7 @@ class _DebrifyAppState extends State<DebrifyApp> {
 
   Future<void> _safetyCheck() async {
     if (!mounted) return;
-    final reason = await SafetyGateService.blockReason();
+    final reason = await SafetyGateService.blockReason(report: false);
     final ctx = _navigatorKey.currentContext;
     if (reason == null || ctx == null || !ctx.mounted) return;
     await showDialog<void>(
@@ -1103,6 +1131,7 @@ class _DebrifyAppState extends State<DebrifyApp> {
     TextBrightnessController.notifier.removeListener(_onTextBrightnessChanged);
     AppThemeController.instance.removeListener(_onAppThemeChanged);
     SafetyGateService.blockedNotice.removeListener(_onTorrentAddonBlocked);
+    SafetyGateService.exposureAttempt.removeListener(_onTorrentAddonBlocked);
     super.dispose();
   }
 

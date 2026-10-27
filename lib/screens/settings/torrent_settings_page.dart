@@ -57,6 +57,7 @@ class _TorrentSettingsPageState extends State<TorrentSettingsPage> {
 
                 const SizedBox(height: 24),
                 const SafetyLockSwitch(),
+                const StrictModeSwitch(),
                 const SizedBox(height: 8),
 
                 SettingsSection(

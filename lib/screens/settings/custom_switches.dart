@@ -63,6 +63,19 @@ class SafetyLockSwitch extends StatelessWidget {
   );
 }
 
+class StrictModeSwitch extends StatelessWidget {
+  const StrictModeSwitch({super.key});
+  @override
+  Widget build(BuildContext context) => _CustomSwitch(
+    title: 'Strict mode (custom)',
+    subtitle:
+        'If something would expose your IP address, the app shows a warning '
+        'and closes right away. Safe links still play. On by default.',
+    load: SafetyGateService.strictEnabled,
+    save: SafetyGateService.setStrict,
+  );
+}
+
 class WatchOrderSwitch extends StatelessWidget {
   const WatchOrderSwitch({super.key});
   @override

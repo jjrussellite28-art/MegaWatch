@@ -36,6 +36,27 @@ class SafetyGateService {
     return !await hasDebrid();
   }
 
+  static const _strictKey = 'safety_strict_enabled';
+
+  /// Strict mode (on by default): the moment something would expose your IP,
+  /// the app shows a warning and closes. Safe links still play.
+  static Future<bool> strictEnabled() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool(_strictKey) ?? true;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  static Future<void> setStrict(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_strictKey, value);
+  }
+
+  /// Bumped whenever a search that would expose the IP was stopped.
+  static final ValueNotifier<int> exposureAttempt = ValueNotifier<int>(0);
+
   static Future<bool> isEnabled() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -78,10 +99,11 @@ class SafetyGateService {
   }
 
   /// null when searching is allowed, otherwise the message to show.
-  static Future<String?> blockReason() async {
+  static Future<String?> blockReason({bool report = true}) async {
     if (!await isEnabled()) return null;
     if (await hasDebrid()) return null;
     if (await vpnDetected()) return null;
+    if (report) exposureAttempt.value++;
     return blockedMessage;
   }
 }

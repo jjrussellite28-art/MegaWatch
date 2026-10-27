@@ -22,7 +22,7 @@ class CreditsPage extends StatelessWidget {
     ),
     (
       'RobbdeezeNutz',
-      'Inspiration for the universe and watch-order ideas.',
+      'Ideas for live sports, IPTV portals, direct-link streaming and other features, from the RobbdeezeNutz fork of Debrify.',
       null,
     ),
     (

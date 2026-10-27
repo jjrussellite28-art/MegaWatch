@@ -35,6 +35,7 @@ class CustomSettingsPage extends StatelessWidget {
           ),
           _heading('SEARCH & SAFETY'),
           const SafetyLockSwitch(),
+          const StrictModeSwitch(),
           _heading('METADATA'),
           const WatchOrderSwitch(),
           _heading('PLAYER'),
