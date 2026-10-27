@@ -793,9 +793,9 @@ class VideoPlayerLauncher {
           builder: (dialogContext) => AlertDialog(
             title: const Text('External player unavailable'),
             content: const Text(
-              'This server requires authentication. Debrify cannot pass '
+              'This server requires authentication. MegaWatch cannot pass '
               'the required authorization headers to another app, so this video '
-              'will open in the Debrify player.',
+              'will open in the MegaWatch player.',
             ),
             actions: [
               TextButton(
@@ -805,7 +805,7 @@ class VideoPlayerLauncher {
               FilledButton(
                 autofocus: true,
                 onPressed: () => Navigator.of(dialogContext).pop(true),
-                child: const Text('Use Debrify player'),
+                child: const Text('Use MegaWatch player'),
               ),
             ],
           ),
@@ -1954,7 +1954,7 @@ class VideoPlayerLauncher {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(false),
-                child: const Text('Use Debrify player'),
+                child: const Text('Use MegaWatch player'),
               ),
               FilledButton(
                 onPressed: () => Navigator.of(dialogContext).pop(true),

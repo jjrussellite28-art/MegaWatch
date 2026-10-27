@@ -4507,7 +4507,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         return Uri.decodeComponent(last);
       }
 
-      String firstTitle = 'Debrify TV';
+      String firstTitle = 'MegaWatch TV';
 
       Future<Map<String, String>?> requestMagicNext() async {
         if (_watchCancelled) {
@@ -4549,7 +4549,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 final display = (item['displayName'] as String?)?.trim();
                 final chosenTitle = inferred.isNotEmpty
                     ? inferred
-                    : (display ?? 'Debrify TV');
+                    : (display ?? 'MegaWatch TV');
                 firstTitle = chosenTitle;
                 if (_watchCancelled) {
                   return null;
@@ -4622,7 +4622,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 final inferred = _inferTitleFromUrl(videoUrl).trim();
                 final chosenTitle = inferred.isNotEmpty
                     ? inferred
-                    : (item.name.trim().isNotEmpty ? item.name : 'Debrify TV');
+                    : (item.name.trim().isNotEmpty ? item.name : 'MegaWatch TV');
                 firstTitle = chosenTitle;
 
                 if (!_watchCancelled && newLinks.isNotEmpty) {
@@ -4982,7 +4982,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       return;
     }
 
-    String firstTitle = 'Debrify TV';
+    String firstTitle = 'MegaWatch TV';
 
     Future<Map<String, String>?> requestMagicNext() async {
       debugPrint(
@@ -5011,7 +5011,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final display = (item['displayName'] as String?)?.trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (display ?? 'Debrify TV');
+                  : (display ?? 'MegaWatch TV');
               firstTitle = chosenTitle;
               return {'url': videoUrl, 'title': chosenTitle};
             }
@@ -5072,7 +5072,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final inferred = _inferTitleFromUrl(videoUrl).trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (item.name.trim().isNotEmpty ? item.name : 'Debrify TV');
+                  : (item.name.trim().isNotEmpty ? item.name : 'MegaWatch TV');
               firstTitle = chosenTitle;
               return {'url': videoUrl, 'title': chosenTitle};
             }
@@ -5546,7 +5546,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -5575,7 +5575,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           videoPlayerRoute(
             builder: (_) => VideoPlayerScreen(
               videoUrl: first['url'] ?? '',
-              title: first['title'] ?? 'Debrify TV',
+              title: first['title'] ?? 'MegaWatch TV',
               startFromRandom: _startRandom,
               randomStartMaxPercent: _randomStartPercent,
               hideSeekbar: _hideSeekbar,
@@ -5827,7 +5827,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -5857,7 +5857,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           videoPlayerRoute(
             builder: (_) => VideoPlayerScreen(
               videoUrl: first['url'] ?? '',
-              title: first['title'] ?? 'Debrify TV',
+              title: first['title'] ?? 'MegaWatch TV',
               startFromRandom: _quickStartRandom,
               randomStartMaxPercent: _quickRandomStartPercent,
               hideSeekbar: _quickHideSeekbar,
@@ -5987,7 +5987,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       return Uri.decodeComponent(last);
     }
 
-    String firstTitle = 'Debrify TV';
+    String firstTitle = 'MegaWatch TV';
 
     Future<Map<String, String>?> requestMagicNext() async {
       debugPrint(
@@ -6012,7 +6012,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final display = (item['displayName'] as String?)?.trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (display ?? 'Debrify TV');
+                  : (display ?? 'MegaWatch TV');
               firstTitle = chosenTitle;
               return {'url': videoUrl, 'title': chosenTitle};
             }
@@ -6076,7 +6076,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final inferred = _inferTitleFromUrl(videoUrl).trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (item.name.trim().isNotEmpty ? item.name : 'Debrify TV');
+                  : (item.name.trim().isNotEmpty ? item.name : 'MegaWatch TV');
               firstTitle = chosenTitle;
 
               if (newLinks.isNotEmpty) {
@@ -6278,7 +6278,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       return Uri.decodeComponent(last);
     }
 
-    String firstTitle = 'Debrify TV';
+    String firstTitle = 'MegaWatch TV';
 
     Future<Map<String, String>?> requestMagicNext() async {
       debugPrint('DebrifyTV/AD: requestMagicNext() queueSize=${_queue.length}');
@@ -6294,7 +6294,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final display = (item['displayName'] as String?)?.trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (display ?? 'Debrify TV');
+                  : (display ?? 'MegaWatch TV');
               firstTitle = chosenTitle;
               return {'url': videoUrl, 'title': chosenTitle};
             }
@@ -6333,7 +6333,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final inferred = _inferTitleFromUrl(videoUrl).trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (item.name.trim().isNotEmpty ? item.name : 'Debrify TV');
+                  : (item.name.trim().isNotEmpty ? item.name : 'MegaWatch TV');
               firstTitle = chosenTitle;
               return {'url': videoUrl, 'title': chosenTitle};
             }
@@ -6485,7 +6485,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       final launched = await AndroidTvPlayerBridge.launchTorboxPlayback(
         initialUrl: initialUrl,
-        title: title.isEmpty ? 'Debrify TV' : title,
+        title: title.isEmpty ? 'MegaWatch TV' : title,
         magnets: magnets,
         requestNext: requestNext,
         requestChannelSwitch: _channels.length > 1 ? _requestNextChannel : null,
@@ -7158,7 +7158,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       final launched = await AndroidTvPlayerBridge.launchRealDebridPlayback(
         initialUrl: initialUrl,
-        title: title.isEmpty ? 'Debrify TV' : title,
+        title: title.isEmpty ? 'MegaWatch TV' : title,
         channelName: channelName,
         requestNext: requestNext,
         requestChannelSwitch: canSwitchChannels ? _requestNextChannel : null,
@@ -7429,7 +7429,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -7453,7 +7453,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         videoPlayerRoute(
           builder: (_) => VideoPlayerScreen(
             videoUrl: first['url'] ?? '',
-            title: first['title'] ?? 'Debrify TV',
+            title: first['title'] ?? 'MegaWatch TV',
             startFromRandom: _startRandom,
             randomStartMaxPercent: _randomStartPercent,
             hideSeekbar: _hideSeekbar,
@@ -7599,7 +7599,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -7624,7 +7624,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         videoPlayerRoute(
           builder: (_) => VideoPlayerScreen(
             videoUrl: first['url'] ?? '',
-            title: first['title'] ?? 'Debrify TV',
+            title: first['title'] ?? 'MegaWatch TV',
             startFromRandom: _startRandom,
             randomStartMaxPercent: _randomStartPercent,
             hideSeekbar: _hideSeekbar,
@@ -7692,7 +7692,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       // Reuse Torbox bridge method - it works for any stream URL
       final launched = await AndroidTvPlayerBridge.launchTorboxPlayback(
         initialUrl: initialUrl,
-        title: title.isEmpty ? 'Debrify TV' : title,
+        title: title.isEmpty ? 'MegaWatch TV' : title,
         magnets: const [],
         requestNext: requestNext,
         requestChannelSwitch: _channels.length > 1 ? _requestNextChannel : null,
@@ -9065,7 +9065,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               DebrifyTvDialogOptionCard(
                 icon: Icons.share_rounded,
                 title: 'Share channel',
-                subtitle: 'Create a portable Debrify link for this pool.',
+                subtitle: 'Create a portable MegaWatch link for this pool.',
                 tag: 'Link',
                 onPressed: () {
                   Navigator.of(dialogContext).pop();
@@ -9260,7 +9260,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             const SizedBox(height: 16),
             SwitchRow(
               title: 'Start from random timestamp',
-              subtitle: 'Each Debrify TV video starts at a random point',
+              subtitle: 'Each MegaWatch TV video starts at a random point',
               value: startRandom,
               onChanged: (v) => setStartRandom(v),
             ),
@@ -10137,7 +10137,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -10158,7 +10158,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         videoPlayerRoute(
           builder: (_) => VideoPlayerScreen(
             videoUrl: first['url'] ?? '',
-            title: first['title'] ?? 'Debrify TV',
+            title: first['title'] ?? 'MegaWatch TV',
             startFromRandom: _startRandom,
             randomStartMaxPercent: _randomStartPercent,
             hideSeekbar: _hideSeekbar,
@@ -10430,7 +10430,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -10453,7 +10453,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           videoPlayerRoute(
             builder: (_) => VideoPlayerScreen(
               videoUrl: first['url'] ?? '',
-              title: first['title'] ?? 'Debrify TV',
+              title: first['title'] ?? 'MegaWatch TV',
               startFromRandom: _startRandom,
               randomStartMaxPercent: _randomStartPercent,
               hideSeekbar: _hideSeekbar,
@@ -10609,7 +10609,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         return Uri.decodeComponent(last);
       }
 
-      String firstTitle = 'Debrify TV';
+      String firstTitle = 'MegaWatch TV';
 
       Future<Map<String, String>?> requestMagicNext() async {
         if (_watchCancelled) return null;
@@ -10627,7 +10627,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 final display = (item['displayName'] as String?)?.trim();
                 final chosenTitle = inferred.isNotEmpty
                     ? inferred
-                    : (display ?? 'Debrify TV');
+                    : (display ?? 'MegaWatch TV');
                 firstTitle = chosenTitle;
                 return {'url': videoUrl, 'title': chosenTitle};
               }
@@ -10663,7 +10663,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 final inferred = _inferTitleFromUrl(videoUrl).trim();
                 final chosenTitle = inferred.isNotEmpty
                     ? inferred
-                    : (item.name.trim().isNotEmpty ? item.name : 'Debrify TV');
+                    : (item.name.trim().isNotEmpty ? item.name : 'MegaWatch TV');
                 firstTitle = chosenTitle;
                 return {'url': videoUrl, 'title': chosenTitle};
               }
@@ -10943,7 +10943,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     final launched = await VideoPlayerLauncher.launchExternalIfConfigured(
       context,
       videoUrl: url,
-      title: title.trim().isEmpty ? 'Debrify TV' : title.trim(),
+      title: title.trim().isEmpty ? 'MegaWatch TV' : title.trim(),
     );
     if (launched) {
       _launchedPlayer = true;

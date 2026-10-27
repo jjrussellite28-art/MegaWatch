@@ -969,7 +969,7 @@ class TorrentService {
           id: config.engineId,
           displayName: config.displayName,
           description:
-              'Direct ${config.type.label} search engine configured in Debrify.',
+              'Direct ${config.type.label} search engine configured in MegaWatch.',
           icon: 'hub',
           categories: const ['general', 'movies', 'tv'],
           capabilities: const EngineCapabilities(

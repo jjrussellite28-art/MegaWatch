@@ -74,8 +74,8 @@ class MediaServerClient {
       );
     }
     final parameters = [
-      'Client="Debrify"',
-      'Device="Debrify"',
+      'Client="MegaWatch"',
+      'Device="MegaWatch"',
       'DeviceId="${_segment(deviceId)}"',
       'Version="1.0"',
       if (token != null) 'Token="$token"',

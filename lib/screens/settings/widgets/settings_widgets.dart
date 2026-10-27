@@ -438,13 +438,13 @@ abstract final class SettingsRows {
     icon: Icons.chat_rounded,
     title: 'Report a problem',
     subtitle: 'Send feedback or bug reports on GitHub',
-    url: 'https://github.com/jjrussellite28-art/debrifyy/issues',
+    url: 'https://github.com/jjrussellite28-art/megawatch/issues',
   );
   static const github = SettingsRowContent(
     icon: Icons.code_rounded,
     title: 'MegaWatch on GitHub',
     subtitle: 'Source code (AGPL-3.0) and releases',
-    url: 'https://github.com/jjrussellite28-art/debrifyy',
+    url: 'https://github.com/jjrussellite28-art/megawatch',
   );
   static const version = SettingsRowContent(
     icon: Icons.info_outline_rounded,

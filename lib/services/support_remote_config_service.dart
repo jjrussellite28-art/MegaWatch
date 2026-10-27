@@ -51,7 +51,7 @@ class SupportDonationConfig {
 
   static const empty = SupportDonationConfig(
     providers: <SupportDonationProvider>[],
-    settingsLabel: 'Support Debrify',
+    settingsLabel: 'Support MegaWatch',
     settingsSubtitle: 'Help fund development with a donation',
   );
 

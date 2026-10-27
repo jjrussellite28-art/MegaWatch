@@ -99,7 +99,7 @@ class LocalBackupManifest {
 
   static LocalBackupManifest fromJson(Map<String, dynamic> json) {
     if (json['format'] != format) {
-      throw const LocalBackupFormatException('Not a Debrify backup archive');
+      throw const LocalBackupFormatException('Not a MegaWatch backup archive');
     }
     final version = json['version'];
     if (version is! int || version < 1) {
@@ -107,7 +107,7 @@ class LocalBackupManifest {
     }
     if (version > LocalBackupManifest.version) {
       throw const LocalBackupFormatException(
-        'This backup was created by a newer Debrify. Update the app to '
+        'This backup was created by a newer MegaWatch. Update the app to '
         'restore it.',
       );
     }

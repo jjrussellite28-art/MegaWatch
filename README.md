@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jjrussellite28-art/debrifyy/releases">Download</a> •
+  <a href="https://github.com/jjrussellite28-art/megawatch/releases">Download</a> •
   <a href="CREDITS.md">Credits</a> •
-  <a href="https://github.com/jjrussellite28-art/debrifyy/issues">Report a problem</a>
+  <a href="https://github.com/jjrussellite28-art/megawatch/issues">Report a problem</a>
 </p>
 
 > **MegaWatch** is an independent fork of [Debrify](https://github.com/varunsalian/debrify) by Varun Salian and contributors, used under the AGPL-3.0 licence. It is not made, endorsed or supported by the Debrify project. Full credits, licences and the take-down policy are in [CREDITS.md](CREDITS.md). If you are credited and want something changed or removed, please open an issue and it will be handled promptly.
@@ -32,7 +32,7 @@ MegaWatch is a personal media hub for Windows (and other Flutter platforms). It 
 
 ## Install (Windows)
 
-1. Open the [Releases](https://github.com/jjrussellite28-art/debrifyy/releases) page and download `megawatch-<version>-setup.exe`.
+1. Open the [Releases](https://github.com/jjrussellite28-art/megawatch/releases) page and download `megawatch-<version>-setup.exe`.
 2. Run it. If Windows says "Windows protected your PC", choose **More info → Run anyway** (the app is not code-signed).
 3. In **Settings → Metadata** paste your own free TMDB read-access token, then connect your own debrid service and accounts.
 

@@ -411,7 +411,7 @@ class TvosTopShelfService {
 
   static String _topShelfContext(String? sourceTitle) {
     final source = sourceTitle?.trim();
-    if (source == null || source.isEmpty) return 'Spotlight on Debrify';
+    if (source == null || source.isEmpty) return 'Spotlight on MegaWatch';
     return 'Spotlight · $source';
   }
 

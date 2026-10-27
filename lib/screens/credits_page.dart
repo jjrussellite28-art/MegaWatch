@@ -71,11 +71,11 @@ class CreditsPage extends StatelessWidget {
             child: ListTile(
               title: const Text('Source code'),
               subtitle: const Text(
-                'github.com/jjrussellite28-art/debrifyy (AGPL-3.0)',
+                'github.com/jjrussellite28-art/megawatch (AGPL-3.0)',
               ),
               trailing: const Icon(Icons.open_in_new),
               onTap: () => launchUrl(
-                Uri.parse('https://github.com/jjrussellite28-art/debrifyy'),
+                Uri.parse('https://github.com/jjrussellite28-art/megawatch'),
                 mode: LaunchMode.externalApplication,
               ),
             ),

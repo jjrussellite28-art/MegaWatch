@@ -1734,7 +1734,7 @@ class RemoteCommandRouter {
         remoteContext,
         requestId: requestId,
         ok: false,
-        message: 'Open the Debrify screen on the TV, then resend',
+        message: 'Open the MegaWatch screen on the TV, then resend',
       );
       return;
     }

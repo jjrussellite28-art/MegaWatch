@@ -2143,7 +2143,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   value: _lockOnResume,
                   title: const Text('Lock when the app resumes'),
-                  subtitle: const Text('Require the PIN after leaving Debrify'),
+                  subtitle: const Text('Require the PIN after leaving MegaWatch'),
                   onChanged: (value) => setState(() => _lockOnResume = value),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
