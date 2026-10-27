@@ -95,9 +95,16 @@ const List<SidebarDestination> sidebarDestinations = <SidebarDestination>[
   SidebarDestination(
     id: 'stremio_tv',
     tabIndex: MainTab.stremioTv,
-    defaultLabel: 'Stremio TV',
+    defaultLabel: 'Usenet',
     section: 'TV',
-    icon: Icons.smart_display_rounded,
+    icon: Icons.newspaper_rounded,
+  ),
+  SidebarDestination(
+    id: 'streaming',
+    tabIndex: MainTab.streaming,
+    defaultLabel: 'Streaming',
+    section: 'Browse',
+    icon: Icons.live_tv_rounded,
   ),
   SidebarDestination(
     id: 'addons',

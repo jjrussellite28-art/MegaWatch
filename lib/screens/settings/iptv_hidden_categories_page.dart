@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import '../../models/iptv_playlist.dart';
 import '../../services/iptv_catalog_db.dart';
 import '../../services/iptv_catalog_key.dart';
+import '../../services/iptv_language_filter.dart';
+import '../../widgets/iptv/hide_foreign_dialog.dart';
 import '../../utils/platform_util.dart';
 import '../../utils/tv_keys.dart';
 import '../../utils/tv_reveal.dart';
@@ -82,6 +84,7 @@ class _IptvHiddenCategoriesPageState extends State<IptvHiddenCategoriesPage> {
   final Map<int, FocusNode> _rowNodes = {};
   final FocusNode _showAllNode = FocusNode(debugLabel: 'iptv-hidden-show-all');
   final FocusNode _hideAllNode = FocusNode(debugLabel: 'iptv-hidden-hide-all');
+  final FocusNode _hideForeignNode = FocusNode(debugLabel: 'iptv-hidden-hide-foreign');
   final List<FocusNode> _tabNodes = [];
 
   @override
@@ -104,6 +107,7 @@ class _IptvHiddenCategoriesPageState extends State<IptvHiddenCategoriesPage> {
     }
     _showAllNode.dispose();
     _hideAllNode.dispose();
+    _hideForeignNode.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -289,6 +293,32 @@ class _IptvHiddenCategoriesPageState extends State<IptvHiddenCategoriesPage> {
     _focusAfterRebuild(_showAllNode);
   }
 
+  /// One press: finds categories whose names look like another language,
+  /// shows the list, and hides them after a confirmation.
+  Future<void> _hideNonEnglish() async {
+    final tab = _tabs[_selectedTab];
+    final names = IptvLanguageFilter.findNonEnglish([
+      for (final row in _rows)
+        if (!row.hidden && !row.stale) row.name,
+    ]);
+    final ok = await confirmHideNonEnglish(context, names);
+    if (!ok || !mounted || _tabs[_selectedTab].key != tab.key) return;
+    if (!IptvCatalogDb.hideGroups(tab.key, names)) {
+      _showWriteFailure();
+      return;
+    }
+    final hide = names.toSet();
+    setState(() {
+      _rows = [
+        for (final row in _rows)
+          hide.contains(row.name)
+              ? _CategoryRow(name: row.name, count: row.count, hidden: true, stale: false)
+              : row,
+      ];
+    });
+    _focusAfterRebuild(_hideForeignNode);
+  }
+
   void _focusAfterRebuild(FocusNode node) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && node.canRequestFocus) node.requestFocus();
@@ -405,6 +435,16 @@ class _IptvHiddenCategoriesPageState extends State<IptvHiddenCategoriesPage> {
                 enabled: _canHideAll,
                 onTap: _hideAll,
                 onNavigateLeft: _canShowAll ? _showAllNode.requestFocus : null,
+                onNavigateRight: _hideForeignNode.requestFocus,
+                onNavigateDown: _focusFirstRow,
+              ),
+              const SizedBox(width: 8),
+              _FocusableTextButton(
+                focusNode: _hideForeignNode,
+                label: 'Hide non-English',
+                enabled: _canHideAll,
+                onTap: _hideNonEnglish,
+                onNavigateLeft: _hideAllNode.requestFocus,
                 onNavigateDown: _focusFirstRow,
               ),
             ],

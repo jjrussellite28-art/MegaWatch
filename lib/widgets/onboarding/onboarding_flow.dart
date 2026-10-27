@@ -12,6 +12,7 @@ import '../../screens/webdav_sync/webdav_sync_login_screen.dart';
 import '../../services/account_service.dart';
 import '../../services/alldebrid_account_service.dart';
 import '../../services/analytics_service.dart';
+import '../../services/easynews_service.dart';
 import '../../services/engine/config_loader.dart';
 import '../../services/engine/engine_registry.dart';
 import '../../services/engine/local_engine_storage.dart';
@@ -450,7 +451,9 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
     final raw = data?.text?.trim() ?? '';
     final meta = integrationMeta[_providerFlow[_providerIndex]]!;
     final parsed = parseOnboardingKey(raw);
-    final plausible = meta.type == IntegrationType.pikpak
+    final plausible = meta.type == IntegrationType.easynews
+        ? false
+        : meta.type == IntegrationType.pikpak
         ? raw.contains('@')
         : meta.keyLength != null
         ? parsed.key.length == meta.keyLength
@@ -483,17 +486,18 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
     final type = _providerFlow[_providerIndex];
     final providerIndex = _providerIndex;
     final primaryController = _controllers[type]!;
-    final parsed = type == IntegrationType.pikpak
+    final usesLogin =
+        type == IntegrationType.pikpak || type == IntegrationType.easynews;
+    final parsed = usesLogin
         ? (key: primaryController.text.trim(), hideFromNav: false)
         : parseOnboardingKey(primaryController.text);
-    final secondary = type == IntegrationType.pikpak
-        ? _pikpakPassword.text.trim()
-        : null;
-    if (parsed.key.isEmpty ||
-        (type == IntegrationType.pikpak && (secondary?.isEmpty ?? true))) {
+    final secondary = usesLogin ? _pikpakPassword.text.trim() : null;
+    if (parsed.key.isEmpty || (usesLogin && (secondary?.isEmpty ?? true))) {
       setState(() {
         _keyPhase = KeyValidationPhase.failed;
-        _keyError = type == IntegrationType.pikpak
+        _keyError = type == IntegrationType.easynews
+            ? 'Enter both your username and password.'
+            : usesLogin
             ? 'Enter both your email and password.'
             : 'Enter an API key to continue.';
       });
@@ -524,7 +528,9 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
     if (!success) {
       setState(() {
         _keyPhase = KeyValidationPhase.failed;
-        _keyError = type == IntegrationType.pikpak
+        _keyError =
+            (type == IntegrationType.pikpak ||
+                type == IntegrationType.easynews)
             ? 'Login failed. Check your credentials and try again.'
             : "That key didn't work — check for a missing character";
       });
@@ -562,6 +568,9 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
       IntegrationType.allDebrid =>
         AllDebridAccountService.validateAndGetUserInfo(value),
       IntegrationType.pikpak => _loginPikPak(value, secondary!),
+      IntegrationType.easynews => EasynewsService.instance
+          .verifyAndSave(value, secondary!)
+          .then((problem) => problem == null),
     };
   }
 
@@ -582,6 +591,7 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
       case IntegrationType.allDebrid:
         await StorageService.setAllDebridHiddenFromNav(true);
       case IntegrationType.pikpak:
+      case IntegrationType.easynews:
         return;
     }
   }

@@ -47,6 +47,8 @@ class TvTextField extends StatefulWidget {
     this.forceTvKeyboard = false,
     this.enabled = true,
     this.obscureText = false,
+    this.minLines,
+    this.maxLines = 1,
     this.cursorColor,
     this.inputFormatters,
     this.autofillHints,
@@ -102,6 +104,10 @@ class TvTextField extends StatefulWidget {
   final bool forceTvKeyboard;
   final bool enabled;
   final bool obscureText;
+
+  /// Multi-line support. Defaults keep the field a single line.
+  final int? minLines;
+  final int maxLines;
   final Color? cursorColor;
   final List<TextInputFormatter>? inputFormatters;
   final Iterable<String>? autofillHints;
@@ -1255,6 +1261,8 @@ class TvTextFieldState extends State<TvTextField> {
           enabled: enabled,
           readOnly: readOnly,
           obscureText: widget.obscureText,
+          minLines: widget.minLines,
+          maxLines: widget.maxLines,
           cursorColor: widget.cursorColor,
           inputFormatters: widget.inputFormatters,
           autofillHints: widget.autofillHints,
@@ -1279,6 +1287,8 @@ class TvTextFieldState extends State<TvTextField> {
         enabled: enabled,
         readOnly: readOnly,
         obscureText: widget.obscureText,
+        minLines: widget.minLines,
+        maxLines: widget.maxLines,
         cursorColor: widget.cursorColor,
         inputFormatters: widget.inputFormatters,
         autofillHints: widget.autofillHints,

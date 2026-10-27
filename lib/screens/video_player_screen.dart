@@ -97,6 +97,9 @@ import 'video_player/widgets/playlist_sheet.dart';
 import 'video_player/widgets/channel_guide.dart';
 import 'video_player/widgets/iptv_channel_sheet.dart';
 import 'video_player/widgets/iptv_zap_banner.dart';
+import '../services/iptv_mirrors.dart';
+import '../widgets/iptv/iptv_server_badge.dart';
+import '../widgets/usenet_safety_badge.dart';
 import 'video_player/widgets/player_guide_style.dart';
 import '../widgets/iptv/styles/iptv_style.dart';
 import 'video_player/widgets/source_sheet.dart';
@@ -593,6 +596,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// the focused control is excluded from the tree.
   final FocusNode _tvRootFocus = FocusNode(debugLabel: 'tvPlayerRoot');
 
+  /// The bar button that had focus last, so closing a menu returns to it
+  /// (e.g. the Settings button) instead of dropping focus onto the video.
+  FocusNode? _tvLastBarFocus;
+
+  void _trackTvBarFocus() {
+    final f = FocusManager.instance.primaryFocus;
+    if (f != null && f != _tvBarScope && _tvBarScope.hasFocus) {
+      _tvLastBarFocus = f;
+    }
+  }
+
+  void _tvRestoreFocusAfterOverlay() {
+    final last = _tvLastBarFocus;
+    if (last != null && last.context != null && last.canRequestFocus) {
+      _controlsVisible.value = true;
+      _scheduleAutoHide();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _anyPlayerOverlayOpen) return;
+        if (last.context != null && last.canRequestFocus) {
+          last.requestFocus();
+        } else {
+          _tvRootFocus.requestFocus();
+        }
+      });
+      return;
+    }
+    _tvRootFocus.requestFocus();
+  }
+
   /// True when there is genuinely nothing to seek: a live channel's ordinary
   /// position/duration is just the HLS rolling window. Start Over may expose
   /// its finite archive timeline explicitly. Mirrors the signal the bar uses,
@@ -745,6 +777,39 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // (codex round 2, finding 3).
     if (_activeMediaUserPaused) return false;
     return true;
+  }
+
+  /// Which IPTV server the playing live channel belongs to, or null.
+  IptvStreamAddress? get _iptvServerAddress {
+    final channel = _currentIptvChannel;
+    if (channel == null || !channel.isLive) return null;
+    return IptvMirrors.instance.addressOf(channel.url);
+  }
+
+  /// Bottom-bar "switch server" action: null (button hidden) unless the
+  /// playlist has at least one backup server.
+  VoidCallback? get _iptvServerSwitchAction {
+    final address = _iptvServerAddress;
+    if (address == null ||
+        IptvMirrors.instance.serverCount(address.primary) < 2) {
+      return null;
+    }
+    return () {
+      IptvMirrors.instance.switchNext(address.primary).then((_) {
+        if (!mounted) return;
+        setState(() {});
+        _performIptvLiveRetune('server-switch', 1);
+      });
+    };
+  }
+
+  String? get _iptvServerSwitchLabel {
+    final address = _iptvServerAddress;
+    if (address == null) return null;
+    final count = IptvMirrors.instance.serverCount(address.primary);
+    if (count < 2) return null;
+    final position = IptvMirrors.instance.activeIndex(address.primary) + 1;
+    return 'Server $position/$count';
   }
 
   /// Re-open the current live channel with its full identity (URL + the
@@ -1617,6 +1682,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   @override
   void initState() {
     super.initState();
+    FocusManager.instance.addListener(_trackTvBarFocus);
     _continuousShuffleEnabled = widget.initialContinuousShuffle;
     _activeHttpHeaders = widget.httpHeaders;
     PlayerVisibility.opened(this);
@@ -3565,7 +3631,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             // Stremio TV owns channel selection and slot changes. As on native
             // TV, a slow channel must not hit the VOD gate's one-attempt limit.
             isStremioTv: isStremioTv,
+            // Easynews links are one trusted, already-checked file: open them
+            // directly and show the player's own error if it cannot start.
+            forceDirect: _isEasynewsLaunch(initialUrl),
             openDirect: () async {
+              if (_isEasynewsLaunch(initialUrl)) _showPlayerErrorOnce();
               final opening = _openMedia(
                 mk.Media(initialUrl, httpHeaders: _activeHttpHeaders),
                 play: !hasExternalAudio,
@@ -3673,6 +3743,57 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     // Preload episode information if this is a series
     _episodeMetadataReady ??= _preloadEpisodeInfo();
+  }
+
+  /// Jump to [target] (mouse click or drag on the control bar).
+  void _seekToFromBar(Duration target) {
+    final clamped = target < Duration.zero
+        ? Duration.zero
+        : (target > _duration ? _duration : target);
+    _player.seek(clamped);
+    _traktScrobbleSeek(clamped);
+    _simklScrobbleSeek(clamped);
+    _mdblistScrobbleSeek(clamped);
+    _scheduleAutoHide();
+  }
+
+  DateTime _lastKeyboardSeekAt = DateTime.fromMillisecondsSinceEpoch(0);
+
+  /// Keyboard arrows: jump 10 seconds; hold the key to keep skipping.
+  void _keyboardSeek(int direction) {
+    final now = DateTime.now();
+    if (now.difference(_lastKeyboardSeekAt).inMilliseconds < 130) return;
+    _lastKeyboardSeekAt = now;
+    final candidate =
+        _position + VideoPlayerTimingConstants.seekDelta * direction;
+    _seekToFromBar(candidate);
+  }
+
+  String? get _activeUrlForBadge => widget.videoUrl;
+
+  bool _isEasynewsLaunch(String url) {
+    final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';
+    return host == 'easynews.com' || host.endsWith('.easynews.com');
+  }
+
+  /// Shows the player's first error as a message, then stops listening.
+  void _showPlayerErrorOnce() {
+    StreamSubscription<String>? sub;
+    sub = _player.stream.error.listen((error) {
+      // Once the video is running, a passing network hiccup is not worth a
+      // message (the player reconnects by itself).
+      if (_position > Duration.zero) return;
+      if (mounted && !_screenDisposed) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 12),
+            content: Text('Player could not open it: $error'),
+          ),
+        );
+      }
+      sub?.cancel();
+    });
+    Future<void>.delayed(const Duration(seconds: 40), () => sub?.cancel());
   }
 
   void _watchStremioTvStartup(String url) {
@@ -4775,6 +4896,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     int? preserveStartupEpoch,
   }) async {
     if (request?.isCurrent == false) return;
+    // Backup IPTV servers: channel URLs always name the playlist's main
+    // server, so swap in whichever backup the user has switched to.
+    await IptvMirrors.instance.load();
+    final mirroredUri = IptvMirrors.instance.rewrite(media.uri);
+    if (mirroredUri != media.uri) {
+      media = mk.Media(
+        mirroredUri,
+        extras: media.extras,
+        httpHeaders: media.httpHeaders,
+        start: media.start,
+      );
+    }
     final watchEpoch = ++_watchOpenEpoch;
     final sources = _effectiveSources;
     final indexedSource = sources != null &&
@@ -4843,6 +4976,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         );
       } catch (e) {
         debugPrint('Player: stream-lavf-o set failed: $e');
+      }
+      // Faster channel start: live MPEG-TS needs far less probing than ffmpeg's
+      // default before it can show the first picture. Other media goes back to
+      // mpv's automatic probing (0 = default).
+      try {
+        await platform.setProperty(
+          'demuxer-lavf-analyzeduration',
+          liveStream ? '2' : '0',
+        );
+        // 5000000 is ffmpeg's own default. (Some mpv builds reject 0 here and
+        // report "must be >= 32".)
+        await platform.setProperty(
+          'demuxer-lavf-probesize',
+          liveStream ? '1000000' : '5000000',
+        );
+      } catch (e) {
+        debugPrint('Player: fast-start probe settings failed: $e');
       }
       await _applyNetworkTuning(
         platform,
@@ -11956,6 +12106,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _iptvZapHideTimer?.cancel();
     _iptvZapTicker?.cancel();
     _tvScrubGeneration++; // invalidate any scrub still in flight
+    FocusManager.instance.removeListener(_trackTvBarFocus);
     _tvBarScope.dispose();
     _dockExtent.dispose();
     _tvPlayPauseFocus.dispose();
@@ -13099,6 +13250,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               // duration has nothing to scrub, so traversal skips the row entirely
               // rather than parking the remote on it.
               progressFocusable: !_tvNoTimeline,
+              onSeekTo: _tvNoTimeline ? null : _seekToFromBar,
               // OK is claimed by the dock's own buttons, so those presses never
               // reach _handleTvKey and never restarted the countdown.
               onInteract: _scheduleAutoHide,
@@ -13149,6 +13301,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               hasRecord: _canRecord,
               isRecording: _recordingActiveNow,
               onRecord: _canRecord ? _toggleRecording : null,
+              onSwitchServer: _iptvServerSwitchAction,
+              switchServerLabel: _iptvServerSwitchLabel,
               onLiveEdgeAction: _iptvLiveEdgeAction,
               liveEdgeActionActive: _iptvStartOverActive,
               liveEdgeActionLoading: _iptvStartOverLoading,
@@ -13219,7 +13373,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     } else {
       return;
     }
-    if (PlatformUtil.isTelevision) _tvRootFocus.requestFocus();
+    if (PlatformUtil.isTelevision) _tvRestoreFocusAfterOverlay();
   }
 
   /// Opens whichever guide this session actually has, in the order the dock
@@ -14814,6 +14968,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               }
             }
 
+            // M -> switch to the next backup IPTV server
+            if (key == LogicalKeyboardKey.keyM) {
+              final liveUrl = _currentIptvChannel?.url;
+              final address = liveUrl == null
+                  ? null
+                  : IptvMirrors.instance.addressOf(liveUrl);
+              if (address != null &&
+                  IptvMirrors.instance.serverCount(address.primary) > 1) {
+                IptvMirrors.instance.switchNext(address.primary).then((_) {
+                  if (mounted) _performIptvLiveRetune('server-switch', 1);
+                });
+                return KeyEventResult.handled;
+              }
+            }
+
             // S -> Stremio source sheet
             if (key == LogicalKeyboardKey.keyS) {
               if (_effectiveSources != null &&
@@ -15265,6 +15434,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     );
                   },
                 ),
+                // Backup IPTV servers: which server is playing, its speed, and
+                // a one-press switch to the next backup.
+                IptvServerBadge(
+                  channelUrl: (_currentIptvChannel?.isLive ?? false)
+                      ? _currentIptvChannel?.url
+                      : null,
+                  controlsVisible: _controlsVisible,
+                  onSwitched: () => _performIptvLiveRetune('server-switch', 1),
+                ),
+                // Usenet (Easynews): is this connection encrypted / on a VPN.
+                UsenetSafetyBadge(
+                  url: _activeUrlForBadge,
+                  controlsVisible: _controlsVisible,
+                ),
                 // Buffering indicator (OTT-style centered spinner)
                 ValueListenableBuilder<bool>(
                   valueListenable: _showBufferingIndicator,
@@ -15594,6 +15777,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                   onRecord: _canRecord
                                       ? _toggleRecording
                                       : null,
+                                  onSwitchServer: _iptvServerSwitchAction,
+                                  switchServerLabel: _iptvServerSwitchLabel,
                                   onLiveEdgeAction: _iptvLiveEdgeAction,
                                   liveEdgeActionActive: _iptvStartOverActive,
                                   liveEdgeActionLoading: _iptvStartOverLoading,
@@ -16872,7 +17057,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _hidePlayerMenu() {
     if (!_showPlayerMenu) return;
     setState(() => _showPlayerMenu = false);
-    if (PlatformUtil.isTelevision) _tvRootFocus.requestFocus();
+    if (PlatformUtil.isTelevision) _tvRestoreFocusAfterOverlay();
   }
 
   /// Persist an explicit subtitle choice made from the menu.

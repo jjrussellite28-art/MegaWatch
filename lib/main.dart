@@ -39,7 +39,7 @@ import 'screens/profiles/profile_recovery_screen.dart';
 import 'screens/downloads_screen.dart';
 import 'screens/trakt_calendar_screen.dart';
 import 'screens/magic_tv_screen.dart';
-import 'screens/stremio_tv/stremio_tv_screen.dart';
+import 'screens/usenet/usenet_screen.dart';
 import 'screens/playlist_screen.dart';
 import 'screens/addons_screen.dart';
 import 'services/android_native_downloader.dart';
@@ -91,6 +91,7 @@ import 'theme/legacy_theme_boundary.dart';
 import 'theme/system_bars.dart';
 import 'models/rd_torrent.dart';
 import 'package:window_manager/window_manager.dart';
+import 'screens/streaming/streaming_screen.dart';
 import 'services/deep_link_service.dart';
 import 'services/magnet_link_handler.dart';
 import 'services/stremio_service.dart';
@@ -1521,7 +1522,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     const SettingsScreen(), // 8: Settings
     // 9: Stremio TV — overridden in _buildPage so it gets the resolved TV flag;
     // this const entry is only an index-stable fallback (defaults to phone).
-    const StremioTvScreen(),
+    const UsenetScreen(),
     const WebDavFilesScreen(), // 10: WebDAV
     const PremiumizeFilesScreen(), // 11: Premiumize
     const AllDebridFilesScreen(), // 12: AllDebrid
@@ -1539,7 +1540,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     'PikPak',
     'Addons',
     'Settings',
-    'Stremio TV',
+    'Usenet',
     'WebDAV',
     'Premiumize',
     'AllDebrid',
@@ -1551,6 +1552,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     'Search', // 17: dedicated search tab (TV + sidebar layouts)
     'Discover', // 18: source-dropdown browser (Continue Watching / Trakt / …)
     'Calendar', // 19: Trakt/Simkl calendar (visible when either is connected)
+    'Streaming', // 20: your own subscriptions (YouTube, Peacock...) in a browser view
   ];
 
   final List<IconData> _icons = [
@@ -1563,7 +1565,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     Icons.cloud_circle_rounded,
     Icons.extension_rounded,
     Icons.settings_rounded,
-    Icons.smart_display_rounded,
+    Icons.newspaper_rounded,
     Icons.cloud_sync_rounded,
     Icons.workspace_premium_rounded,
     Icons.all_inclusive_rounded,
@@ -1574,6 +1576,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     Icons.search_rounded, // 17: Search
     Icons.explore_rounded, // 18: Discover
     Icons.calendar_month_rounded, // 19: Calendar (Trakt/Simkl)
+    Icons.live_tv_rounded, // 20: Streaming
   ];
 
   /// Tab index → bridge back-handler key, in ONE place. Every path that
@@ -3049,6 +3052,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   /// lands right after Discover (18) — the same visual slot — so the tab is
   /// always in a consistent place. Mutates [indices] in place.
   void _insertTraktCalendarTab(List<int> indices, bool authed) {
+    // Streaming sits just before Addons.
+    if (!indices.contains(MainTab.streaming)) {
+      final at = indices.indexOf(MainTab.addons);
+      indices.insert(at >= 0 ? at : indices.length, MainTab.streaming);
+    }
     if (!authed || indices.contains(19)) return;
     var pos = indices.indexOf(2);
     if (pos < 0) {
@@ -3192,6 +3200,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         return 'Main';
       case 13: // IPTV
       case 14: // YouTube
+      case 20: // Streaming
         return 'Browse';
       case 3: // Debrify TV
       case 9: // Stremio TV
@@ -3234,7 +3243,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       case 9: // Stremio TV — built here (not from the const _pages list) so it
         // gets the resolved native TV flag, like IPTV/YouTube/Home. Without it
         // the screen fell back to a width heuristic that mis-detected the TV.
-        return StremioTvScreen(isTelevision: _isAndroidTv);
+        return UsenetScreen(isTelevision: _isAndroidTv);
       case 13: // IPTV
         return BrowseScreen(
           tabIndex: 13,
@@ -3277,6 +3286,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         return SearchScreen(isTelevision: _isAndroidTv, discoverMode: true);
       case 19: // Calendar (gated on Trakt OR Simkl auth in the nav below)
         return const TraktCalendarScreen();
+      case 20: // Streaming
+        return StreamingScreen(isTelevision: _isAndroidTv);
       default:
         return _pages[index];
     }

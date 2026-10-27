@@ -1758,6 +1758,26 @@ class _SpotlightLiveTimelineState extends State<SpotlightLiveTimeline> {
           visible.add((index: index, programme: programme, geometry: geometry));
         }
       }
+      // Some providers list programmes whose times overlap, which painted the
+      // titles on top of each other. The later-starting programme wins: trim
+      // the earlier one so it ends where the next one begins.
+      visible.sort((a, b) => a.geometry.left.compareTo(b.geometry.left));
+      for (var i = 0; i + 1 < visible.length; i++) {
+        final current = visible[i];
+        final next = visible[i + 1];
+        final currentEnd = current.geometry.left + current.geometry.width;
+        if (currentEnd - next.geometry.left > 0.5) {
+          visible[i] = (
+            index: current.index,
+            programme: current.programme,
+            geometry: SpotlightProgrammeGeometry(
+              left: current.geometry.left,
+              width: math.max(0.0, next.geometry.left - current.geometry.left),
+            ),
+          );
+        }
+      }
+      visible.removeWhere((item) => item.geometry.width < 2);
     }
 
     return DecoratedBox(
@@ -1811,14 +1831,14 @@ class _SpotlightLiveTimelineState extends State<SpotlightLiveTimeline> {
           else if (snapshot!.programmes.isEmpty)
             _GuideMessage(
               key: ValueKey(('spotlight-empty', entry.entryKey)),
-              label: 'No programme information',
+              label: 'No guide data from your provider for this channel',
               color: tokens.fgFaint,
               onTap: () => _tapIdentity(row),
             )
           else if (visible.isEmpty)
             _GuideMessage(
               key: ValueKey(('spotlight-window-empty', entry.entryKey)),
-              label: 'No information in this time window',
+              label: 'Nothing listed in this time window - scroll to another time',
               color: tokens.fgFaint,
               onTap: () => _tapIdentity(row),
             ),

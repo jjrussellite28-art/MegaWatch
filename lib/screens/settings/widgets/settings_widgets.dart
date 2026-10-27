@@ -1122,6 +1122,8 @@ class ConnectionsSummary extends StatefulWidget {
   final ConnectionInfo tracking;
   // Null when MDBList is hidden (alpha) — its card + focus node are then omitted.
   final ConnectionInfo? mdblist;
+  // Usenet (Easynews), shown under the debrid ones.
+  final ConnectionInfo? usenet;
   final FocusNode? firstCardFocusNode;
 
   const ConnectionsSummary({
@@ -1139,6 +1141,7 @@ class ConnectionsSummary extends StatefulWidget {
     required this.simkl,
     required this.tracking,
     this.mdblist,
+    this.usenet,
     this.firstCardFocusNode,
   });
 
@@ -1424,6 +1427,20 @@ class _ConnectionsSummaryState extends State<ConnectionsSummary> {
             );
           },
         ),
+        if (widget.usenet != null) ...[
+          const SizedBox(height: 22),
+          const SettingsSectionLabel('Usenet'),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              SizedBox(
+                width: 320,
+                child: ConnectionCard(info: widget.usenet!),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }

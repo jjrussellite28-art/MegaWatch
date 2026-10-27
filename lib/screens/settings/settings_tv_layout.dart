@@ -33,6 +33,10 @@ import '../../theme/app_theme_scope.dart';
 class SettingsTvLayout extends StatefulWidget {
   final List<ConnectionInfo> connections;
 
+  /// Index in [connections] where the Usenet block begins. Drawn in its own
+  /// section under the debrid providers. Null keeps the single grid.
+  final int? separateConnectionsFrom;
+
   /// Cross-service watch-history policy, visually separated from the account
   /// connections below it in the Trackers category.
   final ConnectionInfo tracking;
@@ -160,6 +164,7 @@ class SettingsTvLayout extends StatefulWidget {
   const SettingsTvLayout({
     super.key,
     required this.connections,
+    this.separateConnectionsFrom,
     required this.tracking,
     required this.trackers,
     required this.firstFocusNode,
@@ -924,7 +929,19 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
   List<Widget> _buildPaneChildren(int category) {
     switch (category) {
       case 0: // Connections
-        return [_buildConnectionGrid(widget.connections)];
+        final split = widget.separateConnectionsFrom;
+        if (split == null || split <= 0 || split >= widget.connections.length) {
+          return [_buildConnectionGrid(widget.connections)];
+        }
+        return [
+          _buildConnectionGrid(widget.connections.sublist(0, split)),
+          const SizedBox(height: 22),
+          const SettingsSectionLabel('Usenet'),
+          _buildConnectionGrid(
+            widget.connections.sublist(split),
+            nodeOffset: split,
+          ),
+        ];
       case 1: // Trackers
         return [_buildTrackerGroups()];
       case 2: // Home & Display
@@ -1496,7 +1513,10 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
     }
   }
 
-  Widget _buildConnectionGrid(List<ConnectionInfo> connections) {
+  Widget _buildConnectionGrid(
+    List<ConnectionInfo> connections, {
+    int nodeOffset = 0,
+  }) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final twoColumns = MediaQuery.sizeOf(context).width >= 880;
@@ -1512,7 +1532,7 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
                 width: width,
                 child: ConnectionCard(
                   info: connections[i],
-                  focusNode: _paneNodes[i],
+                  focusNode: _paneNodes[i + nodeOffset],
                   isLeftColumn: false,
                 ),
               ),

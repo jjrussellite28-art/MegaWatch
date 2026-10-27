@@ -227,11 +227,12 @@ class CacheManager implements BaseCacheManager {
       eTag: eTag,
     );
 
+    final savedObject = cacheObject;
     final file = await _config.fileSystem.createFile(cacheObject.relativePath);
     await _store.whileWriting(cacheObject.relativePath, () async {
       await file.writeAsBytes(fileBytes);
-      await _store.putFile(cacheObject!);
-      _store.protectFile(cacheObject.relativePath);
+      await _store.putFile(savedObject);
+      _store.protectFile(savedObject.relativePath);
     });
     return file;
   }
@@ -265,6 +266,7 @@ class CacheManager implements BaseCacheManager {
       eTag: eTag,
     );
 
+    final savedObject = cacheObject;
     final file = await _config.fileSystem.createFile(cacheObject.relativePath);
 
     // Always copy file
@@ -275,8 +277,8 @@ class CacheManager implements BaseCacheManager {
           .map((event) => event)
           .pipe(sink);
 
-      await _store.putFile(cacheObject!);
-      _store.protectFile(cacheObject.relativePath);
+      await _store.putFile(savedObject);
+      _store.protectFile(savedObject.relativePath);
     });
     return file;
   }

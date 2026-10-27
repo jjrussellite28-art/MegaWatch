@@ -1,5 +1,7 @@
 import 'settings/tv_collection_list_style_page.dart';
 import 'settings/metadata_settings_page.dart';
+import 'settings/easynews_settings_page.dart';
+import '../services/easynews_service.dart';
 import '../widgets/collections/tmdb_attribution.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -258,6 +260,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _indexerManagersStatus = 'Not configured';
   String _indexerManagersCaption = 'Connect Jackett or Prowlarr';
 
+  bool _easynewsConnected = false;
+  String _easynewsUser = '';
+
   String _appVersion = '';
   String _currentVersionName = '';
   bool _checkingUpdates = false;
@@ -303,6 +308,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     AnalyticsService.screenView('settings');
     _loadSummaries();
+    unawaited(_loadUsenet());
     _loadSupportConfig();
     _loadDownloadLocation();
     // IPTV recording exists where its engine can run (Android 10+, or pre-Q
@@ -1289,7 +1295,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _mediaServersInfo,
         _iptvInfo,
         _indexerManagersInfo,
+        // Usenet lives in its own block under the debrid ones.
+        _usenetInfo,
       ],
+      separateConnectionsFrom: 9,
       // Watch history lives on its own rail category — Connections had grown
       // to ten cards covering five unrelated jobs.
       tracking: _trackingInfo,
@@ -1419,6 +1428,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // MDBList hidden for the alpha (unfinished) — see [kMdblistEnabled].
         mdblist: kMdblistEnabled ? _mdblistInfo : null,
         indexerManagers: _indexerManagersInfo,
+        usenet: _usenetInfo,
         firstCardFocusNode: _firstCardFocusNode,
       ),
       onOpenSearch: _openSettingsSearch,
@@ -1809,6 +1819,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'jackett',
         'prowlarr',
         'engines',
+      ]),
+      conn(_usenetInfo, const [
+        'usenet',
+        'easynews',
+        'newsgroups',
+        'login',
+        'account',
       ]),
 
       // Trackers — keep this block last in the Connections neighbourhood so
@@ -4942,6 +4959,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!mounted) return;
     setState(() {});
   }
+
+  Future<void> _loadUsenet() async {
+    final configured = await EasynewsService.instance.isConfigured();
+    final name = await EasynewsService.instance.savedUsername();
+    if (!mounted) return;
+    setState(() {
+      _easynewsConnected = configured;
+      _easynewsUser = name;
+    });
+  }
+
+  Future<void> _openEasynewsSettings() async {
+    if (!mounted) return;
+    await pushSettingsPage<bool>(context, const EasynewsSettingsPage());
+    if (!mounted) return;
+    await _loadUsenet();
+  }
+
+  ConnectionInfo get _usenetInfo => ConnectionInfo(
+    title: 'Usenet (Easynews)',
+    connected: _easynewsConnected,
+    status: _easynewsConnected ? 'Connected' : 'Not connected',
+    caption: _easynewsConnected
+        ? 'Signed in as $_easynewsUser'
+        : 'Add your Easynews login',
+    onTap: _openEasynewsSettings,
+  );
 
   Future<void> _openIndexerManagersSettings() async {
     if (!await _ensureProfileFeature(ProfileFeature.torrentSearch)) return;
