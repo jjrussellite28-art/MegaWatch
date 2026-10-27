@@ -2861,8 +2861,8 @@ class ShowcaseUniverse extends StatelessWidget {
   final List<FocusNode> nodes;
   final void Function(UniverseTitle)? onOpen;
 
-  /// True = sorted oldest to newest; false = the order IMDb lists them.
-  final bool byRelease;
+  /// Name of the order currently shown (Related order / Release date / Story order).
+  final String orderLabel;
   final VoidCallback? onToggleOrder;
 
   const ShowcaseUniverse({
@@ -2870,7 +2870,7 @@ class ShowcaseUniverse extends StatelessWidget {
     required this.items,
     required this.nodes,
     required this.onOpen,
-    this.byRelease = false,
+    this.orderLabel = 'Related order',
     this.onToggleOrder,
   });
 
@@ -2885,7 +2885,7 @@ class ShowcaseUniverse extends StatelessWidget {
           : TextButton.icon(
               onPressed: onToggleOrder,
               icon: const Icon(Icons.swap_vert_rounded, size: 16),
-              label: Text(byRelease ? 'Release date' : 'Related order'),
+              label: Text(orderLabel),
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white70,
                 visualDensity: VisualDensity.compact,

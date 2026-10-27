@@ -122,6 +122,27 @@ class WatchOrderService {
     }
   }
 
+  final Map<String, String> _typeCache = {};
+
+  /// The timeline lists films and episodes alike, so ask Cinemeta which one
+  /// an IMDb id really is. Falls back to [guess] when it can't be reached.
+  Future<String> resolveType(String imdbId, String? guess) async {
+    final cached = _typeCache[imdbId];
+    if (cached != null) return cached;
+    try {
+      final res = await http
+          .get(Uri.parse('https://v3-cinemeta.strem.io/meta/movie/$imdbId.json'))
+          .timeout(_timeout);
+      if (res.statusCode == 200) {
+        final meta = (jsonDecode(res.body) as Map?)?['meta'];
+        final isMovie = meta is Map && (meta['name'] ?? '').toString().isNotEmpty;
+        return _typeCache[imdbId] = isMovie ? 'movie' : 'series';
+      }
+      if (res.statusCode == 404) return _typeCache[imdbId] = 'series';
+    } catch (_) {}
+    return guess ?? 'movie';
+  }
+
   /// The full timeline for a universe id such as "wo:john-wick".
   Future<List<WatchOrderTimelineItem>> timeline(String universeId) async {
     try {

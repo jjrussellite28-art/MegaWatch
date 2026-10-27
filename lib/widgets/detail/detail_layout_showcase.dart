@@ -268,6 +268,8 @@ class _DetailShowcaseState extends State<DetailShowcase> {
     final gen = ++_woGeneration;
     final item = widget.model.item;
     final id = (item.imdbId?.startsWith('tt') ?? false) ? item.imdbId! : item.id;
+    _storyIndex = null;
+    if (_uniMode == 2) _uniMode = 0;
     if (_watchOrder != null) setState(() => _watchOrder = null);
     unawaited(() async {
       final info = await WatchOrderService.instance.forTitle(item.type, id);
@@ -997,14 +999,45 @@ class _DetailShowcaseState extends State<DetailShowcase> {
   }
 
   /// Universe order: false = as IMDb lists them, true = oldest to newest.
-  bool _uniByRelease = false;
+  // 0 = related order (IMDb), 1 = release date, 2 = story order (Watch Order).
+  int _uniMode = 0;
+  Map<String, int>? _storyIndex;
+
+  static const _uniModeNames = ['Related order', 'Release date', 'Story order'];
+
+  void _cycleUniverseOrder() {
+    final storyOk = _watchOrder?.timelineId != null;
+    final next = (_uniMode + 1) % (storyOk ? 3 : 2);
+    setState(() => _uniMode = next);
+    if (next == 2 && _storyIndex == null) {
+      final id = _watchOrder!.timelineId!;
+      unawaited(() async {
+        final items = await WatchOrderService.instance.timeline(id);
+        final map = <String, int>{};
+        for (var i = 0; i < items.length; i++) {
+          final tt = items[i].id;
+          if (tt != null) map.putIfAbsent(tt, () => i);
+        }
+        if (mounted) setState(() => _storyIndex = map);
+      }());
+    }
+  }
 
   List<UniverseTitle> get _universe {
     final list = _x?.universe ?? const <UniverseTitle>[];
-    if (!_uniByRelease) return list;
+    if (_uniMode == 0) return list;
     final sorted = List<UniverseTitle>.of(list);
     // Dart's sort is not stable, so break ties by the original position.
     final pos = {for (var i = 0; i < list.length; i++) list[i].imdbId: i};
+    if (_uniMode == 2) {
+      final story = _storyIndex;
+      if (story == null) return list;
+      sorted.sort((a, b) {
+        final c = (story[a.imdbId] ?? 100000).compareTo(story[b.imdbId] ?? 100000);
+        return c != 0 ? c : pos[a.imdbId]!.compareTo(pos[b.imdbId]!);
+      });
+      return sorted;
+    }
     sorted.sort((a, b) {
       final c = (a.year ?? 9999).compareTo(b.year ?? 9999);
       return c != 0 ? c : pos[a.imdbId]!.compareTo(pos[b.imdbId]!);
@@ -1479,9 +1512,8 @@ class _DetailShowcaseState extends State<DetailShowcase> {
                         onOpen: m.onRecommendationTap != null
                             ? _openUniverse
                             : null,
-                        byRelease: _uniByRelease,
-                        onToggleOrder: () =>
-                            setState(() => _uniByRelease = !_uniByRelease),
+                        orderLabel: _uniModeNames[_uniMode],
+                        onToggleOrder: _cycleUniverseOrder,
                       ),
                     ),
                   if (_dyk.isNotEmpty)

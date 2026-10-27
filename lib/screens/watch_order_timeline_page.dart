@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/stremio_addon.dart';
 import '../services/storage_service.dart';
 import '../services/watch_order_service.dart';
+import '../services/watched_action_coordinator.dart';
 import '../services/watched_status_service.dart';
 
 /// The whole universe in order, as the "Watch Order" add-on (u/demon-myth)
@@ -133,6 +134,88 @@ class _WatchOrderTimelinePageState extends State<WatchOrderTimelinePage> {
     }
   }
 
+  /// Marks every film, and every show that is completely behind this row,
+  /// as watched. The show on the row itself, and shows that continue later in
+  /// the timeline, are left alone so you can pick up from the episode you want.
+  Future<void> _markUpTo(List<WatchOrderTimelineItem> items, int index) async {
+    final later = <String>{
+      for (var j = index; j < items.length; j++)
+        if (items[j].id != null) items[j].id!,
+    };
+    final seen = <String>{};
+    final targets = <WatchOrderTimelineItem>[
+      for (var j = 0; j < index; j++)
+        if (items[j].canOpen &&
+            !later.contains(items[j].id) &&
+            seen.add(items[j].id!))
+          items[j],
+    ];
+    if (targets.isEmpty) {
+      _snack('Nothing before this to mark.');
+      return;
+    }
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Mark as watched?'),
+        content: Text(
+          'Mark ${targets.length} titles before "${items[index].title}" as '
+          'watched? Shows that continue later in this order are left as they are.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('Mark watched'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    var done = 0;
+    for (final t in targets) {
+      try {
+        final type = await WatchOrderService.instance.resolveType(t.id!, t.type);
+        await WatchedActionCoordinator.setTitleWatched(
+          imdbId: t.id!,
+          contentType: type,
+          watched: true,
+        );
+        done++;
+      } catch (_) {}
+    }
+    if (mounted) {
+      setState(() {});
+      _snack('Marked $done titles as watched');
+    }
+  }
+
+  void _snack(String text) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  Future<void> _openResolved(WatchOrderTimelineItem item) async {
+    final type = await WatchOrderService.instance.resolveType(
+      item.id!,
+      item.type,
+    );
+    if (!mounted) return;
+    widget.onOpen(
+      WatchOrderTimelineItem(
+        title: item.title,
+        year: item.year,
+        type: type,
+        id: item.id,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<WatchOrderTimelineItem>>(
@@ -223,11 +306,36 @@ class _WatchOrderTimelinePageState extends State<WatchOrderTimelinePage> {
                                 onTap: item.canOpen
                                     ? () {
                                         _saveLast(i);
-                                        widget.onOpen(item);
+                                        _openResolved(item);
                                       }
                                     : null,
+                                onLongPress: item.canOpen
+                                    ? () => _markUpTo(items, i)
+                                    : null,
                                 trailing: item.canOpen
-                                    ? const Icon(Icons.chevron_right_rounded)
+                                    ? Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          PopupMenuButton<String>(
+                                            icon: const Icon(Icons.more_vert),
+                                            tooltip: 'More',
+                                            onSelected: (v) {
+                                              if (v == 'mark') {
+                                                _markUpTo(items, i);
+                                              }
+                                            },
+                                            itemBuilder: (_) => const [
+                                              PopupMenuItem(
+                                                value: 'mark',
+                                                child: Text(
+                                                  'Mark everything before this as watched',
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const Icon(Icons.chevron_right_rounded),
+                                        ],
+                                      )
                                     : null,
                               );
                             },
