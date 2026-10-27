@@ -1135,6 +1135,15 @@ class HeroTrailerBackdropState extends State<HeroTrailerBackdrop>
                       padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
                       child: Row(
                         children: [
+                          // Play / pause button, always in the bar, so you
+                          // never have to hit the picture itself.
+                          _CircleControl(
+                            icon: _playing
+                                ? Icons.pause_rounded
+                                : Icons.play_arrow_rounded,
+                            tooltip: _playing ? 'Pause' : 'Play',
+                            onTap: _togglePlay,
+                          ),
                           Expanded(child: _buildSeekBar()),
                           _CircleControl(
                             icon: _userMuted
