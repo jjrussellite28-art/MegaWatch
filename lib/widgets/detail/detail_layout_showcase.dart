@@ -1,6 +1,8 @@
 import '../../screens/watch_order_timeline_page.dart';
 import '../../services/watch_order_service.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/watched_status_service.dart';
 import 'dart:developer' as developer;
 import '../../services/metadata_explore_service.dart';
 import '../../services/profiles/profile_runtime.dart';
@@ -273,8 +275,57 @@ class _DetailShowcaseState extends State<DetailShowcase> {
     if (_watchOrder != null) setState(() => _watchOrder = null);
     unawaited(() async {
       final info = await WatchOrderService.instance.forTitle(item.type, id);
-      if (mounted && gen == _woGeneration) setState(() => _watchOrder = info);
+      if (mounted && gen == _woGeneration) {
+        setState(() => _watchOrder = info);
+        unawaited(_maybeAskCatchUp(info, id));
+      }
     }());
+  }
+
+  /// If this title follows another one you haven't watched, ask once.
+  Future<void> _maybeAskCatchUp(WatchOrderInfo? info, String id) async {
+    final before = info?.before;
+    if (before == null || !before.canOpen) return;
+    try {
+      if (WatchedStatusService.instance.isWatched(before.id!, before.type!)) {
+        return;
+      }
+      final prefs = await SharedPreferences.getInstance();
+      final key = 'wo_catchup_$id';
+      if (prefs.getBool(key) ?? false) return;
+      await prefs.setBool(key, true);
+      if (!mounted) return;
+      final choice = await showDialog<String>(
+        context: context,
+        builder: (c) => AlertDialog(
+          title: const Text('Heads up'),
+          content: Text(
+            'This comes after "${before.title}", which you haven\'t watched yet.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(c, 'skip'),
+              child: const Text('Skip, keep going'),
+            ),
+            if (info?.timelineId != null)
+              TextButton(
+                onPressed: () => Navigator.pop(c, 'start'),
+                child: const Text('Start from the beginning'),
+              ),
+            FilledButton(
+              onPressed: () => Navigator.pop(c, 'before'),
+              child: const Text('Watch it first'),
+            ),
+          ],
+        ),
+      );
+      if (!mounted) return;
+      if (choice == 'before') {
+        _openWatchOrderEntry(before);
+      } else if (choice == 'start') {
+        _openWatchOrderTimeline();
+      }
+    } catch (_) {}
   }
 
   void _openWatchOrderEntry(WatchOrderEntry e) {

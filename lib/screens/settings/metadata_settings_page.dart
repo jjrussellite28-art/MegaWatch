@@ -1,4 +1,5 @@
 import '../../services/safety_gate_service.dart';
+import '../credits_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/metadata_preferences.dart';
@@ -317,6 +318,14 @@ class _MetadataSettingsPageState extends State<MetadataSettingsPage> {
                           child: Text('Saved. Reopen a title to see it.'),
                         ),
                     ],
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.favorite_outline),
+                  title: const Text('Credits'),
+                  subtitle: const Text('Debrify, u/demon-myth, TMDB and more'),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const CreditsPage()),
                   ),
                 ),
                 SwitchListTile(
