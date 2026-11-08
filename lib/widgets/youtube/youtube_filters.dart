@@ -16,6 +16,8 @@ String youtubeQualityLabel(int height) => '${height}p';
 class YoutubeFiltersBar extends StatelessWidget {
   final int selectedHeight;
   final int resultCount;
+  final String selectedCodec;
+  final ValueChanged<String> onCodecChanged;
   final bool isTelevision;
   final ValueChanged<int> onQualityChanged;
   final FocusNode? qualityFocusNode;
@@ -28,6 +30,8 @@ class YoutubeFiltersBar extends StatelessWidget {
     super.key,
     required this.selectedHeight,
     required this.resultCount,
+    required this.selectedCodec,
+    required this.onCodecChanged,
     required this.isTelevision,
     required this.onQualityChanged,
     this.qualityFocusNode,
@@ -56,6 +60,17 @@ class YoutubeFiltersBar extends StatelessWidget {
                 focusNode: qualityFocusNode,
                 isTelevision: isTelevision,
                 onUpArrowPressed: onUpArrowPressed,
+              ),
+              const SizedBox(width: 10),
+              StremioDropdown<String>(
+                label: 'Codec',
+                value: selectedCodec,
+                options: const [
+                  StremioDropdownOption('auto', 'Automatic (H.264 first)'),
+                  StremioDropdownOption('vp9', 'Prefer VP9'),
+                ],
+                onSelected: onCodecChanged,
+                isTelevision: isTelevision,
               ),
               const SizedBox(width: 10),
               // Explains the resolver's step-down: the preference is a ceiling,
