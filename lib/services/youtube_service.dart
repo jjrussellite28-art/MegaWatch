@@ -235,7 +235,8 @@ class YoutubeService {
 
   /// Run a fresh search. Resets pagination state.
   static Future<YoutubeSearchResult> search(String query) async {
-    final data = await _innertube('search', {'query': query});
+    _continuationToken = null;
+    final data = await _innertube('search', {'query': query.trim()});
     return _parseSearchResponse(data);
   }
 
@@ -256,7 +257,10 @@ class YoutubeService {
     void walk(dynamic node) {
       if (node is Map<String, dynamic>) {
         final vr = node['videoRenderer'];
-        if (vr is Map<String, dynamic>) renderers.add(vr);
+        if (vr is Map) renderers.add(Map<String, dynamic>.from(vr));
+        // YouTube also uses compact video renderers in some result layouts.
+        final compact = node['compactVideoRenderer'];
+        if (compact is Map) renderers.add(Map<String, dynamic>.from(compact));
         // The results "load more" token lives specifically in the
         // continuationItemRenderer — other continuationCommands in the
         // response belong to unrelated UI chrome (filters, topbar, hotkeys).
@@ -280,9 +284,10 @@ class YoutubeService {
     _continuationToken = continuation;
 
     final videos = <YoutubeVideo>[];
+    final seen = <String>{};
     for (final vr in renderers) {
       final video = _parseVideoRenderer(vr);
-      if (video != null) videos.add(video);
+      if (video != null && seen.add(video.id)) videos.add(video);
     }
 
     return YoutubeSearchResult(
