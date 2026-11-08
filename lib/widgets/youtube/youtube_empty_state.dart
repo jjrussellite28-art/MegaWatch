@@ -29,7 +29,7 @@ class YoutubeEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             const Text(
-              'YouTube',
+              'Smart YouTube',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -37,7 +37,7 @@ class YoutubeEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Search for any video — streamed on-device, no account needed',
+              'Search and watch public videos inside MegaWatch. No sign-in required.',
               style: TextStyle(
                 color: app.youtube.textDim,
                 fontSize: 14,
