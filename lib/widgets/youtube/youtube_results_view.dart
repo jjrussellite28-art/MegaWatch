@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../models/playlist_view_mode.dart';
 import '../../models/stremio_subtitle.dart';
 import '../../models/torrent.dart';
@@ -366,86 +365,51 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
     _qualityFocusNode.requestFocus();
   }
 
-  /// Opens the official YouTube website without handling Google credentials.
-  Future<void> _openOfficialYouTube({bool search = false}) async {
-    final query = widget.searchQuery.trim();
-    final uri = search && query.isNotEmpty
-        ? Uri.https('www.youtube.com', '/results', {'search_query': query})
-        : Uri.https('www.youtube.com', '/');
-    try {
-      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!opened && mounted) _showBrowserError();
-    } catch (_) {
-      if (mounted) _showBrowserError();
-    }
-  }
-
-  void _showBrowserError() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Could not open YouTube in your browser.')),
-    );
-  }
-
-  Widget _officialYouTubeHeader() {
+  /// YouTube stays inside MegaWatch; never send users to an external browser.
+  /// Search is submitted by the parent search field and results are displayed
+  /// by the existing in-app cards/player while the native redesign continues.
+  Widget _youtubeHeader() {
     final query = widget.searchQuery.trim();
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: const Color(0xFF171717),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: const Color(0xFF333333)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF0033),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('YouTube', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-                    Text('Watch on the official YouTube website', style: TextStyle(fontSize: 13, color: Color(0xFFBDBDBD))),
-                  ],
-                ),
-              ),
-            ],
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFF0033),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
           ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              FilledButton.icon(
-                style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFF0033), foregroundColor: Colors.white),
-                onPressed: () => _openOfficialYouTube(),
-                icon: const Icon(Icons.open_in_browser),
-                label: const Text('Open YouTube'),
-              ),
-              if (query.isNotEmpty)
-                OutlinedButton.icon(
-                  onPressed: () => _openOfficialYouTube(search: true),
-                  icon: const Icon(Icons.search),
-                  label: const Text('Search on YouTube'),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('YouTube', style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: Colors.white)),
+                Text(
+                  query.isEmpty ? 'Search and watch without leaving MegaWatch' : 'Results for: $query',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: Color(0xFFBDBDBD), fontSize: 13),
                 ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 10),
-          const Text(
-            'Google sign-in, subscriptions and Premium stay in your browser. The results below use MegaWatch’s existing search system.',
-            style: TextStyle(color: Color(0xFFBDBDBD), fontSize: 12),
-          ),
+          if (query.isNotEmpty)
+            IconButton(
+              tooltip: 'Search again inside MegaWatch',
+              onPressed: _performSearch,
+              icon: const Icon(Icons.refresh, color: Colors.white),
+            ),
         ],
       ),
     );
@@ -455,7 +419,7 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _officialYouTubeHeader(),
+        _youtubeHeader(),
         YoutubeFiltersBar(
           selectedHeight: _maxHeight,
           resultCount: _videos.length,
