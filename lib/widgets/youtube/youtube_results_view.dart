@@ -366,31 +366,96 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
     _qualityFocusNode.requestFocus();
   }
 
-  /// Official YouTube runs in the user's normal browser so Google handles
-  /// sign-in, subscriptions, Premium, and playback directly. We never collect
-  /// credentials or attempt to extract streams in this path.
-  Future<void> _openOfficialYouTube() async {
-    final uri = Uri.https('www.youtube.com', '/');
+  /// Opens the official YouTube website without handling Google credentials.
+  Future<void> _openOfficialYouTube({bool search = false}) async {
+    final query = widget.searchQuery.trim();
+    final uri = search && query.isNotEmpty
+        ? Uri.https('www.youtube.com', '/results', {'search_query': query})
+        : Uri.https('www.youtube.com', '/');
     try {
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!opened && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open YouTube in your browser.')),
-        );
-      }
+      if (!opened && mounted) _showBrowserError();
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open YouTube in your browser.')),
-        );
-      }
+      if (mounted) _showBrowserError();
     }
+  }
+
+  void _showBrowserError() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Could not open YouTube in your browser.')),
+    );
+  }
+
+  Widget _officialYouTubeHeader() {
+    final query = widget.searchQuery.trim();
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF171717),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF333333)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF0033),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('YouTube', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                    Text('Watch on the official YouTube website', style: TextStyle(fontSize: 13, color: Color(0xFFBDBDBD))),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              FilledButton.icon(
+                style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFF0033), foregroundColor: Colors.white),
+                onPressed: () => _openOfficialYouTube(),
+                icon: const Icon(Icons.open_in_browser),
+                label: const Text('Open YouTube'),
+              ),
+              if (query.isNotEmpty)
+                OutlinedButton.icon(
+                  onPressed: () => _openOfficialYouTube(search: true),
+                  icon: const Icon(Icons.search),
+                  label: const Text('Search on YouTube'),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Google sign-in, subscriptions and Premium stay in your browser. The results below use MegaWatch’s existing search system.',
+            style: TextStyle(color: Color(0xFFBDBDBD), fontSize: 12),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        _officialYouTubeHeader(),
         YoutubeFiltersBar(
           selectedHeight: _maxHeight,
           resultCount: _videos.length,
@@ -399,18 +464,6 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
           qualityFocusNode: _qualityFocusNode,
           onUpArrowPressed: widget.onUpArrowFromFilters,
         ),
-        if (!widget.isTelevision)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: OutlinedButton.icon(
-                onPressed: _openOfficialYouTube,
-                icon: const Icon(Icons.open_in_browser),
-                label: const Text('Open official YouTube'),
-              ),
-            ),
-          ),
         Expanded(child: _buildContent()),
       ],
     );
