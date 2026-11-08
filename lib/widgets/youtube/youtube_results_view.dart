@@ -365,7 +365,7 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
     _qualityFocusNode.requestFocus();
   }
 
-  /// YouTube stays inside MegaWatch; never send users to an external browser.
+  /// SmartTube-style experience stays inside MegaWatch; no external browser.
   /// Search is submitted by the parent search field and results are displayed
   /// by the existing in-app cards/player while the native redesign continues.
   Widget _youtubeHeader() {
@@ -394,9 +394,9 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('YouTube', style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: Colors.white)),
+                const Text('MegaWatch Smart YouTube', style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: Colors.white)),
                 Text(
-                  query.isEmpty ? 'Search and watch without leaving MegaWatch' : 'Results for: $query',
+                  query.isEmpty ? 'TV-style browsing and playback inside MegaWatch' : 'Results for: $query',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(color: Color(0xFFBDBDBD), fontSize: 13),
