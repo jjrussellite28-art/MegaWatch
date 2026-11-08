@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/playlist_view_mode.dart';
 import '../../models/stremio_subtitle.dart';
 import '../../models/torrent.dart';
@@ -365,6 +366,27 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
     _qualityFocusNode.requestFocus();
   }
 
+  /// Official YouTube runs in the user's normal browser so Google handles
+  /// sign-in, subscriptions, Premium, and playback directly. We never collect
+  /// credentials or attempt to extract streams in this path.
+  Future<void> _openOfficialYouTube() async {
+    final uri = Uri.https('www.youtube.com', '/');
+    try {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open YouTube in your browser.')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open YouTube in your browser.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -377,6 +399,18 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
           qualityFocusNode: _qualityFocusNode,
           onUpArrowPressed: widget.onUpArrowFromFilters,
         ),
+        if (!widget.isTelevision)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton.icon(
+                onPressed: _openOfficialYouTube,
+                icon: const Icon(Icons.open_in_browser),
+                label: const Text('Open official YouTube'),
+              ),
+            ),
+          ),
         Expanded(child: _buildContent()),
       ],
     );
