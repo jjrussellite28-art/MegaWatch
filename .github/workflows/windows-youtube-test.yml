@@ -1,0 +1,45 @@
+name: MegaWatch Windows YouTube test build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/windows-youtube-rebuild
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout development branch
+        uses: actions/checkout@v4
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Analyze YouTube files
+        shell: pwsh
+        run: flutter analyze --no-fatal-infos lib/services/youtube_service.dart lib/widgets/youtube/youtube_results_view.dart
+      - name: Build Windows
+        run: flutter build windows --release
+      - name: Package portable build
+        shell: pwsh
+        run: |
+          $folder = 'build/windows/x64/runner/Release'
+          if (!(Test-Path $folder)) { throw "Windows build output missing: $folder" }
+          Compress-Archive -Path "$folder/*" -DestinationPath "MegaWatch-Windows-YouTube-Test.zip" -Force
+      - name: Upload Windows test application
+        uses: actions/upload-artifact@v4
+        with:
+          name: MegaWatch-Windows-YouTube-Test
+          path: MegaWatch-Windows-YouTube-Test.zip
+          if-no-files-found: error
+          retention-days: 14
