@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/playlist_view_mode.dart';
 import '../../models/stremio_subtitle.dart';
 import '../../models/torrent.dart';
@@ -56,6 +57,7 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
   final FocusNode _qualityFocusNode = FocusNode(debugLabel: 'youtube-quality-filter');
 
   int _maxHeight = 1080;
+  String _codecPreference = 'auto';
 
   String _lastSearchQuery = '';
   int _searchGeneration = 0;
@@ -66,12 +68,24 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
     _scrollController.addListener(_onScroll);
     _lastSearchQuery = widget.searchQuery;
     _loadQuality();
+    _loadCodecPreference();
     if (widget.searchQuery.isNotEmpty) _performSearch();
   }
 
   Future<void> _loadQuality() async {
     final h = await StorageService.getYoutubeMaxHeight();
     if (mounted) setState(() => _maxHeight = h);
+  }
+
+  Future<void> _loadCodecPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) setState(() => _codecPreference = prefs.getString('smart_youtube_codec') ?? 'auto');
+  }
+
+  Future<void> _onCodecChanged(String codec) async {
+    setState(() => _codecPreference = codec);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('smart_youtube_codec', codec);
   }
 
   void _onQualityChanged(int height) {
@@ -212,6 +226,7 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
       streams = await YoutubeService.resolveStreams(
         video.id,
         withCaptions: true,
+        preferVp9: _codecPreference == 'vp9',
       );
     } catch (_) {
       streams = null;
@@ -425,6 +440,8 @@ class YoutubeResultsViewState extends State<YoutubeResultsView>
           resultCount: _videos.length,
           isTelevision: widget.isTelevision,
           onQualityChanged: _onQualityChanged,
+          selectedCodec: _codecPreference,
+          onCodecChanged: _onCodecChanged,
           qualityFocusNode: _qualityFocusNode,
           onUpArrowPressed: widget.onUpArrowFromFilters,
         ),
