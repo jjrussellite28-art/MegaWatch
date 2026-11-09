@@ -1,9 +1,9 @@
-import 'package:debrify/screens/settings/widgets/settings_widgets.dart';
-import 'package:debrify/services/text_brightness.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_adapter.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/theme/widgets/parallax_focus.dart';
+import 'package:megawatch/screens/settings/widgets/settings_widgets.dart';
+import 'package:megawatch/services/text_brightness.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_adapter.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/theme/widgets/parallax_focus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -75,7 +75,7 @@ final class ProfilePackageFileSinks {
   )?
   preferencePages;
 
-  /// Drop rebuildable IPTV catalog/EPG caches from the snapshots. Debrify TV
+  /// Drop rebuildable IPTV catalog/EPG caches from the snapshots. MegaWatch TV
   /// is never omitted on this path regardless of size.
   final bool pruneRebuildableCaches;
 
@@ -142,7 +142,7 @@ class ProfilePackageService {
       throw ArgumentError('File-backed export requires a full profile export');
     }
     if (fileSinks != null && compactDatabaseSnapshots) {
-      throw ArgumentError('File-backed export never compacts Debrify TV');
+      throw ArgumentError('File-backed export never compacts MegaWatch TV');
     }
     final profile = await context.validate(registry);
     if (profile.id != scope.profileId) {
@@ -182,9 +182,9 @@ class ProfilePackageService {
           );
     final databaseSnapshots = databaseExport?.attachments ?? const {};
     final rebuildableCachesCompacted = databaseExport?.compacted
-        .where((name) => name != ProfileDatabaseSnapshot.debrifyTvDatabaseName)
+        .where((name) => name != ProfileDatabaseSnapshot.megawatchTvDatabaseName)
         .toList(growable: false);
-    final debrifyTvOmission = databaseExport?.debrifyTvOmission;
+    final megawatchTvOmission = databaseExport?.megawatchTvOmission;
     final portableFiles = sanitized
         ? const <String, Object?>{}
         : await ProfilePortableFiles.export(scope);
@@ -301,8 +301,8 @@ class ProfilePackageService {
           'rebuildableDatabaseCachesOmitted': rebuildableCachesCompacted!.join(
             ', ',
           ),
-        if (debrifyTvOmission?.isEmpty == false)
-          DebrifyTvBackupOmission.key: debrifyTvOmission!.toJson(),
+        if (megawatchTvOmission?.isEmpty == false)
+          MegaWatchTvBackupOmission.key: megawatchTvOmission!.toJson(),
       },
     );
     await context.validate(registry);
@@ -310,7 +310,7 @@ class ProfilePackageService {
   }
 
   /// [compactDatabaseSnapshots] removes rebuildable IPTV catalog caches and
-  /// omits Debrify TV channels together with their saved hash pools. Manual
+  /// omits MegaWatch TV channels together with their saved hash pools. Manual
   /// backup callers obtain explicit consent; WebDAV Sync also accepts these
   /// two named omissions when the automatic size fallback needs them and
   /// discloses that limitation on its setup page.
@@ -324,7 +324,7 @@ class ProfilePackageService {
     void Function(ProfileGraphPackageExport)? onIdentities,
   }) async {
     if (fileSinks != null && compactDatabaseSnapshots) {
-      throw ArgumentError('File-backed export never compacts Debrify TV');
+      throw ArgumentError('File-backed export never compacts MegaWatch TV');
     }
     final exported = await _exportAllProfiles(
       context: context,
@@ -397,7 +397,7 @@ class ProfilePackageService {
     final sections = <String, dynamic>{};
     final resourceBackupIds = <String, String>{};
     final compactedDatabases = <String>[];
-    var debrifyTvOmission = const DebrifyTvBackupOmission.none();
+    var megawatchTvOmission = const MegaWatchTvBackupOmission.none();
     for (var index = 0; index < profiles.length; index++) {
       final profile = profiles[index];
       final backupId = 'profile-$index';
@@ -460,11 +460,11 @@ class ProfilePackageService {
           databaseExport.compacted
               .where(
                 (entry) =>
-                    entry != ProfileDatabaseSnapshot.debrifyTvDatabaseName,
+                    entry != ProfileDatabaseSnapshot.megawatchTvDatabaseName,
               )
               .map((entry) => '${profile.name}: $entry'),
         );
-        debrifyTvOmission += databaseExport.debrifyTvOmission;
+        megawatchTvOmission += databaseExport.megawatchTvOmission;
         if (databaseExport.attachments.isNotEmpty) {
           final databaseSectionId = '$backupId-databases';
           profileRecords.last['databasesSection'] = databaseSectionId;
@@ -586,8 +586,8 @@ class ProfilePackageService {
         'transientPreferenceAndFileCaches': true,
         if (compactedDatabases.isNotEmpty)
           'rebuildableDatabaseCachesOmitted': compactedDatabases.join(', '),
-        if (!debrifyTvOmission.isEmpty)
-          DebrifyTvBackupOmission.key: debrifyTvOmission.toJson(),
+        if (!megawatchTvOmission.isEmpty)
+          MegaWatchTvBackupOmission.key: megawatchTvOmission.toJson(),
       },
     );
     await context.validate(registry);

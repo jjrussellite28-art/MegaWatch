@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/tmdb_metadata_repository.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/tmdb_metadata_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

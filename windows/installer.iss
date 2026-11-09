@@ -1,20 +1,20 @@
-#define AppVersion GetEnv("DEBRIFY_VERSION")
+#define AppVersion GetEnv("MEGAWATCH_VERSION")
 #ifndef AppVersion
   #define AppVersion "0.0.0"
 #endif
 
 [Setup]
 AppId={{9B23C6A1-6A05-4B0C-9D6C-5DB02E2AA8F7}}
-AppName=Debrify
+AppName=MegaWatch
 AppVersion={#AppVersion}
-AppPublisher=Debrify
-AppPublisherURL=https://github.com/varunsalian/debrify
-DefaultDirName={autopf}\\Debrify
+AppPublisher=MegaWatch
+AppPublisherURL=https://github.com/jjrussellite28-art/MegaWatch
+DefaultDirName={autopf}\\MegaWatch
 DisableDirPage=yes
-DefaultGroupName=Debrify
+DefaultGroupName=MegaWatch
 DisableProgramGroupPage=yes
 OutputDir=..\\build\\windows\\installer
-OutputBaseFilename=debrify-{#AppVersion}-setup
+OutputBaseFilename=megawatch-{#AppVersion}-setup
 Compression=lzma
 SolidCompression=yes
 ArchitecturesAllowed=x64compatible
@@ -32,24 +32,24 @@ Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription
 Source: "..\\build\\windows\\x64\\runner\\Release\\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\\Debrify"; Filename: "{app}\\debrify.exe"
-Name: "{autodesktop}\\Debrify"; Filename: "{app}\\debrify.exe"; Tasks: desktopicon
+Name: "{group}\\MegaWatch"; Filename: "{app}\\megawatch.exe"
+Name: "{autodesktop}\\MegaWatch"; Filename: "{app}\\megawatch.exe"; Tasks: desktopicon
 
 [Registry]
 ; Register stremio:// URL protocol
 Root: HKCU; Subkey: "Software\\Classes\\stremio"; ValueType: string; ValueData: "URL:Stremio Protocol"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\\Classes\\stremio"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
-Root: HKCU; Subkey: "Software\\Classes\\stremio\\shell\\open\\command"; ValueType: string; ValueData: """{app}\\debrify.exe"" ""%1"""
+Root: HKCU; Subkey: "Software\\Classes\\stremio\\shell\\open\\command"; ValueType: string; ValueData: """{app}\\megawatch.exe"" ""%1"""
 
 ; Register magnet:// URL protocol
 Root: HKCU; Subkey: "Software\\Classes\\magnet"; ValueType: string; ValueData: "URL:Magnet Protocol"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\\Classes\\magnet"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
-Root: HKCU; Subkey: "Software\\Classes\\magnet\\shell\\open\\command"; ValueType: string; ValueData: """{app}\\debrify.exe"" ""%1"""
+Root: HKCU; Subkey: "Software\\Classes\\magnet\\shell\\open\\command"; ValueType: string; ValueData: """{app}\\megawatch.exe"" ""%1"""
 
-; Register debrify:// URL protocol (OAuth callbacks, etc.)
-Root: HKCU; Subkey: "Software\\Classes\\debrify"; ValueType: string; ValueData: "URL:Debrify Protocol"; Flags: uninsdeletekey
-Root: HKCU; Subkey: "Software\\Classes\\debrify"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
-Root: HKCU; Subkey: "Software\\Classes\\debrify\\shell\\open\\command"; ValueType: string; ValueData: """{app}\\debrify.exe"" ""%1"""
+; Register megawatch:// URL protocol (OAuth callbacks, etc.)
+Root: HKCU; Subkey: "Software\\Classes\\megawatch"; ValueType: string; ValueData: "URL:MegaWatch Protocol"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\\Classes\\megawatch"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
+Root: HKCU; Subkey: "Software\\Classes\\megawatch\\shell\\open\\command"; ValueType: string; ValueData: """{app}\\megawatch.exe"" ""%1"""
 
 [Run]
-Filename: "{app}\\debrify.exe"; Description: "Launch Debrify"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\\megawatch.exe"; Description: "Launch MegaWatch"; Flags: nowait postinstall skipifsilent

@@ -6,7 +6,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../models/iptv_playlist.dart';
 import '../utils/json_isolate.dart';
-import 'debrify_tv_database.dart';
+import 'megawatch_tv_database.dart';
 import 'diagnostic_log.dart' as app_diagnostics;
 import 'iptv_catalog_db.dart';
 import 'iptv_channel_order.dart';
@@ -22,7 +22,7 @@ import 'webdav_sync/webdav_sync_library_mutation.dart';
 /// made every mutation a read-modify-write of the whole store — racy against
 /// concurrent writers (the reconcile scan yields mid-flight exactly so users
 /// can star things while it runs) and increasingly expensive as they grow.
-/// Rows in `debrify_tv.db` give each mutation row-level atomicity via
+/// Rows in `megawatch_tv.db` give each mutation row-level atomicity via
 /// transactions instead. The legacy prefs blobs are imported once on first
 /// use and then removed; the prefs keys are only deleted after a successful
 /// import, so a failed import simply retries on the next call.
@@ -216,7 +216,7 @@ class IptvMediaStore {
   /// captured profile. Without this outer scope a switch could complete in
   /// the await between them and apply an A-originated request to B.
   static Future<T> _runScoped<T>(Future<T> Function(Database db) action) {
-    return DebrifyTvDatabase.instance.runScoped((db) async {
+    return MegaWatchTvDatabase.instance.runScoped((db) async {
       await _ensureMigrated();
       return action(db);
     });
@@ -224,7 +224,7 @@ class IptvMediaStore {
 
   static Future<void> _migrateFromPrefs() async {
     final prefs = await ProfilePreferences.instance();
-    final db = DebrifyTvDatabase.instance;
+    final db = MegaWatchTvDatabase.instance;
 
     // Every family lands through one batch commit per transaction: a restored
     // legacy blob can hold years of entries, and issuing two awaited platform
@@ -285,7 +285,7 @@ class IptvMediaStore {
       await db.runTxn((txn) async {
         // A very old install can reach v5 with the prefs blob still present,
         // so the import lands straight in the built-in Favorites list.
-        await DebrifyTvDatabase.seedBuiltinList(txn);
+        await MegaWatchTvDatabase.seedBuiltinList(txn);
         final existing = await existingStateKeys(txn);
         final batch = txn.batch();
         var imported = false;
@@ -508,7 +508,7 @@ class IptvMediaStore {
   // ── Lists (Favorites is the built-in one) ─────────────────────────────────
 
   /// Reserved id of the built-in Favorites list.
-  static const String favoritesListId = DebrifyTvDatabase.favoritesListId;
+  static const String favoritesListId = MegaWatchTvDatabase.favoritesListId;
 
   /// Every list, Favorites first, then custom lists in user order.
   static Future<List<IptvListMeta>> lists() {
@@ -553,7 +553,7 @@ class IptvMediaStore {
         List<int>.generate(8, (_) => random.nextInt(256), growable: false),
       ).replaceAll('=', '');
       final id = 'list_${now}_$suffix';
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final maxRow = await txn.rawQuery(
           'SELECT MAX(position) AS p FROM iptv_lists',
         );
@@ -596,7 +596,7 @@ class IptvMediaStore {
     if (listId == favoritesListId) return;
     var changed = false;
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final now = origin == WebDavSyncMutationOrigin.user
             ? _nextStampMs()
             : DateTime.now().millisecondsSinceEpoch;
@@ -638,7 +638,7 @@ class IptvMediaStore {
     var changed = false;
     var stamped = false;
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final deleted = await txn.delete(
           'iptv_lists',
           where: 'id = ? AND is_builtin = 0',
@@ -679,7 +679,7 @@ class IptvMediaStore {
   }) async {
     var changed = false;
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final rows = await txn.query(
           'iptv_lists',
           columns: const <String>['id', 'position'],
@@ -875,7 +875,7 @@ class IptvMediaStore {
     // that changed nothing must not trigger list-row reloads elsewhere.
     if (renames.isEmpty && meta.isEmpty) return false;
     var changed = false;
-    await DebrifyTvDatabase.instance.runTxn((txn) async {
+    await MegaWatchTvDatabase.instance.runTxn((txn) async {
       int? sharedStamp;
       int stamp() => sharedStamp ??= _nextStampMs();
       // One preload plus one batch: a provider-wide URL migration can rename
@@ -1016,7 +1016,7 @@ class IptvMediaStore {
     var changed = false;
     await _runScoped((_) async {
       final canonical = canonicalChannelKey(channelUrl);
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         // Match older stored URL formats too, so toggling can't leave stale
         // duplicates behind. Scoped to this list: the same channel legitimately
         // belongs to several lists at once. A list holds dozens of rows, so
@@ -1176,7 +1176,7 @@ class IptvMediaStore {
   }) async {
     var changed = false;
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final rows = await txn.query(
           'iptv_list_channels',
           columns: const <String>['list_id', 'url'],
@@ -1239,7 +1239,7 @@ class IptvMediaStore {
   }) async {
     var changed = false;
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final rows = await txn.query(
           'iptv_list_channels',
           columns: ['url', 'position'],
@@ -1360,7 +1360,7 @@ class IptvMediaStore {
       if (seen.add(item)) items.add(item);
     }
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         await txn.delete(
           'iptv_category_channel_orders',
           where: 'source_id = ? AND channel_group = ?',
@@ -1474,7 +1474,7 @@ class IptvMediaStore {
   }) async {
     var changed = false;
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final physical = await txn.query(
           'iptv_category_channel_orders',
           columns: const <String>['channel_group'],
@@ -1587,7 +1587,7 @@ class IptvMediaStore {
   }) async {
     if (channelUrl.isEmpty) return Future<void>.value();
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final now = _nextStampMs();
         await txn.insert('iptv_watch_history', {
           'url': channelUrl,
@@ -1645,7 +1645,7 @@ class IptvMediaStore {
   }) async {
     var changed = false;
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final physical = await txn.query(
           'iptv_watch_history',
           columns: const <String>['url'],
@@ -1705,7 +1705,7 @@ class IptvMediaStore {
     if (url.isEmpty) return Future<void>.value();
     var changed = false;
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final history = await txn.query(
           'iptv_watch_history',
           columns: const <String>['playlist_id'],
@@ -1807,7 +1807,7 @@ class IptvMediaStore {
     await _runScoped((_) async {
       // Read the affected URLs and delete both tables in one transaction so
       // the plan cannot be derived from one profile and applied to another.
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final rows = await txn.query(
           'iptv_watch_history',
           columns: ['url'],
@@ -1910,7 +1910,7 @@ class IptvMediaStore {
     WebDavSyncMutationOrigin origin = WebDavSyncMutationOrigin.user,
   }) async {
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         var resolvedSourceId = sourceId;
         if (resolvedSourceId == null || resolvedSourceId.isEmpty) {
           final history = await txn.query(
@@ -1971,7 +1971,7 @@ class IptvMediaStore {
     if (key.isEmpty) return Future<void>.value();
     var changed = false;
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final rows = await txn.query(
           'video_resume',
           columns: const <String>['source_id'],
@@ -2055,7 +2055,7 @@ class IptvMediaStore {
   }) async {
     var changed = false;
     await _runScoped((_) async {
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         final rows = await txn.query(
           'video_resume',
           columns: const <String>['resume_key', 'source_id'],

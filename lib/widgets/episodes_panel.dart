@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 
 import '../models/stremio_addon.dart';
 import '../models/advanced_search_selection.dart';
-import '../services/debrify_image_cache.dart';
+import '../services/megawatch_image_cache.dart';
 import '../services/stremio_service.dart';
 import '../services/trakt/trakt_episode_model.dart';
 import '../services/trakt/trakt_service.dart';
@@ -23,7 +23,7 @@ import '../services/local_series_completion_service.dart';
 import '../utils/platform_util.dart';
 import '../utils/episode_progress_merge.dart';
 import '../utils/tv_keys.dart';
-import '../screens/debrify_tv/widgets/tv_focus_scroll_wrapper.dart';
+import '../screens/megawatch_tv/widgets/tv_focus_scroll_wrapper.dart';
 import '../theme/app_theme_scope.dart';
 import 'detail/detail_style.dart';
 import 'detail/theme/detail_theme.dart';
@@ -2909,7 +2909,7 @@ class _CompactEpisodeRowState extends State<_CompactEpisodeRow> {
                             // Long-lived shared cache — the 200-object default
                             // evicts these within one TV browsing session,
                             // forcing a re-download on every visit.
-                            cacheManager: DebrifyImageCache.manager,
+                            cacheManager: MegaWatchImageCache.manager,
                             // 124-logical-px thumb — the show-poster fallback
                             // is a full-size poster; never decode it full-res
                             // for a row thumbnail (×N rows on a 2 GB box).

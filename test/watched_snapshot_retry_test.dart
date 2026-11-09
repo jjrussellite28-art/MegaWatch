@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/services/watched_snapshot_retry.dart';
+import 'package:megawatch/services/watched_snapshot_retry.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

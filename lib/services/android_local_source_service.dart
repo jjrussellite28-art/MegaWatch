@@ -67,7 +67,7 @@ class LocalSourceUnavailable implements Exception {
 }
 
 abstract final class AndroidLocalSourceService {
-  static const _channel = MethodChannel('debrify/local_sources');
+  static const _channel = MethodChannel('megawatch/local_sources');
 
   static String sourceUri(SeriesSource source) =>
       source.localUri ?? source.localPath ?? source.debridTorrentId;

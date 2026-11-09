@@ -207,7 +207,7 @@ class ProfilePreferences implements SharedPreferences {
     'recording_engine_enabled',
     'iptv_player_guide_style',
     'tv_player_controls_style',
-    'debrify_tv_player_style',
+    'megawatch_tv_player_style',
     'subtitle_auto_sync_enabled',
     'subtitle_only_foreign_audio',
     'subtitle_forced_only',

@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/screens/settings/self_profile_settings_page.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_avatar_policy.dart';
-import 'package:debrify/services/profiles/profile_lock_controller.dart';
-import 'package:debrify/services/profiles/profile_pin_service.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/screens/settings/self_profile_settings_page.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_avatar_policy.dart';
+import 'package:megawatch/services/profiles/profile_lock_controller.dart';
+import 'package:megawatch/services/profiles/profile_pin_service.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;

@@ -60,7 +60,7 @@ Metadata never changes tracking, stream bindings or episode identity.
 Reviewed the default provider paths, identity preservation and detail layout
 integration after the initial implementation. All 1,198 tests in the combined
 metadata, detail-layout/theme, DPAD, Showcase, Spotlight and settings run passed
-(`/tmp/debrify-metadata-review1-tests.log`). The tests exercise existing defaults
+(`/tmp/megawatch-metadata-review1-tests.log`). The tests exercise existing defaults
 and layouts; they do not establish every optional live-provider response.
 
 ### Review 2 — failure handling and profile changes
@@ -70,7 +70,7 @@ as an error, and null results from an unavailable explicit provider remained
 cached. Explicit artwork now retries failed lookups and retains successful
 results. Secondary language/image reads now retain the tile's relevance guard.
 The failure/transport suite passed 27 tests
-(`/tmp/debrify-metadata-review2-tests.log`). Earlier portability, sync refresh,
+(`/tmp/megawatch-metadata-review2-tests.log`). Earlier portability, sync refresh,
 Discover-query and profile tests passed 98 tests. Synced metadata policy now
 bumps the same revision as local edits, behind the authorization barrier.
 
@@ -84,7 +84,7 @@ Showcase; its franchise rail remains in the Explore page rather than inserting
 an unregistered band into Showcase. Classic details also show an inline franchise
 rail. TV Discover exposes TMDB through its Source selector; touch also has a
 shortcut. The 118-test DPAD/Showcase/settings/franchise run passed
-(`/tmp/debrify-metadata-review3-layout-tests.log`).
+(`/tmp/megawatch-metadata-review3-layout-tests.log`).
 
 Custom recommendation renderers now receive ordered presentation batches of four;
 they keep their initial rail and stop requesting new batches after invalidation.
@@ -95,13 +95,13 @@ The related 18 tests passed. The final macOS release build subsequently passed i
 The combined final run passed **1,386 tests** across metadata, transport,
 collections, profile portability/sync refresh, episode progress, Continue Watching,
 detail layouts, remote navigation, Spotlight and trailer lifecycle
-(`/tmp/debrify-metadata-final-tests.log`). These are overlapping regression suites,
+(`/tmp/megawatch-metadata-final-tests.log`). These are overlapping regression suites,
 not a count to add to earlier review runs.
 
 Targeted analysis of 36 implementation files reported no errors; the 25 existing
 diagnostics were checked against HEAD. Subsequent analysis of the repository and
 its retry tests reported no issues. The macOS release build succeeded
-(`/tmp/debrify-metadata-final-macos-build.log`).
+(`/tmp/megawatch-metadata-final-macos-build.log`).
 
 A live repository smoke test passed for localized movie details, images, trailers,
 TV seasons, aggregate credits, people, franchises, discovery and language

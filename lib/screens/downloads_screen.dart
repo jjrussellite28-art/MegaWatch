@@ -412,14 +412,14 @@ class _DownloadsScreenState extends State<DownloadsScreen>
         } catch (_) {}
         destPath = treeName != null
             ? '$treeName/$filename'
-            : 'Download/Debrify/$filename';
+            : 'Download/MegaWatch/$filename';
       } else if (Platform.isMacOS || Platform.isWindows) {
-        // Same default the service resolves: <user Downloads>/Debrify/<folder>.
+        // Same default the service resolves: <user Downloads>/MegaWatch/<folder>.
         try {
           final Directory? downloadsDir = await getDownloadsDirectory();
           if (downloadsDir != null) {
             final sep = Platform.pathSeparator;
-            destPath = 'Downloads${sep}Debrify$sep$folder$sep$filename';
+            destPath = 'Downloads${sep}MegaWatch$sep$folder$sep$filename';
           } else {
             final docs = await AppStorage.documents();
             destPath = '${docs.path}/downloads/$folder/$filename';

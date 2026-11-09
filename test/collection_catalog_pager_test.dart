@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/collection_catalog_pager.dart';
-import 'package:debrify/services/collection_folder_loader.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/collection_catalog_pager.dart';
+import 'package:megawatch/services/collection_folder_loader.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

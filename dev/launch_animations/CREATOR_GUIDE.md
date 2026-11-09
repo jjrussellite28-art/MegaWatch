@@ -3,9 +3,9 @@
 This is an app-independent **playback profile for dotLottie**, not a new archive
 format. An exporter can generate one static `.lottie` file containing custom
 outlined text and fixed colors. A compatible application needs no website,
-account, network request or Debrify-specific asset to play it.
+account, network request or MegaWatch-specific asset to play it.
 
-Debrify's implementation pins Flutter `lottie` 3.5.1. “Compatible” means the
+MegaWatch's implementation pins Flutter `lottie` 3.5.1. “Compatible” means the
 selected animation satisfies the limits below and its preview renders correctly;
 it does not mean every feature of dotLottie or After Effects is supported.
 
@@ -56,7 +56,7 @@ changes do not restart playback. Make the final frame attractive and complete:
 the player runs once at the authored rate, ignores looping and holds the final
 rendered frame while the application finishes loading.
 
-In Debrify, Home starts loading after the reveal. A five-second animation is
+In MegaWatch, Home starts loading after the reveal. A five-second animation is
 therefore not a five-second total startup promise: Home can take its existing
 10-second readiness timeout plus the exit transition. Local animation loading
 has a one-second deadline; a load failure or timeout uses the built-in animation
@@ -118,7 +118,7 @@ All artwork is generated locally without external fonts or assets. Regenerate
 with `python3 dev/launch_animations/generate_samples.py`; `sample_data.dart` is
 used only by the development verification entry point.
 
-## Debrify import and TV delivery
+## MegaWatch import and TV delivery
 
 Open Launch Animation settings, import a file, choose a composition if prompted,
 watch the preview, choose a background and select Use animation. Import alone
@@ -129,11 +129,11 @@ profile. Deleting an animation affects every profile that uses it. Missing files
 (including tvOS cache eviction) fall back safely. Backups and cross-device profile
 sync omit the device-local selection; restoring a profile clears its override.
 
-From an imported animation's detail screen, Send to TV uses Debrify's existing
+From an imported animation's detail screen, Send to TV uses MegaWatch's existing
 paired transfer connection. Both devices must support protocol 8. The selected
 composition and background travel with the original package. The receiving user
 must preview and choose Use in settings; transfer does not activate it. tvOS uses
 this path because it has no file picker.
 
 The animation files remain standard portable content; the paired delivery
-protocol is Debrify-specific and is not required by other adopting applications.
+protocol is MegaWatch-specific and is not required by other adopting applications.

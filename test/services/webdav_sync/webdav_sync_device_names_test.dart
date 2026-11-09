@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 import 'dart:async';
 
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_device_names.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_transport.dart';
-import 'package:debrify/services/profiles/profile_preference_portability.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_device_names.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_transport.dart';
+import 'package:megawatch/services/profiles/profile_preference_portability.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

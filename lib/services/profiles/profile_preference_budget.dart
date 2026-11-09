@@ -25,7 +25,7 @@ class ProfilePreferenceBudgetExceeded implements Exception {
 /// tvOS terminates the process — it does not return an error — once the
 /// defaults database reaches 1 MiB, and warns at 512 KiB. The limit is
 /// database-wide, so scoping a value behind a profile prefix does not move it
-/// out of the way. Debrify stores several unbounded collections there
+/// out of the way. MegaWatch stores several unbounded collections there
 /// (playback state, episode progress, per-title sources, playlists), so
 /// ordinary use can reach the ceiling without any cache involved.
 ///

@@ -3,9 +3,9 @@ import 'dart:ui' show Color;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/stream_badge_rules.dart';
-import 'package:debrify/services/stream_badge_matcher.dart';
-import 'package:debrify/services/stream_badges_service.dart';
+import 'package:megawatch/models/stream_badge_rules.dart';
+import 'package:megawatch/services/stream_badge_matcher.dart';
+import 'package:megawatch/services/stream_badges_service.dart';
 
 const _sample = r'''
 {

@@ -1,6 +1,6 @@
 # Adding a New Debrid/Cloud Provider
 
-Step-by-step checklist for wiring a new provider into Debrify. Use **Premiumize**
+Step-by-step checklist for wiring a new provider into MegaWatch. Use **Premiumize**
 (added in branch `0.5.1`) as the reference implementation — search the codebase
 for `premiumize` / `Premiumize` to see each piece in context.
 
@@ -222,7 +222,7 @@ Let the remote sender push credentials to a TV via UDP, just like RD/Torbox.
     configured (icon + brand color).
   - Add `case ConfigCommand.<provider>` in `_sendConfigItem()` switch.
 
-## 17. Debrify TV / Magic TV (DONE for Premiumize)
+## 17. MegaWatch TV / Magic TV (DONE for Premiumize)
 Wire the provider into `lib/screens/magic_tv_screen.dart` so it can stream via
 both the channel-based auto-play flow and the Quick Play keyword flow.
 
@@ -289,10 +289,10 @@ Pass `_premiumizeAvailable` as the 5th arg to `_determineDefaultProvider`.
 ---
 
 ### New model classes
-- **`lib/models/debrify_tv/prepared_torrents.dart`**: Add
+- **`lib/models/megawatch_tv/prepared_torrents.dart`**: Add
   `PremiumizePreparedTorrent` (same shape as `TorboxPreparedTorrent` —
   `streamUrl`, `title`, `hasMore`).
-- **`lib/models/debrify_tv/cache_results.dart`**: Add `PremiumizePlayableEntry`
+- **`lib/models/megawatch_tv/cache_results.dart`**: Add `PremiumizePlayableEntry`
   (`file: PremiumizeFile`, `title`, `info: SeriesInfo`).
 
 ---
@@ -690,9 +690,9 @@ flutter analyze lib/screens/settings_screen.dart \
 
 After the core integration is complete, audit every surface where other providers appear and ensure the new provider is wired in consistently.
 
-### Reset Debrify (`lib/screens/settings_screen.dart`)
+### Reset MegaWatch (`lib/screens/settings_screen.dart`)
 
-`_resetAppData()` deletes provider credentials when the user taps **Settings → Reset Debrify**. Add the new provider's API key deletion alongside the others:
+`_resetAppData()` deletes provider credentials when the user taps **Settings → Reset MegaWatch**. Add the new provider's API key deletion alongside the others:
 ```dart
 await StorageService.deleteNewProviderApiKey();
 ```
@@ -787,4 +787,4 @@ Any hardcoded provider list in UI strings must include the new provider:
 Two gaps identified during the Premiumize audit that require model changes before they can be implemented:
 
 1. **`AddSourcePickerDialog`** — `SeriesSource` uses `torrentHash`; Premiumize cloud items have no infohash. Requires a `premiumizeItemId` field on `SeriesSource`.
-2. **"Add to Debrify TV" in `PremiumizeFilesScreen`** — `DebrifyTvChannelAddService` requires an infohash which `PremiumizeFolderItem` doesn't carry.
+2. **"Add to MegaWatch TV" in `PremiumizeFilesScreen`** — `MegaWatchTvChannelAddService` requires an infohash which `PremiumizeFolderItem` doesn't carry.

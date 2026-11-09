@@ -6,7 +6,7 @@ import '../widgets/bulk_add_progress_dialog.dart';
 import '../widgets/channel_created_share_dialog.dart';
 import 'alldebrid_service.dart';
 import 'debrid_service.dart';
-import 'debrify_tv_channel_add_service.dart';
+import 'megawatch_tv_channel_add_service.dart';
 import 'pikpak_api_service.dart';
 import 'premiumize_service.dart';
 import 'storage_service.dart';
@@ -16,7 +16,7 @@ import 'torrent_file_service.dart';
 /// Isolated bulk-add engine for the Search tab.
 ///
 /// Ports Home's "select multiple results → add them all to a provider (or save
-/// them as a Debrify TV channel)" feature, composed only from service-layer
+/// them as a MegaWatch TV channel)" feature, composed only from service-layer
 /// primitives so Home's ~26k-line play engine stays untouched. Each provider
 /// keeps its exact semantics: TorBox cache-checks up front and honours the
 /// 60/hr limit, Premiumize adds only cached torrents, Real-Debrid / AllDebrid
@@ -28,7 +28,7 @@ class TorrentBulkAddService {
       .toList();
 
   /// Provider chooser + dispatch. [torrents] is the already-filtered selection;
-  /// [keyword] seeds the channel name when creating a Debrify TV channel.
+  /// [keyword] seeds the channel name when creating a MegaWatch TV channel.
   /// Returns true if the user chose a provider/channel (so the caller can exit
   /// selection mode); false if they dismissed the chooser without picking.
   static Future<bool> showBulkAddDialog(
@@ -208,7 +208,7 @@ class TorrentBulkAddService {
               _optionTile(
                 icon: Icons.live_tv_rounded,
                 color: const Color(0xFF14B8A6),
-                title: 'Debrify TV Channel',
+                title: 'MegaWatch TV Channel',
                 subtitle: 'Save as a local channel',
                 autofocus: autoFocused == 'create_channel',
                 onTap: () => Navigator.of(context).pop('create_channel'),
@@ -270,7 +270,7 @@ class TorrentBulkAddService {
       String? subFolderId;
       try {
         subFolderId = await pikpak.findOrCreateSubfolder(
-          folderName: 'debrify-torrents',
+          folderName: 'megawatch-torrents',
           parentFolderId: parentFolderId,
           getCachedId: StorageService.getPikPakTorrentsFolderId,
           setCachedId: StorageService.setPikPakTorrentsFolderId,
@@ -697,7 +697,7 @@ class TorrentBulkAddService {
   ) async {
     if (torrentsToAdd.isEmpty) return;
     try {
-      final result = await DebrifyTvChannelAddService.addTorrentsToChannel(
+      final result = await MegaWatchTvChannelAddService.addTorrentsToChannel(
         context,
         torrents: torrentsToAdd,
         searchKeyword: keyword,
@@ -712,7 +712,7 @@ class TorrentBulkAddService {
         ),
       );
 
-      // Offer the shareable Debrify link when a brand-new channel was created
+      // Offer the shareable MegaWatch link when a brand-new channel was created
       // (matches Home's bulk create, which passes showShareDialogOnCreate).
       if (result.isNewChannel) {
         try {
@@ -721,7 +721,7 @@ class TorrentBulkAddService {
           debugPrint('[BulkAdd] Share dialog error (non-fatal): $e');
         }
       }
-    } on DebrifyTvChannelAddException catch (e) {
+    } on MegaWatchTvChannelAddException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.message), backgroundColor: Colors.orange),

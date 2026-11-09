@@ -1,8 +1,8 @@
-import 'package:debrify/widgets/text_field_suggestions.dart';
-import 'package:debrify/widgets/tv_keyboard.dart';
-import 'package:debrify/widgets/tv_text_field.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/widgets/text_field_suggestions.dart';
+import 'package:megawatch/widgets/tv_keyboard.dart';
+import 'package:megawatch/widgets/tv_text_field.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -103,7 +103,7 @@ void main() {
       await mount(tester);
       Future<void> endEditing() async {
         await tester.binding.defaultBinaryMessenger.handlePlatformMessage(
-          'debrify/tvkeyboard',
+          'megawatch/tvkeyboard',
           const StandardMethodCodec().encodeMethodCall(
             const MethodCall('endEditing'),
           ),
@@ -136,7 +136,7 @@ void main() {
       await mount(tester, submitOnTvosEndEditing: true);
 
       await tester.binding.defaultBinaryMessenger.handlePlatformMessage(
-        'debrify/tvkeyboard',
+        'megawatch/tvkeyboard',
         const StandardMethodCodec().encodeMethodCall(
           const MethodCall('endEditing'),
         ),
@@ -170,7 +170,7 @@ void main() {
   });
 
   testWidgets(
-    'Debrify keyboard moves between titles and keys without typing a title selection',
+    'MegaWatch keyboard moves between titles and keys without typing a title selection',
     (tester) async {
       await mount(tester, tv: true);
       await tester.sendKeyEvent(LogicalKeyboardKey.select);
@@ -197,7 +197,7 @@ void main() {
   );
 
   testWidgets(
-    'TV shell can select suggestions after closing the Debrify keyboard',
+    'TV shell can select suggestions after closing the MegaWatch keyboard',
     (tester) async {
       await mount(tester, tv: true);
       await tester.sendKeyEvent(LogicalKeyboardKey.select);

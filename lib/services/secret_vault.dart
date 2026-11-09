@@ -339,7 +339,7 @@ class SecretVault {
     return hkdf.deriveKey(
       secretKey: SecretKey(ikm),
       nonce: _hkdfSalt,
-      info: utf8.encode('debrify-secret-vault-v1'),
+      info: utf8.encode('megawatch-secret-vault-v1'),
     );
   }
 
@@ -360,14 +360,14 @@ class SecretVault {
         // device_info_plus has no tvOS implementation; hand-rolled channel in
         // tvos/Runner/AppDelegate.swift.
         return await const MethodChannel(
-          'debrify/tvdevice',
+          'megawatch/tvdevice',
         ).invokeMethod<String>('id');
       }
       if (defaultTargetPlatform == TargetPlatform.android) {
         // Hand-rolled channel in MainActivity.kt (device_info_plus removed
         // its ANDROID_ID accessor).
         return await const MethodChannel(
-          'debrify/device',
+          'megawatch/device',
         ).invokeMethod<String>('id');
       }
       final plugin = DeviceInfoPlugin();

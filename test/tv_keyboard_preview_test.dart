@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/widgets/tv_keyboard.dart';
-import 'package:debrify/widgets/tv_text_field.dart';
+import 'package:megawatch/widgets/tv_keyboard.dart';
+import 'package:megawatch/widgets/tv_text_field.dart';
 
-/// The live input preview on the TV Debrify keyboard: the bottom-anchored
+/// The live input preview on the TV MegaWatch keyboard: the bottom-anchored
 /// panel can cover the very field it edits, so the panel's top row mirrors
 /// the field's content — pre-existing text included — as it is typed.
 void main() {

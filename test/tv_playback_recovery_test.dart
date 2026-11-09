@@ -1,12 +1,12 @@
 import 'dart:convert';
-import 'package:debrify/models/custom_series_identity.dart';
+import 'package:megawatch/models/custom_series_identity.dart';
 
-import 'package:debrify/services/playback_recovery_intent.dart';
+import 'package:megawatch/services/playback_recovery_intent.dart';
 
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/tv_playback_recovery.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/profiles/profile_preference_portability.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/tv_playback_recovery.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/profiles/profile_preference_portability.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +29,7 @@ void main() {
     PlaybackRecoveryIntent.debugReset();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-          const MethodChannel('debrify/tv_playback_recovery'),
+          const MethodChannel('megawatch/tv_playback_recovery'),
           null,
         );
   });
@@ -151,7 +151,7 @@ void main() {
     () async {
       final messenger =
           TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-      const channel = MethodChannel('debrify/tv_playback_recovery');
+      const channel = MethodChannel('megawatch/tv_playback_recovery');
       messenger.setMockMethodCallHandler(channel, (_) async {
         throw PlatformException(
           code: 'io_error',
@@ -172,7 +172,7 @@ void main() {
     for (final value in [null, 0, -1, 0x80000000]) {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
-            const MethodChannel('debrify/tv_playback_recovery'),
+            const MethodChannel('megawatch/tv_playback_recovery'),
             (_) async => value,
           );
       expect(

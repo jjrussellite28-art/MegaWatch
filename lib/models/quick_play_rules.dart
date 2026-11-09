@@ -1,10 +1,10 @@
 /// User-selectable Quick Play behavior.
 ///
-/// The `debrifyDefault` factories below are the shipped Quick Play contract.
+/// The `megawatchDefault` factories below are the shipped Quick Play contract.
 /// Keep those values in sync with the legacy fallbacks in StorageService when
 /// the default behavior intentionally changes.
 enum QuickPlayPreset {
-  debrifyDefault,
+  megawatchDefault,
   addonOrder,
   bestQuality,
   fastest,
@@ -21,7 +21,7 @@ enum QuickPlaySourceMode {
   addonsOnly,
 }
 
-enum QuickPlayRanking { debrify, exactOrder, quality, smallest, readyFirst }
+enum QuickPlayRanking { megawatch, exactOrder, quality, smallest, readyFirst }
 
 enum QuickPlayPackPreference { widestFirst, seasonFirst, exactEpisodeOnly }
 
@@ -95,9 +95,9 @@ class QuickPlayRules {
     this.sourcePriority = const [],
   });
 
-  factory QuickPlayRules.debrifyDefault({required bool isMovie}) =>
+  factory QuickPlayRules.megawatchDefault({required bool isMovie}) =>
       QuickPlayRules(
-        preset: QuickPlayPreset.debrifyDefault,
+        preset: QuickPlayPreset.megawatchDefault,
         sourceMode: QuickPlaySourceMode.torrentsThenAddons,
         ranking: QuickPlayRanking.exactOrder,
         useFilters: true,
@@ -119,9 +119,9 @@ class QuickPlayRules {
     QuickPlayPreset preset, {
     required bool isMovie,
   }) {
-    final base = QuickPlayRules.debrifyDefault(isMovie: isMovie);
+    final base = QuickPlayRules.megawatchDefault(isMovie: isMovie);
     switch (preset) {
-      case QuickPlayPreset.debrifyDefault:
+      case QuickPlayPreset.megawatchDefault:
         return base;
       case QuickPlayPreset.addonOrder:
         return base.copyWith(
@@ -157,8 +157,8 @@ class QuickPlayRules {
     }
   }
 
-  bool matchesDebrifyDefault({required bool isMovie}) =>
-      this == QuickPlayRules.debrifyDefault(isMovie: isMovie);
+  bool matchesMegaWatchDefault({required bool isMovie}) =>
+      this == QuickPlayRules.megawatchDefault(isMovie: isMovie);
 
   QuickPlayRules copyWith({
     QuickPlayPreset? preset,
@@ -227,7 +227,7 @@ class QuickPlayRules {
     Map<String, dynamic> json, {
     required bool isMovie,
   }) {
-    final fallback = QuickPlayRules.debrifyDefault(isMovie: isMovie);
+    final fallback = QuickPlayRules.megawatchDefault(isMovie: isMovie);
     int integer(String key, int fallbackValue) =>
         (json[key] as num?)?.round() ?? fallbackValue;
     bool boolean(String key, bool fallbackValue) =>
@@ -245,11 +245,11 @@ class QuickPlayRules {
     // Profiles saved by the first v2 implementation predate the explicit
     // pack-search compatibility bit. Named non-default presets and custom
     // source modes were intended to honor their selected source priority;
-    // Debrify/default-shaped custom profiles retain the shipped combined pack
+    // MegaWatch/default-shaped custom profiles retain the shipped combined pack
     // route when upgraded.
     final inferredLegacyPackSearch =
         !isMovie &&
-        (preset == QuickPlayPreset.debrifyDefault ||
+        (preset == QuickPlayPreset.megawatchDefault ||
             (preset == QuickPlayPreset.custom &&
                 sourceMode == QuickPlaySourceMode.torrentsThenAddons));
     final storedRanking = _enumValue(
@@ -257,10 +257,10 @@ class QuickPlayRules {
       json['ranking'],
       fallback.ranking,
     );
-    // `debrify` was the old implicit seeder/relevance presentation order. The
+    // `megawatch` was the old implicit seeder/relevance presentation order. The
     // simplified Addon Priority UI has no ranking control, so profiles saved
     // with that implicit value migrate to the new provider-returned order.
-    final ranking = storedRanking == QuickPlayRanking.debrify
+    final ranking = storedRanking == QuickPlayRanking.megawatch
         ? QuickPlayRanking.exactOrder
         : storedRanking;
     return QuickPlayRules(

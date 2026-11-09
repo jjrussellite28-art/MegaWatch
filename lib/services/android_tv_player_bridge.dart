@@ -111,7 +111,7 @@ class StremioSourcePersistenceSession {
 /// [StreamNextProvider] callback.
 class AndroidTvPlayerBridge {
   static const MethodChannel _channel = MethodChannel(
-    'com.debrify.app/android_tv_player',
+    'com.megawatch.app/android_tv_player',
   );
 
   /// The platform channel hands headers back as a plain dynamic map; a stored
@@ -1410,7 +1410,7 @@ class AndroidTvPlayerBridge {
             );
           }
         case 'lookupMovieImdb':
-          // Simple IMDB lookup for TorboxTvPlayerActivity (DebrifyTV)
+          // Simple IMDB lookup for TorboxTvPlayerActivity (MegaWatchTV)
           // Uses MovieMetadataService directly without needing a provider
           debugPrint('MovieMetadata: lookupMovieImdb received from native');
           final args = call.arguments;
@@ -1456,8 +1456,8 @@ class AndroidTvPlayerBridge {
             debugPrint('MovieMetadata: lookupMovieImdb error: $e');
             return null;
           }
-        case 'lookupDebrifyTvIdentity':
-          // Rich identity for the Debrify TV premium player styles
+        case 'lookupMegaWatchTvIdentity':
+          // Rich identity for the MegaWatch TV premium player styles
           // (TorboxTvPlayerActivity): clean title/episode from the same
           // lookups the subtitle path already uses, plus format badges
           // parsed from the release name (FormatTagDetector). Best-effort —
@@ -1529,7 +1529,7 @@ class AndroidTvPlayerBridge {
               }
               return {'kind': 'unknown', 'badges': badges};
             } catch (e) {
-              debugPrint('DebrifyTvIdentity: lookup error: $e');
+              debugPrint('MegaWatchTvIdentity: lookup error: $e');
               return null;
             }
           }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build MediaKit's exact macOS libmpv framework set with Debrify's subtitle
+# Build MediaKit's exact macOS libmpv framework set with MegaWatch's subtitle
 # decoders and passive auto-sync analysis filters. The upstream recipe stays
 # pinned so unrelated player components do not move under this feature.
 
@@ -29,7 +29,7 @@ readonly TARGET="mk-out-archive-xcframeworks-macos-universal-video-default"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PATCH="$ROOT/dev/scripts/patches/libmpv-darwin-subtitle-decoders.patch"
-WORK="$(mktemp -d "${TMPDIR:-/tmp}/debrify-libmpv-macos.XXXXXX")"
+WORK="$(mktemp -d "${TMPDIR:-/tmp}/megawatch-libmpv-macos.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
 
 git clone --quiet --filter=blob:none "$UPSTREAM_REPO" "$WORK/source"
@@ -42,7 +42,7 @@ XCODE_PATH="$(dirname "$(dirname "$(xcode-select -p)")")"
   cd "$WORK/source"
   nix develop -c make \
     XCODE_PATH="$XCODE_PATH" \
-    VERSION="debrify-subtitles-autosync-3" \
+    VERSION="megawatch-subtitles-autosync-3" \
     TARGET="$TARGET"
 )
 

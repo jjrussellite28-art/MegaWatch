@@ -1,0 +1,6478 @@
+package com.megawatch.app.tv;
+
+import android.content.Intent;
+import android.os.Build;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.media.audiofx.LoudnessEnhancer;
+import com.megawatch.app.audio.NativeAudioRouting;
+import com.megawatch.app.audio.NativeAudioRenderersFactory;
+import com.megawatch.app.audio.AudioEffectSession;
+import android.media.MediaCodecInfo;
+import android.media.MediaCodecList;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
+import androidx.media3.common.C;
+import androidx.media3.common.Format;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.Player;
+import androidx.media3.common.TrackSelectionOverride;
+import androidx.media3.common.Tracks;
+import androidx.media3.common.text.Cue;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.DefaultLoadControl;
+import androidx.media3.exoplayer.DefaultRenderersFactory;
+import androidx.media3.exoplayer.DecoderReuseEvaluation;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.LoadControl;
+import androidx.media3.exoplayer.RenderersFactory;
+import androidx.media3.exoplayer.analytics.AnalyticsListener;
+import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection;
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
+import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter;
+import androidx.media3.ui.AspectRatioFrameLayout;
+import androidx.media3.ui.CaptionStyleCompat;
+import androidx.media3.ui.DefaultTimeBar;
+import androidx.media3.ui.PlayerView;
+import androidx.media3.ui.SubtitleView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.megawatch.app.ActivityTracker;
+import com.megawatch.app.MainActivity;
+import com.megawatch.app.R;
+import com.megawatch.app.subtitle.StremioSubtitle;
+import com.megawatch.app.subtitle.StremioSubtitleService;
+import com.megawatch.app.util.LanguageMapper;
+import com.megawatch.app.util.OffsetRenderersFactory;
+import com.megawatch.app.util.SubtitleCue;
+import com.megawatch.app.util.SubtitleCueCache;
+import com.megawatch.app.util.SubtitleFontManager;
+import com.megawatch.app.util.SubtitleSettings;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+
+import io.flutter.plugin.common.MethodChannel;
+
+/**
+ * Android TV playback activity that streams debrid content through ExoPlayer.
+ * Supports both Torbox and Real-Debrid providers.
+ *
+ * A long press on the center (OK) button requests the next stream from Flutter.
+ */
+public class TorboxTvPlayerActivity extends AppCompatActivity {
+
+    private static final String DECODER_LOG_TAG = "MEGAWATCH_PLAYER_DECODER";
+    private static final String PROVIDER_TORBOX = "torbox";
+    private static final String PROVIDER_REAL_DEBRID = "real_debrid";
+    private static final String PROVIDER_PIKPAK = "pikpak";
+
+    private static final long SEEK_STEP_MS = 10_000L;
+    private static final long DEFAULT_TARGET_BUFFER_MS = 12_000L;
+    private static final long HIGH_TARGET_BUFFER_MS = 20_000L;
+    private static final long MAX_TARGET_BUFFER_MS = 20_000L;
+    private static final long LONG_PRESS_TIMEOUT_MS = 450L;
+    private static final long TITLE_FADE_DELAY_MS = 4000L;
+    private static final long TITLE_FADE_DURATION_MS = 220L;
+    private static final long CONTROLS_AUTO_HIDE_DELAY_MS = 4000L;
+    private static final int CHANNEL_JUMP_MAX_DIGITS = 10; // Support up to 10 digits
+
+    // PikPak cold storage retry constants
+    private static final int PIKPAK_MAX_RETRIES = 5;
+    private static final int PIKPAK_METADATA_TIMEOUT_MS = 10000; // 10 seconds to wait for metadata
+    private static final int PIKPAK_BASE_DELAY_MS = 2000; // 2 seconds base delay
+    private static final int PIKPAK_MAX_DELAY_MS = 18000; // 18 seconds max delay
+
+    private static String androidDecoderStatus(String decoderName) {
+        String normalized = decoderName.toLowerCase(Locale.US);
+        if (normalized.contains(".google.")
+                || normalized.contains(".android.")
+                || normalized.startsWith("c2.android")
+                || normalized.startsWith("c2.google")
+                || normalized.contains("ffmpeg")) {
+            return "software";
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                for (MediaCodecInfo codecInfo
+                        : new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos()) {
+                    if (!codecInfo.getName().equalsIgnoreCase(decoderName)) continue;
+                    if (codecInfo.isSoftwareOnly()) return "software";
+                    if (codecInfo.isHardwareAccelerated()) return "hardware";
+                    return "unknown";
+                }
+            } catch (RuntimeException ignored) {
+                // Decoder name remains in the release diagnostic for manual
+                // inspection when a vendor codec registry cannot be queried.
+            }
+        }
+        return "unknown";
+    }
+
+    private String provider;
+    private PlayerView playerView;
+    private ExoPlayer player;
+    private TvContentDisplayMatchMode displayMatchMode = TvContentDisplayMatchMode.SYSTEM;
+    private TvDisplayModeController displayModeController;
+    private final AnalyticsListener decoderAnalyticsListener = new AnalyticsListener() {
+        private Format inputFormat;
+
+        @Override
+        public void onAudioTrackInitialized(
+                AnalyticsListener.EventTime eventTime,
+                androidx.media3.exoplayer.audio.AudioSink.AudioTrackConfig audioTrackConfig) {
+            if (nightModeIndex > 0) initializeLoudnessEnhancer();
+            if (player != null) syncAudioEffectSession(player.getAudioSessionId());
+        }
+
+        @Override
+        public void onVideoInputFormatChanged(
+                AnalyticsListener.EventTime eventTime,
+                Format format,
+                @Nullable DecoderReuseEvaluation decoderReuseEvaluation) {
+            inputFormat = format;
+            if (displayModeController != null) {
+                displayModeController.onVideoFormat(format);
+            }
+        }
+
+        @Override
+        public void onVideoDecoderInitialized(
+                AnalyticsListener.EventTime eventTime,
+                String decoderName,
+                long initializedTimestampMs,
+                long initializationDurationMs) {
+            Format format = player != null && player.getVideoFormat() != null
+                    ? player.getVideoFormat()
+                    : inputFormat;
+            long generation = eventTime.mediaPeriodId != null
+                    ? eventTime.mediaPeriodId.windowSequenceNumber
+                    : -1L;
+            Log.i(
+                    DECODER_LOG_TAG,
+                    "generation=" + generation + " phase=stable"
+                            + " status=" + androidDecoderStatus(decoderName)
+                            + " platform=android_tv backend=media3"
+                            + " codec=" + (format != null && format.sampleMimeType != null
+                                    ? format.sampleMimeType : "unknown")
+                            + " decoder=" + decoderName
+                            + " output=surface_view"
+                            + " resolution=" + (format != null ? format.width : 0)
+                            + "x" + (format != null ? format.height : 0));
+        }
+    };
+    private DefaultTrackSelector trackSelector;
+    private RenderersFactory renderersFactory;
+    private OffsetRenderersFactory offsetRenderersFactory;
+    private DefaultBandwidthMeter bandwidthMeter;
+    private Player.Listener subtitleListener; // Track subtitle listener for proper cleanup
+    private Player.Listener trackChangeListener; // Track listener for proper cleanup on channel switch
+    private long currentTargetBufferMs = DEFAULT_TARGET_BUFFER_MS;
+    private TextView titleView;
+    private TextView hintView;
+    private View broadcastLowerThird;
+    private TextView titleBadgeText;
+    private TextView channelNumberView;
+    private TextView channelNameView;
+    private Runnable broadcastLowerThirdFadeOutRunnable;
+    private View controlsOverlay;
+    // ═══ MegaWatch TV playback-screen style (megawatch_tv_player_style) ═══
+    // CLASSIC keeps the legacy layout byte-for-byte; premium styles swap the
+    // media3 controller child before any controller-id findViewById and
+    // render identity in the dock (the top broadcast bar never shows).
+    private MegaWatchTvPlayerStyle playerStyle = MegaWatchTvPlayerStyle.NETWORK;
+    private boolean premiumLayoutInstalled = false;
+    private TextView dtvTitle;
+    private TextView dtvSub;
+    private TextView dtvYear;
+    private TextView dtvSpecLine;
+    private TextView dtvCaption;
+    private TextView dtvChannelNumberView;
+    private TextView dtvChannelNameView;
+    private TextView dtvChannelBug;
+    private TextView dtvPoolCount;
+    private TextView dtvSourceLine;
+    private final TextView[] dtvBadges = new TextView[4];
+    private ImageView dtvPoster;
+    private View dtvProgressGroup;
+    private View dtvPoolGroup;
+    private String dtvLoadedPosterUrl;
+    private String dtvLaunchChannelId;
+    private int dtvIdentitySeq = 0;
+    private TextView megawatchTimeDisplay;
+    private View megawatchProgressLine;
+    private View buttonsRow;
+    private View pauseButton;
+    private View audioButton;
+    private View subtitleButton;
+    private View aspectButton;
+    private View nightModeButton;
+    private View speedButton;
+    private int nightModeIndex = 0;  // Off by default
+    private final NativeAudioRouting nativeAudioRouting = new NativeAudioRouting();
+    private boolean systemAudioEffectsEnabled = false;
+    private LoudnessEnhancer loudnessEnhancer = null;
+    private View guideButton;
+    private View channelNextButton;
+    private TextView megawatchTimeCurrent;
+    private TextView megawatchTimeTotal;
+    private View nextOverlay;
+    private TextView nextText;
+    private TextView nextSubtext;
+    private View channelOverlay;
+    private TextView channelNumberText;
+    private TextView channelNameText;
+    private TextView channelStatusText;
+    private View channelSlideView;
+    private View channelRgbBars;
+    private SubtitleView subtitleOverlay;
+    private SubtitleControlsLiftController subtitleControlsLift;
+    // Unified Channel Guide
+    private View unifiedGuideOverlay;
+    private View unifiedGuidePanel;
+    private EditText unifiedGuideSearch;
+    private RecyclerView unifiedGuideList;
+    private ChannelSearchAdapter unifiedGuideAdapter;
+    private TextView unifiedGuideCurrentNumber;
+    private TextView unifiedGuideChannelCount;
+    private TextWatcher unifiedGuideTextWatcher;
+    private boolean unifiedGuideVisible = false;
+    private View loadingBarContainer;
+    private View loadingBar;
+    private android.animation.ValueAnimator loadingBarAnimator;
+    private View loadingIndicator;
+    private TextView loadingText;
+    private View loadingDot1;
+    private View loadingDot2;
+    private View loadingDot3;
+    private android.animation.ValueAnimator dotsAnimator;
+
+    // Buffering indicator
+    private View bufferingIndicator;
+    private boolean hasEverBeenReady = false;
+    private final Handler bufferingHandler = new Handler(Looper.getMainLooper());
+    private Runnable bufferingDebounceRunnable;
+
+    private boolean controlsMenuVisible = false;
+    private final Handler controlsMenuHandler = new Handler(Looper.getMainLooper());
+    private final Runnable hideControlsMenuRunnable = () -> {
+        // Don't hide if user is actively navigating the controls
+        if (isFocusInControlsOverlay()) {
+            // Reschedule hide for later since user is still navigating
+            scheduleHideControlsMenu();
+        } else {
+            hideControlsMenu();
+        }
+    };
+    private final Runnable updateProgressBarRunnable = new Runnable() {
+        @Override
+        public void run() {
+            updateControlsMenuProgressBar();
+            if (controlsMenuVisible) {
+                controlsMenuHandler.postDelayed(this, 100); // Update every 100ms
+            }
+        }
+    };
+    private boolean reopenControlsMenuAfterSeek = false;
+    private boolean resumePlaybackOnSeekbarClose = false;
+
+    // Custom Seekbar Views
+    private View seekbarOverlay;
+    private View seekbarProgress;
+    private View seekbarHandle;
+    private TextView seekbarCurrentTime;
+    private TextView seekbarTotalTime;
+    private TextView seekbarSpeedIndicator;
+    private long seekbarPosition = 0;
+    private long videoDuration = 0;
+    private boolean seekbarVisible = false;
+    private float currentSeekSpeed = 1.0f;
+    private int playbackSpeedIndex = 2; // Default to 1.0x
+
+    // ── Sleep timer ──────────────────────────────────────────────────────────
+    // Stops playback after a countdown, or at the end of the current item.
+    //
+    // The player view is created with keepScreenOn, so pausing alone would
+    // leave the TV lit all night — the exact thing this exists to prevent.
+    // Firing releases it too, and later playback re-arms it.
+    private static final int SLEEP_OFF = 0;
+    private static final int SLEEP_COUNTDOWN = 1;
+    private static final int SLEEP_END_OF_ITEM = 2;
+    private static final int[] SLEEP_MINUTE_OPTIONS = {15, 30, 45, 60, 90};
+    private int sleepTimerMode = SLEEP_OFF;
+    private long sleepTimerDeadlineElapsedMs = 0L;
+    private final Handler sleepTimerHandler = new Handler(Looper.getMainLooper());
+    private Runnable sleepTimerRunnable = null;
+
+    /**
+     * Latched from a sleep-timer stop until the user explicitly starts playback
+     * again. A channel's next-stream handoff is asynchronous, so a countdown
+     * expiring mid-flight would otherwise be undone by the stream that was
+     * already on its way.
+     */
+    private boolean sleepStopLatched = false;
+    private final float[] playbackSpeeds = new float[] {0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f};
+    private final String[] playbackSpeedLabels = new String[] {"0.5x", "0.75x", "1.0x", "1.25x", "1.5x", "2.0x"};
+    private final int[] nightModeGains = new int[] {0, 500, 1000, 1500, 2000, 2500, 3000, 5000};  // millibels
+    private final String[] nightModeLabels = new String[] {"Off", "Low", "Medium", "High", "Higher", "Extreme", "Max", "Sleeping Baby"};
+
+    private final ArrayList<ChannelEntry> channelDirectoryEntries = new ArrayList<>();
+    private final ArrayList<ChannelEntry> filteredChannelEntries = new ArrayList<>();
+    private android.animation.ValueAnimator staticAnimator;
+
+    // Seek feedback manager
+    private SeekFeedbackManager seekFeedbackManager;
+    private final Handler keyPressHandler = new Handler(Looper.getMainLooper());
+
+    // Double-back to exit
+    private long lastBackPressTime = 0;
+    private static final long BACK_PRESS_INTERVAL_MS = 2000; // 2 seconds
+    private final Handler channelOverlayHandler = new Handler(Looper.getMainLooper());
+    private ArrayList<Bundle> magnetQueue = new ArrayList<>();
+    private int resizeModeIndex = 1;  // Fill by default
+    private final int[] resizeModes = new int[] {
+            AspectRatioFrameLayout.RESIZE_MODE_FIT,
+            AspectRatioFrameLayout.RESIZE_MODE_FILL,
+            AspectRatioFrameLayout.RESIZE_MODE_ZOOM,
+            AspectRatioFrameLayout.RESIZE_MODE_FIT
+    };
+    private final String[] resizeModeLabels = new String[] {
+            "Fit",
+            "Fill",
+            "Zoom",
+            "Cinema Zoom"
+    };
+
+    private boolean startFromRandom;
+    private int randomMaxPercent;
+    private double startAtPercent;
+    private boolean percentSeekApplied = false;
+    private boolean hideSeekbar;
+    private boolean hideOptions;
+    private boolean showVideoTitle;
+    private boolean showChannelName;
+    private String currentChannelName = "";
+    private String currentChannelId;
+    private int currentChannelNumber = -1;
+
+    private boolean randomApplied = false;
+    private boolean requestingNext = false;
+    private boolean finishedNotified = false;
+    private int playedCount = 0;
+    private long lastChannelSwitchTime = 0;
+    private static final long CHANNEL_SWITCH_COOLDOWN_MS = 2000L; // 2 second cooldown
+    private static final int SEEK_LONG_PRESS_THRESHOLD = 3;
+
+    // PikPak cold storage retry state
+    private boolean isPikPakRetrying = false;
+    private int pikPakRetryCount = 0;
+    private int pikPakRetryId = 0; // Cancellation token
+    private String currentStreamProvider = null; // Track provider of current stream
+    private String currentStreamUrl = null;
+    private String currentStreamTitle = null;
+    private final Handler pikPakRetryHandler = new Handler(Looper.getMainLooper());
+    private View pikPakRetryOverlay;
+    private TextView pikPakRetryText;
+
+    // Subtitle Settings Panel
+    private View subtitleSettingsRoot;
+    private boolean subtitleSettingsVisible = false;
+    private SubtitlePanelController subtitlePanel;
+    private SubtitleSyncOverlayController syncOverlay;
+    private SubtitleLinePickerController linePickerOverlay;
+    private final Handler subtitleSeekHandler = new Handler(Looper.getMainLooper());
+
+    // Unified player menu (Miller columns) — additive, gated by USE_UNIFIED_MENU.
+    // Mirrors the torrent player's new menu; the old dialogs/panel remain as
+    // fallback when the flag is off (or the layout view is absent).
+    private static final boolean USE_UNIFIED_MENU = true;
+    private UnifiedMenuController unifiedMenu;
+    // Whether the unified Subtitles→Track list has been built for this menu
+    // opening. Guards a one-shot lazy rebuild so an empty list (a stream with
+    // no subtitle tracks) doesn't re-collect tracks on every DPAD keypress.
+    // Reset when the menu closes; load-event refreshes rebuild via their own path.
+    private boolean umSubtitleTracksBuilt = false;
+
+    // Analytics keep-alive: this native player has no periodic progress channel
+    // of its own, so we ping Flutter every few minutes while actually playing so
+    // the analytics session is not cut off during a long watch. No content data
+    // is sent — the Flutter side just emits a playback heartbeat.
+    private static final long ANALYTICS_HEARTBEAT_MS = 240_000L; // 4 minutes
+    private final Handler analyticsHeartbeatHandler = new Handler(Looper.getMainLooper());
+    private final Runnable analyticsHeartbeatRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (player != null && player.isPlaying()) {
+                MethodChannel channel = MainActivity.getAndroidTvPlayerChannel();
+                if (channel != null) {
+                    channel.invokeMethod("analyticsHeartbeat", null);
+                }
+            }
+            analyticsHeartbeatHandler.postDelayed(this, ANALYTICS_HEARTBEAT_MS);
+        }
+    };
+
+    private void startAnalyticsHeartbeat() {
+        analyticsHeartbeatHandler.removeCallbacks(analyticsHeartbeatRunnable);
+        analyticsHeartbeatHandler.postDelayed(analyticsHeartbeatRunnable, ANALYTICS_HEARTBEAT_MS);
+    }
+
+    private void stopAnalyticsHeartbeat() {
+        analyticsHeartbeatHandler.removeCallbacks(analyticsHeartbeatRunnable);
+    }
+    private final Runnable subtitleSeekRunnable = () -> {
+        if (player != null) {
+            long pos = player.getCurrentPosition();
+            if (pos >= 0) player.seekTo(pos);
+        }
+    };
+    private final ArrayList<TrackOption> subtitleTrackOptions = new ArrayList<>();
+    private int currentSubtitleTrackIndex = 0;
+
+    // Stremio external subtitles
+    private StremioSubtitleService stremioSubtitleService;
+    private final ArrayList<StremioSubtitle> stremioSubtitles = new ArrayList<>();
+    private int currentStremioSubtitleIndex = -1;  // -1 means no Stremio subtitle selected
+    private boolean isLoadingStremioSubtitles = false;  // Loading state for UI indicator
+    private boolean userManuallySelectedSubtitle = false;
+    private boolean embeddedSubtitleSelected = false;  // Track if embedded subtitle was auto-selected
+    private int addonSubtitleFetchToken = 0;  // Guard against stale async fetches on content switch
+    private final ExecutorService subtitleExecutor = Executors.newSingleThreadExecutor();
+    // Title chosen via manual "Search Movie/Show Subtitles" flow (null = auto-detected)
+    @Nullable private String manualSubtitleDisplayLabel = null;
+
+    // ── External subtitle side-rendering ─────────────────────────────────────
+    // Mirrors AndroidTvTorrentPlayerActivity: an external subtitle is downloaded
+    // and parsed off-thread, then pushed to subtitleOverlay from a position
+    // ticker. The media item is never rebuilt, so switching subtitles never
+    // interrupts playback — no re-prepare, no rebuffer, no resume/seek juggling.
+    private List<SubtitleCue> externalSubtitleCues = Collections.emptyList();
+    private boolean externalSubtitleActive = false;
+    // URL of the side-rendered subtitle currently on screen; identifies it for
+    // sync-offset scoping and for the line picker.
+    @Nullable private String activeExternalSubtitleUrl = null;
+    private int externalSubtitleLoadToken = 0;  // guards against stale downloads (fast switching / content change)
+    private final Handler externalSubtitleHandler = new Handler(Looper.getMainLooper());
+    @Nullable private Runnable externalSubtitleTicker = null;
+    @Nullable private String lastExternalCueText = null;
+    // External subs that parsed to zero cues — don't re-auto-select them.
+    private final Set<String> failedSubtitleUrls = new HashSet<>();
+    // Separate from subtitleExecutor (single-threaded, used for addon catalog
+    // fetches) so picking a subtitle never queues behind an in-flight fetch.
+    private final ExecutorService subtitleCueExecutor = Executors.newCachedThreadPool();
+    @Nullable private TextView statusPill = null;
+    private final Runnable statusPillHideRunnable = this::hideStatusPill;
+    private static final long EXTERNAL_SUBTITLE_TICK_MS = 250L;
+    // Gates the ticker so a load that lands while backgrounded doesn't start it.
+    private boolean activityResumed = false;
+
+    private final Random random = new Random();
+    private final Runnable hideTitleRunnable = this::fadeOutTitle;
+    private final Runnable hideNextOverlayRunnable = this::performHideNextOverlay;
+    private final Runnable hideChannelOverlayRunnable = this::performHideChannelOverlay;
+    private final Player.Listener playbackListener = new Player.Listener() {
+        @Override
+        public void onPlaybackStateChanged(int playbackState) {
+            if (nativeAudioRouting.reprepareIfPending(player, playbackSpeeds[playbackSpeedIndex])) {
+                return;
+            }
+            if (playbackState == Player.STATE_READY) {
+                hasEverBeenReady = true;
+                if (playerPreferences.getBoolean("subtitle_forced_only", false) ||
+                    "pt-BR".equalsIgnoreCase(playerPreferences.getString("player_default_subtitle_language", null))) {
+                    ensureDefaultSubtitleSelected();
+                }
+                hideBufferingIndicator();
+                if (startFromRandom && !randomApplied) {
+                    maybeSeekRandomly();
+                } else if (startAtPercent > 0 && !percentSeekApplied) {
+                    maybeSeekToPercent();
+                }
+                // Initialize night mode if needed
+                if (loudnessEnhancer == null && nightModeIndex > 0) {
+                    initializeLoudnessEnhancer();
+                }
+                if (player != null) syncAudioEffectSession(player.getAudioSessionId());
+            } else if (playbackState == Player.STATE_BUFFERING) {
+                if (hasEverBeenReady) {
+                    showBufferingIndicatorDebounced();
+                }
+            } else if (playbackState == Player.STATE_ENDED) {
+                hideBufferingIndicator();
+                randomApplied = false;
+                // "Stop at the end of this episode": suppress the advance and
+                // let the screen sleep. Playback has already finished, so
+                // there is nothing left to pause.
+                if (sleepTimerMode == SLEEP_END_OF_ITEM) {
+                    cancelSleepTimer(false);
+                    sleepStopLatched = true;
+                    if (playerView != null) playerView.setKeepScreenOn(false);
+                    Toast.makeText(TorboxTvPlayerActivity.this,
+                            "Sleep timer — stopping here", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                requestNextStream();
+            }
+            updatePauseButtonLabel();
+        }
+
+        @Override
+        public void onTracksChanged(Tracks tracks) {
+            if (playerPreferences.getBoolean("subtitle_only_foreign_audio", false) ||
+                playerPreferences.getBoolean("subtitle_forced_only", false) ||
+                "pt-BR".equalsIgnoreCase(playerPreferences.getString("player_default_subtitle_language", null))) {
+                ensureDefaultSubtitleSelected();
+            }
+            // The unified menu's audio-track marker is derived live from
+            // player.getCurrentTracks(); ExoPlayer applies a track override
+            // asynchronously, so repaint once it actually takes effect (the
+            // menu stays open after a pick, unlike the old dialog).
+            refreshUnifiedMenuIfVisible();
+        }
+
+        @Override
+        public void onIsPlayingChanged(boolean isPlaying) {
+            updatePauseButtonLabel();
+            // Re-arm the screen if a sleep-timer stop released it and the user
+            // started watching again. Idempotent, so it's harmless otherwise.
+            if (isPlaying && playerView != null) {
+                playerView.setKeepScreenOn(true);
+            }
+        }
+
+        @Override
+        public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+            // When the player is reused across a content swap (next episode,
+            // channel switch), the audio session id stays the same and
+            // onAudioSessionIdChanged never fires — but the new media item
+            // rebuilds the AudioTrack, detaching the night-mode LoudnessEnhancer.
+            // (When maybeRecreatePlayerForBandwidth() rebuilds the player instead,
+            // createPlayer() reattaches the effect itself; this covers the reused
+            // case it doesn't.) Drop the stale instance so the STATE_READY handler
+            // recreates it against the live audio track.
+            //
+            // Defensive: repeat mode isn't enabled today (next is manual via
+            // STATE_ENDED), so this can't currently fire. But if it ever is, a
+            // seamless repeat reuses the same AudioTrack (effect still attached)
+            // and won't re-fire STATE_READY — releasing there would kill night
+            // mode with nothing to rebuild it.
+            if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
+                return;
+            }
+            releaseLoudnessEnhancer();
+        }
+
+        @Override
+        public void onAudioSessionIdChanged(int audioSessionId) {
+            syncAudioEffectSession(audioSessionId);
+            // Reinitialize night mode effect when audio session changes
+            if (nightModeIndex > 0 && audioSessionId != 0) {
+                releaseLoudnessEnhancer();
+                initializeLoudnessEnhancer();
+            }
+        }
+    };
+
+    private com.megawatch.app.profiles.NativePlayerPreferences playerPreferences;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        try {
+            playerPreferences = com.megawatch.app.profiles.NativePlayerPreferences.fromIntent(this, getIntent());
+        } catch (Exception error) {
+            android.util.Log.w("TorboxTvPlayer", "Player settings handoff rejected");
+            android.widget.Toast.makeText(this, "Player settings could not be loaded. Try again.", android.widget.Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        setContentView(R.layout.activity_torbox_tv_player);
+
+        // Load default player settings from Flutter's SharedPreferences
+        loadPlayerDefaults();
+
+        playerView = findViewById(R.id.player_view);
+        titleView = findViewById(R.id.player_title);
+        hintView = findViewById(R.id.player_hint);
+        broadcastLowerThird = findViewById(R.id.player_broadcast_lower_third);
+        titleBadgeText = findViewById(R.id.player_title_badge_text);
+        channelNumberView = findViewById(R.id.player_channel_number);
+        channelNameView = findViewById(R.id.player_channel_name);
+        nextOverlay = findViewById(R.id.player_next_overlay);
+        nextText = findViewById(R.id.player_next_text);
+        nextSubtext = findViewById(R.id.player_next_subtext);
+        channelOverlay = findViewById(R.id.player_channel_overlay);
+        channelNumberText = findViewById(R.id.channel_number_text);
+        channelNameText = findViewById(R.id.channel_name_text);
+        channelStatusText = findViewById(R.id.channel_status_text);
+        channelSlideView = findViewById(R.id.channel_slide_view);
+        channelRgbBars = findViewById(R.id.channel_rgb_bars);
+        // Use our custom SubtitleView that's positioned independently
+        subtitleOverlay = findViewById(R.id.player_subtitles_custom);
+        subtitleControlsLift = new SubtitleControlsLiftController(subtitleOverlay, dpToPx(24));
+        // Unified Channel Guide views
+        unifiedGuideOverlay = findViewById(R.id.unified_guide_overlay);
+        unifiedGuidePanel = findViewById(R.id.unified_guide_panel);
+        unifiedGuideSearch = findViewById(R.id.unified_guide_search);
+        unifiedGuideList = findViewById(R.id.unified_guide_list);
+        unifiedGuideCurrentNumber = findViewById(R.id.unified_guide_current_number);
+        unifiedGuideChannelCount = findViewById(R.id.unified_guide_channel_count);
+        loadingBarContainer = findViewById(R.id.player_loading_bar_container);
+        loadingBar = findViewById(R.id.player_loading_bar);
+        loadingIndicator = findViewById(R.id.player_loading_indicator);
+        loadingText = findViewById(R.id.player_loading_text);
+        loadingDot1 = findViewById(R.id.loading_dot_1);
+        loadingDot2 = findViewById(R.id.loading_dot_2);
+        loadingDot3 = findViewById(R.id.loading_dot_3);
+
+        bufferingIndicator = findViewById(R.id.player_buffering_indicator);
+
+        // Initialize PikPak retry overlay (reuse loading indicator for now)
+        setupPikPakRetryOverlay();
+
+        // Initialize Custom Seekbar Views
+        seekbarOverlay = findViewById(R.id.seekbar_overlay);
+        seekbarProgress = findViewById(R.id.seekbar_progress);
+        seekbarHandle = findViewById(R.id.seekbar_handle);
+        seekbarCurrentTime = findViewById(R.id.seekbar_current_time);
+        seekbarTotalTime = findViewById(R.id.seekbar_total_time);
+        seekbarSpeedIndicator = findViewById(R.id.seekbar_speed_indicator);
+
+        // Initialize Subtitle Settings Panel Views
+        subtitleSettingsRoot = findViewById(R.id.subtitle_settings_root);
+        if (subtitleSettingsRoot != null) {
+            subtitlePanel = new SubtitlePanelController(
+                    this,
+                    subtitleSettingsRoot,
+                    findViewById(R.id.subtitle_categories_container),
+                    findViewById(R.id.subtitle_options_container),
+                    findViewById(R.id.subtitle_categories_scroll),
+                    findViewById(R.id.subtitle_options_scroll),
+                    findViewById(R.id.subtitle_preview_text),
+                    findViewById(R.id.subtitle_identity_label),
+                    findViewById(R.id.subtitle_search_button),
+                    buildSubtitlePanelCallbacks()
+            );
+        }
+
+        // Unified player menu (Miller columns) — additive, gated by USE_UNIFIED_MENU.
+        // The Torbox player has no "sources" section, so it passes a 4-section list.
+        View unifiedMenuRoot = findViewById(R.id.unified_menu_root);
+        if (unifiedMenuRoot != null) {
+            unifiedMenu = new UnifiedMenuController(
+                    this,
+                    unifiedMenuRoot,
+                    findViewById(R.id.unified_col1),
+                    findViewById(R.id.unified_col2),
+                    findViewById(R.id.unified_col3),
+                    findViewById(R.id.unified_col2_header),
+                    findViewById(R.id.unified_col3_header),
+                    findViewById(R.id.unified_preview),
+                    buildUnifiedMenuCallbacks(),
+                    Arrays.asList("audio", "subs", "display", "playback")
+            );
+        }
+
+        Intent intent = getIntent();
+        
+        // Read provider type (default to torbox for backward compatibility)
+        provider = intent.getStringExtra("provider");
+        android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: onCreate() - received provider=" + provider);
+        
+        if (provider == null || provider.isEmpty()) {
+            provider = PROVIDER_TORBOX;
+            android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: Provider was null/empty, defaulting to " + PROVIDER_TORBOX);
+        }
+        
+        android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: Final provider=" + provider);
+        
+        String initialUrl = intent.getStringExtra("initialUrl");
+        String initialTitle = intent.getStringExtra("initialTitle");
+
+        android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: initialUrl=" + (initialUrl != null ? initialUrl.substring(0, Math.min(50, initialUrl.length())) : "null") + "...");
+        android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: initialTitle=" + initialTitle);
+        
+        // Read magnet list (optional for Real-Debrid)
+        ArrayList<Bundle> extrasList;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            extrasList = intent.getParcelableArrayListExtra("magnetList", Bundle.class);
+        } else {
+            extrasList = intent.getParcelableArrayListExtra("magnetList");
+        }
+        if (extrasList != null) {
+            magnetQueue = extrasList;
+        }
+
+        startFromRandom = intent.getBooleanExtra("startFromRandom", false);
+        randomMaxPercent = intent.getIntExtra("randomStartMaxPercent", 40);
+        startAtPercent = intent.getDoubleExtra("startAtPercent", 0.0);
+        hideSeekbar = intent.getBooleanExtra("hideSeekbar", false);
+        hideOptions = intent.getBooleanExtra("hideOptions", false);
+        showVideoTitle = intent.getBooleanExtra("showVideoTitle", true);
+        showChannelName = intent.getBooleanExtra("showChannelName", false);
+        String initialChannelName = intent.getStringExtra("channelName");
+        if (initialChannelName != null) {
+            currentChannelName = initialChannelName;
+        }
+        currentChannelId = safeString(intent.getStringExtra("currentChannelId"));
+        playerStyle = MegaWatchTvPlayerStyle.fromPref(
+                playerPreferences.getString("megawatch_tv_player_style", "cinema"));
+        int providedChannelNumber = intent.getIntExtra("currentChannelNumber", -1);
+        if (providedChannelNumber > 0) {
+            currentChannelNumber = providedChannelNumber;
+        }
+
+        if (initialUrl == null || initialUrl.isEmpty()) {
+            Toast.makeText(this, "Missing stream URL", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        setupUnifiedGuide(intent);
+        runOnUiThread(() -> {
+            updateChannelBadge(currentChannelName);
+            updateTitleBadge(initialTitle);
+        });
+
+        setupBackPressHandler();
+
+        // Initialize seek feedback manager
+        seekFeedbackManager = new SeekFeedbackManager(findViewById(android.R.id.content));
+
+        // Initialize Stremio subtitle service
+        stremioSubtitleService = new StremioSubtitleService(this);
+
+        // Start every native session from the active Flutter profile. The
+        // native panel remains immediately editable, and changes are bridged
+        // back to that same profile below.
+        SubtitleSettings.synchronizeProjectedAppearance(this);
+        SubtitleFontManager.synchronizeProjectedFont(this);
+
+        // Apply custom font from Flutter settings if provided
+        String customFontPath = intent.getStringExtra("customFontPath");
+        String customFontName = intent.getStringExtra("customFontName");
+        if (customFontPath != null && !customFontPath.isEmpty()) {
+            android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: Applying custom font from Flutter: " + customFontPath);
+            SubtitleFontManager.applyCustomFontIfValid(this, customFontPath, customFontName);
+        }
+
+        initialisePlayer();
+        applyUiPreferences(initialTitle);
+        setupControllerUi();
+        setupCustomSeekbar();
+        // Pass provider to enable PikPak cold storage retry for first video
+        playMedia(initialUrl, initialTitle, provider);
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private void initialisePlayer() {
+        nativeAudioRouting.update(nightModeIndex > 0, systemAudioEffectsEnabled, playbackSpeeds[playbackSpeedIndex]);
+        DefaultRenderersFactory baseRenderersFactory = new NativeAudioRenderersFactory(this, nativeAudioRouting)
+                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
+                .setEnableDecoderFallback(true)
+                .setAllowedVideoJoiningTimeMs(300);
+        offsetRenderersFactory = new OffsetRenderersFactory(baseRenderersFactory);
+        renderersFactory = offsetRenderersFactory;
+
+        bandwidthMeter = new DefaultBandwidthMeter.Builder(this).build();
+
+        trackSelector = new DefaultTrackSelector(this, new AdaptiveTrackSelection.Factory());
+
+        // Get default language settings
+        String defaultAudioLang = playerPreferences.getString("player_default_audio_language", null);
+        String defaultSubtitleLang = playerPreferences.getString("player_default_subtitle_language", null);
+
+        // Build track selector parameters with robust language matching
+        DefaultTrackSelector.Parameters.Builder paramsBuilder = trackSelector.buildUponParameters()
+                // Recover passthrough after HDMI/display-mode capability changes.
+                .setAllowInvalidateSelectionsOnRendererCapabilitiesChange(true)
+                .setPreferredAudioMimeType("audio/opus");
+
+        // Apply audio language preference
+        if (defaultAudioLang != null) {
+            List<String> audioVariants = LanguageMapper.getLanguageVariantsForExoPlayer(defaultAudioLang);
+            if (!audioVariants.isEmpty()) {
+                paramsBuilder.setPreferredAudioLanguages(audioVariants.toArray(new String[0]));
+            } else {
+                paramsBuilder.setPreferredAudioLanguage(defaultAudioLang);
+            }
+        } else {
+            // Default to English if no preference set
+            List<String> englishVariants = LanguageMapper.getLanguageVariantsForExoPlayer("en");
+            paramsBuilder.setPreferredAudioLanguages(englishVariants.toArray(new String[0]));
+        }
+
+        // Apply subtitle language preference
+        if ("off".equals(defaultSubtitleLang)) {
+            // An empty language alone still permits default/forced tracks.
+            // Match the movie player's explicit Off behavior; manual subtitle
+            // selection re-enables text tracks in applySubtitleTrack.
+            paramsBuilder.setPreferredTextLanguage("");
+            paramsBuilder.setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true);
+        } else if (defaultSubtitleLang != null) {
+            // Get all language variants (ISO 639-1, ISO 639-2, etc.) for robust matching
+            List<String> variants = LanguageMapper.getLanguageVariantsForExoPlayer(defaultSubtitleLang);
+            if (!variants.isEmpty()) {
+                paramsBuilder.setPreferredTextLanguages(variants.toArray(new String[0]));
+            } else {
+                paramsBuilder.setPreferredTextLanguage(defaultSubtitleLang);
+            }
+        } else {
+            // Default to English if no preference set
+            List<String> englishVariants = LanguageMapper.getLanguageVariantsForExoPlayer("en");
+            paramsBuilder.setPreferredTextLanguages(englishVariants.toArray(new String[0]));
+        }
+
+        // Wait for exact regional matching; ExoPlayer may initially treat
+        // pt-PT as a partial match for pt-BR.
+        if (playerPreferences.getBoolean("subtitle_only_foreign_audio", false) ||
+                playerPreferences.getBoolean("subtitle_forced_only", false) ||
+                "pt-BR".equalsIgnoreCase(defaultSubtitleLang)) {
+            paramsBuilder.setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true);
+        }
+        trackSelector.setParameters(paramsBuilder.build());
+
+        LoadControl loadControl = buildLoadControl(bandwidthMeter.getBitrateEstimate());
+        createPlayer(loadControl);
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private void createPlayer(LoadControl loadControl) {
+        // Release night mode effect before releasing player to prevent memory leak
+        releaseLoudnessEnhancer();
+        AudioEffectSession.INSTANCE.closeCurrent(this);
+
+        if (player != null) {
+            player.removeListener(playbackListener);
+            // Clear track change listener reference (old player is being released)
+            trackChangeListener = null;
+            player.release();
+        }
+        ExoPlayer.Builder playerBuilder = new ExoPlayer.Builder(this, renderersFactory)
+                .setTrackSelector(trackSelector)
+                .setLoadControl(loadControl)
+                .setBandwidthMeter(bandwidthMeter);
+        if (displayMatchMode == TvContentDisplayMatchMode.OFF) {
+            playerBuilder.setVideoChangeFrameRateStrategy(
+                    C.VIDEO_CHANGE_FRAME_RATE_STRATEGY_OFF);
+        } else if (displayMatchMode == TvContentDisplayMatchMode.FRAME_RATE ||
+                displayMatchMode == TvContentDisplayMatchMode.FRAME_RATE_AND_RESOLUTION) {
+            playerBuilder.setVideoChangeFrameRateStrategy(
+                    C.VIDEO_CHANGE_FRAME_RATE_STRATEGY_ONLY_IF_SEAMLESS);
+        }
+        player = playerBuilder.build();
+        player.setPlaybackSpeed(playbackSpeeds[playbackSpeedIndex]);
+        player.addListener(playbackListener);
+        player.addAnalyticsListener(decoderAnalyticsListener);
+        playerView.setPlayer(player);
+        
+        // Hide PlayerView's internal SubtitleView to use our custom one
+        SubtitleView internalSubtitleView = playerView.getSubtitleView();
+        if (internalSubtitleView != null) {
+            internalSubtitleView.setVisibility(View.GONE);
+        }
+        
+        // Connect player subtitle output to our custom SubtitleView
+        if (subtitleOverlay != null) {
+            // Remove previous subtitle listener if it exists
+            if (subtitleListener != null) {
+                player.removeListener(subtitleListener);
+            }
+            // Create and store new subtitle listener
+            subtitleListener = new Player.Listener() {
+                @Override
+                public void onCues(androidx.media3.common.text.CueGroup cueGroup) {
+                    // While an external subtitle is side-rendered, the overlay is
+                    // owned by the ticker — ignore the player's (empty) cue events.
+                    if (externalSubtitleActive) return;
+                    if (subtitleOverlay != null) {
+                        subtitleOverlay.setCues(cueGroup.cues);
+                    }
+                }
+            };
+            player.addListener(subtitleListener);
+        }
+        
+        playerView.setKeepScreenOn(true);
+        playerView.setUseController(true);
+        playerView.setControllerAutoShow(true);
+        playerView.setControllerShowTimeoutMs(4000);
+        applyResizeMode();
+        if (subtitleOverlay != null) {
+            subtitleOverlay.setApplyEmbeddedStyles(false);
+            subtitleOverlay.setApplyEmbeddedFontSizes(false);
+            // Apply subtitle settings from preferences (includes elevation padding)
+            applySubtitleSettings();
+        }
+        playerView.requestFocus();
+
+        // Reinitialize night mode effect with new audio session if it was active
+        if (nightModeIndex > 0) {
+            initializeLoudnessEnhancer();
+        }
+    }
+
+    private LoadControl buildLoadControl(long estimatedBitrate) {
+        long targetBufferMs = selectTargetBufferMs(estimatedBitrate);
+        long minBufferMs = Math.min(targetBufferMs / 2, 7_500L);
+        currentTargetBufferMs = targetBufferMs;
+        return new DefaultLoadControl.Builder()
+                .setBufferDurationsMs((int) minBufferMs, (int) targetBufferMs, 1_000, 2_000)
+                .setBackBuffer(0, false)
+                .build();
+    }
+
+    private void maybeRecreatePlayerForBandwidth() {
+        if (bandwidthMeter == null) {
+            return;
+        }
+        long estimate = bandwidthMeter.getBitrateEstimate();
+        long desiredTarget = selectTargetBufferMs(estimate);
+        if (Math.abs(desiredTarget - currentTargetBufferMs) > 2_000L) {
+            LoadControl tuned = buildLoadControl(estimate);
+            createPlayer(tuned);
+        }
+    }
+
+    private long selectTargetBufferMs(long estimatedBitrate) {
+        if (estimatedBitrate <= 0) {
+            return DEFAULT_TARGET_BUFFER_MS;
+        }
+        if (estimatedBitrate >= 12_000_000L) {
+            return MAX_TARGET_BUFFER_MS;
+        }
+        if (estimatedBitrate >= 6_000_000L) {
+            return HIGH_TARGET_BUFFER_MS;
+        }
+        if (estimatedBitrate >= 3_000_000L) {
+            return 16_000L;
+        }
+        return DEFAULT_TARGET_BUFFER_MS;
+    }
+
+    private void applyUiPreferences(@Nullable String initialTitle) {
+        // Old centered title is replaced by the new badge, always hide it
+        if (titleView != null) {
+            cancelTitleFade();
+            titleView.setVisibility(View.GONE);
+        }
+
+        updateChannelBadge(currentChannelName);
+
+        if (hintView != null) {
+            hintView.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isPremiumStyle() {
+        return playerStyle != MegaWatchTvPlayerStyle.CLASSIC;
+    }
+
+    /**
+     * Swap the legacy controller child for the selected premium layout.
+     * MUST run before any controller-id findViewById: media3 inflates
+     * `controller_layout_id` into its PlayerControlView with attachToRoot,
+     * so `megawatch_controls_root` is an ordinary child we can replace at the
+     * same index. Every premium layout reuses the legacy id contract
+     * (buttons, times, progress line, zero-size stubs) so the existing
+     * bindings and visibility machinery work unchanged.
+     */
+    private void installPremiumControllerLayout() {
+        if (premiumLayoutInstalled || playerView == null) {
+            return;
+        }
+        View legacyRoot = playerView.findViewById(R.id.megawatch_controls_root);
+        if (legacyRoot == null || !(legacyRoot.getParent() instanceof ViewGroup)) {
+            return;
+        }
+        ViewGroup parent = (ViewGroup) legacyRoot.getParent();
+        int index = parent.indexOfChild(legacyRoot);
+        int layoutRes;
+        switch (playerStyle) {
+            case CINEMA:
+                layoutRes = R.layout.view_megawatch_tv_cinema_controls;
+                break;
+            case GUIDE:
+                layoutRes = R.layout.view_megawatch_tv_guide_controls;
+                break;
+            case SPOTLIGHT:
+                layoutRes = R.layout.view_megawatch_tv_spotlight_controls;
+                break;
+            case PRESTIGE:
+                layoutRes = R.layout.view_megawatch_tv_prestige_controls;
+                break;
+            case NETWORK:
+            default:
+                layoutRes = R.layout.view_megawatch_tv_network_controls;
+                break;
+        }
+        View premium = getLayoutInflater().inflate(layoutRes, parent, false);
+        parent.removeViewAt(index);
+        parent.addView(premium, index);
+        premiumLayoutInstalled = true;
+    }
+
+    private void setupControllerUi() {
+        if (isPremiumStyle()) {
+            installPremiumControllerLayout();
+        }
+        controlsOverlay = playerView.findViewById(R.id.megawatch_controls_root);
+        // Media3 can hide the parent controller on its own timeout while our
+        // child dock still considers itself visible. Route that transition
+        // through the same cleanup as Back so subtitle lift is always restored.
+        playerView.setControllerVisibilityListener(
+                new PlayerView.ControllerVisibilityListener() {
+                    @Override
+                    public void onVisibilityChanged(int visibility) {
+                        if (visibility != View.VISIBLE && controlsMenuVisible) {
+                            hideControlsMenu();
+                            // This callback fires from inside Media3's hide-animation
+                            // end dispatch, where the restore animation kicked off by
+                            // hideControlsMenu never lands — the subtitle view stays
+                            // translated off-screen until the next lift call. Snap it
+                            // back directly; a no-op when the animated restore worked.
+                            if (subtitleControlsLift != null) {
+                                subtitleControlsLift.restore(false);
+                            }
+                        }
+                    }
+                });
+        megawatchTimeDisplay = playerView.findViewById(R.id.megawatch_time_display);
+        megawatchTimeCurrent = playerView.findViewById(R.id.megawatch_time_current);
+        megawatchTimeTotal = playerView.findViewById(R.id.megawatch_time_total);
+        megawatchProgressLine = playerView.findViewById(R.id.megawatch_progress_line);
+        buttonsRow = playerView.findViewById(R.id.megawatch_controls_buttons);
+        pauseButton = playerView.findViewById(R.id.megawatch_pause_button);
+        nightModeButton = playerView.findViewById(R.id.megawatch_night_mode_button);
+        audioButton = playerView.findViewById(R.id.megawatch_audio_button);
+        subtitleButton = playerView.findViewById(R.id.megawatch_subtitle_button);
+        aspectButton = playerView.findViewById(R.id.megawatch_aspect_button);
+        speedButton = playerView.findViewById(R.id.megawatch_speed_button);
+        guideButton = playerView.findViewById(R.id.megawatch_guide_button);
+        channelNextButton = playerView.findViewById(R.id.megawatch_channel_next_button);
+        DefaultTimeBar timeBar = playerView.findViewById(androidx.media3.ui.R.id.exo_progress);
+        View nextButton = playerView.findViewById(R.id.megawatch_next_button);
+
+        if (controlsOverlay != null) {
+            controlsOverlay.setVisibility(View.GONE);
+            controlsOverlay.setAlpha(0f);
+            // Ensure broadcast lower-third starts hidden
+            if (broadcastLowerThird != null) {
+                broadcastLowerThird.setVisibility(View.GONE);
+            }
+        }
+
+        if (buttonsRow != null) {
+            buttonsRow.setVisibility(hideOptions ? View.GONE : View.VISIBLE);
+        }
+
+        if (megawatchTimeDisplay != null) {
+            if (hideSeekbar) {
+                megawatchTimeDisplay.setVisibility(View.GONE);
+            } else if (hideOptions) {
+                megawatchTimeDisplay.setVisibility(View.VISIBLE);
+            }
+        }
+
+        // Focus listener to extend timer when navigating
+        View.OnFocusChangeListener extendTimerOnFocus = (v, hasFocus) -> {
+            if (hasFocus && controlsMenuVisible) {
+                // Reset timer when user navigates to a button
+                scheduleHideControlsMenu();
+            }
+        };
+
+        if (pauseButton != null) {
+            pauseButton.setVisibility(hideOptions ? View.GONE : View.VISIBLE);
+            pauseButton.setOnClickListener(v -> {
+                togglePlayPause();
+                if (player != null && player.isPlaying()) {
+                    scheduleHideControlsMenu();
+                } else {
+                    cancelScheduledHideControlsMenu();
+                }
+            });
+            pauseButton.setOnFocusChangeListener(extendTimerOnFocus);
+            updatePauseButtonLabel();
+        }
+
+        if (nightModeButton != null) {
+            nightModeButton.setVisibility(hideOptions ? View.GONE : View.VISIBLE);
+            nightModeButton.setOnClickListener(v -> {
+                if (USE_UNIFIED_MENU && unifiedMenu != null) {
+                    hideControlsMenu();
+                    unifiedMenu.show("audio", "night");
+                } else {
+                    showNightModeDialog();
+                }
+            });
+            nightModeButton.setOnFocusChangeListener(extendTimerOnFocus);
+        }
+
+        if (audioButton != null) {
+            audioButton.setVisibility(hideOptions ? View.GONE : View.VISIBLE);
+            audioButton.setOnClickListener(v -> {
+                if (USE_UNIFIED_MENU && unifiedMenu != null) {
+                    hideControlsMenu();
+                    unifiedMenu.show("audio", null);
+                } else {
+                    showAudioSelectionDialog();
+                    scheduleHideControlsMenu();
+                }
+            });
+            audioButton.setOnFocusChangeListener(extendTimerOnFocus);
+        }
+
+        if (subtitleButton != null) {
+            subtitleButton.setVisibility(hideOptions ? View.GONE : View.VISIBLE);
+            subtitleButton.setOnClickListener(v -> {
+                hideControlsMenu();
+                if (USE_UNIFIED_MENU && unifiedMenu != null) {
+                    unifiedMenu.show("subs", null);
+                } else {
+                    showSubtitleSettingsPanel();
+                }
+            });
+            subtitleButton.setOnFocusChangeListener(extendTimerOnFocus);
+        }
+
+        if (aspectButton != null) {
+            aspectButton.setVisibility(hideOptions ? View.GONE : View.VISIBLE);
+            aspectButton.setOnClickListener(v -> {
+                cycleAspectRatio();
+                scheduleHideControlsMenu();
+            });
+            aspectButton.setOnFocusChangeListener(extendTimerOnFocus);
+            updateAspectButtonLabel();
+        }
+
+        if (speedButton != null) {
+            speedButton.setVisibility(hideOptions ? View.GONE : View.VISIBLE);
+            speedButton.setOnClickListener(v -> {
+                if (USE_UNIFIED_MENU && unifiedMenu != null) {
+                    hideControlsMenu();
+                    unifiedMenu.show("playback", "speed");
+                } else {
+                    cyclePlaybackSpeed();
+                    scheduleHideControlsMenu();
+                }
+            });
+            speedButton.setOnFocusChangeListener(extendTimerOnFocus);
+        }
+
+        if (guideButton != null) {
+            guideButton.setVisibility(hideOptions ? View.GONE : View.VISIBLE);
+            guideButton.setOnClickListener(v -> handleControlAction("guide"));
+            guideButton.setOnFocusChangeListener(extendTimerOnFocus);
+        }
+
+        if (channelNextButton != null) {
+            channelNextButton.setVisibility(hideOptions ? View.GONE : View.VISIBLE);
+            channelNextButton.setOnClickListener(v -> handleControlAction("channel_next"));
+            channelNextButton.setOnFocusChangeListener(extendTimerOnFocus);
+        }
+
+        if (nextButton != null) {
+            nextButton.setVisibility(hideOptions ? View.GONE : View.VISIBLE);
+            nextButton.setOnClickListener(v -> handleControlAction("stream_next"));
+            nextButton.setOnFocusChangeListener(extendTimerOnFocus);
+        }
+
+        if (timeBar != null) {
+            timeBar.setVisibility(View.GONE);
+        }
+
+        if (isPremiumStyle()) {
+            bindPremiumViews();
+        }
+
+        // Keep controller enabled but disable auto-show - we'll manage visibility manually
+        playerView.setControllerAutoShow(false);
+    }
+
+    /**
+     * Bind the premium-only views (all optional per skin — null-safe) and
+     * apply the premium focus treatment. Runs AFTER every legacy listener
+     * assignment in {@link #setupControllerUi()} on purpose: a view holds one
+     * focus listener (last set wins), so the caption-writing listener must be
+     * the final assignment.
+     */
+    private void bindPremiumViews() {
+        dtvTitle = playerView.findViewById(R.id.dtv_identity_title);
+        dtvSub = playerView.findViewById(R.id.dtv_identity_sub);
+        dtvYear = playerView.findViewById(R.id.dtv_year);
+        dtvSpecLine = playerView.findViewById(R.id.dtv_spec_line);
+        dtvCaption = playerView.findViewById(R.id.dtv_caption);
+        dtvChannelNumberView = playerView.findViewById(R.id.dtv_channel_number);
+        dtvChannelNameView = playerView.findViewById(R.id.dtv_channel_name);
+        dtvChannelBug = playerView.findViewById(R.id.dtv_channel_bug);
+        dtvPoolCount = playerView.findViewById(R.id.dtv_pool_count);
+        dtvPoolGroup = playerView.findViewById(R.id.dtv_pool_group);
+        dtvSourceLine = playerView.findViewById(R.id.dtv_source_line);
+        dtvPoster = playerView.findViewById(R.id.dtv_poster);
+        dtvProgressGroup = playerView.findViewById(R.id.dtv_progress_group);
+        dtvBadges[0] = playerView.findViewById(R.id.dtv_badge_1);
+        dtvBadges[1] = playerView.findViewById(R.id.dtv_badge_2);
+        dtvBadges[2] = playerView.findViewById(R.id.dtv_badge_3);
+        dtvBadges[3] = playerView.findViewById(R.id.dtv_badge_4);
+
+        // Runtimes stay a surprise: the progress strip honors hideSeekbar.
+        if (dtvProgressGroup != null && hideSeekbar) {
+            dtvProgressGroup.setVisibility(View.GONE);
+        }
+
+        // GUIDE pool cell — magnetQueue is the launch channel's shuffled
+        // pool; an honest count, never a promise of what plays next.
+        dtvLaunchChannelId = currentChannelId;
+        refreshPremiumPoolCell();
+
+        if (dtvSourceLine != null) {
+            dtvSourceLine.setText(premiumSourceLabel());
+        }
+
+        updatePremiumChannelViews();
+
+        View.OnFocusChangeListener premiumFocus = (v, hasFocus) -> {
+            if (!hasFocus) {
+                return;
+            }
+            if (controlsMenuVisible) {
+                scheduleHideControlsMenu();
+            }
+            if (dtvCaption != null) {
+                CharSequence cd = v.getContentDescription();
+                dtvCaption.setText(cd != null ? cd : "");
+            }
+        };
+        View nextButton = playerView.findViewById(R.id.megawatch_next_button);
+        View[] premiumButtons = {
+                pauseButton, nextButton, channelNextButton, guideButton,
+                audioButton, subtitleButton, speedButton, aspectButton,
+                nightModeButton,
+        };
+        for (View b : premiumButtons) {
+            if (b != null) {
+                b.setOnFocusChangeListener(premiumFocus);
+            }
+        }
+    }
+
+    private String premiumSourceLabel() {
+        String p = provider != null ? provider : "";
+        switch (p) {
+            case "real_debrid":
+                return "via Real-Debrid";
+            case "pikpak":
+                return "via PikPak";
+            case "premiumize":
+                return "via Premiumize";
+            case "alldebrid":
+                return "via AllDebrid";
+            case PROVIDER_TORBOX:
+                return "via Torbox";
+            default:
+                return "";
+        }
+    }
+
+    private void updatePauseButtonLabel() {
+        if (pauseButton == null) {
+            return;
+        }
+        boolean playing = player != null && player.isPlaying();
+        int iconRes;
+        if (isPremiumStyle()) {
+            // Premium skins carry the hand-drawn icon families: wire
+            // (hairline) for the serif skins, dock (solid-rounded) elsewhere.
+            boolean wire = playerStyle == MegaWatchTvPlayerStyle.CINEMA
+                    || playerStyle == MegaWatchTvPlayerStyle.PRESTIGE;
+            iconRes = playing
+                    ? (wire ? R.drawable.ic_wire_pause : R.drawable.ic_dock_pause)
+                    : (wire ? R.drawable.ic_wire_play : R.drawable.ic_dock_play);
+        } else {
+            iconRes = playing ? R.drawable.ic_pause : R.drawable.ic_play;
+        }
+        String labelText = playing ? "PAUSE" : "PLAY";
+
+        // TV broadcast style: button is a LinearLayout with ImageView and TextView children
+        ImageView pauseIcon = pauseButton.findViewById(R.id.megawatch_pause_icon);
+        TextView pauseLabel = pauseButton.findViewById(R.id.megawatch_pause_label);
+
+        if (pauseIcon != null) {
+            pauseIcon.setImageResource(iconRes);
+        }
+        if (pauseLabel != null) {
+            pauseLabel.setText(labelText);
+        }
+    }
+
+    private void updateAspectButtonLabel() {
+        // Icon-only design: no text label to update
+        // State is visual only through cycling
+    }
+
+    private void updateControlsMenuProgressBar() {
+        if (player == null) {
+            return;
+        }
+
+        long currentPosition = player.getCurrentPosition();
+        long duration = player.getDuration();
+
+        if (duration <= 0) {
+            return;
+        }
+
+        // Update time displays (TV broadcast style: separate current and total)
+        if (megawatchTimeCurrent != null) {
+            megawatchTimeCurrent.setText(formatTime(currentPosition));
+        }
+        if (megawatchTimeTotal != null) {
+            megawatchTimeTotal.setText(formatTime(duration));
+        }
+        // Fallback for old combined display
+        if (megawatchTimeDisplay != null) {
+            megawatchTimeDisplay.setText(formatTime(currentPosition) + " / " + formatTime(duration));
+        }
+
+        // Update progress line width
+        if (megawatchProgressLine != null) {
+            float progressPercentage = (float) currentPosition / (float) duration;
+            View parent = (View) megawatchProgressLine.getParent();
+            if (parent != null) {
+                int parentWidth = parent.getWidth();
+                if (parentWidth > 0) {
+                    int progressWidth = (int) (parentWidth * progressPercentage);
+                    ViewGroup.LayoutParams layoutParams = megawatchProgressLine.getLayoutParams();
+                    layoutParams.width = progressWidth;
+                    megawatchProgressLine.setLayoutParams(layoutParams);
+                }
+            }
+        }
+    }
+
+    private void startProgressBarUpdates() {
+        stopProgressBarUpdates(); // Stop any existing updates
+        controlsMenuHandler.post(updateProgressBarRunnable);
+    }
+
+    private void stopProgressBarUpdates() {
+        controlsMenuHandler.removeCallbacks(updateProgressBarRunnable);
+    }
+
+    private void handleControlAction(String action) {
+        switch (action) {
+            case "seek":
+                hideControlsMenu();
+                showSeekbar(true, true);
+                break;
+            case "guide":
+                hideControlsMenu();
+                if (!channelDirectoryEntries.isEmpty()) {
+                    showUnifiedGuide(true); // Focus search bar
+                } else {
+                    Toast.makeText(this, "Channel guide unavailable", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case "channel_next":
+                hideControlsMenu();
+                requestNextChannel();
+                break;
+            case "stream_next":
+                hideControlsMenu();
+                requestNextStream();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void showControlsMenu() {
+        if (controlsOverlay == null) {
+            return;
+        }
+        cancelScheduledHideControlsMenu();
+
+        // A previous timeout may have hidden Media3's parent controller even
+        // though this activity only animates the child dock.
+        playerView.showController();
+
+        // Cancel any ongoing animations to prevent race conditions
+        controlsOverlay.animate().cancel();
+
+        if (!controlsMenuVisible) {
+            controlsMenuVisible = true;
+            setControlsMenuChildrenVisible(true);
+            controlsOverlay.setVisibility(View.VISIBLE);
+            controlsOverlay.setAlpha(0f);
+            controlsOverlay.animate()
+                    .alpha(1f)
+                    .setDuration(180L)
+                    .withEndAction(() -> {
+                        if (controlsOverlay != null) {
+                            controlsOverlay.setAlpha(1f);
+                        }
+                    })
+                    .start();
+            if (pauseButton != null) {
+                pauseButton.post(() -> {
+                    if (pauseButton != null) {
+                        pauseButton.requestFocus();
+                    }
+                });
+            }
+        } else {
+            // Menu already visible, just make sure it's fully visible and focused
+            controlsOverlay.setAlpha(1f);
+            controlsOverlay.setVisibility(View.VISIBLE);
+            if (pauseButton != null) {
+                pauseButton.post(() -> {
+                    if (pauseButton != null) {
+                        pauseButton.requestFocus();
+                    }
+                });
+            }
+        }
+        updatePauseButtonLabel();
+
+        // Show channel badge when controls appear (if enabled and has valid channel info)
+        if (showChannelName && (currentChannelNumber > 0 || !currentChannelName.isEmpty())) {
+            showChannelBadgeWithAnimation();
+        }
+
+        // Show title badge when controls appear (if enabled and has valid title)
+        if (showVideoTitle && titleBadgeText != null && titleBadgeText.getText() != null
+                && !titleBadgeText.getText().toString().isEmpty()) {
+            showTitleBadgeWithAnimation();
+        }
+
+        // Start updating the progress bar
+        startProgressBarUpdates();
+        updateSubtitleControlsLift();
+    }
+
+    private void hideControlsMenu() {
+        if (controlsOverlay == null) {
+            cancelScheduledHideControlsMenu();
+            return;
+        }
+
+        // Cancel any ongoing animations to prevent race conditions
+        controlsOverlay.animate().cancel();
+
+        if (!controlsMenuVisible) {
+            // Already hidden, just make sure state is consistent
+            controlsOverlay.setVisibility(View.GONE);
+            controlsOverlay.setAlpha(0f);
+            // Ensure broadcast lower-third is also hidden
+            hideBroadcastLowerThird();
+            cancelScheduledHideControlsMenu();
+            return;
+        }
+
+        cancelScheduledHideControlsMenu();
+        controlsMenuVisible = false;
+        if (subtitleControlsLift != null) {
+            subtitleControlsLift.restore(true);
+        }
+
+        // Stop updating the progress bar
+        stopProgressBarUpdates();
+
+        // Hide broadcast lower-third IMMEDIATELY (synchronous)
+        hideBroadcastLowerThird();
+
+        controlsOverlay.animate()
+                .alpha(0f)
+                .setDuration(140L)
+                .withEndAction(() -> {
+                    if (controlsOverlay != null && !controlsMenuVisible) {
+                        controlsOverlay.setVisibility(View.GONE);
+                        controlsOverlay.setAlpha(0f);
+                        setControlsMenuChildrenVisible(false);
+                        // Redundant safety call (already called above)
+                        hideBroadcastLowerThird();
+                    }
+                })
+                .start();
+    }
+
+    private void updateSubtitleControlsLift() {
+        if (!controlsMenuVisible || controlsOverlay == null || subtitleControlsLift == null) {
+            return;
+        }
+        subtitleControlsLift.liftAbove(controlsOverlay.getHeight(), true);
+        controlsOverlay.post(() -> {
+            if (controlsMenuVisible && controlsOverlay != null && subtitleControlsLift != null) {
+                subtitleControlsLift.liftAbove(controlsOverlay.getHeight(), true);
+            }
+        });
+    }
+
+    private void scheduleHideControlsMenu() {
+        if (!controlsMenuVisible) {
+            return;
+        }
+        controlsMenuHandler.removeCallbacks(hideControlsMenuRunnable);
+        if (player != null && player.isPlaying()) {
+            controlsMenuHandler.postDelayed(hideControlsMenuRunnable, CONTROLS_AUTO_HIDE_DELAY_MS);
+        }
+    }
+
+    private void cancelScheduledHideControlsMenu() {
+        controlsMenuHandler.removeCallbacks(hideControlsMenuRunnable);
+    }
+
+    private void handlePlayPauseToggleFromCenter() {
+        boolean wasPlaying = player != null && player.isPlaying();
+        showControlsMenu();
+        togglePlayPause();
+        if (player != null && player.isPlaying()) {
+            scheduleHideControlsMenu();
+        } else if (wasPlaying) {
+            cancelScheduledHideControlsMenu();
+        }
+    }
+
+    private void setControlsMenuChildrenVisible(boolean visible) {
+        int target = visible ? View.VISIBLE : View.GONE;
+        if (buttonsRow != null) {
+            buttonsRow.setVisibility(target);
+        }
+        if (!hideSeekbar && megawatchTimeDisplay != null) {
+            megawatchTimeDisplay.setVisibility(target);
+        }
+        if (pauseButton != null) {
+            pauseButton.setVisibility(target);
+        }
+        if (nightModeButton != null) {
+            nightModeButton.setVisibility(target);
+        }
+        if (audioButton != null) {
+            audioButton.setVisibility(target);
+        }
+        if (subtitleButton != null) {
+            subtitleButton.setVisibility(target);
+        }
+        if (aspectButton != null) {
+            aspectButton.setVisibility(target);
+        }
+        if (speedButton != null) {
+            speedButton.setVisibility(target);
+        }
+        if (guideButton != null) {
+            guideButton.setVisibility(target);
+        }
+        if (channelNextButton != null) {
+            channelNextButton.setVisibility(target);
+        }
+        View nextButton = playerView != null ? playerView.findViewById(R.id.megawatch_next_button) : null;
+        if (nextButton != null) {
+            nextButton.setVisibility(target);
+        }
+    }
+
+    private void cyclePlaybackSpeed() {
+        if (player == null) {
+            return;
+        }
+        applyPlaybackSpeed((playbackSpeedIndex + 1) % playbackSpeeds.length);
+        Toast.makeText(this, "Speed: " + playbackSpeedLabels[playbackSpeedIndex], Toast.LENGTH_SHORT).show();
+    }
+
+    private void applyPlaybackSpeed(int index) {
+        playbackSpeedIndex = Math.max(0, Math.min(index, playbackSpeeds.length - 1));
+        float speed = playbackSpeeds[playbackSpeedIndex];
+        boolean routeChanged = nativeAudioRouting.update(nightModeIndex > 0, systemAudioEffectsEnabled, speed);
+        if (routeChanged) {
+            releaseLoudnessEnhancer();
+        }
+        nativeAudioRouting.setPlaybackSpeed(player, speed, routeChanged);
+    }
+
+    // Night mode (dynamic range compression)
+    private void syncAudioEffectSession(int sessionId) {
+        if (systemAudioEffectsEnabled && sessionId != 0) {
+            AudioEffectSession.INSTANCE.open(this, sessionId);
+        }
+    }
+
+    private void initializeLoudnessEnhancer() {
+        if (player == null) {
+            return;
+        }
+
+        try {
+            int audioSessionId = player.getAudioSessionId();
+            if (audioSessionId == 0) {
+                return;  // Invalid session
+            }
+
+            releaseLoudnessEnhancer();  // Clean up any existing instance
+
+            loudnessEnhancer = new LoudnessEnhancer(audioSessionId);
+            loudnessEnhancer.setEnabled(nightModeIndex > 0);
+            if (nightModeIndex > 0) {
+                loudnessEnhancer.setTargetGain(nightModeGains[nightModeIndex]);
+            }
+        } catch (Exception e) {
+            android.util.Log.e("TorboxTvPlayer", "Failed to initialize LoudnessEnhancer", e);
+            loudnessEnhancer = null;
+        }
+    }
+
+    private void releaseLoudnessEnhancer() {
+        if (loudnessEnhancer != null) {
+            try {
+                loudnessEnhancer.release();
+            } catch (Exception e) {
+                android.util.Log.e("TorboxTvPlayer", "Error releasing LoudnessEnhancer", e);
+            }
+            loudnessEnhancer = null;
+        }
+    }
+
+    /**
+     * Load default player settings from Flutter's SharedPreferences.
+     * Keys are prefixed with "flutter." as per flutter shared_preferences package.
+     */
+    private void loadPlayerDefaults() {
+        try {
+            // Load aspect index for TV (separate from mobile)
+            // TV only: 0=Fit, 1=Fill, 2=Zoom, 3=Cinema Zoom (default: 0=Fit)
+            resizeModeIndex = (int) playerPreferences
+                .getLong("player_default_aspect_index_tv", 0);
+            resizeModeIndex = Math.max(0, Math.min(resizeModeIndex, resizeModes.length - 1));
+
+            // Load night mode index (default: 0 = Off)
+            nightModeIndex = (int) playerPreferences
+                .getLong("player_night_mode_index", 0);
+            nightModeIndex = Math.max(0, Math.min(nightModeIndex, nightModeGains.length - 1));
+            systemAudioEffectsEnabled = playerPreferences
+                    .getBoolean("player_system_audio_effects", false);
+
+            displayMatchMode = TvContentDisplayMatchMode.Companion.fromStorage(
+                    playerPreferences.getString(
+                            "content_display_match_mode",
+                            TvContentDisplayMatchMode.SYSTEM.getStorageKey()));
+            if (displayModeController != null) displayModeController.clear();
+            displayModeController = new TvDisplayModeController(this, displayMatchMode);
+
+            android.util.Log.d("TorboxTvPlayer", "Loaded defaults - aspect=" + resizeModeIndex + ", nightMode=" + nightModeIndex + ", displayMatch=" + displayMatchMode.getStorageKey());
+            android.util.Log.d("TorboxTvPlayer", "Player settings handoff: style=" + playerPreferences.getString("megawatch_tv_player_style", "cinema") + " subtitles=" + playerPreferences.getString("player_default_subtitle_language", "auto") + " nightMode=" + nightModeIndex);
+        } catch (Exception e) {
+            android.util.Log.e("TorboxTvPlayer", "Error loading player defaults", e);
+            // Keep default values
+        }
+    }
+
+    private void showNightModeDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Night Mode")
+                .setSingleChoiceItems(nightModeLabels, nightModeIndex, (d, which) -> {
+                    applyNightMode(which);
+                    d.dismiss();
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+
+        dialog.show();
+    }
+
+    private void applyNightMode(int index) {
+        nightModeIndex = index;
+
+        float speed = playbackSpeeds[playbackSpeedIndex];
+        boolean routeChanged = nativeAudioRouting.update(nightModeIndex > 0, systemAudioEffectsEnabled, speed);
+        if (routeChanged) releaseLoudnessEnhancer();
+        boolean restartingAudio = routeChanged && nativeAudioRouting.reprepare(player, speed);
+
+        if (nightModeIndex == 0) {
+            // Turn off
+            if (loudnessEnhancer != null) {
+                loudnessEnhancer.setEnabled(false);
+            }
+        } else if (!restartingAudio) {
+            // Turn on or adjust
+            if (loudnessEnhancer == null) {
+                initializeLoudnessEnhancer();
+            }
+            // Check if initialization succeeded before using
+            if (loudnessEnhancer != null) {
+                loudnessEnhancer.setEnabled(true);
+                loudnessEnhancer.setTargetGain(nightModeGains[nightModeIndex]);
+            }
+        }
+
+        showToast("Night Mode: " + nightModeLabels[nightModeIndex]);
+    }
+
+    private void setupCustomSeekbar() {
+        if (seekbarOverlay == null) {
+            return;
+        }
+        seekbarOverlay.setVisibility(View.GONE);
+        seekbarOverlay.setOnKeyListener((v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+                hideSeekbar();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void showSeekbar(boolean pauseVideo, boolean reopenMenu) {
+        if (seekbarOverlay == null || player == null || seekbarVisible) {
+            return;
+        }
+
+        // Get current position and duration
+        seekbarPosition = player.getCurrentPosition();
+        videoDuration = player.getDuration();
+
+        if (videoDuration <= 0) {
+            Toast.makeText(this, "Seeking not available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        reopenControlsMenuAfterSeek = reopenMenu;
+        boolean wasPlaying = player.isPlaying();
+        resumePlaybackOnSeekbarClose = false;
+
+        // Hide controls overlay while seek UI is open
+        if (controlsMenuVisible) {
+            hideControlsMenu();
+        }
+
+        // Reset seek speed indicator
+        currentSeekSpeed = 1.0f;
+        seekbarSpeedIndicator.setVisibility(View.GONE);
+
+        // Update UI
+        updateSeekbarUI();
+
+        // Show seekbar overlay with fade-in
+        seekbarVisible = true;
+        seekbarOverlay.setVisibility(View.VISIBLE);
+        seekbarOverlay.setAlpha(0f);
+        seekbarOverlay.animate()
+                .alpha(1f)
+                .setDuration(200)
+                .start();
+
+        // Pause the video if required
+        if (pauseVideo && wasPlaying) {
+            resumePlaybackOnSeekbarClose = true;
+            player.pause();
+        }
+    }
+
+    private void hideSeekbar() {
+        if (seekbarOverlay == null || !seekbarVisible) {
+            return;
+        }
+
+        seekbarVisible = false;
+        seekbarSpeedIndicator.setVisibility(View.GONE);
+        final boolean reopenMenu = reopenControlsMenuAfterSeek;
+        final boolean resumePlayback = resumePlaybackOnSeekbarClose;
+
+        seekbarOverlay.animate()
+                .alpha(0f)
+                .setDuration(150)
+                .withEndAction(() -> {
+                    if (seekbarOverlay != null) {
+                        seekbarOverlay.setVisibility(View.GONE);
+                    }
+                    if (resumePlayback && player != null && !player.isPlaying()) {
+                        player.play();
+                    }
+                    if (reopenMenu) {
+                        showControlsMenu();
+                        scheduleHideControlsMenu();
+                    }
+                    resumePlaybackOnSeekbarClose = false;
+                    reopenControlsMenuAfterSeek = false;
+                })
+                .start();
+    }
+
+    private void confirmSeekPosition() {
+        if (player == null || !seekbarVisible) {
+            return;
+        }
+
+        // Seek to the position
+        player.seekTo(seekbarPosition);
+
+        // Hide seekbar overlay
+        hideSeekbar();
+    }
+
+    private void updateSeekbarUI() {
+        if (seekbarProgress == null || seekbarHandle == null || seekbarCurrentTime == null || seekbarTotalTime == null) {
+            return;
+        }
+
+        // Update time displays
+        seekbarCurrentTime.setText(formatTime(seekbarPosition));
+        seekbarTotalTime.setText(formatTime(videoDuration));
+
+        // Update progress bar and handle position
+        float progressPercent = (float) seekbarPosition / videoDuration;
+
+        // Get the width of the seekbar background to calculate positions
+        View seekbarBackground = findViewById(R.id.seekbar_background);
+        if (seekbarBackground != null) {
+            int totalWidth = seekbarBackground.getWidth();
+            if (totalWidth > 0) {
+                int progressWidth = (int) (totalWidth * progressPercent);
+
+                ViewGroup.LayoutParams progressParams = seekbarProgress.getLayoutParams();
+                progressParams.width = progressWidth;
+                seekbarProgress.setLayoutParams(progressParams);
+
+                // Position the handle
+                int handleSize = seekbarHandle.getWidth();
+                float handleX = progressWidth - (handleSize / 2f);
+                seekbarHandle.setTranslationX(handleX);
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════════
+    // UNIFIED CHANNEL GUIDE - Modern Streaming Style
+    // Combines channel number pad and channel scanner into one elegant overlay
+    // ═══════════════════════════════════════════════════════════════════════════════════
+
+    private void setupUnifiedGuide(Intent intent) {
+        if (unifiedGuideOverlay == null || unifiedGuideSearch == null || unifiedGuideList == null) {
+            return;
+        }
+
+        unifiedGuideOverlay.setVisibility(View.GONE);
+        unifiedGuideOverlay.setAlpha(0f);
+        unifiedGuideOverlay.setFocusable(true);
+        unifiedGuideOverlay.setFocusableInTouchMode(true);
+        unifiedGuideOverlay.setOnClickListener(v -> hideUnifiedGuide());
+
+        if (unifiedGuidePanel != null) {
+            // Consume clicks on panel to prevent propagation to overlay (which dismisses)
+            unifiedGuidePanel.setOnClickListener(v -> { /* consume click */ });
+        }
+
+        // Load channel directory from intent
+        ArrayList<Bundle> directoryBundles;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            directoryBundles = intent.getParcelableArrayListExtra("channelDirectory", Bundle.class);
+        } else {
+            directoryBundles = intent.getParcelableArrayListExtra("channelDirectory");
+        }
+
+        if (directoryBundles != null) {
+            for (int index = 0; index < directoryBundles.size(); index++) {
+                Bundle bundle = directoryBundles.get(index);
+                if (bundle == null) continue;
+                String id = safeString(bundle.get("id"));
+                if (id == null || id.isEmpty()) continue;
+                String name = safeString(bundle.get("name"));
+                int number = bundle.containsKey("channelNumber") ? bundle.getInt("channelNumber", -1) : -1;
+                boolean isCurrent = bundle.getBoolean("isCurrent", false);
+                if (currentChannelId != null && currentChannelId.equals(id)) {
+                    isCurrent = true;
+                    if (number > 0) currentChannelNumber = number;
+                }
+                channelDirectoryEntries.add(new ChannelEntry(id, name != null ? name : "", number, isCurrent, index));
+            }
+        }
+
+        if (currentChannelNumber <= 0 && currentChannelId != null) {
+            int lookedUp = resolveChannelNumberFromDirectory(currentChannelId);
+            if (lookedUp > 0) currentChannelNumber = lookedUp;
+        }
+
+        if (channelDirectoryEntries.isEmpty()) return;
+
+        filteredChannelEntries.clear();
+        filteredChannelEntries.addAll(channelDirectoryEntries);
+
+        // Setup adapter with new modern layout
+        unifiedGuideAdapter = new ChannelSearchAdapter(filteredChannelEntries, this::requestChannelByEntry);
+        unifiedGuideList.setLayoutManager(new LinearLayoutManager(this));
+        unifiedGuideList.setHasFixedSize(false);
+        unifiedGuideList.setItemAnimator(null);
+        unifiedGuideList.setAdapter(unifiedGuideAdapter);
+
+        // Setup search text watcher (store as field for cleanup in onDestroy)
+        if (unifiedGuideTextWatcher != null) {
+            unifiedGuideSearch.removeTextChangedListener(unifiedGuideTextWatcher);
+        }
+        unifiedGuideTextWatcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterChannels(s != null ? s.toString() : "");
+            }
+        };
+        unifiedGuideSearch.addTextChangedListener(unifiedGuideTextWatcher);
+
+        // Update channel count display
+        if (unifiedGuideChannelCount != null) {
+            unifiedGuideChannelCount.setText(channelDirectoryEntries.size() + " channels");
+        }
+
+        markUnifiedGuideCurrentChannel(currentChannelId);
+        if (unifiedGuideAdapter != null) {
+            unifiedGuideAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void showUnifiedGuide(boolean focusSearch) {
+        if (unifiedGuideOverlay == null || unifiedGuideSearch == null || unifiedGuideList == null) {
+            return;
+        }
+        if (channelDirectoryEntries.isEmpty()) {
+            Toast.makeText(this, "Channel guide unavailable", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (unifiedGuideVisible) return;
+
+        unifiedGuideVisible = true;
+        hideControlsMenu();
+
+        // Update current channel display
+        if (unifiedGuideCurrentNumber != null) {
+            unifiedGuideCurrentNumber.setText(currentChannelNumber > 0 ? String.valueOf(currentChannelNumber) : "--");
+        }
+
+        // Filter/reset list
+        filterChannels(unifiedGuideSearch.getText() != null ? unifiedGuideSearch.getText().toString() : "");
+
+        // Cancel any ongoing animations to prevent race conditions
+        unifiedGuideOverlay.animate().cancel();
+        if (unifiedGuidePanel != null) {
+            unifiedGuidePanel.animate().cancel();
+        }
+
+        // Show with animation
+        unifiedGuideOverlay.setVisibility(View.VISIBLE);
+        unifiedGuideOverlay.setAlpha(0f);
+        unifiedGuideOverlay.bringToFront();
+        unifiedGuideOverlay.animate().alpha(1f).setDuration(200L).start();
+
+        if (unifiedGuidePanel != null) {
+            unifiedGuidePanel.setScaleX(0.95f);
+            unifiedGuidePanel.setScaleY(0.95f);
+            unifiedGuidePanel.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(200L)
+                    .start();
+        }
+
+        if (focusSearch) {
+            // Focus search bar (guide button triggered)
+            unifiedGuideSearch.requestFocus();
+            unifiedGuideSearch.post(() -> {
+                unifiedGuideSearch.selectAll();
+                showKeyboard(unifiedGuideSearch);
+            });
+        } else {
+            // Focus first list item (DPAD_UP triggered)
+            // Use post to ensure layout is complete before focusing
+            final RecyclerView listRef = unifiedGuideList;
+            listRef.post(() -> {
+                RecyclerView.LayoutManager lm = listRef.getLayoutManager();
+                if (lm != null && listRef.getAdapter() != null && listRef.getAdapter().getItemCount() > 0) {
+                    // Scroll to position 0 first, then focus the view
+                    lm.scrollToPosition(0);
+                    listRef.post(() -> {
+                        View first = lm.findViewByPosition(0);
+                        if (first != null) {
+                            first.requestFocus();
+                        } else if (listRef.getChildCount() > 0) {
+                            // Fallback: focus first visible child
+                            listRef.getChildAt(0).requestFocus();
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    private void hideUnifiedGuide() {
+        if (unifiedGuideOverlay == null || !unifiedGuideVisible) {
+            return;
+        }
+        // Guard against multiple calls during fade-out animation
+        if (unifiedGuideOverlay.getAlpha() < 1f) {
+            return;
+        }
+
+        hideKeyboard(unifiedGuideSearch);
+
+        // Cancel any ongoing animations to prevent race conditions
+        unifiedGuideOverlay.animate().cancel();
+        if (unifiedGuidePanel != null) {
+            unifiedGuidePanel.animate().cancel();
+        }
+
+        // Use final reference to avoid lambda capture issues
+        final View overlayRef = unifiedGuideOverlay;
+        overlayRef.animate()
+                .alpha(0f)
+                .setDuration(150L)
+                .withEndAction(() -> {
+                    // Only set flag to false after animation completes to prevent race condition
+                    unifiedGuideVisible = false;
+                    overlayRef.setVisibility(View.GONE);
+                    overlayRef.setAlpha(1f);
+                    // Restore focus to player view for proper TV D-pad navigation
+                    if (playerView != null) {
+                        playerView.requestFocus();
+                    }
+                })
+                .start();
+    }
+
+    private boolean isUnifiedGuideVisible() {
+        return unifiedGuideVisible && unifiedGuideOverlay != null && unifiedGuideOverlay.getVisibility() == View.VISIBLE;
+    }
+
+    private void markUnifiedGuideCurrentChannel(@Nullable String channelId) {
+        if (channelId == null) return;
+        for (ChannelEntry entry : channelDirectoryEntries) {
+            entry.isCurrent = channelId.equals(entry.id);
+        }
+    }
+
+    @Nullable
+    private ChannelEntry findChannelEntryByNumber(int number) {
+        if (number <= 0 || channelDirectoryEntries.isEmpty()) {
+            return null;
+        }
+        for (ChannelEntry entry : channelDirectoryEntries) {
+            if (entry.number == number) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    private long getAcceleratedSeekStep(int repeatCount) {
+        final long baseStep = 10_000L;          // 10 seconds
+        final long acceleration = 2_000L;       // 2 seconds per repeat
+        final long maxStep = 120_000L;          // 2 minutes cap
+
+        long calculatedStep = baseStep + (repeatCount * acceleration);
+        return Math.min(calculatedStep, maxStep);
+    }
+
+    private void seekForward(long stepMs) {
+        if (player == null) {
+            return;
+        }
+        seekbarPosition = Math.min(seekbarPosition + stepMs, videoDuration);
+        updateSeekSpeed(stepMs);
+        updateSeekbarUI();
+
+        // NO visual feedback here - this is only called during long-press seekbar mode
+        // Visual feedback should only appear for quick single presses (handled in seekBy method)
+    }
+
+    private void seekBackward(long stepMs) {
+        if (player == null) {
+            return;
+        }
+        seekbarPosition = Math.max(seekbarPosition - stepMs, 0);
+        updateSeekSpeed(stepMs);
+        updateSeekbarUI();
+
+        // NO visual feedback here - this is only called during long-press seekbar mode
+        // Visual feedback should only appear for quick single presses (handled in seekBy method)
+    }
+
+    private void updateSeekSpeed(long stepMs) {
+        currentSeekSpeed = stepMs / 10_000f;  // Base is 10s = 1x
+
+        if (currentSeekSpeed > 1.0f) {
+            seekbarSpeedIndicator.setText(String.format(Locale.US, "→ %.1fx", currentSeekSpeed));
+            seekbarSpeedIndicator.setVisibility(View.VISIBLE);
+        } else {
+            seekbarSpeedIndicator.setVisibility(View.GONE);
+        }
+    }
+
+    private String formatTime(long timeMs) {
+        if (timeMs <= 0) {
+            return "00:00";
+        }
+        long totalSeconds = timeMs / 1000;
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+
+        if (hours > 0) {
+            return String.format(Locale.US, "%d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format(Locale.US, "%02d:%02d", minutes, seconds);
+        }
+    }
+
+    private void showTitleTemporarily(@Nullable String title) {
+        if (!showVideoTitle || titleView == null) {
+            return;
+        }
+        titleView.removeCallbacks(hideTitleRunnable);
+        titleView.animate().cancel();
+        String displayTitle = title != null ? title.trim() : "";
+        if (displayTitle.isEmpty()) {
+            titleView.setVisibility(View.GONE);
+            return;
+        }
+        titleView.setText(displayTitle);
+        titleView.setAlpha(0f);
+        titleView.setVisibility(View.VISIBLE);
+        titleView.animate().alpha(1f).setDuration(TITLE_FADE_DURATION_MS).start();
+        titleView.postDelayed(hideTitleRunnable, TITLE_FADE_DELAY_MS);
+    }
+
+    private void cancelTitleFade() {
+        if (titleView != null) {
+            titleView.removeCallbacks(hideTitleRunnable);
+            titleView.animate().cancel();
+        }
+    }
+
+    private void fadeOutTitle() {
+        if (titleView == null || titleView.getVisibility() != View.VISIBLE) {
+            return;
+        }
+        titleView.removeCallbacks(hideTitleRunnable);
+        titleView.animate().cancel();
+        titleView.animate()
+                .alpha(0f)
+                .setDuration(TITLE_FADE_DURATION_MS)
+                .withEndAction(() -> {
+                    if (titleView != null) {
+                        titleView.setVisibility(View.GONE);
+                    }
+                })
+                .start();
+    }
+
+    private void showLoadingBar() {
+        showLoadingBar(null, null);
+    }
+
+    private void showLoadingBar(@Nullable Integer channelNum, @Nullable String channelName) {
+        if (loadingBarContainer == null || loadingBar == null) {
+            return;
+        }
+
+        runOnUiThread(() -> {
+            // Stop any existing animation
+            if (loadingBarAnimator != null && loadingBarAnimator.isRunning()) {
+                loadingBarAnimator.cancel();
+            }
+
+            loadingBar.setBackgroundColor(Color.parseColor("#CC00FFFF")); // Cyan for channel
+
+            // Show the container
+            loadingBarContainer.setVisibility(View.VISIBLE);
+            loadingBarContainer.setAlpha(1f);
+
+            // Show bottom indicator
+            showBottomLoadingIndicator(channelNum, channelName);
+            
+            // Get the width of the container
+            loadingBarContainer.post(() -> {
+                int containerWidth = loadingBarContainer.getWidth();
+                if (containerWidth <= 0) {
+                    return;
+                }
+                
+                // Create indeterminate loading animation (0% to 100%)
+                loadingBarAnimator = android.animation.ValueAnimator.ofFloat(0f, 1f);
+                loadingBarAnimator.setDuration(1500L);
+                loadingBarAnimator.setRepeatCount(android.animation.ValueAnimator.INFINITE);
+                loadingBarAnimator.setRepeatMode(android.animation.ValueAnimator.RESTART);
+                loadingBarAnimator.setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator());
+                
+                loadingBarAnimator.addUpdateListener(animation -> {
+                    if (loadingBar == null) {
+                        return;
+                    }
+                    float progress = (float) animation.getAnimatedValue();
+                    
+                    // Calculate width for indeterminate animation
+                    // The bar will grow from 0% to 30% of width, then slide across
+                    float barWidth;
+                    float barPosition;
+                    
+                    if (progress < 0.3f) {
+                        // Growing phase
+                        barWidth = (progress / 0.3f) * 0.3f * containerWidth;
+                        barPosition = 0;
+                    } else {
+                        // Sliding phase
+                        barWidth = 0.3f * containerWidth;
+                        float slideProgress = (progress - 0.3f) / 0.7f;
+                        barPosition = slideProgress * containerWidth;
+                    }
+                    
+                    android.view.ViewGroup.LayoutParams params = loadingBar.getLayoutParams();
+                    params.width = (int) barWidth;
+                    loadingBar.setLayoutParams(params);
+                    loadingBar.setTranslationX(barPosition);
+                });
+                
+                loadingBarAnimator.start();
+            });
+        });
+    }
+    
+    private void showBottomLoadingIndicator(@Nullable Integer channelNum, @Nullable String channelName) {
+        if (loadingIndicator == null || loadingText == null) {
+            return;
+        }
+
+        runOnUiThread(() -> {
+            // Stop any existing animation
+            if (dotsAnimator != null && dotsAnimator.isRunning()) {
+                dotsAnimator.cancel();
+            }
+
+            // Cyan channel-switch styling
+            int textColor = Color.parseColor("#00FFFF");
+            int dotColor = Color.parseColor("#00FFFF");
+            String text;
+            if (channelNum != null && channelName != null) {
+                text = String.format(Locale.US, "Loading channel %02d : %s", channelNum, channelName.toUpperCase());
+            } else if (channelNum != null) {
+                text = String.format(Locale.US, "Loading channel %02d", channelNum);
+            } else {
+                text = "Loading channel";
+            }
+
+            loadingText.setText(text);
+            loadingText.setTextColor(textColor);
+            
+            if (loadingDot1 != null) {
+                loadingDot1.setBackgroundColor(dotColor);
+            }
+            if (loadingDot2 != null) {
+                loadingDot2.setBackgroundColor(dotColor);
+            }
+            if (loadingDot3 != null) {
+                loadingDot3.setBackgroundColor(dotColor);
+            }
+            
+            // Show indicator
+            loadingIndicator.setVisibility(View.VISIBLE);
+            loadingIndicator.setAlpha(0f);
+            loadingIndicator.animate()
+                .alpha(1f)
+                .setDuration(150L)
+                .start();
+            
+            // Animate dots (wave effect)
+            dotsAnimator = android.animation.ValueAnimator.ofInt(0, 1, 2, 3);
+            dotsAnimator.setDuration(1200L);
+            dotsAnimator.setRepeatCount(android.animation.ValueAnimator.INFINITE);
+            dotsAnimator.setRepeatMode(android.animation.ValueAnimator.RESTART);
+            
+            dotsAnimator.addUpdateListener(animation -> {
+                int step = (int) animation.getAnimatedValue();
+                if (loadingDot1 != null && loadingDot2 != null && loadingDot3 != null) {
+                    loadingDot1.setAlpha(step == 1 ? 1f : 0.3f);
+                    loadingDot2.setAlpha(step == 2 ? 1f : 0.3f);
+                    loadingDot3.setAlpha(step == 3 ? 1f : 0.3f);
+                }
+            });
+            
+            dotsAnimator.start();
+        });
+    }
+    
+    private void hideBottomLoadingIndicator() {
+        if (loadingIndicator == null) {
+            return;
+        }
+        
+        runOnUiThread(() -> {
+            // Stop animation
+            if (dotsAnimator != null && dotsAnimator.isRunning()) {
+                dotsAnimator.cancel();
+            }
+            
+            // Fade out
+            loadingIndicator.animate()
+                .alpha(0f)
+                .setDuration(200L)
+                .withEndAction(() -> {
+                    if (loadingIndicator != null) {
+                        loadingIndicator.setVisibility(View.GONE);
+                        loadingIndicator.setAlpha(1f);
+                    }
+                })
+                .start();
+        });
+    }
+    
+    private void hideLoadingBar() {
+        if (loadingBarContainer == null) {
+            return;
+        }
+        
+        runOnUiThread(() -> {
+            // Stop top bar animation
+            if (loadingBarAnimator != null && loadingBarAnimator.isRunning()) {
+                loadingBarAnimator.cancel();
+            }
+            
+            // Hide bottom indicator
+            hideBottomLoadingIndicator();
+            
+            // Fade out top bar
+            loadingBarContainer.animate()
+                .alpha(0f)
+                .setDuration(200L)
+                .withEndAction(() -> {
+                    if (loadingBarContainer != null) {
+                        loadingBarContainer.setVisibility(View.GONE);
+                        loadingBarContainer.setAlpha(1f);
+                    }
+                })
+                .start();
+        });
+    }
+    
+    private void showNextOverlay() {
+        // Premium frosted "loading next stream" overlay (spinner + title).
+        runOnUiThread(() -> {
+            if (nextOverlay == null) {
+                return;
+            }
+            if (nextText != null) {
+                nextText.setText(""); // Title is filled in once the stream resolves
+            }
+            if (nextSubtext != null) {
+                nextSubtext.setVisibility(View.GONE);
+            }
+            nextOverlay.animate().cancel();
+            nextOverlay.setAlpha(0f);
+            nextOverlay.setVisibility(View.VISIBLE);
+            nextOverlay.animate().alpha(1f).setDuration(220).start();
+        });
+    }
+
+    private void hideNextOverlay() {
+        runOnUiThread(() -> {
+            // Channel-switch flows funnel through here too; always clear the bar.
+            hideLoadingBar();
+            if (nextOverlay == null || nextOverlay.getVisibility() != View.VISIBLE) {
+                return;
+            }
+            nextOverlay.animate().cancel();
+            nextOverlay.animate().alpha(0f).setDuration(160).withEndAction(() -> {
+                if (nextOverlay != null) {
+                    nextOverlay.setVisibility(View.GONE);
+                    nextOverlay.setAlpha(1f);
+                }
+            }).start();
+        });
+    }
+
+    private void scheduleHideNextOverlay(long delayMs) {
+        new Handler(Looper.getMainLooper()).postDelayed(this::hideNextOverlay, delayMs);
+    }
+
+    private void performHideNextOverlay() {
+        hideNextOverlay();
+    }
+
+    private void playMedia(String url, @Nullable String title) {
+        playMedia(url, title, null);
+    }
+
+    private void playMedia(String url, @Nullable String title, @Nullable String providerHint) {
+        if (player == null || url == null || url.isEmpty()) {
+            return;
+        }
+
+        // Clean up from previous channel/stream
+        cancelPikPakRetry(); // Cancel any ongoing PikPak retry operations
+
+        // Remove old track change listener to prevent accumulation
+        if (trackChangeListener != null) {
+            player.removeListener(trackChangeListener);
+            trackChangeListener = null;
+        }
+
+        // Store current stream info for retry logic
+        currentStreamUrl = url;
+        currentStreamTitle = title;
+        currentStreamProvider = providerHint;
+
+        // Check if this is a PikPak stream and apply retry logic
+        boolean isPikPak = PROVIDER_PIKPAK.equalsIgnoreCase(currentStreamProvider);
+
+        android.util.Log.d("TorboxTvPlayer", "playMedia: url=" + url.substring(0, Math.min(50, url.length())) +
+                ", title=" + title + ", provider=" + currentStreamProvider + ", isPikPak=" + isPikPak);
+
+        if (isPikPak) {
+            // Use PikPak retry logic for cold storage handling
+            playPikPakVideoWithRetry(url, title);
+        } else {
+            // Standard playback for non-PikPak providers
+            playMediaDirect(url, title);
+        }
+    }
+
+    /**
+     * Drop every trace of the previous item's subtitles. Shared by the direct and
+     * PikPak playback paths: the PikPak path used to reset nothing, so a stale
+     * currentStremioSubtitleIndex pointed into a list belonging to the previous
+     * item — which then suppressed embedded auto-selection for the new one.
+     */
+    private void resetSubtitleState() {
+        stopExternalSubtitleRendering();
+        userManuallySelectedSubtitle = false;
+        if (trackSelector != null && (playerPreferences.getBoolean("subtitle_only_foreign_audio", false) ||
+                playerPreferences.getBoolean("subtitle_forced_only", false))) {
+            trackSelector.setParameters(trackSelector.buildUponParameters()
+                    .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+                    .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true).build());
+        }
+        if (subtitleOverlay != null) {
+            subtitleOverlay.setCues(Collections.emptyList());
+        }
+        stremioSubtitles.clear();
+        currentStremioSubtitleIndex = -1;
+        embeddedSubtitleSelected = false;
+        manualSubtitleDisplayLabel = null;
+        failedSubtitleUrls.clear();
+        addonSubtitleFetchToken++;
+    }
+
+    private void playMediaDirect(String url, @Nullable String title) {
+        if (player == null || url == null || url.isEmpty()) {
+            return;
+        }
+        randomApplied = false;
+
+        // Must run before maybeRecreatePlayerForBandwidth(), which can swap in a
+        // fresh player (and trackSelector) mid-call — the teardown has to hit the
+        // player the old subtitle was rendering against.
+        resetSubtitleState();
+        maybeRecreatePlayerForBandwidth();
+
+        MediaMetadata metadata = new MediaMetadata.Builder()
+                .setTitle(title != null ? title : "")
+                .build();
+        MediaItem item = new MediaItem.Builder()
+                .setUri(url)
+                .setMediaMetadata(metadata)
+                .build();
+        player.setMediaItem(item);
+        player.prepare();
+        player.play();
+        playedCount += 1;
+        updateTitle(title);
+
+        // Fetch Stremio subtitles for this content
+        fetchStremioSubtitles(title);
+
+        // Store listener reference for cleanup on channel switch
+        trackChangeListener = new Player.Listener() {
+            @Override
+            public void onTracksChanged(Tracks tracks) {
+                // Self-remove after first track change
+                if (trackChangeListener == this) {
+                    player.removeListener(this);
+                    trackChangeListener = null;
+                }
+                ensureDefaultSubtitleSelected();
+            }
+        };
+        player.addListener(trackChangeListener);
+    }
+
+    private void updateTitle(@Nullable String title) {
+        // Don't show the old centered title anymore, only use the new badge
+        // showTitleTemporarily(title);
+        updateTitleBadge(title);
+        if (isPremiumStyle()) {
+            bindPremiumIdentityFallback(title);
+            fetchPremiumIdentity(title);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PREMIUM IDENTITY (MegaWatch TV playback-screen styles)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /**
+     * Immediate best-effort identity while the Flutter lookup runs: the
+     * release name with its extension stripped, no subtitle, no badges. The
+     * async result overwrites this; on failure this is what stays up — still
+     * better than the raw marquee.
+     */
+    private void bindPremiumIdentityFallback(@Nullable String title) {
+        String display = title != null ? title.trim() : "";
+        display = display.replaceAll(
+                "(?i)\\.(mkv|mp4|avi|mov|wmv|flv|webm|m4v|mpg|mpeg|ts|m2ts|vob|3gp|ogv|divx)$",
+                "").trim();
+        if (dtvTitle != null) {
+            dtvTitle.setText(display);
+        }
+        if (dtvSub != null) {
+            dtvSub.setVisibility(View.GONE);
+        }
+        if (dtvYear != null) {
+            dtvYear.setVisibility(View.GONE);
+        }
+        if (dtvSpecLine != null) {
+            dtvSpecLine.setVisibility(View.GONE);
+        }
+        for (TextView chip : dtvBadges) {
+            if (chip != null) {
+                chip.setVisibility(View.GONE);
+            }
+        }
+        if (dtvPoster != null) {
+            dtvPoster.setImageDrawable(null);
+            dtvLoadedPosterUrl = null;
+        }
+    }
+
+    /**
+     * Ask Flutter for the clean identity (Cinemeta/TVMaze — the same lookups
+     * the subtitle path uses) plus FormatTagDetector badges parsed from the
+     * release name. Stale responses are dropped via {@link #dtvIdentitySeq}
+     * so a zap during a slow lookup can't paint the previous title.
+     */
+    private void fetchPremiumIdentity(@Nullable String title) {
+        if (title == null || title.isEmpty()) {
+            return;
+        }
+        MethodChannel channel = MainActivity.getAndroidTvPlayerChannel();
+        if (channel == null) {
+            return;
+        }
+        final int seq = ++dtvIdentitySeq;
+        Map<String, Object> args = new HashMap<>();
+        args.put("filename", title);
+        channel.invokeMethod("lookupMegaWatchTvIdentity", args, new MethodChannel.Result() {
+            @Override
+            public void success(@Nullable Object result) {
+                if (seq != dtvIdentitySeq || !(result instanceof Map)) {
+                    return;
+                }
+                @SuppressWarnings("unchecked")
+                Map<String, Object> data = (Map<String, Object>) result;
+                runOnUiThread(() -> {
+                    if (seq == dtvIdentitySeq) {
+                        bindPremiumIdentity(data);
+                    }
+                });
+            }
+
+            @Override
+            public void error(String errorCode, @Nullable String errorMessage,
+                              @Nullable Object errorDetails) {
+                // Fallback binding already on screen.
+            }
+
+            @Override
+            public void notImplemented() {
+                // Older Flutter side — fallback binding already on screen.
+            }
+        });
+    }
+
+    private void bindPremiumIdentity(Map<String, Object> data) {
+        String kind = safeString(data.get("kind"));
+        String cleanTitle = safeString(data.get("title"));
+        String episodeTitle = safeString(data.get("episodeTitle"));
+        Object seasonO = data.get("season");
+        Object episodeO = data.get("episode");
+        Object yearO = data.get("year");
+        String poster = safeString(data.get("poster"));
+
+        if (cleanTitle != null && !cleanTitle.isEmpty() && dtvTitle != null) {
+            dtvTitle.setText(cleanTitle);
+        }
+
+        boolean isSeries = "series".equals(kind)
+                && seasonO instanceof Number && episodeO instanceof Number;
+        String sub = null;
+        if (isSeries) {
+            sub = "S" + ((Number) seasonO).intValue()
+                    + " E" + ((Number) episodeO).intValue();
+            if (episodeTitle != null && !episodeTitle.isEmpty()) {
+                sub += " — " + episodeTitle;
+            }
+        }
+
+        boolean yearShown = false;
+        if (dtvYear != null) {
+            if ("movie".equals(kind) && yearO instanceof Number) {
+                dtvYear.setText(String.valueOf(((Number) yearO).intValue()));
+                dtvYear.setVisibility(View.VISIBLE);
+                yearShown = true;
+            } else {
+                dtvYear.setVisibility(View.GONE);
+            }
+        }
+        if (sub == null && !yearShown && "movie".equals(kind)
+                && yearO instanceof Number) {
+            sub = String.valueOf(((Number) yearO).intValue());
+        }
+
+        if (dtvSub != null) {
+            if (sub != null && !sub.isEmpty()) {
+                dtvSub.setText(sub);
+                dtvSub.setVisibility(View.VISIBLE);
+            } else {
+                dtvSub.setVisibility(View.GONE);
+            }
+        }
+
+        java.util.List<String> badges = new java.util.ArrayList<>();
+        Object badgesO = data.get("badges");
+        if (badgesO instanceof java.util.List) {
+            for (Object b : (java.util.List<?>) badgesO) {
+                if (b instanceof String && !((String) b).isEmpty()) {
+                    badges.add((String) b);
+                }
+            }
+        }
+        if (dtvSpecLine != null) {
+            if (!badges.isEmpty()) {
+                StringBuilder spec = new StringBuilder();
+                for (String b : badges) {
+                    if (spec.length() > 0) {
+                        spec.append("  ·  ");
+                    }
+                    spec.append(b);
+                }
+                dtvSpecLine.setText(spec.toString());
+                dtvSpecLine.setVisibility(View.VISIBLE);
+            } else {
+                dtvSpecLine.setVisibility(View.GONE);
+            }
+        }
+        for (int i = 0; i < dtvBadges.length; i++) {
+            TextView chip = dtvBadges[i];
+            if (chip == null) {
+                continue;
+            }
+            if (i < badges.size()) {
+                chip.setText(badges.get(i).toUpperCase(java.util.Locale.US));
+                chip.setVisibility(View.VISIBLE);
+            } else {
+                chip.setVisibility(View.GONE);
+            }
+        }
+
+        if (dtvPoster != null && poster != null && !poster.isEmpty()) {
+            loadPremiumPoster(poster);
+        }
+    }
+
+    /**
+     * GUIDE pool cell: the count comes from the launch intent's magnetQueue,
+     * which is never refreshed on an in-activity channel zap — so the cell
+     * only shows while the LAUNCH channel is still tuned and hides the
+     * moment the channel changes (an unknown pool must not wear the old
+     * channel's number).
+     */
+    private void refreshPremiumPoolCell() {
+        if (dtvPoolGroup == null) {
+            return;
+        }
+        boolean launchChannelTuned = dtvLaunchChannelId != null
+                && dtvLaunchChannelId.equals(currentChannelId);
+        int pool = magnetQueue != null ? magnetQueue.size() : 0;
+        if (launchChannelTuned && pool > 1 && dtvPoolCount != null) {
+            dtvPoolCount.setText(pool + " titles");
+            dtvPoolGroup.setVisibility(View.VISIBLE);
+        } else {
+            dtvPoolGroup.setVisibility(View.GONE);
+        }
+    }
+
+    /** Per-skin channel plate/pill/kicker text. Null-safe on every view. */
+    private void updatePremiumChannelViews() {
+        if (!isPremiumStyle()) {
+            return;
+        }
+        String name = currentChannelName != null ? currentChannelName.trim() : "";
+        String num2 = currentChannelNumber > 0
+                ? String.format(java.util.Locale.US, "%02d", currentChannelNumber)
+                : "";
+        switch (playerStyle) {
+            case CINEMA: {
+                if (dtvChannelNameView != null) {
+                    StringBuilder pill = new StringBuilder();
+                    if (!num2.isEmpty()) {
+                        pill.append("CH ").append(num2);
+                    }
+                    if (!name.isEmpty()) {
+                        if (pill.length() > 0) {
+                            pill.append(" · ");
+                        }
+                        pill.append(name.toUpperCase(java.util.Locale.US));
+                    }
+                    dtvChannelNameView.setText(pill.toString());
+                    dtvChannelNameView.setVisibility(
+                            pill.length() > 0 ? View.VISIBLE : View.GONE);
+                }
+                break;
+            }
+            case SPOTLIGHT: {
+                if (dtvChannelNumberView != null) {
+                    dtvChannelNumberView.setText(
+                            num2.isEmpty() ? "" : "CH " + num2);
+                    dtvChannelNumberView.setVisibility(
+                            num2.isEmpty() ? View.GONE : View.VISIBLE);
+                }
+                if (dtvChannelNameView != null) {
+                    dtvChannelNameView.setText(name);
+                }
+                break;
+            }
+            case PRESTIGE: {
+                if (dtvChannelNameView != null) {
+                    dtvChannelNameView.setText(
+                            name.isEmpty() ? "Now Playing" : name + " · Now Playing");
+                }
+                if (dtvChannelBug != null) {
+                    dtvChannelBug.setText(
+                            num2.isEmpty() ? "MEGAWATCH" : "MEGAWATCH · CH " + num2);
+                }
+                break;
+            }
+            case NETWORK:
+            case GUIDE:
+            default: {
+                if (dtvChannelNumberView != null) {
+                    dtvChannelNumberView.setText(num2);
+                }
+                if (dtvChannelNameView != null) {
+                    dtvChannelNameView.setText(name);
+                }
+                break;
+            }
+        }
+        refreshPremiumPoolCell();
+    }
+
+    /**
+     * Tiny poster loader for the CINEMA skin (Cinemeta URL). One in-flight
+     * bitmap, dedup on URL; failures leave the placeholder frame.
+     */
+    private void loadPremiumPoster(String url) {
+        if (dtvPoster == null || url.equals(dtvLoadedPosterUrl)) {
+            return;
+        }
+        // Same stale-guard as the identity text: a zap during a slow download
+        // must not paint the previous title's poster next to the new title.
+        final int seq = dtvIdentitySeq;
+        new Thread(() -> {
+            android.graphics.Bitmap bitmap = null;
+            java.net.HttpURLConnection connection = null;
+            try {
+                connection = (java.net.HttpURLConnection)
+                        new java.net.URL(url).openConnection();
+                connection.setConnectTimeout(8000);
+                connection.setReadTimeout(8000);
+                bitmap = android.graphics.BitmapFactory
+                        .decodeStream(connection.getInputStream());
+            } catch (Exception ignored) {
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+            final android.graphics.Bitmap loaded = bitmap;
+            if (loaded != null) {
+                runOnUiThread(() -> {
+                    if (dtvPoster != null && seq == dtvIdentitySeq
+                            && !isFinishing() && !isDestroyed()) {
+                        dtvPoster.setImageBitmap(loaded);
+                        dtvLoadedPosterUrl = url;
+                    }
+                });
+            }
+        }, "DtvPosterLoader").start();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STREMIO EXTERNAL SUBTITLES
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /**
+     * Fetch external subtitles from Stremio addons for the current content.
+     * Uses the video title to look up IMDB ID via Flutter's MovieMetadata service.
+     */
+    private void fetchStremioSubtitles(@Nullable String title) {
+        if (stremioSubtitleService == null || title == null || title.isEmpty()) {
+            return;
+        }
+
+        // Set loading state and refresh panel if visible
+        isLoadingStremioSubtitles = true;
+        if (isSubtitleSurfaceVisible()) {
+            refreshSubtitlePanelForLoading();
+        }
+
+        // Request IMDB ID from Flutter for this title
+        MethodChannel channel = MainActivity.getAndroidTvPlayerChannel();
+        if (channel == null) {
+            android.util.Log.d("StremioSubs", "Method channel not available");
+            clearStremioLoadingState();
+            return;
+        }
+
+        Map<String, Object> args = new HashMap<>();
+        args.put("filename", title);
+
+        channel.invokeMethod("lookupMovieImdb", args, new MethodChannel.Result() {
+            @Override
+            public void success(@Nullable Object result) {
+                if (!(result instanceof Map)) {
+                    android.util.Log.d("StremioSubs", "No IMDB result for: " + title);
+                    clearStremioLoadingState();
+                    return;
+                }
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> data = (Map<String, Object>) result;
+                String imdbId = safeString(data.get("imdbId"));
+
+                if (imdbId == null || imdbId.isEmpty()) {
+                    android.util.Log.d("StremioSubs", "No IMDB ID found for: " + title);
+                    clearStremioLoadingState();
+                    return;
+                }
+
+                android.util.Log.d("StremioSubs", "Found IMDB ID: " + imdbId + " for: " + title);
+                fetchStremioSubtitlesWithImdb(imdbId);
+            }
+
+            @Override
+            public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
+                android.util.Log.e("StremioSubs", "IMDB lookup error: " + errorMessage);
+                clearStremioLoadingState();
+            }
+
+            @Override
+            public void notImplemented() {
+                android.util.Log.d("StremioSubs", "lookupMovieImdb not implemented");
+                clearStremioLoadingState();
+            }
+        });
+    }
+
+    /**
+     * Clear Stremio subtitle loading state and refresh panel if visible.
+     */
+    private void clearStremioLoadingState() {
+        isLoadingStremioSubtitles = false;
+        if (isSubtitleSurfaceVisible()) {
+            refreshSubtitlePanelForLoading();
+        }
+    }
+
+    /**
+     * Fetch subtitles from Stremio addons using a known IMDB ID.
+     */
+    private void fetchStremioSubtitlesWithImdb(String imdbId) {
+        fetchStremioSubtitlesWithImdb(imdbId, "movie", null, null);
+    }
+
+    private void fetchStremioSubtitlesWithImdb(String imdbId, String type,
+                                               @Nullable Integer season, @Nullable Integer episode) {
+        if (stremioSubtitleService == null) {
+            // Clear any loading state set by the caller so the panel doesn't hang on ⏳.
+            clearStremioLoadingState();
+            return;
+        }
+
+        final StremioSubtitleService service = stremioSubtitleService;
+        final String contentType = "series".equals(type) ? "series" : "movie";
+        // Capture token to detect if content changes during async fetch
+        final int fetchToken = addonSubtitleFetchToken;
+
+        subtitleExecutor.execute(() -> {
+            try {
+                // Use the blocking version for Java interop
+                List<StremioSubtitle> subtitles = service.fetchSubtitlesBlocking(contentType, imdbId, season, episode);
+
+                runOnUiThread(() -> {
+                    // Check if content changed during fetch
+                    if (fetchToken != addonSubtitleFetchToken) {
+                        android.util.Log.d("StremioSubs", "Content changed during fetch, discarding results for IMDB " + imdbId);
+                        return;
+                    }
+
+                    stremioSubtitles.clear();
+                    if (subtitles != null) {
+                        for (StremioSubtitle sub : subtitles) {
+                            if (isSideRenderableSubtitle(sub.getUrl())) {
+                                stremioSubtitles.add(sub);
+                            }
+                        }
+                    }
+                    currentStremioSubtitleIndex = -1;
+                    isLoadingStremioSubtitles = false;
+                    android.util.Log.d("StremioSubs", "Fetched " + stremioSubtitles.size() + " subtitles for IMDB " + imdbId);
+
+                    // Try to auto-select addon subtitle if no embedded subtitle was selected
+                    tryAutoSelectAddonSubtitle();
+
+                    // Refresh panel if visible to show loaded subtitles
+                    if (isSubtitleSurfaceVisible()) {
+                        refreshSubtitlePanelForLoading();
+                    }
+                });
+            } catch (Exception e) {
+                android.util.Log.e("StremioSubs", "Failed to fetch subtitles", e);
+                runOnUiThread(() -> {
+                    // Check if content changed during fetch
+                    if (fetchToken != addonSubtitleFetchToken) {
+                        return;
+                    }
+
+                    stremioSubtitles.clear();
+                    currentStremioSubtitleIndex = -1;
+                    isLoadingStremioSubtitles = false;
+                    // Refresh panel if visible to clear loading indicator
+                    if (isSubtitleSurfaceVisible()) {
+                        refreshSubtitlePanelForLoading();
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * True if this subtitle URL is a format the on-device parser can render.
+     * TTML/DFXP were handled by ExoPlayer's decoder in the old re-prepare path
+     * but SubtitleCueParser can't parse them (they'd yield zero cues and fail
+     * the load), so they're filtered out of the offered list entirely.
+     */
+    private boolean isSideRenderableSubtitle(String url) {
+        if (url == null) return false;
+        String path = url.split("\\?")[0].toLowerCase(Locale.US);
+        return !path.endsWith(".ttml") && !path.endsWith(".dfxp");
+    }
+
+    /**
+     * Index into stremioSubtitles of the subtitle actually on screen right now,
+     * or -1 if none is. Unlike currentStremioSubtitleIndex this can never name a
+     * pick that is still downloading.
+     */
+    private int findRenderingStremioIndex() {
+        if (!externalSubtitleActive || activeExternalSubtitleUrl == null) {
+            return -1;
+        }
+        for (int i = 0; i < stremioSubtitles.size(); i++) {
+            if (activeExternalSubtitleUrl.equals(stremioSubtitles.get(i).getUrl())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Load an external Stremio subtitle by side-rendering it: the file is
+     * downloaded + parsed off-thread and cues are fed to subtitleOverlay from
+     * a position ticker. The player source is never rebuilt, so playback is
+     * never interrupted — no re-prepare, no rebuffer, no resume/seek juggling.
+     */
+    private void loadStremioSubtitle(StremioSubtitle subtitle) {
+        // The player null check is load-bearing, not defensive: the addon
+        // catalog fetch can land after onDestroy (shutdown() doesn't interrupt
+        // a running task), and by then subtitleCueExecutor is shut down — an
+        // execute() on it would throw RejectedExecutionException on the main
+        // thread. Bail out on any torn-down state before touching the pool.
+        if (subtitle == null || player == null || isFinishing() || isDestroyed()) {
+            return;
+        }
+        final int loadToken = ++externalSubtitleLoadToken;
+        // Capture the currently-*rendering* external selection so a failed load
+        // can fall back to it instead of tearing down a working subtitle.
+        // Derived from the rendering URL rather than currentStremioSubtitleIndex:
+        // the panel assigns that index eagerly for every pick, including ones
+        // still downloading, so A(rendering)→B(downloading)→C would otherwise
+        // capture B and restore the panel to a subtitle that never appeared.
+        final int previousStremioIndex = findRenderingStremioIndex();
+        showStatusPill("Loading " + subtitle.getDisplayName() + "…");
+
+        List<SubtitleCue> cached = SubtitleCueCache.INSTANCE.get(subtitle.getUrl());
+        if (cached != null) {
+            onExternalSubtitleLoaded(subtitle, cached, previousStremioIndex);
+            return;
+        }
+
+        subtitleCueExecutor.execute(() -> {
+            final List<SubtitleCue> parsed = SubtitleCueCache.INSTANCE.fetch(subtitle.getUrl());
+            runOnUiThread(() -> {
+                // Stale if the user picked another subtitle or content changed meanwhile
+                if (loadToken != externalSubtitleLoadToken) return;
+                onExternalSubtitleLoaded(subtitle, parsed, previousStremioIndex);
+            });
+        });
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private void onExternalSubtitleLoaded(StremioSubtitle subtitle,
+                                          List<SubtitleCue> cues,
+                                          int previousStremioIndex) {
+        if (cues.isEmpty()) {
+            android.util.Log.w("StremioSubs", "Failed to load/parse external subtitle: " + subtitle.getUrl());
+            failedSubtitleUrls.add(subtitle.getUrl());   // don't auto-select this broken sub again
+            showStatusPillTransient("Couldn't load " + subtitle.getDisplayName());
+            // Keep whatever was rendering before — do NOT stopExternalSubtitleRendering()
+            // here (it would wipe a working subtitle and cancel the error pill).
+            // Just restore the selection state to the previously-good subtitle.
+            currentStremioSubtitleIndex = previousStremioIndex;
+            if (!externalSubtitleActive && trackSelector != null) {
+                // Nothing external is on screen; the selecting caller already
+                // disabled embedded text tracks in anticipation. Re-enable so
+                // ExoPlayer can restore an embedded subtitle. Keyed on what is
+                // actually rendering rather than on previousStremioIndex, which
+                // is -1 both when nothing was active and when the rendering
+                // subtitle has since dropped out of stremioSubtitles.
+                trackSelector.setParameters(trackSelector.buildUponParameters()
+                        .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
+                        .build());
+            }
+            if (isSubtitleSurfaceVisible()) {
+                refreshSubtitlePanelForLoading();
+            }
+            return;
+        }
+
+        // Disable embedded text tracks so they don't double-render under the
+        // side-loaded cues (covers the auto-select path, which doesn't go
+        // through applySelectedSubtitleTrackFromPanel).
+        if (trackSelector != null) {
+            trackSelector.setParameters(trackSelector.buildUponParameters()
+                    .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+                    .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                    .build());
+        }
+
+        // Landing on a different subtitle than the one on screen invalidates the
+        // sync offset — it was dialed in against the outgoing one. Done here, not
+        // at pick time, so a load that fails leaves the still-rendering
+        // subtitle's offset alone. Mirrors the reset in applySubtitleTrack;
+        // together they cover every external⇄embedded and external⇄external hop.
+        if (!subtitle.getUrl().equals(activeExternalSubtitleUrl)) {
+            SubtitleSettings.resetSyncOffset();
+        }
+
+        externalSubtitleCues = cues;
+        externalSubtitleActive = true;
+        activeExternalSubtitleUrl = subtitle.getUrl();
+        lastExternalCueText = null;
+        // Clear immediately: disabling the embedded track fires onCues(empty),
+        // but that's now suppressed, and the first ticker render early-returns
+        // when no cue is active — without this a stale embedded line would
+        // freeze on screen until the next external cue.
+        if (subtitleOverlay != null) {
+            subtitleOverlay.setCues(Collections.emptyList());
+        }
+        startExternalSubtitleTicker();
+        showStatusPillTransient("✓ " + subtitle.getDisplayName());
+        android.util.Log.d("StremioSubs", "Side-rendering " + cues.size() + " cues from " + subtitle.getDisplayName());
+    }
+
+    /** Stop side-rendering and give the overlay back to the player's onCues. */
+    @OptIn(markerClass = UnstableApi.class)
+    private void stopExternalSubtitleRendering() {
+        externalSubtitleLoadToken++;
+        if (externalSubtitleTicker != null) {
+            externalSubtitleHandler.removeCallbacks(externalSubtitleTicker);
+            externalSubtitleTicker = null;
+        }
+        if (externalSubtitleActive || !externalSubtitleCues.isEmpty()) {
+            externalSubtitleActive = false;
+            activeExternalSubtitleUrl = null;
+            externalSubtitleCues = Collections.emptyList();
+            lastExternalCueText = null;
+            if (subtitleOverlay != null) {
+                subtitleOverlay.setCues(Collections.emptyList());
+            }
+            // Re-enable the embedded text track type that onExternalSubtitleLoaded
+            // disabled — otherwise embedded-subtitle auto-selection stays dead for
+            // every subsequent item. Callers that want text off (Off selection)
+            // re-apply their own params right after this returns.
+            if (trackSelector != null) {
+                trackSelector.setParameters(trackSelector.buildUponParameters()
+                        .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
+                        .build());
+            }
+        }
+        hideStatusPill();
+    }
+
+    private void startExternalSubtitleTicker() {
+        if (externalSubtitleTicker != null) {
+            externalSubtitleHandler.removeCallbacks(externalSubtitleTicker);
+        }
+        // A subtitle load can complete while backgrounded (user picked one then
+        // pressed HOME). Don't start ticking — onResume does it, and the cue
+        // state is already stored.
+        if (!activityResumed) {
+            return;
+        }
+        Runnable ticker = new Runnable() {
+            @Override
+            public void run() {
+                if (!externalSubtitleActive) return;
+                renderExternalSubtitleCue();
+                externalSubtitleHandler.postDelayed(this, EXTERNAL_SUBTITLE_TICK_MS);
+            }
+        };
+        externalSubtitleTicker = ticker;
+        ticker.run();
+    }
+
+    private void renderExternalSubtitleCue() {
+        List<SubtitleCue> cues = externalSubtitleCues;
+        if (cues.isEmpty() || player == null || subtitleOverlay == null) return;
+        // Same convention as the sync line picker: a positive offset means the
+        // subtitle text lags the audio, so we look up cues at (position - offset).
+        long effectiveMs = player.getCurrentPosition() - SubtitleSettings.getSyncOffsetMs(this);
+
+        // Binary search for the last cue starting at or before effectiveMs,
+        // then collect all still-active overlapping cues. Cues are sorted only
+        // by start time, so a long-running cue (e.g. an anime sign/song event)
+        // can begin many entries before the current dialogue line — scan the
+        // whole prefix (cheap: a few thousand comparisons a few times a second).
+        int lo = 0;
+        int hi = cues.size() - 1;
+        int last = -1;
+        while (lo <= hi) {
+            int mid = (lo + hi) / 2;
+            if (cues.get(mid).getStartMs() <= effectiveMs) {
+                last = mid;
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+
+        String text = null;
+        if (last >= 0) {
+            StringBuilder active = new StringBuilder();
+            for (int i = 0; i <= last; i++) {
+                SubtitleCue cue = cues.get(i);
+                if (cue.getStartMs() <= effectiveMs && effectiveMs < cue.getEndMs()) {
+                    if (active.length() > 0) active.append('\n');
+                    active.append(cue.getText());
+                }
+            }
+            if (active.length() > 0) text = active.toString();
+        }
+
+        if (text == null ? lastExternalCueText == null : text.equals(lastExternalCueText)) return;
+        lastExternalCueText = text;
+        subtitleOverlay.setCues(text == null
+                ? Collections.emptyList()
+                : Collections.singletonList(new Cue.Builder().setText(text).build()));
+    }
+
+    // ── Status pill ──────────────────────────────────────────────────────────
+    // Small bottom-center chip for transient progress feedback that must not
+    // touch playback: external subtitle downloads and source switches.
+
+    private TextView ensureStatusPill() {
+        if (statusPill != null) return statusPill;
+        TextView pill = new TextView(this);
+        pill.setTextSize(13f);
+        pill.setTextColor(Color.WHITE);
+        pill.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0xD9101014);
+        bg.setCornerRadius(dpToPx(18));
+        bg.setStroke(dpToPx(1), 0x33FFFFFF);
+        pill.setBackground(bg);
+        int padH = dpToPx(16);
+        int padV = dpToPx(8);
+        pill.setPadding(padH, padV, padH, padV);
+        pill.setElevation(dpToPx(240));
+        pill.setVisibility(View.GONE);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+        lp.bottomMargin = dpToPx(48);
+        pill.setLayoutParams(lp);
+        ((ViewGroup) findViewById(android.R.id.content)).addView(pill);
+        statusPill = pill;
+        return pill;
+    }
+
+    private void showStatusPill(String message) {
+        externalSubtitleHandler.removeCallbacks(statusPillHideRunnable);
+        TextView pill = ensureStatusPill();
+        pill.setText(message);
+        if (pill.getVisibility() != View.VISIBLE) {
+            pill.setAlpha(0f);
+            pill.setVisibility(View.VISIBLE);
+        }
+        pill.animate().cancel();
+        pill.animate().alpha(1f).setDuration(180).start();
+    }
+
+    /** Show a short confirmation/error message, then fade the pill away. */
+    private void showStatusPillTransient(String message) {
+        showStatusPill(message);
+        externalSubtitleHandler.postDelayed(statusPillHideRunnable, 1400);
+    }
+
+    private void hideStatusPill() {
+        externalSubtitleHandler.removeCallbacks(statusPillHideRunnable);
+        TextView pill = statusPill;
+        if (pill == null || pill.getVisibility() != View.VISIBLE) return;
+        pill.animate().cancel();
+        pill.animate().alpha(0f).setDuration(220).withEndAction(() -> pill.setVisibility(View.GONE)).start();
+    }
+
+    /**
+     * PikPak Cold Storage Retry Logic
+     * PikPak uses "cold storage" where files that haven't been accessed recently need 10-30 seconds
+     * to reactivate. This method implements retry logic with exponential backoff.
+     */
+    private void playPikPakVideoWithRetry(String url, @Nullable String title) {
+        android.util.Log.d("TorboxTvPlayer", "PikPak: Starting retry logic for cold storage handling");
+
+        // Cancel any previous retry loops
+        pikPakRetryId++;
+        final int myRetryId = pikPakRetryId;
+
+        // Reset retry state
+        pikPakRetryCount = 0;
+        isPikPakRetrying = false;
+        hidePikPakRetryOverlay();
+
+        // Null safety check for player
+        if (player == null) {
+            android.util.Log.e("TorboxTvPlayer", "PikPak: Player is null, cannot attempt playback");
+            return;
+        }
+
+        // Clear previous video's subtitles
+        resetSubtitleState();
+
+        // Prepare and play the media ONCE before retry loop
+        MediaMetadata metadata = new MediaMetadata.Builder()
+                .setTitle(title != null ? title : "")
+                .build();
+        final MediaItem item = new MediaItem.Builder()
+                .setUri(url)
+                .setMediaMetadata(metadata)
+                .build();
+
+        player.setMediaItem(item);
+        player.prepare();
+        player.play();
+
+        playedCount += 1;
+        updateTitle(title);
+
+        // Start retry loop with attempt 0
+        attemptPikPakPlaybackLoop(url, title, 0, myRetryId, item);
+    }
+
+    private void attemptPikPakPlaybackLoop(String url, @Nullable String title, int attemptNumber, int retryId, MediaItem mediaItem) {
+        // Check if this retry has been cancelled
+        if (pikPakRetryId != retryId) {
+            android.util.Log.d("TorboxTvPlayer", "PikPak: Retry cancelled (token mismatch)");
+            isPikPakRetrying = false;
+            pikPakRetryCount = 0;
+            hidePikPakRetryOverlay();
+            return;
+        }
+
+        // Null safety check for player
+        if (player == null) {
+            android.util.Log.e("TorboxTvPlayer", "PikPak: Player is null, cannot continue playback");
+            isPikPakRetrying = false;
+            pikPakRetryCount = 0;
+            hidePikPakRetryOverlay();
+            return;
+        }
+
+        android.util.Log.d("TorboxTvPlayer", "PikPak: Playback attempt " + (attemptNumber + 1) + "/" + (PIKPAK_MAX_RETRIES + 1));
+
+        // Calculate delay for this attempt (0 for first attempt, exponential backoff for subsequent)
+        long delayMs;
+        if (attemptNumber == 0) {
+            delayMs = 0;
+        } else {
+            int calculatedDelay = PIKPAK_BASE_DELAY_MS * (1 << (attemptNumber - 1));
+            delayMs = Math.min(calculatedDelay, PIKPAK_MAX_DELAY_MS);
+        }
+
+        // Monitor during BOTH the timeout period AND the delay period
+        waitForPikPakMetadata(url, title, attemptNumber, retryId, delayMs, success -> {
+            // Check if retry was cancelled during monitoring
+            if (pikPakRetryId != retryId) {
+                android.util.Log.d("TorboxTvPlayer", "PikPak: Retry cancelled during monitoring");
+                return;
+            }
+
+            if (success) {
+                // Video loaded successfully, exit retry loop
+                android.util.Log.d("TorboxTvPlayer", "PikPak: Video loaded successfully, exiting retry loop");
+                return;
+            }
+
+            // Check if this was the last attempt
+            if (attemptNumber >= PIKPAK_MAX_RETRIES) {
+                // All retries exhausted
+                android.util.Log.e("TorboxTvPlayer", "PikPak: All retry attempts exhausted. Video failed to load.");
+
+                // Clear state synchronously
+                isPikPakRetrying = false;
+                pikPakRetryCount = 0;
+                hidePikPakRetryOverlay();
+
+                if (!isFinishing()) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(TorboxTvPlayerActivity.this,
+                                "Video failed to load. Skipping to next...",
+                                Toast.LENGTH_SHORT).show();
+
+                        // Auto-advance to next video
+                        pikPakRetryHandler.postDelayed(() -> requestNextStream(), 1500);
+                    });
+                }
+                return;
+            }
+
+            // Video didn't load, need to retry
+            // Update retry UI
+            pikPakRetryCount = attemptNumber + 1;
+            isPikPakRetrying = true;
+            if (!isFinishing()) {
+                showPikPakRetryOverlay("Reactivating video... (Attempt " + (attemptNumber + 2) + "/" + (PIKPAK_MAX_RETRIES + 1) + ")");
+            }
+
+            android.util.Log.d("TorboxTvPlayer", "PikPak: Video didn't load, monitoring for next attempt");
+
+            // Continue to next attempt
+            attemptPikPakPlaybackLoop(url, title, attemptNumber + 1, retryId, mediaItem);
+        });
+    }
+
+    private void waitForPikPakMetadata(String url, @Nullable String title, int attemptNumber, int retryId,
+                                       long additionalMonitoringMs, java.util.function.Consumer<Boolean> onComplete) {
+        final long startTime = System.currentTimeMillis();
+        final long totalTimeoutMs = PIKPAK_METADATA_TIMEOUT_MS + additionalMonitoringMs;
+
+        final Runnable[] checkRunnable = new Runnable[1];
+        checkRunnable[0] = new Runnable() {
+            @Override
+            public void run() {
+                // Check if retry was cancelled
+                if (pikPakRetryId != retryId) {
+                    android.util.Log.d("TorboxTvPlayer", "PikPak: Metadata check cancelled");
+                    // Clean up handler callbacks to prevent memory leaks
+                    pikPakRetryHandler.removeCallbacks(this);
+                    onComplete.accept(false);
+                    return;
+                }
+
+                long elapsed = System.currentTimeMillis() - startTime;
+
+                // Check if player state is ready or has duration (with null safety)
+                final ExoPlayer currentPlayer = player;
+                if (currentPlayer != null && (currentPlayer.getPlaybackState() == Player.STATE_READY || currentPlayer.getDuration() > 0)) {
+                    android.util.Log.d("TorboxTvPlayer", "PikPak: Video metadata loaded successfully - file is ready!");
+
+                    // CRITICAL FIX: Clear retry state IMMEDIATELY when video loads
+                    // This prevents race conditions and ensures UI updates instantly
+                    isPikPakRetrying = false;
+                    pikPakRetryCount = 0;
+                    hidePikPakRetryOverlay();
+
+                    // Clean up handler callbacks
+                    pikPakRetryHandler.removeCallbacks(this);
+
+                    // Ensure subtitles are selected after successful load
+                    // Use self-removing listener with timeout to prevent memory leaks
+                    final Player.Listener trackListener = new Player.Listener() {
+                        @Override
+                        public void onTracksChanged(Tracks tracks) {
+                            // Null check before removing listener
+                            final ExoPlayer p = player;
+                            if (p != null) {
+                                p.removeListener(this);
+                            }
+                            ensureDefaultSubtitleSelected();
+                        }
+                    };
+                    currentPlayer.addListener(trackListener);
+
+                    // Ensure removal after timeout to prevent memory leak
+                    pikPakRetryHandler.postDelayed(() -> {
+                        if (player != null) {
+                            player.removeListener(trackListener);
+                        }
+                    }, 5000);  // Remove after 5 seconds if onTracksChanged hasn't fired
+
+                    onComplete.accept(true);
+                    return;
+                }
+
+                // Check timeout (now includes additional monitoring period)
+                if (elapsed >= totalTimeoutMs) {
+                    android.util.Log.d("TorboxTvPlayer", "PikPak: Timeout waiting for metadata after " + totalTimeoutMs + "ms - file likely in cold storage");
+                    // Clean up handler callbacks before timeout handling
+                    pikPakRetryHandler.removeCallbacks(this);
+                    onComplete.accept(false);
+                    return;
+                }
+
+                // Continue checking
+                pikPakRetryHandler.postDelayed(checkRunnable[0], 500);
+            }
+        };
+
+        // Start checking
+        pikPakRetryHandler.postDelayed(checkRunnable[0], 500);
+    }
+
+
+    private void showPikPakRetryOverlay(String message) {
+        runOnUiThread(() -> {
+            if (pikPakRetryOverlay != null) {
+                pikPakRetryOverlay.setVisibility(View.VISIBLE);
+            }
+            if (pikPakRetryText != null) {
+                pikPakRetryText.setText(message);
+            }
+        });
+    }
+
+    private void hidePikPakRetryOverlay() {
+        runOnUiThread(() -> {
+            if (pikPakRetryOverlay != null) {
+                pikPakRetryOverlay.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void setupPikPakRetryOverlay() {
+        // Reuse the existing loading indicator for PikPak retry messages
+        pikPakRetryOverlay = loadingIndicator;
+        pikPakRetryText = loadingText;
+    }
+
+    private void cancelPikPakRetry() {
+        // Increment retry ID to invalidate any ongoing retry operations
+        pikPakRetryId++;
+        isPikPakRetrying = false;
+        pikPakRetryCount = 0;
+
+        // Remove any pending retry callbacks
+        if (pikPakRetryHandler != null) {
+            pikPakRetryHandler.removeCallbacksAndMessages(null);
+        }
+
+        hidePikPakRetryOverlay();
+        android.util.Log.d("TorboxTvPlayer", "PikPak: Retry operations cancelled");
+    }
+
+    private void maybeSeekRandomly() {
+        if (player == null) {
+            return;
+        }
+        long duration = player.getDuration();
+        if (duration <= 0) {
+            return;
+        }
+        int percent = Math.max(0, Math.min(randomMaxPercent, 90));
+        long maxOffset = (duration * percent) / 100L;
+        if (maxOffset <= 0) {
+            return;
+        }
+        long offset = (long) (random.nextDouble() * (double) maxOffset);
+        if (offset > 0) {
+            player.seekTo(offset);
+        }
+        randomApplied = true;
+    }
+
+    private void maybeSeekToPercent() {
+        if (player == null) {
+            return;
+        }
+        long duration = player.getDuration();
+        if (duration <= 0) {
+            return;
+        }
+        long offset = (long) (duration * startAtPercent);
+        if (offset > 0 && offset < duration) {
+            player.seekTo(offset);
+        }
+        percentSeekApplied = true;
+    }
+
+    /** Both auto-selection entry points enforce the selected audio policy. */
+    private boolean applyAutomaticSubtitleAudioPolicy() {
+        if (userManuallySelectedSubtitle) return false;
+        if (playerPreferences.getBoolean("subtitle_forced_only", false)) {
+            applyForcedSubtitleOnly();
+            return false;
+        }
+        boolean allowed = SubtitleAutoSelectionKt.audioAllowsAutomaticSubtitles(
+                playerPreferences.getBoolean("subtitle_only_foreign_audio", false),
+                playerPreferences.getString("player_default_audio_language", null),
+                player == null ? null : SubtitleAutoSelectionKt.selectedAudioLanguage(player.getCurrentTracks()));
+        if (allowed) return true;
+        if (currentStremioSubtitleIndex >= 0 || externalSubtitleActive) {
+            stopExternalSubtitleRendering();
+            currentStremioSubtitleIndex = -1;
+        }
+        embeddedSubtitleSelected = false;
+        if (trackSelector != null && !trackSelector.getParameters().disabledTrackTypes.contains(C.TRACK_TYPE_TEXT)) {
+            trackSelector.setParameters(trackSelector.buildUponParameters()
+                    .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+                    .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true).build());
+        }
+        return false;
+    }
+
+    private void applyForcedSubtitleOnly() {
+        if (player == null || trackSelector == null || player.getPlaybackState() != Player.STATE_READY) return;
+        String language = playerPreferences.getString("player_default_subtitle_language", "en");
+        TrackOption match = null;
+        if (!"off".equals(language)) {
+            for (TrackOption option : collectTrackOptions(C.TRACK_TYPE_TEXT)) {
+                Format format = option.group.getMediaTrackGroup().getFormat(option.trackIndex);
+                if (option.group.isTrackSupported(option.trackIndex) &&
+                        (format.selectionFlags & C.SELECTION_FLAG_FORCED) != 0 &&
+                        LanguageMapper.matchesLanguage(language, format.language)) {
+                    match = option;
+                    break;
+                }
+            }
+        }
+        if (currentStremioSubtitleIndex >= 0 || externalSubtitleActive) {
+            stopExternalSubtitleRendering();
+            currentStremioSubtitleIndex = -1;
+        }
+        embeddedSubtitleSelected = match != null;
+        if (match != null && match.group.isTrackSelected(match.trackIndex)) return;
+        if (match == null && trackSelector.getParameters().disabledTrackTypes.contains(C.TRACK_TYPE_TEXT)) return;
+        DefaultTrackSelector.Parameters.Builder builder = trackSelector.buildUponParameters()
+                .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+                .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, match == null);
+        if (match != null) builder.setOverrideForType(new TrackSelectionOverride(
+                match.group.getMediaTrackGroup(), match.trackIndex));
+        trackSelector.setParameters(builder.build());
+    }
+
+    private void ensureDefaultSubtitleSelected() {
+        if (!applyAutomaticSubtitleAudioPolicy() || embeddedSubtitleSelected) return;
+        if (trackSelector == null) {
+            return;
+        }
+
+        // An external subtitle is already chosen (auto-selected before this
+        // fired) — don't quietly select an embedded track underneath it. The
+        // index check covers the window where the pick is still downloading, so
+        // a fast addon fetch can't flash embedded subs before it lands.
+        if (externalSubtitleActive || currentStremioSubtitleIndex >= 0) {
+            return;
+        }
+
+        // Get user's default subtitle language preference
+        String defaultSubtitleLang = playerPreferences.getString("player_default_subtitle_language", null);
+
+        // If subtitles are explicitly disabled, don't auto-select
+        if ("off".equals(defaultSubtitleLang)) {
+            android.util.Log.d("TorboxTvPlayer", "Subtitles disabled by user preference");
+            embeddedSubtitleSelected = false;
+            return;
+        }
+
+        // If no preference set, default to English
+        String targetLang = defaultSubtitleLang != null ? defaultSubtitleLang : "en";
+
+        List<TrackOption> subtitleTracks = collectTrackOptions(C.TRACK_TYPE_TEXT);
+        if (subtitleTracks.isEmpty()) {
+            // No embedded subtitles - mark for addon selection
+            embeddedSubtitleSelected = false;
+            // Try addon subtitles if already loaded
+            if (!stremioSubtitles.isEmpty()) {
+                tryAutoSelectAddonSubtitle();
+            }
+            return;
+        }
+
+        // Search for subtitle track matching the preferred language
+        TrackOption matchingTrack = null;
+        for (TrackOption option : subtitleTracks) {
+            // Get track format to extract language and id
+            Format format = option.group.getMediaTrackGroup().getFormat(option.trackIndex);
+            String language = format.language;
+            String id = format.id;
+
+            // Check if track matches the preferred language using robust matching
+            // Use the raw label; the menu label appends a translated language.
+            if (LanguageMapper.matchesLanguage(targetLang, language) ||
+                LanguageMapper.matchesLanguage(targetLang, format.label) ||
+                LanguageMapper.matchesLanguage(targetLang, id)) {
+                matchingTrack = option;
+                android.util.Log.d("TorboxTvPlayer", "Found matching subtitle for '" + targetLang + "': label=" + option.label + " id=" + format.id + " lang=" + format.language);
+                break;
+            }
+        }
+
+        // Only enable subtitles if matching track is found
+        if (matchingTrack != null) {
+            DefaultTrackSelector.Parameters.Builder builder = trackSelector.buildUponParameters()
+                    .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
+                    .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+                    .addOverride(new TrackSelectionOverride(
+                            matchingTrack.group.getMediaTrackGroup(),
+                            Collections.singletonList(matchingTrack.trackIndex)));
+            trackSelector.setParameters(builder.build());
+            android.util.Log.d("TorboxTvPlayer", "Auto-enabled " + targetLang + " subtitles: " + matchingTrack.label);
+            embeddedSubtitleSelected = true;
+        } else {
+            // No embedded subtitle found - mark for addon subtitle selection
+            android.util.Log.d("TorboxTvPlayer", "No " + targetLang + " embedded subtitle found");
+            embeddedSubtitleSelected = false;
+
+            // Try addon subtitles if already loaded
+            if (!stremioSubtitles.isEmpty()) {
+                tryAutoSelectAddonSubtitle();
+            }
+        }
+    }
+
+    /**
+     * Try to auto-select a Stremio addon subtitle matching user's preferred language.
+     * Called after Stremio subtitles are fetched, if no embedded subtitle was selected.
+     */
+    private void tryAutoSelectAddonSubtitle() {
+        if (!applyAutomaticSubtitleAudioPolicy()) return;
+        // Skip if embedded subtitle was already selected
+        if (embeddedSubtitleSelected) {
+            return;
+        }
+
+        // Skip if addon subtitle is already selected
+        if (currentStremioSubtitleIndex >= 0) {
+            return;
+        }
+
+        // Get user's default subtitle language preference
+        String defaultSubtitleLang = playerPreferences.getString("player_default_subtitle_language", null);
+
+        // If subtitles are explicitly disabled, don't auto-select
+        if ("off".equals(defaultSubtitleLang)) {
+            return;
+        }
+
+        // If no preference set, default to English
+        String targetLang = defaultSubtitleLang != null ? defaultSubtitleLang : "en";
+
+        // Search for addon subtitle matching the preferred language
+        for (int i = 0; i < stremioSubtitles.size(); i++) {
+            StremioSubtitle sub = stremioSubtitles.get(i);
+            if (failedSubtitleUrls.contains(sub.getUrl())) continue;  // parsed to zero cues
+            if (LanguageMapper.matchesLanguage(targetLang, sub.getLang()) ||
+                ("pt-BR".equalsIgnoreCase(targetLang) &&
+                    LanguageMapper.matchesLanguage(targetLang, sub.getLabel()))) {
+                android.util.Log.d("TorboxTvPlayer", "Auto-selecting addon subtitle: " + sub.getDisplayName() + " (" + sub.getLang() + ")");
+                loadStremioSubtitle(sub);
+                currentStremioSubtitleIndex = i;
+                return;
+            }
+        }
+
+        android.util.Log.d("TorboxTvPlayer", "No " + targetLang + " addon subtitle found");
+    }
+
+    private void requestNextStream() {
+        android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: requestNextStream() called");
+        // A sleep stop wins over anything already queued: the handoff is
+        // asynchronous, so a countdown expiring mid-flight would otherwise be
+        // undone by the stream that was already on its way.
+        if (sleepStopLatched) {
+            android.util.Log.d("MegaWatchTV", "requestNextStream suppressed by sleep timer");
+            return;
+        }
+        hasEverBeenReady = false;
+        hideBufferingIndicator();
+
+        if (requestingNext) {
+            android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: Already requesting next, ignoring");
+            return;
+        }
+        
+        MethodChannel channel = MainActivity.getAndroidTvPlayerChannel();
+        if (channel == null) {
+            android.util.Log.e("MegaWatchTV", "TorboxTvPlayerActivity: Method channel is null!");
+            Toast.makeText(this, "Playback bridge unavailable", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        showNextOverlay();
+        requestingNext = true;
+        
+        // Determine which method to call based on provider
+        String methodName;
+        if (PROVIDER_REAL_DEBRID.equals(provider)) {
+            methodName = "requestRealDebridNext";
+        } else {
+            methodName = "requestTorboxNext";
+        }
+        
+        android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: Calling method channel: " + methodName);
+        
+        channel.invokeMethod(methodName, null, new MethodChannel.Result() {
+            @Override
+            public void success(@Nullable Object result) {
+                requestingNext = false;
+                
+                if (!(result instanceof Map)) {
+                    handleNoMoreStreams();
+                    return;
+                }
+                @SuppressWarnings("unchecked")
+                Map<String, Object> payload = (Map<String, Object>) result;
+                String nextUrl = safeString(payload.get("url"));
+                String nextTitle = safeString(payload.get("title"));
+                String nextProvider = safeString(payload.get("provider")); // Extract provider info
+
+                // The check at the top of requestNextStream happens before this
+                // round trip, which can outlast the countdown — without
+                // rechecking, a stream already on its way would start the night
+                // up again. Gated here rather than in playMedia so an explicit
+                // channel pick after a stop still works.
+                if (sleepStopLatched) {
+                    android.util.Log.d("MegaWatchTV", "next stream suppressed by sleep timer");
+                    hideNextOverlay();
+                    return;
+                }
+
+                if (nextUrl == null || nextUrl.isEmpty()) {
+                    handleNoMoreStreams();
+                    return;
+                }
+
+                android.util.Log.d("TorboxTvPlayer", "requestNextStream: received provider=" + nextProvider);
+
+                // Show the resolved title under the spinner.
+                if (nextTitle != null && !nextTitle.isEmpty()) {
+                    runOnUiThread(() -> {
+                        if (nextText != null) {
+                            nextText.setText(nextTitle);
+                        }
+                    });
+                }
+
+                playMedia(nextUrl, nextTitle, nextProvider); // Pass provider hint
+                scheduleHideNextOverlay(350L);
+            }
+
+            @Override
+            public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
+                requestingNext = false;
+                String displayMsg = errorMessage != null ? errorMessage : "Failed to load next stream";
+                Toast.makeText(TorboxTvPlayerActivity.this, displayMsg, Toast.LENGTH_SHORT).show();
+                hideNextOverlay();
+            }
+
+            @Override
+            public void notImplemented() {
+                requestingNext = false;
+                hideNextOverlay();
+            }
+        });
+    }
+
+    private void handleNoMoreStreams() {
+        runOnUiThread(() -> {
+            hideNextOverlay();
+            String providerName = PROVIDER_REAL_DEBRID.equals(provider) ? "Real-Debrid" : "Torbox";
+            Toast.makeText(TorboxTvPlayerActivity.this,
+                    "No more " + providerName + " streams available",
+                    Toast.LENGTH_SHORT).show();
+            finish();
+        });
+    }
+
+    @Nullable
+    private String safeString(@Nullable Object value) {
+        if (value == null) {
+            return null;
+        }
+        String str = value.toString();
+        return str != null ? str.trim() : null;
+    }
+
+    /**
+     * Request the next channel from Flutter (with looping)
+     */
+    private void requestNextChannel() {
+        android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: requestNextChannel() called");
+        
+        // Check cooldown
+        long now = System.currentTimeMillis();
+        if (now - lastChannelSwitchTime < CHANNEL_SWITCH_COOLDOWN_MS) {
+            android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: Channel switch on cooldown, ignoring");
+            Toast.makeText(this, "Please wait...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        if (requestingNext) {
+            android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: Already requesting next, ignoring");
+            return;
+        }
+        
+        MethodChannel channel = MainActivity.getAndroidTvPlayerChannel();
+        if (channel == null) {
+            android.util.Log.e("MegaWatchTV", "TorboxTvPlayerActivity: Method channel is null!");
+            Toast.makeText(this, "Playback bridge unavailable", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // Show loading bar IMMEDIATELY before fetching - CHANNEL type (cyan)
+        showLoadingBar();
+        
+        lastChannelSwitchTime = now;
+        requestingNext = true;
+        
+        android.util.Log.d("MegaWatchTV", "TorboxTvPlayerActivity: Calling method channel: requestNextChannel");
+        
+        channel.invokeMethod("requestNextChannel", null, new MethodChannel.Result() {
+            @Override
+            public void success(@Nullable Object result) {
+                requestingNext = false;
+                
+                if (!(result instanceof Map)) {
+                    android.util.Log.e("MegaWatchTV", "Channel switch failed: result is not a Map");
+                    runOnUiThread(() -> {
+                        Toast.makeText(TorboxTvPlayerActivity.this, "Channel switch failed. Check logs.", Toast.LENGTH_SHORT).show();
+                        hideChannelOverlay();
+                    });
+                    return;
+                }
+                @SuppressWarnings("unchecked")
+                Map<String, Object> payload = (Map<String, Object>) result;
+                ChannelSwitchData switchData = parseChannelSwitchPayload(payload, null, null);
+                if (switchData == null || switchData.url == null || switchData.url.isEmpty()) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(TorboxTvPlayerActivity.this, "Channel has no streams", Toast.LENGTH_SHORT).show();
+                        hideLoadingBar();
+                    });
+                    return;
+                }
+                final String playUrl = switchData.url;
+                final String playTitle = switchData.title;
+                final String playProvider = switchData.provider;
+
+                android.util.Log.d("TorboxTvPlayer", "requestNextChannel: received provider=" + playProvider);
+
+                // Play the first video from the new channel
+                playMedia(playUrl, playTitle, playProvider);
+                scheduleHideNextOverlay(350L);
+            }
+
+            @Override
+            public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
+                requestingNext = false;
+                String displayMsg = errorMessage != null ? errorMessage : "Failed to switch channel";
+                runOnUiThread(() -> {
+                    Toast.makeText(TorboxTvPlayerActivity.this, displayMsg, Toast.LENGTH_SHORT).show();
+                    hideLoadingBar();
+                });
+            }
+
+            @Override
+            public void notImplemented() {
+                requestingNext = false;
+                runOnUiThread(() -> hideLoadingBar());
+            }
+        });
+    }
+
+    private void showChannelOverlay(@Nullable Integer channelNum, @Nullable String name) {
+        if (channelOverlay == null || player == null) {
+            return;
+        }
+
+        runOnUiThread(() -> {
+            cancelScheduledChannelOverlayHide();
+            
+            // Set channel info
+            if (channelNumberText != null) {
+                String displayNum = channelNum != null ? 
+                        String.format(Locale.US, "CH %02d", channelNum) : "CHANNEL";
+                channelNumberText.setText(displayNum);
+            }
+            
+            if (channelNameText != null) {
+                String displayName = name != null && !name.isEmpty() ? name.toUpperCase() : "";
+                channelNameText.setText(displayName);
+                channelNameText.setVisibility(!displayName.isEmpty() ? View.VISIBLE : View.GONE);
+            }
+            
+            // Make sure overlay is fully visible immediately (no partial rendering)
+            channelOverlay.setVisibility(View.VISIBLE);
+            channelOverlay.bringToFront(); // Ensure it's on top of everything
+            channelOverlay.setTranslationX(getChannelOverlayTravelDistance());
+            channelOverlay.setAlpha(0f);
+            
+            // Start awesome channel surf animation
+            startChannelSurfAnimation();
+            
+            // Animate overlay in with horizontal slide
+            channelOverlay.animate()
+                .translationX(0f)
+                .alpha(1f)
+                .setDuration(200L)
+                .start();
+        });
+    }
+
+    private void startChannelSurfAnimation() {
+        if (channelSlideView == null || channelRgbBars == null) {
+            return;
+        }
+        
+        // Animate background color cycling (cyan -> blue -> magenta -> cyan)
+        final int[] colors = {
+            Color.rgb(0, 17, 51),   // Dark blue
+            Color.rgb(0, 34, 68),   // Lighter blue
+            Color.rgb(17, 0, 51),   // Dark magenta
+            Color.rgb(0, 17, 51)    // Back to dark blue
+        };
+        
+        final int[] currentColorIndex = {0};
+        final Handler animHandler = new Handler(Looper.getMainLooper());
+        final Runnable colorCycleRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (channelSlideView != null && channelOverlay != null && 
+                    channelOverlay.getVisibility() == View.VISIBLE) {
+                    channelSlideView.setBackgroundColor(colors[currentColorIndex[0]]);
+                    currentColorIndex[0] = (currentColorIndex[0] + 1) % colors.length;
+                    animHandler.postDelayed(this, 100); // Cycle every 100ms
+                }
+            }
+        };
+        animHandler.post(colorCycleRunnable);
+        
+        // Animate RGB bars with flicker effect
+        if (channelRgbBars != null) {
+            final Runnable rgbFlickerRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (channelRgbBars != null && channelOverlay != null && 
+                        channelOverlay.getVisibility() == View.VISIBLE) {
+                        // Random RGB color for chromatic aberration effect
+                        int r = random.nextInt(256);
+                        int g = random.nextInt(256);
+                        int b = random.nextInt(256);
+                        channelRgbBars.setBackgroundColor(Color.argb(51, r, g, b)); // 20% alpha
+                        animHandler.postDelayed(this, 70); // Flicker every 70ms
+                    }
+                }
+            };
+            animHandler.post(rgbFlickerRunnable);
+        }
+        
+        // Pulse the status text
+        if (channelStatusText != null) {
+            channelStatusText.animate()
+                .alpha(0.5f)
+                .setDuration(300)
+                .withEndAction(() -> {
+                    if (channelStatusText != null && channelOverlay != null && 
+                        channelOverlay.getVisibility() == View.VISIBLE) {
+                        channelStatusText.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .withEndAction(this::startChannelSurfAnimation)
+                            .start();
+                    }
+                })
+                .start();
+        }
+    }
+
+    private void scheduleHideChannelOverlay(long delayMs) {
+        if (channelOverlay == null) {
+            return;
+        }
+        cancelScheduledChannelOverlayHide();
+        channelOverlayHandler.postDelayed(hideChannelOverlayRunnable, delayMs);
+    }
+
+    private void hideChannelOverlay() {
+        cancelScheduledChannelOverlayHide();
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            performHideChannelOverlay();
+        } else {
+            channelOverlayHandler.post(hideChannelOverlayRunnable);
+        }
+    }
+
+    private void performHideChannelOverlay() {
+        if (channelOverlay == null) {
+            return;
+        }
+
+        channelOverlay.animate()
+            .translationX(-getChannelOverlayTravelDistance())
+            .alpha(0f)
+            .setDuration(200L)
+            .withEndAction(() -> {
+                if (channelOverlay != null) {
+                    channelOverlay.setVisibility(View.GONE);
+                }
+            })
+            .start();
+    }
+
+    private void cancelScheduledChannelOverlayHide() {
+        channelOverlayHandler.removeCallbacks(hideChannelOverlayRunnable);
+    }
+
+    private float getChannelOverlayTravelDistance() {
+        if (channelOverlay == null) {
+            return 0f;
+        }
+        int width = channelOverlay.getWidth();
+        if (width <= 0) {
+            View root = channelOverlay.getRootView();
+            if (root != null) {
+                width = root.getWidth();
+            }
+        }
+        if (width <= 0) {
+            width = getResources().getDisplayMetrics().widthPixels;
+        }
+        return (float) width;
+    }
+
+    private void togglePlayPause() {
+        if (player == null) {
+            return;
+        }
+        if (player.isPlaying()) {
+            player.pause();
+        } else {
+            // An explicit press is the one thing that clears a sleep stop.
+            sleepStopLatched = false;
+            player.play();
+        }
+        updatePauseButtonLabel();
+    }
+
+    private void showAudioSelectionDialog() {
+        if (player == null || trackSelector == null) {
+            return;
+        }
+        List<TrackOption> audioTracks = collectTrackOptions(C.TRACK_TYPE_AUDIO);
+        if (audioTracks.isEmpty()) {
+            showToast("No alternate audio tracks");
+            return;
+        }
+
+        int checkedItem = -1;
+        for (int i = 0; i < audioTracks.size(); i++) {
+            TrackOption option = audioTracks.get(i);
+            if (option.group.isTrackSelected(option.trackIndex)) {
+                checkedItem = i;
+                break;
+            }
+        }
+
+        String[] labels = new String[audioTracks.size()];
+        for (int i = 0; i < audioTracks.size(); i++) {
+            labels[i] = audioTracks.get(i).label;
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Audio Tracks")
+                .setSingleChoiceItems(labels, checkedItem, (d, which) -> {
+                    applyAudioTrack(audioTracks.get(which));
+                    d.dismiss();
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+
+        dialog.show();
+    }
+
+    private void applyAudioTrack(TrackOption option) {
+        if (trackSelector == null || option == null) {
+            return;
+        }
+        DefaultTrackSelector.Parameters.Builder builder = trackSelector.buildUponParameters()
+                .clearOverridesOfType(C.TRACK_TYPE_AUDIO)
+                .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, false)
+                .addOverride(new TrackSelectionOverride(
+                        option.group.getMediaTrackGroup(),
+                        Collections.singletonList(option.trackIndex)));
+        trackSelector.setParameters(builder.build());
+        showToast("Audio: " + option.label);
+    }
+
+    private void showSubtitleSelectionDialog() {
+        if (player == null || trackSelector == null) {
+            return;
+        }
+        List<TrackOption> subtitleTracks = collectTrackOptions(C.TRACK_TYPE_TEXT);
+        if (subtitleTracks.isEmpty()) {
+            showToast("No subtitles available");
+            return;
+        }
+
+        String[] labels = new String[subtitleTracks.size() + 1];
+        labels[0] = "Off";
+        for (int i = 0; i < subtitleTracks.size(); i++) {
+            labels[i + 1] = subtitleTracks.get(i).label;
+        }
+
+        int checkedItem = 0;
+        for (int i = 0; i < subtitleTracks.size(); i++) {
+            TrackOption option = subtitleTracks.get(i);
+            if (option.group.isTrackSelected(option.trackIndex)) {
+                checkedItem = i + 1;
+                break;
+            }
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Subtitles")
+                .setSingleChoiceItems(labels, checkedItem, (d, which) -> {
+                    if (which == 0) {
+                        applySubtitleTrack(null);
+                    } else {
+                        applySubtitleTrack(subtitleTracks.get(which - 1));
+                    }
+                    d.dismiss();
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+
+        dialog.show();
+    }
+
+    private void applySubtitleTrack(@Nullable TrackOption option) {
+        userManuallySelectedSubtitle = true;
+        if (trackSelector == null) {
+            return;
+        }
+        // Picking an embedded track (or Off) always ends side-rendering. Done
+        // first so the params built below win over the re-enable inside stop().
+        // Clearing the index matters even though the panel paths already do it:
+        // showSubtitleSelectionDialog doesn't, and a stale index would send
+        // showSyncOverlay to the line picker for a subtitle that isn't showing.
+        stopExternalSubtitleRendering();
+        currentStremioSubtitleIndex = -1;
+        // The offset was dialed in against the subtitle being replaced, so it
+        // means nothing for the new one. (The Kotlin player gets this for free
+        // from per-subtitle offset identities; here it has to be explicit.)
+        SubtitleSettings.resetSyncOffset();
+        if (offsetRenderersFactory != null) {
+            offsetRenderersFactory.setOffsetUs(0L);
+        }
+        DefaultTrackSelector.Parameters.Builder builder =
+                trackSelector.buildUponParameters().clearOverridesOfType(C.TRACK_TYPE_TEXT);
+        if (option == null) {
+            builder.setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true);
+            trackSelector.setParameters(builder.build());
+            showToast("Subtitles off");
+            return;
+        }
+
+        builder.setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
+                .addOverride(new TrackSelectionOverride(
+                        option.group.getMediaTrackGroup(),
+                        Collections.singletonList(option.trackIndex)));
+        trackSelector.setParameters(builder.build());
+        showToast("Subtitles: " + option.label);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SUBTITLE SETTINGS PANEL
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    private void rebuildSubtitleTrackOptions() {
+        subtitleTrackOptions.clear();
+        currentSubtitleTrackIndex = 0;
+
+        List<TrackOption> tracks = collectTrackOptions(C.TRACK_TYPE_TEXT);
+        subtitleTrackOptions.addAll(tracks);
+
+        boolean hasSelectedSubtitle = false;
+        if (!tracks.isEmpty()) {
+            Tracks currentTracks = player != null ? player.getCurrentTracks() : null;
+            if (currentTracks != null) {
+                for (int i = 0; i < tracks.size(); i++) {
+                    TrackOption opt = tracks.get(i);
+                    if (opt.group.isTrackSelected(opt.trackIndex)) {
+                        currentSubtitleTrackIndex = i;
+                        hasSelectedSubtitle = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        int embeddedTrackCount = subtitleTrackOptions.size();
+        for (int i = 0; i < stremioSubtitles.size(); i++) {
+            StremioSubtitle sub = stremioSubtitles.get(i);
+            String label = "⬇ " + sub.getDisplayName() + " (" + sub.getSource() + ")";
+            subtitleTrackOptions.add(new TrackOption(null, -1, label));
+            if (currentStremioSubtitleIndex == i) {
+                currentSubtitleTrackIndex = embeddedTrackCount + i;
+                hasSelectedSubtitle = true;
+            }
+        }
+
+        if (isLoadingStremioSubtitles) {
+            subtitleTrackOptions.add(new TrackOption(null, -2, "⏳ Loading external subtitles..."));
+        }
+
+        if (!hasSelectedSubtitle && currentStremioSubtitleIndex < 0) {
+            currentSubtitleTrackIndex = -1;
+        }
+    }
+
+    private SubtitlePanelController.Callbacks buildSubtitlePanelCallbacks() {
+        return new SubtitlePanelController.Callbacks() {
+            @NonNull
+            @Override
+            public List<String> getTrackLabels() {
+                List<String> labels = new ArrayList<>();
+                labels.add("Off");
+                for (TrackOption opt : subtitleTrackOptions) {
+                    labels.add(opt.label);
+                }
+                return labels;
+            }
+
+            @Override
+            public int getCurrentTrackIndex() {
+                if (currentSubtitleTrackIndex < 0) return 0;
+                return currentSubtitleTrackIndex + 1;
+            }
+
+            @Override
+            public void selectTrack(int index) {
+                if (index == 0) {
+                    currentSubtitleTrackIndex = -1;
+                    currentStremioSubtitleIndex = -1;
+                    applySubtitleTrack(null);
+                    return;
+                }
+                int trackIdx = index - 1;
+                if (trackIdx < 0 || trackIdx >= subtitleTrackOptions.size()) return;
+                TrackOption opt = subtitleTrackOptions.get(trackIdx);
+                if (opt.trackIndex == -2) return; // loading placeholder
+                currentSubtitleTrackIndex = trackIdx;
+                applySelectedSubtitleTrackFromPanel();
+            }
+
+            @Override
+            public void onSearchSubtitle() {
+                showSearchSubtitleDialog();
+            }
+
+            @NonNull
+            @Override
+            public String getIdentityLabel() {
+                if (manualSubtitleDisplayLabel != null && !manualSubtitleDisplayLabel.isEmpty()) {
+                    return "Chosen: " + manualSubtitleDisplayLabel;
+                }
+                String query = buildSubtitleSearchInitialQuery(currentStreamTitle);
+                if (!query.isEmpty()) {
+                    return "Search subtitles for \"" + query + "\"";
+                }
+                return "Search movie/show subtitles";
+            }
+
+            @Override
+            public void onSettingsChanged() {
+                applyAndPersistSubtitleSettings();
+            }
+
+            @Override
+            public void onSyncOverlayRequested() {
+                showSyncOverlay();
+            }
+
+            @Override
+            public void onHidden() {
+                subtitleSettingsVisible = false;
+                if (playerView != null) {
+                    playerView.requestFocus();
+                }
+            }
+
+            @Override
+            public boolean supportsSearch() {
+                return true;
+            }
+        };
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // UNIFIED PLAYER MENU (Miller columns) — additive, gated by USE_UNIFIED_MENU.
+    // Mirrors the torrent player's menu but drops the "sources" section (Torbox
+    // plays a single cloud stream) and reuses the existing search/sync dialogs
+    // instead of an inline search field. All apply-logic delegates to the
+    // methods the old dialogs/panel already use — nothing is duplicated.
+    // ═══════════════════════════════════════════════════════════════════════
+
+    private UnifiedMenuController.Callbacks buildUnifiedMenuCallbacks() {
+        return new UnifiedMenuController.Callbacks() {
+            @NonNull
+            @Override
+            public UnifiedMenuController.Model buildModel(int sectionIndex, int col2Index) {
+                List<UnifiedMenuController.Row> col1 = umSectionRows();
+                switch (sectionIndex) {
+                    case 1:  return umSubsModel(col1, col2Index);
+                    case 2:  return umDisplayModel(col1, col2Index);
+                    case 3:  return umPlaybackModel(col1, col2Index);
+                    case 0:
+                    default: return umAudioModel(col1, col2Index);
+                }
+            }
+
+            @Override
+            public boolean onSectionActivated(int sectionIndex) {
+                return false;
+            }
+
+            @Override
+            public void onSearchSubmit(@NonNull String query) {
+                // Torbox subtitle search uses its own dialog (opened from the
+                // Subtitles → Search row), so the inline search field is unused.
+            }
+
+            @NonNull
+            @Override
+            public String searchInitialQuery() {
+                return "";
+            }
+
+            @Override
+            public void stylePreview(@NonNull TextView tv) {
+                umStylePreview(tv);
+            }
+
+            @Override
+            public void onHidden() {
+                umSubtitleTracksBuilt = false;   // rebuild the track list on next open
+                if (playerView != null) {
+                    playerView.requestFocus();
+                }
+            }
+        };
+    }
+
+    /** Column 1 — the section list (order MUST match buildModel + sectionIds). */
+    private List<UnifiedMenuController.Row> umSectionRows() {
+        String subBadge = isLoadingStremioSubtitles
+                ? "…"
+                : (!stremioSubtitles.isEmpty() ? String.valueOf(stremioSubtitles.size()) : null);
+        List<UnifiedMenuController.Row> rows = new ArrayList<>();
+        rows.add(UnifiedMenuController.row("Audio").build());
+        rows.add(UnifiedMenuController.row("Subtitles").value(subBadge).build());
+        rows.add(UnifiedMenuController.row("Display").build());
+        rows.add(UnifiedMenuController.row("Playback").build());
+        return rows;
+    }
+
+    // ── Audio ────────────────────────────────────────────────────────────
+    private UnifiedMenuController.Model umAudioModel(List<UnifiedMenuController.Row> col1, int col2Index) {
+        List<UnifiedMenuController.Row> col2 = new ArrayList<>();
+        col2.add(UnifiedMenuController.row("Audio track").tag("audio").build());
+        col2.add(UnifiedMenuController.row("Night mode")
+                .value(nightModeLabels[Math.max(0, Math.min(nightModeIndex, nightModeLabels.length - 1))])
+                .tag("night").build());
+
+        List<UnifiedMenuController.Row> col3 = new ArrayList<>();
+        String col3Title;
+        if (col2Index == 1) {
+            col3Title = "Night mode · loudness";
+            for (int i = 0; i < nightModeLabels.length; i++) {
+                final int idx = i;
+                col3.add(UnifiedMenuController.row(nightModeLabels[i])
+                        .selected(i == nightModeIndex)
+                        .onOk(() -> applyNightMode(idx))
+                        .build());
+            }
+        } else {
+            col3Title = "Audio tracks";
+            List<TrackOption> tracks = (player != null && trackSelector != null)
+                    ? collectTrackOptions(C.TRACK_TYPE_AUDIO)
+                    : Collections.emptyList();
+            if (tracks.isEmpty()) {
+                col3.add(UnifiedMenuController.row("No audio tracks available").enabled(false).build());
+            } else {
+                for (TrackOption t : tracks) {
+                    final TrackOption option = t;
+                    boolean sel = option.group != null && option.group.isTrackSelected(option.trackIndex);
+                    col3.add(UnifiedMenuController.row(option.label)
+                            .selected(sel)
+                            .onOk(() -> applyAudioTrack(option))
+                            .build());
+                }
+            }
+        }
+        return new UnifiedMenuController.Model(col1, "AUDIO", col2, col3Title, col3);
+    }
+
+    // ── Subtitles (track + appearance + timing + search) ───────────────────
+    private UnifiedMenuController.Model umSubsModel(List<UnifiedMenuController.Row> col1, int col2Index) {
+        List<UnifiedMenuController.Row> col2 = new ArrayList<>();
+        col2.add(UnifiedMenuController.row("Track").tag("track").build());
+        col2.add(UnifiedMenuController.row("Appearance").tag("appearance").build());
+        col2.add(UnifiedMenuController.row("Timing").tag("timing").build());
+        col2.add(UnifiedMenuController.row("Search").tag("search").accent(true).build());
+
+        List<UnifiedMenuController.Row> col3;
+        String col3Title;
+        boolean previewVisible = false;
+        switch (col2Index) {
+            case 1:
+                col3Title = "Appearance · live";
+                col3 = umAppearanceRows();
+                previewVisible = true;
+                break;
+            case 2:
+                col3Title = "Timing";
+                col3 = umTimingRows();
+                break;
+            case 3:
+                col3Title = "Fix subtitles";
+                col3 = umSearchRows();
+                break;
+            case 0:
+            default:
+                col3Title = "Track";
+                col3 = umSubtitleTrackRows();
+                break;
+        }
+        return new UnifiedMenuController.Model(
+                col1, umSubtitleIdentityLabel(), col2, col3Title, col3,
+                UnifiedMenuController.Col3Mode.ROWS, previewVisible);
+    }
+
+    private List<UnifiedMenuController.Row> umSubtitleTrackRows() {
+        // Populate the flat list once per menu opening. Don't rebuild on every
+        // render: rebuild re-derives the selected index from the not-yet-updated
+        // player tracks and would clobber a just-made selection — and a stream
+        // with no subtitle tracks stays empty, which would otherwise re-collect
+        // tracks on every DPAD keypress. Load-event refreshes rebuild separately.
+        if (!umSubtitleTracksBuilt) {
+            rebuildSubtitleTrackOptions();
+            umSubtitleTracksBuilt = true;
+        }
+        List<UnifiedMenuController.Row> rows = new ArrayList<>();
+        rows.add(UnifiedMenuController.row("Off")
+                .selected(currentSubtitleTrackIndex < 0)
+                .onOk(() -> umSelectSubtitle(0))
+                .build());
+        for (int i = 0; i < subtitleTrackOptions.size(); i++) {
+            final TrackOption opt = subtitleTrackOptions.get(i);
+            final int panelIndex = i + 1;
+            if (opt.trackIndex == -2) {   // "⏳ Loading external subtitles..." placeholder
+                rows.add(UnifiedMenuController.row(opt.label).enabled(false).build());
+            } else {
+                rows.add(UnifiedMenuController.row(opt.label)
+                        .selected(i == currentSubtitleTrackIndex)
+                        .onOk(() -> umSelectSubtitle(panelIndex))
+                        .build());
+            }
+        }
+        return rows;
+    }
+
+    /** Mirror of the subtitle panel's selectTrack(index): 0 == Off, else index-1
+     *  into [subtitleTrackOptions] (embedded or external). */
+    private void umSelectSubtitle(int index) {
+        if (index == 0) {
+            currentSubtitleTrackIndex = -1;
+            currentStremioSubtitleIndex = -1;
+            applySubtitleTrack(null);
+        } else {
+            int trackIdx = index - 1;
+            if (trackIdx < 0 || trackIdx >= subtitleTrackOptions.size()) return;
+            TrackOption opt = subtitleTrackOptions.get(trackIdx);
+            if (opt.trackIndex == -2) return;   // loading placeholder
+            currentSubtitleTrackIndex = trackIdx;
+            applySelectedSubtitleTrackFromPanel();
+        }
+    }
+
+    private List<UnifiedMenuController.Row> umAppearanceRows() {
+        // Shared with the torrent player so the subtitle-appearance controls
+        // can't drift between the two (see UnifiedMenuSections).
+        return UnifiedMenuSections.appearanceRows(this, this::applyAndPersistSubtitleSettings);
+    }
+
+    private List<UnifiedMenuController.Row> umTimingRows() {
+        long ms = SubtitleSettings.getSyncOffsetMs(this);
+        List<UnifiedMenuController.Row> rows = new ArrayList<>();
+        // Sync needs the subtitle on screen to judge alignment (a bottom menu
+        // column covers it), so this opens the dedicated over-video overlay:
+        // slider for embedded subs, "tap the line" picker for downloaded subs.
+        rows.add(UnifiedMenuController.row("Adjust timing  ▸")
+                .value(SubtitleSettings.formatSyncOffset(ms))
+                .swatch(SubtitleSettings.getSyncOffsetColor(ms))
+                .accent(true)
+                .onOk(() -> { if (unifiedMenu != null) unifiedMenu.hide(); showSyncOverlay(); })
+                .build());
+        return rows;
+    }
+
+    private List<UnifiedMenuController.Row> umSearchRows() {
+        List<UnifiedMenuController.Row> rows = new ArrayList<>();
+        rows.add(UnifiedMenuController.row("Search online…")
+                .accent(true)
+                .onOk(() -> { if (unifiedMenu != null) unifiedMenu.hide(); showSearchSubtitleDialog(); })
+                .build());
+        return rows;
+    }
+
+    /** Header shown above the subtitle sub-controls (detected / chosen identity). */
+    private String umSubtitleIdentityLabel() {
+        if (manualSubtitleDisplayLabel != null && !manualSubtitleDisplayLabel.isEmpty()) {
+            return "Chosen: " + manualSubtitleDisplayLabel;
+        }
+        String query = buildSubtitleSearchInitialQuery(currentStreamTitle);
+        if (!query.isEmpty()) {
+            return "Subtitles · " + query;
+        }
+        return "SUBTITLES";
+    }
+
+    // ── Display ────────────────────────────────────────────────────────────
+    private UnifiedMenuController.Model umDisplayModel(List<UnifiedMenuController.Row> col1, int col2Index) {
+        int idx = Math.max(0, Math.min(resizeModeIndex, resizeModeLabels.length - 1));
+        List<UnifiedMenuController.Row> col2 = new ArrayList<>();
+        col2.add(UnifiedMenuController.row("Aspect ratio").value(resizeModeLabels[idx]).tag("aspect").build());
+
+        List<UnifiedMenuController.Row> col3 = new ArrayList<>();
+        for (int i = 0; i < resizeModeLabels.length; i++) {
+            final int target = i;
+            col3.add(UnifiedMenuController.row(resizeModeLabels[i])
+                    .selected(i == resizeModeIndex)
+                    .onOk(() -> {
+                        resizeModeIndex = Math.max(0, Math.min(target, resizeModes.length - 1));
+                        if (playerView != null) {
+                            applyResizeMode();
+                        }
+                        updateAspectButtonLabel();
+                    })
+                    .build());
+        }
+        return new UnifiedMenuController.Model(col1, "DISPLAY", col2, "Aspect ratio", col3);
+    }
+
+    // ── Playback ─────────────────────────────────────────────────────────
+    private UnifiedMenuController.Model umPlaybackModel(List<UnifiedMenuController.Row> col1, int col2Index) {
+        int idx = Math.max(0, Math.min(playbackSpeedIndex, playbackSpeedLabels.length - 1));
+        List<UnifiedMenuController.Row> col2 = new ArrayList<>();
+        col2.add(UnifiedMenuController.row("Playback speed").value(playbackSpeedLabels[idx]).tag("speed").build());
+        col2.add(UnifiedMenuController.row("Sleep timer").value(sleepTimerValueLabel()).tag("sleep").build());
+
+        UnifiedMenuController.Row selectedCol2 =
+                (col2Index >= 0 && col2Index < col2.size()) ? col2.get(col2Index) : null;
+        String tag = selectedCol2 != null ? selectedCol2.getTag() : null;
+
+        List<UnifiedMenuController.Row> col3 = new ArrayList<>();
+        if ("sleep".equals(tag)) {
+            col3.add(UnifiedMenuController.row("Off")
+                    .selected(sleepTimerMode == SLEEP_OFF)
+                    .onOk(() -> cancelSleepTimer(true))
+                    .build());
+            for (int i = 0; i < SLEEP_MINUTE_OPTIONS.length; i++) {
+                final int minutes = SLEEP_MINUTE_OPTIONS[i];
+                col3.add(UnifiedMenuController.row(minutes + " minutes")
+                        .onOk(() -> startSleepCountdown(minutes))
+                        .build());
+            }
+            col3.add(UnifiedMenuController.row("End of episode")
+                    .selected(sleepTimerMode == SLEEP_END_OF_ITEM)
+                    .onOk(this::armSleepAtEndOfItem)
+                    .build());
+            return new UnifiedMenuController.Model(col1, "PLAYBACK", col2, "Sleep timer", col3);
+        }
+
+        for (int i = 0; i < playbackSpeedLabels.length; i++) {
+            final int target = i;
+            col3.add(UnifiedMenuController.row(playbackSpeedLabels[i])
+                    .selected(i == playbackSpeedIndex)
+                    .onOk(() -> applyPlaybackSpeed(target))
+                    .build());
+        }
+        return new UnifiedMenuController.Model(col1, "PLAYBACK", col2, "Playback speed", col3);
+    }
+
+    // ── Sleep timer ──────────────────────────────────────────────────────────
+
+    /** Whole minutes left, rounded up so a fresh 30-minute timer reads "30". */
+    private int sleepTimerMinutesLeft() {
+        if (sleepTimerMode != SLEEP_COUNTDOWN) return 0;
+        long remaining = sleepTimerDeadlineElapsedMs - android.os.SystemClock.elapsedRealtime();
+        return (int) Math.max(0, Math.ceil(remaining / 60000.0));
+    }
+
+    private String sleepTimerValueLabel() {
+        if (sleepTimerMode == SLEEP_END_OF_ITEM) return "End of episode";
+        if (sleepTimerMode == SLEEP_COUNTDOWN) return sleepTimerMinutesLeft() + " min";
+        return "Off";
+    }
+
+    private void startSleepCountdown(int minutes) {
+        cancelSleepTimer(false);
+        long durationMs = minutes * 60000L;
+        sleepTimerMode = SLEEP_COUNTDOWN;
+        // elapsedRealtime, not currentTimeMillis: the countdown must survive a
+        // clock adjustment and keep counting while the box is dozing.
+        sleepTimerDeadlineElapsedMs = android.os.SystemClock.elapsedRealtime() + durationMs;
+        sleepTimerRunnable = this::fireSleepTimer;
+        sleepTimerHandler.postDelayed(sleepTimerRunnable, durationMs);
+        Toast.makeText(this, "Sleep timer set for " + minutes + " minutes", Toast.LENGTH_SHORT).show();
+    }
+
+    private void armSleepAtEndOfItem() {
+        cancelSleepTimer(false);
+        sleepTimerMode = SLEEP_END_OF_ITEM;
+        Toast.makeText(this, "Sleep timer: stopping at the end of this episode", Toast.LENGTH_SHORT).show();
+    }
+
+    private void cancelSleepTimer(boolean announce) {
+        if (sleepTimerRunnable != null) {
+            sleepTimerHandler.removeCallbacks(sleepTimerRunnable);
+            sleepTimerRunnable = null;
+        }
+        sleepTimerMode = SLEEP_OFF;
+        sleepTimerDeadlineElapsedMs = 0L;
+        if (announce) Toast.makeText(this, "Sleep timer off", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Stop for the night: pause and release the screen so the TV can sleep on
+     * its own. MegaWatch TV plays a channel of separate items rather than one
+     * resumable title, so there is no position to persist here.
+     */
+    private void fireSleepTimer() {
+        cancelSleepTimer(false);
+        sleepStopLatched = true;
+        if (player != null) player.pause();
+        if (playerView != null) playerView.setKeepScreenOn(false);
+        Toast.makeText(this, "Sleep timer ended — paused", Toast.LENGTH_LONG).show();
+    }
+
+    /** Style the live subtitle-appearance preview from the current SubtitleSettings. */
+    private void umStylePreview(TextView tv) {
+        tv.setText("Sample subtitle preview");
+        tv.setTextColor(SubtitleSettings.getCurrentColor(this).getColor());
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, SubtitleSettings.getFontSizeSp(this));
+        tv.setTypeface(SubtitleSettings.getEffectiveTypeface(this));
+        tv.setBackgroundColor(SubtitleSettings.getCurrentBg(this).getColor());
+        if (SubtitleSettings.getStyleIndex(this) != 0) {   // 0 = "None" edge
+            Integer edge = SubtitleSettings.getCurrentOutlineColor(this).getColor();
+            tv.setShadowLayer(6f, 0f, 0f, edge != null ? edge : Color.BLACK);
+        } else {
+            tv.setShadowLayer(0f, 0f, 0f, 0);
+        }
+    }
+
+    /** Re-render the unified menu when its backing state changes (e.g. subtitles
+     *  finish loading) — no-op if it isn't open. */
+    private void refreshUnifiedMenuIfVisible() {
+        if (unifiedMenu != null && unifiedMenu.isVisible()) {
+            unifiedMenu.render();
+        }
+    }
+
+    /** True when a subtitle-listing surface is on screen — either the legacy
+     *  settings panel or the unified menu. Async subtitle-load callbacks use
+     *  this to decide whether a refresh is worth doing; gating on the panel's
+     *  own flag alone left the unified menu showing a stale loading placeholder. */
+    private boolean isSubtitleSurfaceVisible() {
+        return subtitleSettingsVisible || (unifiedMenu != null && unifiedMenu.isVisible());
+    }
+
+    // ---------------------------------------------------------------------
+    // Manual "Search Movie/Show Subtitles" flow
+    // ---------------------------------------------------------------------
+
+    /** Callback for a successful subtitle-catalog search from Flutter. */
+    private interface CatalogSearchSuccess {
+        void onResult(@NonNull List<SubtitleCatalogResult> results);
+    }
+
+    /** Callback for a failed subtitle-catalog search. */
+    private interface CatalogSearchError {
+        void onError(@NonNull String message);
+    }
+
+    /** A movie/series entry the user can pick to identify the title for subtitle lookup. */
+    private static final class SubtitleCatalogResult {
+        final String imdbId;
+        final String type; // "movie" or "series"
+        final String name;
+        @Nullable final String year;
+        @Nullable final String source;
+
+        SubtitleCatalogResult(String imdbId, String type, String name,
+                              @Nullable String year, @Nullable String source) {
+            this.imdbId = imdbId;
+            this.type = type;
+            this.name = name;
+            this.year = year;
+            this.source = source;
+        }
+
+        String titleLine() {
+            return (year != null && !year.isEmpty()) ? name + " (" + year + ")" : name;
+        }
+
+        String detailLine() {
+            StringBuilder sb = new StringBuilder("series".equals(type) ? "Series" : "Movie");
+            if (source != null && !source.isEmpty()) sb.append(" · ").append(source);
+            sb.append(" · ").append(imdbId);
+            return sb.toString();
+        }
+    }
+
+    private void showSearchSubtitleDialog() {
+        final List<SubtitleCatalogResult> results = new ArrayList<>();
+        final ArrayAdapter<SubtitleCatalogResult> adapter = createSubtitleCatalogResultAdapter(results);
+
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(dpToPx(24), dpToPx(8), dpToPx(24), 0);
+
+        final EditText queryInput = new EditText(this);
+        queryInput.setSingleLine(true);
+        queryInput.setHint("Movie or show title");
+        queryInput.setInputType(InputType.TYPE_CLASS_TEXT);
+        queryInput.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        queryInput.setText(buildSubtitleSearchInitialQuery(currentStreamTitle));
+        queryInput.setSelectAllOnFocus(true);
+        queryInput.setTextColor(Color.WHITE);
+        queryInput.setHintTextColor(0x80FFFFFF);
+
+        LinearLayout actionRow = new LinearLayout(this);
+        actionRow.setOrientation(LinearLayout.HORIZONTAL);
+        actionRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        actionRow.setPadding(0, dpToPx(12), 0, dpToPx(8));
+
+        final AppCompatButton searchButton = new AppCompatButton(this);
+        searchButton.setText("Search");
+        searchButton.setFocusable(true);
+        searchButton.setAllCaps(true);
+        searchButton.setTextColor(Color.WHITE);
+        searchButton.setBackgroundResource(R.drawable.subtitle_search_button_bg);
+        searchButton.setStateListAnimator(null);
+        searchButton.setMinHeight(dpToPx(44));
+
+        final ProgressBar progressBar = new ProgressBar(this);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(View.GONE);
+
+        actionRow.addView(searchButton,
+                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        LinearLayout.LayoutParams progressLp = new LinearLayout.LayoutParams(dpToPx(48), dpToPx(48));
+        progressLp.leftMargin = dpToPx(16);
+        actionRow.addView(progressBar, progressLp);
+
+        final TextView statusText = new TextView(this);
+        statusText.setText("Find subtitles by choosing the correct title.");
+        statusText.setPadding(0, 0, 0, dpToPx(8));
+        statusText.setTextColor(0xB3FFFFFF);
+
+        final ListView resultList = new ListView(this);
+        resultList.setAdapter(adapter);
+        resultList.setFocusable(true);
+        resultList.setFocusableInTouchMode(true);
+        resultList.setSelector(R.drawable.subtitle_catalog_row_selector);
+        resultList.setDrawSelectorOnTop(false);
+        resultList.setDivider(new ColorDrawable(0x14FFFFFF));
+        resultList.setDividerHeight(1);
+        // Keep the DPAD-focused row fully on screen: with bottom padding + clipToPadding
+        // off, ListView scrolls the selection above the padding instead of half-clipping it.
+        resultList.setClipToPadding(false);
+        resultList.setPadding(0, 0, 0, dpToPx(48));
+
+        container.addView(queryInput, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        container.addView(actionRow, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        container.addView(statusText, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        container.addView(resultList, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(360)));
+
+        // Dark, red-accented dialog theme so the rows/buttons match the player chrome
+        // and stay readable regardless of the activity's DayNight state.
+        final AlertDialog dialog = new AlertDialog.Builder(
+                this, R.style.Theme_MegaWatch_SubtitleDialog)
+                .setTitle("Search Movie/Show Subtitles")
+                .setView(container)
+                .setNegativeButton("Cancel", null)
+                .create();
+
+        final Runnable doSearch = () -> {
+            String query = queryInput.getText() != null ? queryInput.getText().toString().trim() : "";
+            if (query.isEmpty()) {
+                results.clear();
+                adapter.notifyDataSetChanged();
+                statusText.setText("Enter a title to search.");
+                queryInput.requestFocus();
+                return;
+            }
+            progressBar.setVisibility(View.VISIBLE);
+            searchButton.setEnabled(false);
+            queryInput.setEnabled(false);
+            statusText.setText("Searching…");
+            requestSubtitleCatalogSearchFromFlutter(
+                    query,
+                    newResults -> {
+                        if (!dialog.isShowing()) return;
+                        progressBar.setVisibility(View.GONE);
+                        searchButton.setEnabled(true);
+                        queryInput.setEnabled(true);
+                        results.clear();
+                        results.addAll(newResults);
+                        adapter.notifyDataSetChanged();
+                        if (newResults.isEmpty()) {
+                            statusText.setText("No matching movie/show results found.");
+                            searchButton.requestFocus();
+                        } else {
+                            statusText.setText(newResults.size() == 1
+                                    ? "1 result" : newResults.size() + " results");
+                            resultList.requestFocus();
+                            resultList.setSelection(0);
+                        }
+                    },
+                    message -> {
+                        if (!dialog.isShowing()) return;
+                        progressBar.setVisibility(View.GONE);
+                        searchButton.setEnabled(true);
+                        queryInput.setEnabled(true);
+                        results.clear();
+                        adapter.notifyDataSetChanged();
+                        statusText.setText(message);
+                        searchButton.requestFocus();
+                    });
+        };
+
+        resultList.setOnItemClickListener((parent, view, position, id) -> {
+            SubtitleCatalogResult selected = adapter.getItem(position);
+            if (selected == null) return;
+            dialog.dismiss();
+            if ("series".equals(selected.type)) {
+                int[] parsed = parseSeasonEpisodeFromTitle(currentStreamTitle);
+                if (parsed != null) {
+                    applyManualSubtitleIdentity(selected, parsed[0], parsed[1]);
+                } else {
+                    showSeasonEpisodePrompt(selected);
+                }
+            } else {
+                applyManualSubtitleIdentity(selected, null, null);
+            }
+        });
+
+        searchButton.setOnClickListener(v -> doSearch.run());
+        queryInput.setOnEditorActionListener((v, actionId, event) -> {
+            boolean isSearchAction = actionId == EditorInfo.IME_ACTION_SEARCH;
+            boolean isEnterKey = event != null
+                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                    && event.getAction() == KeyEvent.ACTION_UP;
+            if (isSearchAction || isEnterKey) {
+                doSearch.run();
+                return true;
+            }
+            return false;
+        });
+
+        dialog.setOnShowListener(d -> searchButton.requestFocus());
+        dialog.show();
+    }
+
+    private ArrayAdapter<SubtitleCatalogResult> createSubtitleCatalogResultAdapter(
+            List<SubtitleCatalogResult> results) {
+        return new ArrayAdapter<SubtitleCatalogResult>(this, 0, results) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                LinearLayout row;
+                if (convertView instanceof LinearLayout) {
+                    row = (LinearLayout) convertView;
+                } else {
+                    row = new LinearLayout(getContext());
+                    row.setOrientation(LinearLayout.VERTICAL);
+                    row.setPadding(dpToPx(20), dpToPx(12), dpToPx(20), dpToPx(12));
+                    row.setMinimumHeight(dpToPx(72));
+                }
+                row.removeAllViews();
+
+                SubtitleCatalogResult item = getItem(position);
+                TextView title = new TextView(getContext());
+                title.setText(item != null ? item.titleLine() : "");
+                title.setTextSize(18f);
+                title.setTextColor(Color.WHITE);
+                title.setTypeface(Typeface.DEFAULT_BOLD);
+                title.setMaxLines(1);
+                title.setEllipsize(TextUtils.TruncateAt.END);
+
+                TextView detail = new TextView(getContext());
+                detail.setText(item != null ? item.detailLine() : "");
+                detail.setTextSize(14f);
+                detail.setTextColor(Color.LTGRAY);
+                detail.setMaxLines(1);
+                detail.setEllipsize(TextUtils.TruncateAt.END);
+
+                row.addView(title, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                row.addView(detail, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                return row;
+            }
+        };
+    }
+
+    private void requestSubtitleCatalogSearchFromFlutter(
+            String query, CatalogSearchSuccess onSuccess, CatalogSearchError onError) {
+        try {
+            MethodChannel channel = MainActivity.getAndroidTvPlayerChannel();
+            if (channel == null) {
+                onError.onError("Subtitle search is unavailable.");
+                return;
+            }
+            Map<String, Object> args = new HashMap<>();
+            args.put("query", query);
+            channel.invokeMethod("searchSubtitleCatalogs", args, new MethodChannel.Result() {
+                @Override
+                public void success(@Nullable Object result) {
+                    final List<SubtitleCatalogResult> parsed = parseSubtitleCatalogResults(result);
+                    runOnUiThread(() -> onSuccess.onResult(parsed));
+                }
+
+                @Override
+                public void error(String errorCode, @Nullable String errorMessage,
+                                  @Nullable Object errorDetails) {
+                    android.util.Log.e("StremioSubs",
+                            "Subtitle catalog search failed: " + errorCode + " - " + errorMessage);
+                    runOnUiThread(() -> onError.onError(
+                            errorMessage != null ? errorMessage : "Subtitle search failed."));
+                }
+
+                @Override
+                public void notImplemented() {
+                    runOnUiThread(() -> onError.onError("Subtitle search is unavailable."));
+                }
+            });
+        } catch (Exception e) {
+            android.util.Log.e("StremioSubs", "Subtitle catalog search exception", e);
+            onError.onError("Subtitle search failed.");
+        }
+    }
+
+    private List<SubtitleCatalogResult> parseSubtitleCatalogResults(@Nullable Object result) {
+        List<SubtitleCatalogResult> out = new ArrayList<>();
+        if (!(result instanceof List)) return out;
+        for (Object raw : (List<?>) result) {
+            if (!(raw instanceof Map)) continue;
+            Map<?, ?> map = (Map<?, ?>) raw;
+            String imdbId = safeString(map.get("imdbId"));
+            if (imdbId == null || !imdbId.startsWith("tt")) continue;
+            String type = safeString(map.get("type"));
+            if (type == null) continue;
+            type = type.toLowerCase(Locale.US);
+            if (!type.equals("movie") && !type.equals("series")) continue;
+            String name = safeString(map.get("name"));
+            name = (name == null || name.trim().isEmpty()) ? imdbId : name.trim();
+            String year = safeString(map.get("year"));
+            if (year != null) { year = year.trim(); if (year.isEmpty()) year = null; }
+            String source = safeString(map.get("source"));
+            if (source != null) { source = source.trim(); if (source.isEmpty()) source = null; }
+            out.add(new SubtitleCatalogResult(imdbId, type, name, year, source));
+        }
+        return out;
+    }
+
+    private void applyManualSubtitleIdentity(SubtitleCatalogResult result,
+                                             @Nullable Integer season, @Nullable Integer episode) {
+        String type = "series".equals(result.type) ? "series" : "movie";
+        if (type.equals("series")
+                && (season == null || episode == null || season <= 0 || episode <= 0)) {
+            showSeasonEpisodePrompt(result);
+            return;
+        }
+
+        // Invalidate any in-flight auto-fetch and reset subtitle state.
+        // Tear down any side-rendered subtitle before switching identity —
+        // otherwise its cues keep drawing while the panel shows nothing selected.
+        stopExternalSubtitleRendering();
+        addonSubtitleFetchToken++;
+        stremioSubtitles.clear();
+        currentStremioSubtitleIndex = -1;
+        currentSubtitleTrackIndex = -1;
+        embeddedSubtitleSelected = false;
+        isLoadingStremioSubtitles = true;
+        manualSubtitleDisplayLabel = buildManualSubtitleLabel(result, type, season, episode);
+
+        // Turn off any embedded subtitle so the fetched addon subtitle can take over.
+        // Done silently (no "Subtitles off" toast) since we immediately search.
+        if (trackSelector != null) {
+            trackSelector.setParameters(trackSelector.buildUponParameters()
+                    .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+                    .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                    .build());
+        }
+
+        if (isSubtitleSurfaceVisible()) {
+            refreshSubtitlePanelForLoading();
+        }
+
+        showToast("Searching subtitles for " + result.name);
+        fetchStremioSubtitlesWithImdb(result.imdbId, type, season, episode);
+    }
+
+    private String buildManualSubtitleLabel(SubtitleCatalogResult result, String type,
+                                            @Nullable Integer season, @Nullable Integer episode) {
+        if ("series".equals(type) && season != null && episode != null) {
+            return result.name + " · S" + season + "E" + episode;
+        }
+        return result.titleLine();
+    }
+
+    private void showSeasonEpisodePrompt(SubtitleCatalogResult result) {
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(dpToPx(24), dpToPx(8), dpToPx(24), 0);
+
+        TextView title = new TextView(this);
+        title.setText(result.titleLine());
+        title.setTextSize(18f);
+        title.setPadding(0, 0, 0, dpToPx(12));
+
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+
+        final EditText seasonInput = new EditText(this);
+        seasonInput.setHint("Season");
+        seasonInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+        seasonInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        seasonInput.setText("1");
+        seasonInput.setSelectAllOnFocus(true);
+        seasonInput.setTextColor(Color.WHITE);
+        seasonInput.setHintTextColor(0x80FFFFFF);
+
+        final EditText episodeInput = new EditText(this);
+        episodeInput.setHint("Episode");
+        episodeInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+        episodeInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        episodeInput.setText("1");
+        episodeInput.setSelectAllOnFocus(true);
+        episodeInput.setTextColor(Color.WHITE);
+        episodeInput.setHintTextColor(0x80FFFFFF);
+
+        LinearLayout.LayoutParams seasonLp =
+                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        seasonLp.rightMargin = dpToPx(12);
+        row.addView(seasonInput, seasonLp);
+        row.addView(episodeInput,
+                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        container.addView(title, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        container.addView(row, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        final AlertDialog dialog = new AlertDialog.Builder(
+                this, R.style.Theme_MegaWatch_SubtitleDialog)
+                .setTitle("Series Episode")
+                .setView(container)
+                .setPositiveButton("Search", null)
+                .setNegativeButton("Cancel", null)
+                .create();
+
+        final Runnable submit = () -> {
+            Integer season = parseIntOrNull(
+                    seasonInput.getText() != null ? seasonInput.getText().toString() : null);
+            Integer episode = parseIntOrNull(
+                    episodeInput.getText() != null ? episodeInput.getText().toString() : null);
+            if (season == null || episode == null || season <= 0 || episode <= 0) {
+                showToast("Enter a valid season and episode");
+                return;
+            }
+            dialog.dismiss();
+            applyManualSubtitleIdentity(result, season, episode);
+        };
+
+        episodeInput.setOnEditorActionListener((v, actionId, event) -> {
+            boolean isDoneAction = actionId == EditorInfo.IME_ACTION_DONE;
+            boolean isEnterKey = event != null
+                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                    && event.getAction() == KeyEvent.ACTION_UP;
+            if (isDoneAction || isEnterKey) {
+                submit.run();
+                return true;
+            }
+            return false;
+        });
+
+        dialog.setOnShowListener(d -> {
+            Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            if (positive != null) {
+                positive.setOnClickListener(v -> submit.run());
+            }
+            seasonInput.requestFocus();
+        });
+        dialog.show();
+    }
+
+    private String buildSubtitleSearchInitialQuery(@Nullable String rawTitle) {
+        if (rawTitle == null || rawTitle.trim().isEmpty()) return "";
+        String filename = rawTitle;
+        int slash = filename.lastIndexOf('/');
+        if (slash >= 0) filename = filename.substring(slash + 1);
+        int q = filename.indexOf('?');
+        if (q >= 0) filename = filename.substring(0, q);
+        String cleaned = filename
+                .replaceAll("(?i)\\.(mkv|mp4|avi|mov|m4v|webm|ts|m2ts|mpg|mpeg|flv|wmv|vob|ogv|3gp|divx)$", "")
+                .replaceAll("[._]+", " ")
+                .replaceAll("(?i)\\bS\\d{1,2}\\s*E\\d{1,3}\\b", " ")
+                .replaceAll("(?i)\\b\\d{1,2}x\\d{1,3}\\b", " ")
+                .replaceAll("(?i)\\b(2160p|1080p|720p|480p|4k|uhd|hdr|web[- ]?dl|webrip|bluray|brrip|hdtv|dvdrip|x264|x265|h264|h265|hevc|aac|dts|yify)\\b", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+        return cleaned.isEmpty() ? rawTitle.trim() : cleaned;
+    }
+
+    @Nullable
+    private int[] parseSeasonEpisodeFromTitle(@Nullable String title) {
+        if (title == null) return null;
+        java.util.regex.Pattern[] patterns = new java.util.regex.Pattern[]{
+                java.util.regex.Pattern.compile("(?i)\\bS(\\d{1,2})\\s*E(\\d{1,3})\\b"),
+                // Bare NxNN form: cap episode at 2 digits so resolution artifacts like
+                // "12x480" / "5x264" don't get misread as season/episode.
+                java.util.regex.Pattern.compile("(?i)\\b(\\d{1,2})x(\\d{1,2})\\b"),
+                java.util.regex.Pattern.compile("(?i)\\bSeason\\s*(\\d{1,2})\\s*(?:Episode|Ep|E)\\s*(\\d{1,3})\\b")
+        };
+        for (java.util.regex.Pattern pattern : patterns) {
+            java.util.regex.Matcher matcher = pattern.matcher(title);
+            if (matcher.find()) {
+                Integer season = parseIntOrNull(matcher.group(1));
+                Integer episode = parseIntOrNull(matcher.group(2));
+                if (season != null && episode != null && season > 0 && episode > 0) {
+                    return new int[]{season, episode};
+                }
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    private Integer parseIntOrNull(@Nullable String value) {
+        if (value == null) return null;
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+
+    private void showSubtitleSettingsPanel() {
+        rebuildSubtitleTrackOptions();
+        if (subtitlePanel != null) {
+            subtitlePanel.show();
+        }
+        subtitleSettingsVisible = true;
+    }
+
+    private void hideSubtitleSettingsPanel() {
+        if (subtitlePanel != null) {
+            subtitlePanel.hide();
+        } else {
+            subtitleSettingsVisible = false;
+        }
+    }
+
+    private void showSyncOverlay() {
+        ViewGroup root = (ViewGroup) ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
+        if (root == null) return;
+
+        // Use line picker for external (Stremio) subtitles. Prefer the actually-
+        // rendering URL: the flat list can transiently lose the current sub's
+        // entry (currentStremioSubtitleIndex → -1) while it's still on screen,
+        // and we must not fall through to the embedded slider for it.
+        String externalUrl = externalSubtitleActive ? activeExternalSubtitleUrl : null;
+        if (externalUrl == null
+                && currentStremioSubtitleIndex >= 0
+                && currentStremioSubtitleIndex < stremioSubtitles.size()) {
+            externalUrl = stremioSubtitles.get(currentStremioSubtitleIndex).getUrl();
+        }
+        if (externalUrl != null) {
+            if (linePickerOverlay == null) {
+                final TorboxTvPlayerActivity self = this;
+                linePickerOverlay = new SubtitleLinePickerController(
+                        this,
+                        root,
+                        () -> player != null ? player.getCurrentPosition() : 0L,
+                        (kotlin.jvm.functions.Function1<Long, kotlin.Unit>) (offset) -> { applySubtitleSettings(); return kotlin.Unit.INSTANCE; },
+                        () -> {
+                            self.linePickerOverlay = null;
+                            if (playerView != null) playerView.requestFocus();
+                        }
+                );
+            }
+            linePickerOverlay.show(externalUrl);
+            return;
+        }
+
+        // Fall back to slider for embedded subtitles
+        if (syncOverlay == null) {
+            syncOverlay = new SubtitleSyncOverlayController(
+                    this,
+                    root,
+                    () -> applySubtitleSettings(),
+                    () -> { if (playerView != null) playerView.requestFocus(); }
+            );
+        }
+        syncOverlay.show();
+    }
+
+    /**
+     * Refresh subtitle panel to update loading state / loaded subtitles.
+     * Re-collects tracks and updates UI without changing visibility or focus.
+     */
+    private void refreshSubtitlePanelForLoading() {
+        rebuildSubtitleTrackOptions();
+        if (subtitlePanel != null) {
+            subtitlePanel.refresh();
+        }
+        // Keep the unified menu's subtitle list/badge in sync when it's the
+        // surface that's open (e.g. external subtitles finish downloading).
+        refreshUnifiedMenuIfVisible();
+    }
+
+    private void applySelectedSubtitleTrackFromPanel() {
+        userManuallySelectedSubtitle = true;
+        if (currentSubtitleTrackIndex < 0 || currentSubtitleTrackIndex >= subtitleTrackOptions.size()) {
+            // Off - disable all subtitles
+            currentStremioSubtitleIndex = -1;
+            applySubtitleTrack(null);
+            return;
+        }
+
+        TrackOption option = subtitleTrackOptions.get(currentSubtitleTrackIndex);
+
+        // Check if this is a Stremio external subtitle (has null group)
+        if (option.group == null) {
+            // Calculate the Stremio subtitle index
+            // Count embedded tracks (those with non-null group)
+            int embeddedTrackCount = 0;
+            for (TrackOption opt : subtitleTrackOptions) {
+                if (opt.group != null) {
+                    embeddedTrackCount++;
+                } else {
+                    break; // Stremio subtitles come after embedded ones
+                }
+            }
+            int stremioIndex = currentSubtitleTrackIndex - embeddedTrackCount;
+
+            if (stremioIndex >= 0 && stremioIndex < stremioSubtitles.size()) {
+                // Disable embedded subtitles first
+                if (trackSelector != null) {
+                    DefaultTrackSelector.Parameters params = trackSelector.buildUponParameters()
+                            .clearOverridesOfType(C.TRACK_TYPE_TEXT)
+                            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                            .build();
+                    trackSelector.setParameters(params);
+                }
+
+                // Load Stremio subtitle
+                loadStremioSubtitle(stremioSubtitles.get(stremioIndex));
+                currentStremioSubtitleIndex = stremioIndex;
+            }
+            return;
+        }
+
+        // Clear Stremio subtitle selection when selecting embedded track
+        currentStremioSubtitleIndex = -1;
+
+        // Handle embedded subtitle selection
+        applySubtitleTrack(option);
+    }
+
+    private void applySubtitleSettings() {
+        if (subtitleOverlay != null) {
+            subtitleOverlay.setFixedTextSize(
+                    TypedValue.COMPLEX_UNIT_SP,
+                    SubtitleSettings.getFontSizeSp(this));
+            subtitleOverlay.setStyle(SubtitleSettings.buildCaptionStyle(this));
+            subtitleControlsLift.setBasePaddingFraction(SubtitleSettings.getElevationPaddingFraction(this));
+        }
+        // While side-rendering, the offset is applied at cue lookup instead, so
+        // the renderer must hold 0 — otherwise it keeps the external subtitle's
+        // offset and a later embedded track renders shifted by it.
+        long newOffsetUs = externalSubtitleActive
+                ? 0L
+                : SubtitleSettings.getSyncOffsetMs(this) * 1000L;
+        long oldOffsetUs = offsetRenderersFactory != null
+                ? offsetRenderersFactory.getCurrentOffsetUs() : 0L;
+        if (offsetRenderersFactory != null) {
+            offsetRenderersFactory.setOffsetUs(newOffsetUs);
+        }
+        if (externalSubtitleActive) {
+            // Side-rendered subtitles pick the offset up at lookup time — just
+            // force an immediate re-render, no seek needed.
+            lastExternalCueText = null;
+            renderExternalSubtitleCue();
+        } else if (offsetRenderersFactory != null && newOffsetUs != oldOffsetUs) {
+            // Debounce: rapid offset changes (line picker tap, arrow key
+            // hold) would otherwise pile up seeks and confuse the text
+            // renderer.
+            subtitleSeekHandler.removeCallbacks(subtitleSeekRunnable);
+            subtitleSeekHandler.postDelayed(subtitleSeekRunnable, 150);
+        }
+    }
+
+    private void applyAndPersistSubtitleSettings() {
+        applySubtitleSettings();
+        MethodChannel channel = MainActivity.getAndroidTvPlayerChannel();
+        if (channel != null) {
+            channel.invokeMethod(
+                    "saveSubtitleAppearance",
+                    SubtitleSettings.profileAppearanceSnapshot(this));
+        }
+    }
+
+    private void cycleAspectRatio() {
+        resizeModeIndex = (resizeModeIndex + 1) % resizeModes.length;
+        applyResizeMode();
+        updateAspectButtonLabel();
+        showToast("Aspect: " + resizeModeLabels[resizeModeIndex]);
+    }
+
+    private void applyResizeMode() {
+        if (playerView == null) return;
+        playerView.setResizeMode(resizeModes[resizeModeIndex]);
+        View content = playerView.findViewById(androidx.media3.ui.R.id.exo_content_frame);
+        if (content == null) content = playerView.getVideoSurfaceView();
+        if (content == null) return;
+        float scale = resizeModeIndex == 3 ? 4f / 3f : 1f;
+        content.setScaleX(scale);
+        content.setScaleY(scale);
+    }
+
+    private List<TrackOption> collectTrackOptions(int trackType) {
+        List<TrackOption> options = new ArrayList<>();
+        if (player == null) {
+            return options;
+        }
+        Tracks tracks = player.getCurrentTracks();
+        int fallbackIndex = 1;
+        for (Tracks.Group group : tracks.getGroups()) {
+            if (group.getType() != trackType || !group.isSupported()) {
+                continue;
+            }
+            for (int i = 0; i < group.length; i++) {
+                if (!group.isTrackSupported(i)) {
+                    continue;
+                }
+                Format format = group.getTrackFormat(i);
+                String label = buildTrackLabel(format, fallbackIndex, trackType);
+                options.add(new TrackOption(group, i, label));
+                fallbackIndex++;
+            }
+        }
+        return options;
+    }
+
+    private String buildTrackLabel(Format format, int fallbackIndex, int trackType) {
+        List<String> parts = new ArrayList<>();
+        if (format.label != null && !format.label.isEmpty()) {
+            parts.add(format.label);
+        }
+        String languageLabel = formatLanguage(format.language);
+        if (languageLabel != null && !languageLabel.isEmpty()) {
+            parts.add(languageLabel);
+        }
+        if (trackType == C.TRACK_TYPE_AUDIO && format.channelCount != Format.NO_VALUE) {
+            parts.add(format.channelCount + "ch");
+        }
+        if (parts.isEmpty()) {
+            String prefix = trackType == C.TRACK_TYPE_AUDIO ? "Track" : "Subtitle";
+            parts.add(prefix + " " + fallbackIndex);
+        }
+        return TextUtils.join(" • ", parts);
+    }
+
+    private String formatLanguage(@Nullable String languageTag) {
+        if (languageTag == null || languageTag.isEmpty() || "und".equals(languageTag)) {
+            return null;
+        }
+        Locale locale = Locale.forLanguageTag(languageTag);
+        String display = locale.getDisplayLanguage(Locale.getDefault());
+        if (display == null || display.isEmpty()) {
+            return languageTag;
+        }
+        return display;
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void filterChannels(@Nullable String query) {
+        final String raw = query != null ? query.trim() : "";
+        final String normalized = raw.toLowerCase(Locale.US);
+        final String digitsOnly = raw.replaceAll("[^0-9]", "");
+        filteredChannelEntries.clear();
+        if (normalized.isEmpty()) {
+            filteredChannelEntries.addAll(channelDirectoryEntries);
+        } else {
+            for (ChannelEntry entry : channelDirectoryEntries) {
+                if (entry.matches(normalized, digitsOnly)) {
+                    filteredChannelEntries.add(entry);
+                }
+            }
+        }
+        if (unifiedGuideAdapter != null) {
+            unifiedGuideAdapter.notifyDataSetChanged();
+        }
+        // Scroll to top after filter - capture reference for lambda safety
+        final RecyclerView listRef = unifiedGuideList;
+        if (!filteredChannelEntries.isEmpty() && listRef != null) {
+            listRef.post(() -> {
+                if (listRef.getAdapter() != null && listRef.getAdapter().getItemCount() > 0) {
+                    listRef.scrollToPosition(0);
+                }
+            });
+        }
+    }
+
+    private void showKeyboard(@Nullable View target) {
+        if (target == null) {
+            return;
+        }
+        target.post(() -> {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(target, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
+    }
+
+    private void hideKeyboard(@Nullable View target) {
+        if (target == null) {
+            return;
+        }
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(target.getWindowToken(), 0);
+        }
+    }
+
+
+    private int resolveChannelNumberFromDirectory(@Nullable String channelIdValue) {
+        if (channelIdValue == null || channelDirectoryEntries.isEmpty()) {
+            return -1;
+        }
+        for (ChannelEntry entry : channelDirectoryEntries) {
+            if (channelIdValue.equals(entry.id) && entry.number > 0) {
+                return entry.number;
+            }
+        }
+        return -1;
+    }
+
+    @Nullable
+    private ChannelSwitchData parseChannelSwitchPayload(Map<String, Object> payload,
+                                                        @Nullable Integer fallbackNumber,
+                                                        @Nullable String fallbackName) {
+        String channelName = safeString(payload.get("channelName"));
+        Integer channelNumber = payload.get("channelNumber") instanceof Integer
+                ? (Integer) payload.get("channelNumber")
+                : null;
+        String channelId = safeString(payload.get("channelId"));
+        String firstUrl = safeString(payload.get("firstUrl"));
+        String firstTitle = safeString(payload.get("firstTitle"));
+        String provider = safeString(payload.get("provider")); // Extract provider info
+
+        if (channelId != null && !channelId.isEmpty()) {
+            currentChannelId = channelId;
+        }
+
+        String resolvedName;
+        if (channelName != null && !channelName.isEmpty()) {
+            resolvedName = channelName;
+        } else if (fallbackName != null && !fallbackName.isEmpty()) {
+            resolvedName = fallbackName;
+        } else {
+            resolvedName = currentChannelName;
+        }
+        if (resolvedName == null) {
+            resolvedName = "";
+        }
+
+        Integer resolvedNumber = channelNumber;
+        if (resolvedNumber == null || resolvedNumber <= 0) {
+            if (fallbackNumber != null && fallbackNumber > 0) {
+                resolvedNumber = fallbackNumber;
+            } else if (currentChannelId != null) {
+                int lookedUp = resolveChannelNumberFromDirectory(currentChannelId);
+                if (lookedUp > 0) {
+                    resolvedNumber = lookedUp;
+                }
+            }
+        }
+
+        currentChannelName = resolvedName;
+        currentChannelNumber = resolvedNumber != null ? resolvedNumber : -1;
+        markUnifiedGuideCurrentChannel(currentChannelId);
+
+        final String badgeName = currentChannelName;
+        final boolean hasAdapter = unifiedGuideAdapter != null;
+        runOnUiThread(() -> {
+            updateChannelBadge(badgeName);
+            if (hasAdapter) {
+                unifiedGuideAdapter.notifyDataSetChanged();
+            }
+        });
+
+        if (firstUrl == null || firstUrl.isEmpty()) {
+            return null;
+        }
+
+        String resolvedTitle;
+        if (firstTitle != null && !firstTitle.isEmpty()) {
+            resolvedTitle = firstTitle;
+        } else if (!resolvedName.isEmpty()) {
+            resolvedTitle = resolvedName;
+        } else {
+            resolvedTitle = "MegaWatch TV";
+        }
+
+        return new ChannelSwitchData(firstUrl, resolvedTitle, resolvedNumber, resolvedName, provider);
+    }
+
+    private void requestChannelByEntry(ChannelEntry entry) {
+        if (entry == null) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        if (now - lastChannelSwitchTime < CHANNEL_SWITCH_COOLDOWN_MS) {
+            Toast.makeText(this, "Please wait...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (requestingNext) {
+            return;
+        }
+
+        MethodChannel channel = MainActivity.getAndroidTvPlayerChannel();
+        if (channel == null) {
+            Toast.makeText(this, "Playback bridge unavailable", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        hideUnifiedGuide();
+        hasEverBeenReady = false;
+        hideBufferingIndicator();
+        showLoadingBar(entry.number > 0 ? entry.number : null, entry.name);
+
+        lastChannelSwitchTime = now;
+        requestingNext = true;
+        currentChannelId = entry.id;
+        if (entry.number > 0) {
+            currentChannelNumber = entry.number;
+        }
+
+        Map<String, Object> args = new HashMap<>();
+        args.put("channelId", entry.id);
+
+        channel.invokeMethod("requestChannelById", args, new MethodChannel.Result() {
+            @Override
+            public void success(@Nullable Object result) {
+                requestingNext = false;
+
+                if (!(result instanceof Map)) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(TorboxTvPlayerActivity.this,
+                                "Channel switch failed. Check logs.",
+                                Toast.LENGTH_SHORT).show();
+                        hideChannelOverlay();
+                    });
+                    return;
+                }
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> payload = (Map<String, Object>) result;
+                ChannelSwitchData switchData = parseChannelSwitchPayload(
+                        payload,
+                        entry.number > 0 ? entry.number : null,
+                        entry.name);
+
+                if (switchData == null || switchData.url == null || switchData.url.isEmpty()) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(TorboxTvPlayerActivity.this,
+                                "Channel has no streams",
+                                Toast.LENGTH_SHORT).show();
+                        hideLoadingBar();
+                    });
+                    return;
+                }
+
+                final String playUrl = switchData.url;
+                final String playTitle = switchData.title;
+                final String playProvider = switchData.provider;
+
+                android.util.Log.d("TorboxTvPlayer", "requestChannelByEntry: received provider=" + playProvider);
+
+                // Play the new channel video
+                playMedia(playUrl, playTitle, playProvider);
+                scheduleHideNextOverlay(350L);
+            }
+
+            @Override
+            public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
+                requestingNext = false;
+                runOnUiThread(() -> {
+                    Toast.makeText(TorboxTvPlayerActivity.this,
+                            errorMessage != null ? errorMessage : "Failed to switch channel",
+                            Toast.LENGTH_SHORT).show();
+                    hideLoadingBar();
+                });
+            }
+
+            @Override
+            public void notImplemented() {
+                requestingNext = false;
+                runOnUiThread(() -> hideLoadingBar());
+            }
+        });
+    }
+
+    private static class TrackOption {
+        final Tracks.Group group;
+        final int trackIndex;
+        final String label;
+
+        TrackOption(Tracks.Group group, int trackIndex, String label) {
+            this.group = group;
+            this.trackIndex = trackIndex;
+            this.label = label;
+        }
+    }
+
+    private static class ChannelEntry {
+        final String id;
+        final String name;
+        final String nameUpper;
+        final String nameLower;
+        final int number;
+        final int order;
+        boolean isCurrent;
+
+        ChannelEntry(String id, String name, int number, boolean isCurrent, int order) {
+            this.id = id;
+            this.name = name != null ? name : "";
+            this.nameUpper = this.name.toUpperCase(Locale.US);
+            this.nameLower = this.name.toLowerCase(Locale.US);
+            this.number = number;
+            this.isCurrent = isCurrent;
+            this.order = order;
+        }
+
+        boolean matches(String normalizedQuery, String digitsQuery) {
+            if (normalizedQuery.isEmpty()) {
+                return true;
+            }
+            if (!nameLower.isEmpty() && nameLower.contains(normalizedQuery)) {
+                return true;
+            }
+            if (!digitsQuery.isEmpty() && number > 0) {
+                String plain = Integer.toString(number);
+                String padded = String.format(Locale.US, "%02d", number);
+                return plain.contains(digitsQuery) || padded.contains(digitsQuery);
+            }
+            return false;
+        }
+    }
+
+    private static class ChannelSearchAdapter extends RecyclerView.Adapter<ChannelSearchAdapter.ChannelViewHolder> {
+        interface OnChannelClickListener {
+            void onChannelClicked(ChannelEntry entry);
+        }
+
+        private final List<ChannelEntry> items;
+        private final OnChannelClickListener listener;
+
+        ChannelSearchAdapter(List<ChannelEntry> items, OnChannelClickListener listener) {
+            this.items = items;
+            this.listener = listener;
+        }
+
+        @NonNull
+        @Override
+        public ChannelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_unified_channel, parent, false);
+            view.setFocusable(true);
+            view.setFocusableInTouchMode(true);
+            return new ChannelViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ChannelViewHolder holder, int position) {
+            ChannelEntry entry = items.get(position);
+            holder.bind(entry, listener);
+        }
+
+        @Override
+        public int getItemCount() {
+            return items.size();
+        }
+
+        static class ChannelViewHolder extends RecyclerView.ViewHolder {
+            private final TextView numberView;
+            private final TextView nameView;
+            private final TextView subtitleView;
+            private final TextView nowBadge;
+            // Store current entry and listener to avoid creating new listeners on every bind
+            private ChannelEntry currentEntry;
+            private OnChannelClickListener currentListener;
+
+            ChannelViewHolder(@NonNull View itemView) {
+                super(itemView);
+                numberView = itemView.findViewById(R.id.unified_channel_number);
+                nameView = itemView.findViewById(R.id.unified_channel_name);
+                subtitleView = itemView.findViewById(R.id.unified_channel_subtitle);
+                nowBadge = itemView.findViewById(R.id.unified_channel_now_badge);
+
+                // Set listeners once in constructor to prevent accumulation
+                itemView.setOnClickListener(v -> {
+                    if (currentEntry != null && currentListener != null) {
+                        currentListener.onChannelClicked(currentEntry);
+                    }
+                });
+                itemView.setOnFocusChangeListener((v, hasFocus) -> {
+                    v.animate().cancel(); // Cancel any ongoing animation
+                    if (hasFocus) {
+                        v.animate().scaleX(1.02f).scaleY(1.02f).setDuration(100L).start();
+                    } else {
+                        v.animate().scaleX(1f).scaleY(1f).setDuration(100L).start();
+                    }
+                });
+            }
+
+            void bind(ChannelEntry entry, OnChannelClickListener listener) {
+                this.currentEntry = entry;
+                this.currentListener = listener;
+
+                // Modern clean format: just the number, no "CH" prefix
+                String numberText = entry.number > 0
+                        ? String.format(Locale.US, "%02d", entry.number)
+                        : "--";
+
+                // Null-safe view updates
+                if (numberView != null) {
+                    numberView.setText(numberText);
+                }
+                if (nameView != null) {
+                    nameView.setText(entry.nameUpper);
+                }
+                if (subtitleView != null) {
+                    subtitleView.setText(entry.isCurrent ? "Currently playing" : "Press OK to tune");
+                }
+                if (nowBadge != null) {
+                    nowBadge.setVisibility(entry.isCurrent ? View.VISIBLE : View.GONE);
+                }
+
+                // Background handled by drawable selector (unified_guide_item_bg.xml)
+                itemView.setAlpha(1f);
+            }
+        }
+    }
+
+    private static class ChannelSwitchData {
+        final String url;
+        final String title;
+        @Nullable
+        final Integer channelNumber;
+        @Nullable
+        final String channelName;
+        @Nullable
+        final String provider;
+
+        ChannelSwitchData(String url, String title, @Nullable Integer channelNumber, @Nullable String channelName, @Nullable String provider) {
+            this.url = url;
+            this.title = title;
+            this.channelNumber = channelNumber;
+            this.channelName = channelName;
+            this.provider = provider;
+        }
+    }
+
+    private void seekBy(long offsetMs) {
+        if (player == null) {
+            return;
+        }
+        long position = player.getCurrentPosition();
+        long duration = player.getDuration();
+        long target = position + offsetMs;
+        if (duration != C.TIME_UNSET) {
+            target = Math.max(0L, Math.min(target, duration));
+        } else {
+            target = Math.max(0L, target);
+        }
+        android.util.Log.d("TorboxTvPlayer", "Seeking from " + position + "ms to " + target + "ms (offset=" + offsetMs + "ms)");
+        player.seekTo(target);
+
+        // Show visual feedback for quick seek
+        String seekSeconds = String.valueOf(Math.abs(offsetMs) / 1000) + "s";
+        if (offsetMs > 0) {
+            seekFeedbackManager.showSeekForward(seekSeconds);
+        } else {
+            seekFeedbackManager.showSeekBackward(seekSeconds);
+        }
+
+        if (playerView != null) {
+            playerView.hideController();
+        }
+    }
+
+    private void setupBackPressHandler() {
+        // Use modern OnBackPressedDispatcher API instead of deprecated onBackPressed()
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // System Back may bypass dispatchKeyEvent on some remotes.
+                if (linePickerOverlay != null && linePickerOverlay.isVisible()) {
+                    linePickerOverlay.hide();
+                    return;
+                }
+                if (syncOverlay != null && syncOverlay.isVisible()) {
+                    syncOverlay.hide();
+                    return;
+                }
+                if (isUnifiedGuideVisible()) {
+                    hideUnifiedGuide();
+                    return;
+                }
+
+                // Double-back to exit confirmation
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastBackPressTime < BACK_PRESS_INTERVAL_MS) {
+                    // Second back press within time window - exit
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                } else {
+                    // First back press - show message
+                    lastBackPressTime = currentTime;
+                    Toast.makeText(TorboxTvPlayerActivity.this,
+                        "Press back again to exit",
+                        Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int keyCode = event.getKeyCode();
+
+        // Unified Channel Guide is visible - handle keys
+        if (isUnifiedGuideVisible()) {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+                hideUnifiedGuide();
+                return true;
+            }
+            // Number keys go to search bar
+            if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && unifiedGuideSearch != null) {
+                    // Send key to search EditText
+                    unifiedGuideSearch.requestFocus();
+                    return unifiedGuideSearch.dispatchKeyEvent(event);
+                }
+            }
+            return super.dispatchKeyEvent(event);
+        }
+
+        // Subtitle line picker overlay (floats on top of video)
+        if (linePickerOverlay != null && linePickerOverlay.isVisible()) {
+            return linePickerOverlay.dispatchKey(event);
+        }
+
+        // Subtitle sync overlay (floats on top of video)
+        if (syncOverlay != null && syncOverlay.isVisible()) {
+            return syncOverlay.dispatchKey(event);
+        }
+
+        // Subtitle Settings Panel is visible - handle keys
+        if (subtitlePanel != null && subtitlePanel.isVisible()) {
+            return subtitlePanel.dispatchKey(event);
+        }
+
+        // Unified player menu (Miller columns). Only navigation keys are consumed;
+        // in edit mode (unused on Torbox, but handled for parity) all keys fall
+        // through except the boundary keys the controller uses to leave the field.
+        if (unifiedMenu != null && unifiedMenu.isVisible()) {
+            if (unifiedMenu.getInEditMode()) {
+                if (unifiedMenu.handleEditModeKey(event)) return true;
+                return super.dispatchKeyEvent(event);
+            }
+            if (unifiedMenu.dispatchKey(event)) return true;
+            return super.dispatchKeyEvent(event);
+        }
+
+        if (seekbarVisible) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                    long step = getAcceleratedSeekStep(event.getRepeatCount());
+                    seekBackward(step);
+                    return true;
+                } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    long step = getAcceleratedSeekStep(event.getRepeatCount());
+                    seekForward(step);
+                    return true;
+                } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
+                    confirmSeekPosition();
+                    return true;
+                } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    hideSeekbar();
+                    return true;
+                }
+            }
+            return true;
+        }
+
+        // If controls menu is visible and back is pressed, hide the menu first
+        if (controlsMenuVisible && keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            hideControlsMenu();
+            return true;
+        }
+
+        boolean focusInControls = isFocusInControlsOverlay();
+
+        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
+            if (focusInControls) {
+                return super.dispatchKeyEvent(event);
+            }
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                handlePlayPauseToggleFromCenter();
+            }
+            return true;
+        }
+
+        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                if (!controlsMenuVisible) {
+                    // Menu is hidden, show it
+                    showControlsMenu();
+                    scheduleHideControlsMenu();
+                    return true;
+                } else if (!focusInControls) {
+                    // Menu is visible but focus is not in controls, refocus it
+                    showControlsMenu();
+                    scheduleHideControlsMenu();
+                    return true;
+                }
+            }
+            // Menu is visible and has focus, let normal navigation happen
+            return super.dispatchKeyEvent(event);
+        }
+
+        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                showUnifiedGuide(false); // Open guide with list focused (not search)
+            }
+            return true;
+        }
+
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            if (focusInControls) {
+                // Focus is in menu, let normal navigation happen
+                return super.dispatchKeyEvent(event);
+            }
+            // Not in menu, handle seeking
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                int repeat = event.getRepeatCount();
+                if (repeat >= SEEK_LONG_PRESS_THRESHOLD) {
+                    if (!seekbarVisible) {
+                        showSeekbar(false, false);
+                    }
+                } else if (repeat == 0) {
+                    seekBy(SEEK_STEP_MS);
+                }
+            }
+            return true;
+        }
+
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            if (focusInControls) {
+                // Focus is in menu, let normal navigation happen
+                return super.dispatchKeyEvent(event);
+            }
+            // Not in menu, handle seeking
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                int repeat = event.getRepeatCount();
+                if (repeat >= SEEK_LONG_PRESS_THRESHOLD) {
+                    if (!seekbarVisible) {
+                        showSeekbar(false, false);
+                    }
+                } else if (repeat == 0) {
+                    seekBy(-SEEK_STEP_MS);
+                }
+            }
+            return true;
+        }
+
+        return super.dispatchKeyEvent(event);
+    }
+
+    private boolean isFocusInControlsOverlay() {
+        if (controlsOverlay == null) {
+            return false;
+        }
+        View current = getCurrentFocus();
+        while (current instanceof View) {
+            if (current == controlsOverlay) {
+                return true;
+            }
+            android.view.ViewParent parent = current.getParent();
+            if (!(parent instanceof View)) {
+                break;
+            }
+            current = (View) parent;
+        }
+        return false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ActivityTracker.INSTANCE.setCurrentActivity(this);
+        startAnalyticsHeartbeat();
+        // Resume the side-rendered subtitle ticker paused in onPause. Set the
+        // gate first — startExternalSubtitleTicker() honours it.
+        activityResumed = true;
+        if (externalSubtitleActive) {
+            startExternalSubtitleTicker();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (ActivityTracker.INSTANCE.getCurrentActivity() == this) {
+            ActivityTracker.INSTANCE.setCurrentActivity(null);
+        }
+        if (player != null && player.isPlaying()) {
+            player.pause();
+        }
+        stopAnalyticsHeartbeat();
+
+        // Stop waking the main thread 4x/second while the activity isn't visible;
+        // state is preserved and onResume restarts the ticker. The gate also
+        // stops a subtitle load that lands while backgrounded from restarting it.
+        activityResumed = false;
+        if (externalSubtitleTicker != null) {
+            externalSubtitleHandler.removeCallbacks(externalSubtitleTicker);
+        }
+
+        // Cancel any ongoing PikPak retry operations
+        cancelPikPakRetry();
+    }
+
+    private void showBufferingIndicatorDebounced() {
+        if (bufferingDebounceRunnable != null) {
+            bufferingHandler.removeCallbacks(bufferingDebounceRunnable);
+        }
+        bufferingDebounceRunnable = () -> {
+            if (player == null) return;
+            int state = player.getPlaybackState();
+            boolean overlayVisible = (nextOverlay != null && nextOverlay.getVisibility() == View.VISIBLE)
+                    || (channelOverlay != null && channelOverlay.getVisibility() == View.VISIBLE)
+                    || (loadingIndicator != null && loadingIndicator.getVisibility() == View.VISIBLE);
+            if (state == Player.STATE_BUFFERING && hasEverBeenReady && !overlayVisible) {
+                bufferingIndicator.setVisibility(View.VISIBLE);
+                bufferingIndicator.animate().alpha(1f).setDuration(250).start();
+            }
+        };
+        bufferingHandler.postDelayed(bufferingDebounceRunnable, 800);
+    }
+
+    private void hideBufferingIndicator() {
+        if (bufferingDebounceRunnable != null) {
+            bufferingHandler.removeCallbacks(bufferingDebounceRunnable);
+            bufferingDebounceRunnable = null;
+        }
+        if (bufferingIndicator != null && bufferingIndicator.getVisibility() == View.VISIBLE) {
+            bufferingIndicator.animate().alpha(0f).setDuration(200).withEndAction(() -> {
+                bufferingIndicator.setVisibility(View.GONE);
+            }).start();
+        }
+    }
+
+    protected void onDestroy() {
+        if (displayModeController != null) {
+            displayModeController.clear();
+            displayModeController = null;
+        }
+        if (subtitleControlsLift != null) {
+            subtitleControlsLift.cancel();
+        }
+        // The sleep timer belongs to this playback session — a pending one must
+        // not outlive the player and fire against a dead surface.
+        cancelSleepTimer(false);
+        // Clean up unified guide text watcher to prevent memory leak
+        if (unifiedGuideSearch != null && unifiedGuideTextWatcher != null) {
+            unifiedGuideSearch.removeTextChangedListener(unifiedGuideTextWatcher);
+            unifiedGuideTextWatcher = null;
+        }
+
+        // Clean up seek feedback manager
+        if (seekFeedbackManager != null) {
+            seekFeedbackManager.destroy();
+        }
+
+        // Cancel PikPak retry operations
+        cancelPikPakRetry();
+
+        // Clean up Stremio subtitle resources
+        subtitleExecutor.shutdown();
+        subtitleCueExecutor.shutdown();
+        // shutdown() doesn't interrupt an in-flight task, and its runOnUiThread
+        // callback still runs after onDestroy. Bump both tokens so neither the
+        // addon catalog fetch nor a subtitle download can touch the player /
+        // trackSelector that gets released below.
+        externalSubtitleLoadToken++;
+        addonSubtitleFetchToken++;
+        externalSubtitleHandler.removeCallbacksAndMessages(null);
+        externalSubtitleTicker = null;
+        externalSubtitleActive = false;
+        externalSubtitleCues = Collections.emptyList();
+        stremioSubtitles.clear();
+        stremioSubtitleService = null;
+
+        // Clean up PikPak retry handler
+        if (pikPakRetryHandler != null) {
+            pikPakRetryHandler.removeCallbacksAndMessages(null);
+        }
+
+        // Stop analytics keep-alive heartbeat
+        stopAnalyticsHeartbeat();
+
+        // Clean up buffering indicator
+        if (bufferingIndicator != null) {
+            bufferingIndicator.animate().cancel();
+        }
+        bufferingHandler.removeCallbacksAndMessages(null);
+
+        // Stop progress bar updates
+        stopProgressBarUpdates();
+
+        // Clean up loading bar animation
+        if (loadingBarAnimator != null && loadingBarAnimator.isRunning()) {
+            loadingBarAnimator.cancel();
+        }
+
+        // Clean up dots animation
+        if (dotsAnimator != null && dotsAnimator.isRunning()) {
+            dotsAnimator.cancel();
+        }
+
+        // Release night mode audio effect
+        releaseLoudnessEnhancer();
+        AudioEffectSession.INSTANCE.closeCurrent(this);
+
+        if (player != null) {
+            player.removeListener(playbackListener);
+            // Remove subtitle listener to prevent memory leaks
+            if (subtitleListener != null) {
+                player.removeListener(subtitleListener);
+                subtitleListener = null;
+            }
+            // Remove track change listener to prevent memory leaks
+            if (trackChangeListener != null) {
+                player.removeListener(trackChangeListener);
+                trackChangeListener = null;
+            }
+            player.stop();
+            player.release();
+            player = null;
+            offsetRenderersFactory = null;
+            syncOverlay = null;
+            if (linePickerOverlay != null) {
+                linePickerOverlay.hide();
+                linePickerOverlay = null;
+            }
+            subtitleSeekHandler.removeCallbacks(subtitleSeekRunnable);
+        }
+        hideNextOverlay();
+        cancelTitleFade();
+        notifyFlutterPlaybackFinished();
+        keyPressHandler.removeCallbacksAndMessages(null);
+        controlsMenuHandler.removeCallbacks(hideControlsMenuRunnable);
+        super.onDestroy();
+    }
+
+    private void notifyFlutterPlaybackFinished() {
+        if (finishedNotified) {
+            return;
+        }
+        finishedNotified = true;
+        MethodChannel channel = MainActivity.getAndroidTvPlayerChannel();
+        if (channel != null) {
+            try {
+                String methodName;
+                if (PROVIDER_REAL_DEBRID.equals(provider)) {
+                    methodName = "realDebridPlaybackFinished";
+                } else {
+                    methodName = "torboxPlaybackFinished";
+                }
+                channel.invokeMethod(methodName, null);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private void updateChannelBadge(@Nullable String name) {
+        if (channelNumberView == null || channelNameView == null) {
+            return;
+        }
+
+        if (!showChannelName) {
+            hideChannelBadge();
+            return;
+        }
+
+        String displayName = name != null ? name.trim() : "";
+        boolean hasNumber = currentChannelNumber > 0;
+
+        if (!hasNumber && displayName.isEmpty()) {
+            hideChannelBadge();
+            return;
+        }
+
+        // Set channel number with zero-padding for professional look
+        if (hasNumber) {
+            String formattedNumber = String.format(java.util.Locale.US, "%02d", currentChannelNumber);
+            channelNumberView.setText(formattedNumber);
+        } else {
+            channelNumberView.setText("");
+        }
+
+        // Set channel name in uppercase for broadcast aesthetic
+        if (!displayName.isEmpty()) {
+            channelNameView.setText(displayName.toUpperCase(java.util.Locale.US));
+        } else {
+            channelNameView.setText("");
+        }
+
+        // Premium styles mirror the channel identity into the dock views.
+        updatePremiumChannelViews();
+
+        // Update content only - visibility controlled by menu
+        // If menu is visible, ensure broadcast lower-third is shown
+        if (controlsMenuVisible) {
+            showChannelBadgeWithAnimation();
+        }
+    }
+
+    private void showChannelBadgeWithAnimation() {
+        // Now handled by unified broadcast lower-third
+        showBroadcastLowerThirdWithAnimation();
+    }
+
+    private void fadeOutChannelBadge() {
+        // Now handled by unified broadcast lower-third
+        fadeOutBroadcastLowerThird();
+    }
+
+    private void hideChannelBadge() {
+        // Now handled by unified broadcast lower-third
+        hideBroadcastLowerThird();
+    }
+
+    private void updateTitleBadge(@Nullable String videoTitle) {
+        if (titleBadgeText == null) {
+            return;
+        }
+
+        if (!showVideoTitle) {
+            hideTitleBadge();
+            return;
+        }
+
+        String displayTitle = videoTitle != null ? videoTitle.trim() : "";
+
+        // Remove file extensions (case-insensitive)
+        if (!displayTitle.isEmpty()) {
+            displayTitle = displayTitle.replaceAll("(?i)\\.(mkv|mp4|avi|mov|wmv|flv|webm|m4v|mpg|mpeg|ts|m2ts|vob|3gp|ogv|divx)$", "");
+            displayTitle = displayTitle.trim();
+        }
+
+        if (displayTitle.isEmpty()) {
+            hideTitleBadge();
+            return;
+        }
+
+        // Set title text
+        titleBadgeText.setText(displayTitle);
+
+        // Enable marquee scrolling for long titles
+        titleBadgeText.setSelected(true);
+
+        // Update content only - visibility controlled by menu
+        // If menu is visible, ensure broadcast lower-third is shown
+        if (controlsMenuVisible) {
+            showTitleBadgeWithAnimation();
+        }
+    }
+
+    private void showTitleBadgeWithAnimation() {
+        // Now handled by unified broadcast lower-third
+        showBroadcastLowerThirdWithAnimation();
+    }
+
+    private void fadeOutTitleBadge() {
+        // Now handled by unified broadcast lower-third
+        fadeOutBroadcastLowerThird();
+    }
+
+    private void hideTitleBadge() {
+        // Now handled by unified broadcast lower-third
+        hideBroadcastLowerThird();
+    }
+
+    private void showBroadcastLowerThirdWithAnimation() {
+        // Premium styles render identity in the dock — the legacy top bar
+        // never shows for them.
+        if (isPremiumStyle()) {
+            return;
+        }
+        if (broadcastLowerThird == null) {
+            return;
+        }
+
+        // Cancel any pending fade-out
+        if (broadcastLowerThirdFadeOutRunnable != null) {
+            broadcastLowerThird.removeCallbacks(broadcastLowerThirdFadeOutRunnable);
+            broadcastLowerThirdFadeOutRunnable = null;
+        }
+
+        // Only show if controls menu is visible AND controls overlay is actually visible
+        if (controlsMenuVisible && controlsOverlay != null
+                && controlsOverlay.getVisibility() == View.VISIBLE) {
+            broadcastLowerThird.setVisibility(View.VISIBLE);
+        }
+
+        // NO independent auto-hide timer - synchronized with menu visibility
+    }
+
+    private void fadeOutBroadcastLowerThird() {
+        if (broadcastLowerThird == null) {
+            return;
+        }
+
+        // Just hide instantly - no animation
+        broadcastLowerThird.setVisibility(View.GONE);
+    }
+
+    private void hideBroadcastLowerThird() {
+        if (broadcastLowerThird == null) {
+            return;
+        }
+
+        // Cancel any pending animations/callbacks
+        if (broadcastLowerThirdFadeOutRunnable != null) {
+            broadcastLowerThird.removeCallbacks(broadcastLowerThirdFadeOutRunnable);
+            broadcastLowerThirdFadeOutRunnable = null;
+        }
+        broadcastLowerThird.animate().cancel();
+        broadcastLowerThird.setVisibility(View.GONE);
+    }
+}

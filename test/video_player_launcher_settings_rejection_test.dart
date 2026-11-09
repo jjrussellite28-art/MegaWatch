@@ -1,7 +1,7 @@
-import 'package:debrify/services/android_tv_player_bridge.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/video_player_launcher.dart';
+import 'package:megawatch/services/android_tv_player_bridge.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/video_player_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

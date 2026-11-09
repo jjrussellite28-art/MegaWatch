@@ -270,7 +270,7 @@ class ProfileMigrationService {
       final id = 'resource-legacy-$stableName';
       if (await registry.getResource(id) == null) {
         final aad = utf8.encode(
-          'debrify-resource|id=$id|type=${type.name}|owner=$ownerProfileId|'
+          'megawatch-resource|id=$id|type=${type.name}|owner=$ownerProfileId|'
           'public=1|secret=1',
         );
         final sealed = await cipher.seal(
@@ -596,7 +596,7 @@ class ProfileMigrationService {
   static Future<bool> legacyMediaDatabasesExist() async {
     try {
       final root = await AppStorage.documents();
-      for (final name in const <String>['debrify_tv.db', 'iptv_catalog.db']) {
+      for (final name in const <String>['megawatch_tv.db', 'iptv_catalog.db']) {
         if (await File(p.join(root.path, name)).exists()) return true;
       }
     } catch (_) {
@@ -609,7 +609,7 @@ class ProfileMigrationService {
   Future<List<Map<String, dynamic>>> _copyDatabases(ProfileScope scope) async {
     final root = await AppStorage.documents();
     final out = <Map<String, dynamic>>[];
-    for (final name in const <String>['debrify_tv.db', 'iptv_catalog.db']) {
+    for (final name in const <String>['megawatch_tv.db', 'iptv_catalog.db']) {
       final source = File(p.join(root.path, name));
       if (!await source.exists()) continue;
       final destination = scope.fileIn(root, 'documents', name);

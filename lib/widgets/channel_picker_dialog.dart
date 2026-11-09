@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../models/debrify_tv_channel_record.dart';
-import '../services/debrify_tv_repository.dart';
-import '../services/debrify_tv_cache_service.dart';
-import '../models/debrify_tv_cache.dart';
+import '../models/megawatch_tv_channel_record.dart';
+import '../services/megawatch_tv_repository.dart';
+import '../services/megawatch_tv_cache_service.dart';
+import '../models/megawatch_tv_cache.dart';
 import '../utils/dialog_tap_guard.dart';
 import '../utils/tv_keys.dart';
 import 'tv_text_field.dart';
@@ -35,7 +35,7 @@ class ChannelPickerDialog extends StatefulWidget {
 }
 
 class _ChannelPickerDialogState extends State<ChannelPickerDialog> {
-  List<DebrifyTvChannelRecord> _channels = [];
+  List<MegaWatchTvChannelRecord> _channels = [];
   bool _isLoading = true;
   bool _isCreating = false;
   bool _confirmButtonFocused = false;
@@ -69,7 +69,7 @@ class _ChannelPickerDialogState extends State<ChannelPickerDialog> {
 
   Future<void> _loadChannels() async {
     try {
-      final channels = await DebrifyTvRepository.instance.fetchAllChannels();
+      final channels = await MegaWatchTvRepository.instance.fetchAllChannels();
       if (mounted) {
         setState(() {
           _channels = channels;
@@ -105,7 +105,7 @@ class _ChannelPickerDialogState extends State<ChannelPickerDialog> {
     }
   }
 
-  void _handleChannelSelect(DebrifyTvChannelRecord channel) {
+  void _handleChannelSelect(MegaWatchTvChannelRecord channel) {
     Navigator.of(context).pop(
       ChannelPickerResult(
         channelId: channel.channelId,
@@ -149,7 +149,7 @@ class _ChannelPickerDialogState extends State<ChannelPickerDialog> {
       final now = DateTime.now();
       final channelId = now.microsecondsSinceEpoch.toString();
 
-      final channel = DebrifyTvChannelRecord(
+      final channel = MegaWatchTvChannelRecord(
         channelId: channelId,
         name: name,
         keywords: [widget.searchKeyword],
@@ -159,19 +159,19 @@ class _ChannelPickerDialogState extends State<ChannelPickerDialog> {
         updatedAt: now,
       );
 
-      await DebrifyTvRepository.instance.upsertChannel(channel);
+      await MegaWatchTvRepository.instance.upsertChannel(channel);
 
       if (!mounted) return;
 
       // Initialize empty cache entry with warming status
       final normalizedKeyword = widget.searchKeyword.toLowerCase();
-      final cacheEntry = DebrifyTvChannelCacheEntry.empty(
+      final cacheEntry = MegaWatchTvChannelCacheEntry.empty(
         channelId: channelId,
         normalizedKeywords: [normalizedKeyword],
-        status: DebrifyTvCacheStatus.warming,
+        status: MegaWatchTvCacheStatus.warming,
       );
 
-      await DebrifyTvCacheService.saveEntry(cacheEntry);
+      await MegaWatchTvCacheService.saveEntry(cacheEntry);
 
       if (mounted) {
         Navigator.of(context).pop(

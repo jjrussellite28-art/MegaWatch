@@ -20,7 +20,7 @@ import '../../widgets/cloud/cloud_segmented_tabs.dart';
 import '../../widgets/cloud/cloud_theme.dart';
 import '../../widgets/file_selection_dialog.dart';
 import '../../widgets/tv_text_field.dart';
-import '../debrify_tv/widgets/tv_focus_scroll_wrapper.dart';
+import '../megawatch_tv/widgets/tv_focus_scroll_wrapper.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/app_theme_scope.dart';
 import '../../utils/tv_keys.dart';

@@ -1,7 +1,7 @@
-import 'package:debrify/screens/browse_screen.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/widgets/browse/browse_search_header.dart';
+import 'package:megawatch/screens/browse_screen.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/widgets/browse/browse_search_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

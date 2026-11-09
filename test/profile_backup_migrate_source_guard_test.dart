@@ -46,7 +46,7 @@ void main() {
 
   test('remote staging is always private, bounded, and finally-cleaned', () {
     expect(source, contains('getTemporaryDirectory()'));
-    expect(source, contains("root.createTemp('debrify-migrate-\$purpose-')"));
+    expect(source, contains("root.createTemp('megawatch-migrate-\$purpose-')"));
     expect(
       RegExp(r'_deletePrivateStagingDirectory\(').allMatches(source).length,
       greaterThanOrEqualTo(2),

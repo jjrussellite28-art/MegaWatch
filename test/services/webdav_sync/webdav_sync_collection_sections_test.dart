@@ -1,6 +1,6 @@
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_collection_sections.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_collection_sections.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

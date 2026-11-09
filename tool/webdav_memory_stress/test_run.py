@@ -33,7 +33,7 @@ def image_info(fingerprint, image_id=IMAGE_A):
 
 class BuildProvenanceTest(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix="debrify-runner-test-")
+        self.temp = tempfile.TemporaryDirectory(prefix="megawatch-runner-test-")
         self.addCleanup(self.temp.cleanup)
         self.root = pathlib.Path(self.temp.name)
         self.here = self.root / "tool/webdav_memory_stress"

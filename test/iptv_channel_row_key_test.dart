@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/widgets/iptv/iptv_channel_row.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/widgets/iptv/iptv_channel_row.dart';
 
 /// A favoritable TV row plays on OK key-UP (so a held OK can favorite
 /// instead). That makes it vulnerable to a key-up it never started: when

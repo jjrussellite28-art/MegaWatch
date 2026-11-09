@@ -1,18 +1,18 @@
-import '../../models/debrify_tv_cache.dart';
-import '../../models/debrify_tv_channel_record.dart';
-import '../debrify_tv_cache_service.dart';
+import '../../models/megawatch_tv_cache.dart';
+import '../../models/megawatch_tv_channel_record.dart';
+import '../megawatch_tv_cache_service.dart';
 
 class ChannelYamlBuilder {
-  static Future<String> build(DebrifyTvChannelRecord channel) async {
-    final cacheEntry = await DebrifyTvCacheService.getEntryForPortableExport(
+  static Future<String> build(MegaWatchTvChannelRecord channel) async {
+    final cacheEntry = await MegaWatchTvCacheService.getEntryForPortableExport(
       channel.channelId,
     );
     return buildFromEntry(channel, cacheEntry);
   }
 
   static String buildFromEntry(
-    DebrifyTvChannelRecord channel,
-    DebrifyTvChannelCacheEntry? cacheEntry,
+    MegaWatchTvChannelRecord channel,
+    MegaWatchTvChannelCacheEntry? cacheEntry,
   ) {
     final buffer = StringBuffer();
     buffer.writeln('channel_name: "${escapeYamlString(channel.name)}"');

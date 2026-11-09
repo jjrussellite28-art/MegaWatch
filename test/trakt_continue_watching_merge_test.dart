@@ -1,4 +1,4 @@
-import 'package:debrify/services/trakt/trakt_continue_watching_merge.dart';
+import 'package:megawatch/services/trakt/trakt_continue_watching_merge.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, dynamic> show(int id) => {

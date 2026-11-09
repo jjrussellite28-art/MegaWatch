@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/services/native_playback_progress_session.dart';
+import 'package:megawatch/services/native_playback_progress_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

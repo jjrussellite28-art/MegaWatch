@@ -147,9 +147,9 @@ class _QuickPlaySettingsPageState extends State<QuickPlaySettingsPage> {
 
   QuickPlayRules _custom(QuickPlayRules candidate) {
     final compatible = candidate.copyWith(
-      preset: QuickPlayPreset.debrifyDefault,
+      preset: QuickPlayPreset.megawatchDefault,
     );
-    return compatible == QuickPlayRules.debrifyDefault(isMovie: _isMovie)
+    return compatible == QuickPlayRules.megawatchDefault(isMovie: _isMovie)
         ? compatible
         : candidate.copyWith(preset: QuickPlayPreset.custom);
   }
@@ -276,8 +276,8 @@ class _QuickPlaySettingsPageState extends State<QuickPlaySettingsPage> {
     await StorageService.restoreQuickPlayDefaults();
     if (!mounted) return;
     setState(() {
-      _movie = QuickPlayRules.debrifyDefault(isMovie: true);
-      _show = QuickPlayRules.debrifyDefault(isMovie: false);
+      _movie = QuickPlayRules.megawatchDefault(isMovie: true);
+      _show = QuickPlayRules.megawatchDefault(isMovie: false);
       _orderedMovie = _applyStoredOrder(const []);
       _orderedSeries = _applyStoredOrder(const []);
       // restoreQuickPlayDefaults() clears the stored mode; mirror it here or the
@@ -317,7 +317,7 @@ class _QuickPlaySettingsPageState extends State<QuickPlaySettingsPage> {
                   icon: Icons.bolt_rounded,
                   title: 'Quick Play',
                   subtitle:
-                      'Choose what Debrify plays automatically. Movies and series have separate rules.',
+                      'Choose what MegaWatch plays automatically. Movies and series have separate rules.',
                 ),
                 const SizedBox(height: 22),
                 _heading(
@@ -366,7 +366,7 @@ class _QuickPlaySettingsPageState extends State<QuickPlaySettingsPage> {
                 const SizedBox(height: 24),
                 _heading(
                   'Streams to try',
-                  'When a stream fails to start, Debrify moves down the list '
+                  'When a stream fails to start, MegaWatch moves down the list '
                       'and tries the next one. This is the count the player '
                       'shows while it works ("Checking stream 1 of '
                       '$_effectiveAttempts…").',
@@ -430,7 +430,7 @@ class _QuickPlaySettingsPageState extends State<QuickPlaySettingsPage> {
         SettingsSelectOption(
           'quick',
           'Quick Play',
-          'Debrify picks the source and starts playing.',
+          'MegaWatch picks the source and starts playing.',
         ),
         SettingsSelectOption(
           'smart',
@@ -543,7 +543,7 @@ class _QuickPlaySettingsPageState extends State<QuickPlaySettingsPage> {
                     'exception: if a season pack was ranked first, the best '
                     'single episode still gets a try.)',
               5 =>
-                'Debrify’s default — a good balance between starting fast '
+                'MegaWatch’s default — a good balance between starting fast '
                     'and finding a working stream.',
               _ when n < 5 =>
                 'Gives up sooner. Fails fast when nothing is working.',

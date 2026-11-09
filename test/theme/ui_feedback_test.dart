@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/theme/app_sound.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/theme/app_surfaces.dart';
-import 'package:debrify/theme/app_theme_controller.dart';
-import 'package:debrify/theme/ui_feedback.dart';
+import 'package:megawatch/theme/app_sound.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/theme/app_surfaces.dart';
+import 'package:megawatch/theme/app_theme_controller.dart';
+import 'package:megawatch/theme/ui_feedback.dart';
 
 /// The dispatcher's whole value is what it REFUSES to do.
 ///

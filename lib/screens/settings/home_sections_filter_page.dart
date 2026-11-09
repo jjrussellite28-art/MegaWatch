@@ -297,7 +297,7 @@ class _HomeSectionsFilterPageState extends State<HomeSectionsFilterPage> {
       ]),
       _Group('Favorites', [
         _Item('fav:playlist', 'Playlist', on('fav:playlist')),
-        _Item('fav:debrify', 'Debrify TV', on('fav:debrify')),
+        _Item('fav:megawatch', 'MegaWatch TV', on('fav:megawatch')),
         _Item('fav:stremio', 'Stremio TV', on('fav:stremio')),
         _Item('fav:iptv', 'IPTV', on('fav:iptv')),
       ]),
@@ -401,7 +401,7 @@ class _HomeSectionsFilterPageState extends State<HomeSectionsFilterPage> {
       'watchlist:movies',
       'watchlist:series',
       'fav:playlist',
-      'fav:debrify',
+      'fav:megawatch',
       'fav:stremio',
       'fav:iptv',
     ]) {

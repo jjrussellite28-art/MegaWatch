@@ -1,4 +1,4 @@
-import 'package:debrify/utils/episode_progress_merge.dart';
+import 'package:megawatch/utils/episode_progress_merge.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

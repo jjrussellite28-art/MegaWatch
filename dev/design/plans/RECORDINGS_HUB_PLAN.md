@@ -48,7 +48,7 @@ runs only while something is live or scheduled). No new animations on TV
 - **`queryRecordingsLibrary`** (new channel method, worker thread):
   store entries (`done`, has uri) enriched with channelName + duration
   (`updatedAt - startedAtMs`, sanity-clamped), MERGED with a MediaStore scan
-  of our own rows under `Download/Debrify/Recordings` (Q+; pending rows are
+  of our own rows under `Download/MegaWatch/Recordings` (Q+; pending rows are
   excluded by default) and a legacy dir listing (pre-Q, only when granted).
   The scan is what makes tee-recorded files and **recordings whose entries
   the old 24h TTL already pruned** (the user's existing test recordings!)

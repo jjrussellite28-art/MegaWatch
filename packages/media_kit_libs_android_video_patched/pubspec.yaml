@@ -1,6 +1,6 @@
 name: media_kit_libs_android_video
-description: Debrify's PGS-capable Android native libraries for media_kit.
-version: 1.3.7+debrify.1
+description: MegaWatch's PGS-capable Android native libraries for media_kit.
+version: 1.3.7+megawatch.1
 publish_to: none
 
 environment:

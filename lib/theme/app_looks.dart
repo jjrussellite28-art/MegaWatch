@@ -140,11 +140,11 @@ abstract final class LookKeys {
     write: StorageService.setIptvStyle,
   );
 
-  static final debrifyTvStyle = LookKey(
-    id: 'debrify_tv_style',
-    label: 'Debrify TV',
-    read: () => StorageService.debrifyTvStyleCached,
-    write: StorageService.setDebrifyTvStyle,
+  static final megawatchTvStyle = LookKey(
+    id: 'megawatch_tv_style',
+    label: 'MegaWatch TV',
+    read: () => StorageService.megawatchTvStyleCached,
+    write: StorageService.setMegaWatchTvStyle,
     // No notify, like iptv_style: tabs are keyed by index and rebuilt on
     // switch, so the page re-reads the pref in initState.
   );
@@ -173,7 +173,7 @@ abstract final class LookKeys {
     desktopSidebarStyle,
     discoverLayout,
     iptvStyle,
-    debrifyTvStyle,
+    megawatchTvStyle,
     textBrightness,
   ];
 
@@ -255,7 +255,7 @@ abstract final class AppLooks {
   static const List<AppLook> all = [
     AppLook(
       id: 'classic',
-      label: 'Debrify Classic',
+      label: 'MegaWatch Classic',
       blurb: 'The app exactly as it has always looked.',
       values: {
         'app_theme': 'legacy',
@@ -272,9 +272,9 @@ abstract final class AppLooks {
         'desktop_sidebar_style': 'rail',
         // Pinned for Look coherence first, migration second: isActive only
         // checks keys a bundle names, so a Classic that said nothing here
-        // would report itself active while Debrify TV drew the Spotlight
+        // would report itself active while MegaWatch TV drew the Spotlight
         // rail.
-        'debrify_tv_style': 'grid',
+        'megawatch_tv_style': 'grid',
       },
     ),
     AppLook(
@@ -289,7 +289,7 @@ abstract final class AppLooks {
         'tv_home_style': 'spotlight',
         'tv_sidebar_style': 'pill',
         'desktop_sidebar_style': 'pill',
-        'debrify_tv_style': 'spotlight',
+        'megawatch_tv_style': 'spotlight',
         'text_brightness': 'bright',
       },
     ),

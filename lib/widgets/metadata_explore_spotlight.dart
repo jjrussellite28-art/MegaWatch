@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/metadata_preferences.dart';
 import '../models/stremio_addon.dart';
-import '../services/debrify_image_cache.dart';
+import '../services/megawatch_image_cache.dart';
 import '../services/metadata_explore_service.dart';
 import '../services/metadata_preferences_service.dart';
 import '../services/profiles/profile_runtime.dart';
@@ -870,7 +870,7 @@ class _ExploreImage extends StatelessWidget {
       imageUrl: url!,
       fit: fit,
       memCacheWidth: width,
-      cacheManager: DebrifyImageCache.manager,
+      cacheManager: MegaWatchImageCache.manager,
       placeholder: (_, _) => empty,
       errorWidget: (_, _, _) => empty,
     );

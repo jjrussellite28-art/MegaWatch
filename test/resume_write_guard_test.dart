@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/services/resume_write_guard.dart';
+import 'package:megawatch/services/resume_write_guard.dart';
 
 void main() {
   group('ResumeWriteGuard', () {

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../models/iptv_playlist.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../services/iptv_epg_service.dart';
 import '../browse/brand_accent.dart';
 import '../../theme/app_theme_scope.dart';
@@ -1494,7 +1494,7 @@ class _LogoChip extends StatelessWidget {
                     // Dedicated disk store: the default manager holds 200
                     // objects, so a big guide re-downloaded logos on every
                     // scroll-back.
-                    cacheManager: DebrifyImageCache.iptvLogos,
+                    cacheManager: MegaWatchImageCache.iptvLogos,
                     fit: poster ? BoxFit.cover : BoxFit.contain,
                     // IPTV art is often 1000px+ going into a tiny slot —
                     // uncapped decodes janked scrolling and thrashed the TV's

@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:debrify/services/secret_vault.dart';
+import 'package:megawatch/services/secret_vault.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/remote_control/remote_session.dart';
-import 'package:debrify/services/remote_control/udp_command_service.dart';
-import 'package:debrify/services/remote_control/udp_discovery_service.dart';
-import 'package:debrify/services/remote_control/remote_constants.dart';
-import 'package:debrify/services/remote_control/remote_control_state.dart';
-import 'package:debrify/utils/app_storage.dart';
-import 'package:debrify/services/remote_control/remote_pairing_store.dart';
+import 'package:megawatch/services/remote_control/remote_session.dart';
+import 'package:megawatch/services/remote_control/udp_command_service.dart';
+import 'package:megawatch/services/remote_control/udp_discovery_service.dart';
+import 'package:megawatch/services/remote_control/remote_constants.dart';
+import 'package:megawatch/services/remote_control/remote_control_state.dart';
+import 'package:megawatch/utils/app_storage.dart';
+import 'package:megawatch/services/remote_control/remote_pairing_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

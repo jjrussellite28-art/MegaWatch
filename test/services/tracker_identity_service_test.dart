@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/services/tracker_identity_service.dart';
+import 'package:megawatch/services/tracker_identity_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,9 +1,9 @@
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/screens/profiles/profile_wall_screen.dart';
-import 'package:debrify/screens/profiles/profile_picker_screen.dart';
-import 'package:debrify/widgets/profiles/profile_avatar_view.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/screens/profiles/profile_wall_screen.dart';
+import 'package:megawatch/screens/profiles/profile_picker_screen.dart';
+import 'package:megawatch/widgets/profiles/profile_avatar_view.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

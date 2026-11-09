@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/screens/profiles/profile_setup_flow.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/utils/app_storage.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/screens/profiles/profile_setup_flow.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/utils/app_storage.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -143,7 +143,7 @@ void main() {
       await nextByLabel(tester, 'Next');
     }
     await nextByLabel(tester, 'Review');
-    expect(find.text("Maya's corner of Debrify"), findsOneWidget);
+    expect(find.text("Maya's corner of MegaWatch"), findsOneWidget);
 
     await nextByLabel(tester, 'Cancel');
 
@@ -369,7 +369,7 @@ void main() {
     await nextByLabel(tester, 'Next'); // → sources
     await nextByLabel(tester, 'Next'); // → abilities
     await nextByLabel(tester, 'Review'); // → review
-    expect(find.text("Maya's corner of Debrify"), findsOneWidget);
+    expect(find.text("Maya's corner of MegaWatch"), findsOneWidget);
 
     await nextByLabel(tester, 'Create Maya');
 
@@ -381,7 +381,7 @@ void main() {
       ProfilePolicy.defaultsFor(UserProfileRole.child).enabled,
       reason: 'an untouched Kid walk-through IS the preset',
     );
-    expect(maya.allows(ProfileFeature.debrifyTv), isTrue);
+    expect(maya.allows(ProfileFeature.megawatchTv), isTrue);
     expect(maya.allows(ProfileFeature.keywordSearch), isFalse);
     expect(maya.allows(ProfileFeature.iptv), isFalse);
     // Operations stay on: curated playback keeps working.
@@ -444,11 +444,11 @@ void main() {
     await pumpFrames(tester);
 
     // Lands on review, speaking Can/Can't for the stored policy.
-    expect(find.text("Noor's corner of Debrify"), findsOneWidget);
+    expect(find.text("Noor's corner of MegaWatch"), findsOneWidget);
     expect(find.text('CAN'), findsOneWidget);
     expect(find.text("CAN'T"), findsOneWidget);
-    // Debrify TV is a Can; Live TV a Can't (one chip each).
-    expect(find.text('Debrify TV'), findsOneWidget);
+    // MegaWatch TV is a Can; Live TV a Can't (one chip each).
+    expect(find.text('MegaWatch TV'), findsOneWidget);
     expect(find.text('Live TV'), findsOneWidget);
 
     await nextByLabel(tester, 'Save changes');

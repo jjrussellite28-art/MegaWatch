@@ -2,21 +2,21 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_data_generation.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/profiles/profile_lifecycle.dart';
-import 'package:debrify/services/profiles/profile_preference_budget.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_restore_coordinator.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_adoption_operations.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_data_generation.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/profiles/profile_lifecycle.dart';
+import 'package:megawatch/services/profiles/profile_preference_budget.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_restore_coordinator.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_adoption_operations.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -453,7 +453,7 @@ void main() {
         dataGeneration: 1,
         sessionEpoch: 0,
       );
-      final source = oldScope.fileIn(documents, 'documents', 'debrify_tv.db');
+      final source = oldScope.fileIn(documents, 'documents', 'megawatch_tv.db');
       await source.parent.create(recursive: true);
       final sourceDb = await openDatabase(source.path, singleInstance: false);
       await sourceDb.execute(
@@ -475,7 +475,7 @@ void main() {
       final destination = newScope.fileIn(
         documents,
         'documents',
-        'debrify_tv.db',
+        'megawatch_tv.db',
       );
       final copied = await openDatabase(
         destination.path,

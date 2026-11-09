@@ -2,8 +2,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/utils/platform_util.dart';
-import 'package:debrify/widgets/collections/collection_focus_glow.dart';
+import 'package:megawatch/utils/platform_util.dart';
+import 'package:megawatch/widgets/collections/collection_focus_glow.dart';
 
 void main() {
   testWidgets(

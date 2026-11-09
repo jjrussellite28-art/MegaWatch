@@ -3,9 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:debrify/services/profiles/local_backup/local_backup_zip.dart';
-import 'package:debrify/services/transfer/streaming_encrypted_file.dart';
-import 'package:debrify/services/transfer/transfer_io.dart';
+import 'package:megawatch/services/profiles/local_backup/local_backup_zip.dart';
+import 'package:megawatch/services/transfer/streaming_encrypted_file.dart';
+import 'package:megawatch/services/transfer/transfer_io.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -18,7 +18,7 @@ unchanged**, which is the explicit constraint.
 ## Contract: match Android TV, deviate only with a reason
 
 The native player is what users already know, so it is the reference
-(`android/app/src/main/kotlin/com/debrify/app/tv/AndroidTvTorrentPlayerActivity.kt`).
+(`android/app/src/main/kotlin/com/megawatch/app/tv/AndroidTvTorrentPlayerActivity.kt`).
 
 **Bar down**
 | Key | Action | Source |

@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/profiles/profile_app_lifecycle_participant.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_cache_ledger.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_lifecycle.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/profiles/profile_app_lifecycle_participant.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_cache_ledger.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_lifecycle.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +27,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 ///
 /// **What this cannot cover.** Everything here runs on the Dart VM, so native
 /// state is invisible: the nine Kotlin files that read `FlutterSharedPreferences`
-/// directly, `debrify_pending_recordings`, `debrify_permissions`, and tvOS
+/// directly, `megawatch_pending_recordings`, `megawatch_permissions`, and tvOS
 /// `UserDefaults`. Those need a device. See the suite README.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

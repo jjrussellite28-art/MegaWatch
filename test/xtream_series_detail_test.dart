@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/screens/iptv/xtream_series_detail.dart';
+import 'package:megawatch/screens/iptv/xtream_series_detail.dart';
 
 void main() {
   test('parses a saved Xtream series identity', () {

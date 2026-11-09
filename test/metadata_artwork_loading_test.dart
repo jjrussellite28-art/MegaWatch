@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:debrify/models/metadata_preferences.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/metadata_preferences_service.dart';
-import 'package:debrify/services/metadata_provider_service.dart';
-import 'package:debrify/widgets/metadata_presentation_mixin.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/metadata_preferences_service.dart';
+import 'package:megawatch/services/metadata_provider_service.dart';
+import 'package:megawatch/widgets/metadata_presentation_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

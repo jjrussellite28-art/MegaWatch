@@ -39,13 +39,13 @@ import '../../services/engine/engine_registry.dart';
 import '../../services/engine/remote_engine_manager.dart';
 import '../../services/engine/local_engine_storage.dart';
 import '../../services/community/magnet_yaml_service.dart';
-import '../../services/debrify_tv_zip_importer.dart';
+import '../../services/megawatch_tv_zip_importer.dart';
 import '../../services/iptv_transfer_payload.dart';
-import '../../services/debrify_tv_database.dart';
-import '../../services/debrify_tv_repository.dart';
-import '../../services/debrify_tv_cache_service.dart';
-import '../../models/debrify_tv_cache.dart';
-import '../../models/debrify_tv_channel_record.dart';
+import '../../services/megawatch_tv_database.dart';
+import '../../services/megawatch_tv_repository.dart';
+import '../../services/megawatch_tv_cache_service.dart';
+import '../../models/megawatch_tv_cache.dart';
+import '../../models/megawatch_tv_channel_record.dart';
 import '../../models/indexer_manager_config.dart';
 import '../../models/webdav_item.dart';
 import '../../models/profiles/profile_policy.dart';
@@ -105,7 +105,7 @@ class RemoteCommandRouter {
   RemoteCommandRouter._internal();
 
   // Platform channel for key injection
-  static const _channel = MethodChannel('com.debrify.app/remote_control');
+  static const _channel = MethodChannel('com.megawatch.app/remote_control');
 
   // Registered command handlers
   final List<RemoteCommandCallback> _handlers = [];
@@ -449,7 +449,7 @@ class RemoteCommandRouter {
         command != ConfigCommand.remoteTransferResult &&
         command != ConfigCommand.addonTransferResult &&
         command != ConfigCommand.profileGraphResult &&
-        command != ConfigCommand.debrifyChannelNeed;
+        command != ConfigCommand.megawatchChannelNeed;
     if (!transferWork) {
       unawaited(work);
       return;
@@ -565,8 +565,8 @@ class RemoteCommandRouter {
             sessionId: sessionId,
             rateLimit:
                 command != ConfigCommand.remoteTransferStart &&
-                command != ConfigCommand.debrifyChannelStart &&
-                command != ConfigCommand.debrifyChannelChunk,
+                command != ConfigCommand.megawatchChannelStart &&
+                command != ConfigCommand.megawatchChannelChunk,
           )
         : false;
     if (!runtimeCommitted ||
@@ -580,9 +580,9 @@ class RemoteCommandRouter {
           ? parseRemoteTransferRequestBody(data)?.requestId ??
                 _addonTransferRequestId(data)
           : null;
-      final channelRequestId = command == ConfigCommand.debrifyChannel
+      final channelRequestId = command == ConfigCommand.megawatchChannel
           ? parseRemoteChannelTransferBody(data ?? '')?.requestId
-          : command == ConfigCommand.debrifyChannelStart
+          : command == ConfigCommand.megawatchChannelStart
           ? parseChunkResultRequestId(data)
           : null;
       final startRequestId = command == ConfigCommand.remoteTransferStart
@@ -592,13 +592,13 @@ class RemoteCommandRouter {
           ? data == null
                 ? null
                 : await Isolate.run(() => _profileGraphRequestId(data))
-          : command == ConfigCommand.debrifyChannelStart &&
+          : command == ConfigCommand.megawatchChannelStart &&
                 parseChunkResultCommand(data) == ConfigCommand.profileGraph
           ? parseChunkResultRequestId(data)
           : null;
       if (action == RemoteAction.config &&
           (command == ConfigCommand.profileGraph ||
-              (command == ConfigCommand.debrifyChannelStart &&
+              (command == ConfigCommand.megawatchChannelStart &&
                   parseChunkResultCommand(data) ==
                       ConfigCommand.profileGraph))) {
         RemoteTransferDiagnostics.record(
@@ -677,7 +677,7 @@ class RemoteCommandRouter {
     _ProfileCommandBinding? profileBinding,
   }) async {
     // Suppress per-chunk logs to avoid flooding
-    final isChunk = command == ConfigCommand.debrifyChannelChunk;
+    final isChunk = command == ConfigCommand.megawatchChannelChunk;
     if (!isChunk) {
       debugPrint('RemoteCommandRouter: dispatching authorized command');
     }
@@ -957,7 +957,7 @@ class RemoteCommandRouter {
     RemoteCommandContext context = RemoteCommandContext.plaintext,
     _ProfileCommandBinding? profileBinding,
   }) async {
-    if (command != ConfigCommand.debrifyChannelChunk) {
+    if (command != ConfigCommand.megawatchChannelChunk) {
       debugPrint('RemoteCommandRouter: Handling config command: $command');
     }
 
@@ -1135,7 +1135,7 @@ class RemoteCommandRouter {
     // unreachable — it exists so a future dispatch refactor cannot silently
     // turn repair requests into staged-import categories below. Same guards
     // as the live path: authorized encrypted session + requester binding.
-    if (command == ConfigCommand.debrifyChannelNeed) {
+    if (command == ConfigCommand.megawatchChannelNeed) {
       final requesterIp = context.sourceIp;
       if (context.encrypted && context.authorized && requesterIp != null) {
         final need = parseChunkNeedBody(data);
@@ -1157,8 +1157,8 @@ class RemoteCommandRouter {
     // Chunk-transport packets only file bytes into a buffer — the payload
     // they carry hits these gates again when it replays after reassembly.
     final isTransport =
-        command == ConfigCommand.debrifyChannelStart ||
-        command == ConfigCommand.debrifyChannelChunk;
+        command == ConfigCommand.megawatchChannelStart ||
+        command == ConfigCommand.megawatchChannelChunk;
     if (!isTransport && !context.authorized) {
       if (_legacyApprovedFor(context.sourceIp)) {
         _markAuthorizedConfigActivity();
@@ -1182,14 +1182,14 @@ class RemoteCommandRouter {
         // than joining the staged import payload.
         command != ConfigCommand.profileAvatar &&
         command != ConfigCommand.launchAnimation &&
-        // Debrify TV channels are repository data, not connection secrets:
+        // MegaWatch TV channels are repository data, not connection secrets:
         // there is no staging category or restore adapter for them, so this
         // gate used to feed them into a FormatException that was swallowed —
         // channels sent to a profiles TV VANISHED while both sides reported
         // success. They import directly into the active profile's channel
         // repository, exactly as the pre-profiles path did; the transport is
         // already authorized and encrypted at this point.
-        command != ConfigCommand.debrifyChannel &&
+        command != ConfigCommand.megawatchChannel &&
         // A profile graph is its own atomic import path (restoreDeviceGraph)
         // with its own confirmation — never a staged category.
         command != ConfigCommand.profileGraph) {
@@ -1476,7 +1476,7 @@ class RemoteCommandRouter {
     try {
       final decoded = jsonDecode(data);
       if (decoded is! Map) return null;
-      if (decoded['format'] == 'debrify-profile-transport') {
+      if (decoded['format'] == 'megawatch-profile-transport') {
         final requestId = decoded['requestId'];
         return requestId is String &&
                 requestId.isNotEmpty &&
@@ -1734,7 +1734,7 @@ class RemoteCommandRouter {
         remoteContext,
         requestId: requestId,
         ok: false,
-        message: 'Open the Debrify screen on the TV, then resend',
+        message: 'Open the MegaWatch screen on the TV, then resend',
       );
       return;
     }
@@ -1743,7 +1743,7 @@ class RemoteCommandRouter {
     final rebuildableCachesOmitted = package.omissions.containsKey(
       'rebuildableDatabaseCachesOmitted',
     );
-    final debrifyTvOmission = DebrifyTvBackupOmission.fromOmissions(
+    final megawatchTvOmission = MegaWatchTvBackupOmission.fromOmissions(
       package.omissions,
     );
     RemoteTransferDiagnostics.record(
@@ -1752,8 +1752,8 @@ class RemoteCommandRouter {
         'trace': trace,
         'profiles': package.profiles.length,
         'cacheCompacted': rebuildableCachesOmitted,
-        'debrifyTvChannelsOmitted': debrifyTvOmission?.channels ?? 0,
-        'debrifyTvHashesOmitted': debrifyTvOmission?.savedHashes ?? 0,
+        'megawatchTvChannelsOmitted': megawatchTvOmission?.channels ?? 0,
+        'megawatchTvHashesOmitted': megawatchTvOmission?.savedHashes ?? 0,
         'webDavSyncActive': webDavSyncOwnsProfileGraph,
       },
     );
@@ -1770,13 +1770,13 @@ class RemoteCommandRouter {
               'not overwritten; only the unused automatic setup profile is '
               'removed. Profiles keep their PINs when the transfer '
               'carries them.'
-              '${debrifyTvOmission?.isEmpty == false ? '\n\nDebrify TV was '
+              '${megawatchTvOmission?.isEmpty == false ? '\n\nMegaWatch TV was '
                         'excluded when this transfer was compacted '
-                        '(${debrifyTvOmission!.contentsLabel}). No empty '
+                        '(${megawatchTvOmission!.contentsLabel}). No empty '
                         'channels will be created. After importing, restore '
-                        'a channel ZIP from Debrify TV → Import → From '
+                        'a channel ZIP from MegaWatch TV → Import → From '
                         'storage, or send them separately with Remote → '
-                        'Debrify TV Channels.' : ''}'
+                        'MegaWatch TV Channels.' : ''}'
               '${rebuildableCachesOmitted ? '\n\nRebuildable catalog and EPG '
                         'caches were compacted for transport. Playlists, '
                         'favorites, history, numbering, and settings are '
@@ -1936,7 +1936,7 @@ class RemoteCommandRouter {
             'TV imported ${report.profilesImported} profiles and '
             '${report.resourcesImported} connections'
             '${syncRestorePending ? '; WebDAV sync reconnection is pending' : ''}'
-            '${debrifyTvOmission?.isEmpty == false ? '; Debrify TV channels were not included' : ''}',
+            '${megawatchTvOmission?.isEmpty == false ? '; MegaWatch TV channels were not included' : ''}',
       );
       if (!acknowledged) {
         RemoteTransferDiagnostics.record(
@@ -1970,7 +1970,7 @@ class RemoteCommandRouter {
         'Imported ${report.profilesImported} profiles and '
         '${report.resourcesImported} connections from $sender.'
         '${report.pinResetsRequired == 0 ? '' : ' ${report.pinResetsRequired} profile(s) need a new PIN.'}'
-        '${debrifyTvOmission?.isEmpty == false ? ' Debrify TV channels were not included; import a channel ZIP or send them separately from Remote.' : ''}',
+        '${megawatchTvOmission?.isEmpty == false ? ' MegaWatch TV channels were not included; import a channel ZIP or send them separately from Remote.' : ''}',
       );
       if (receivingDuringOnboarding) {
         try {
@@ -3486,8 +3486,8 @@ class RemoteCommandRouter {
       case ConfigCommand.streamBadges:
         await _handleStreamBadgesConfig(data);
         break;
-      case ConfigCommand.debrifyChannel:
-        await _handleDebrifyChannelConfig(data, context, profileBinding);
+      case ConfigCommand.megawatchChannel:
+        await _handleMegaWatchChannelConfig(data, context, profileBinding);
         break;
       case ConfigCommand.profileAvatar:
         await _handleProfileAvatarConfig(data, context);
@@ -3495,11 +3495,11 @@ class RemoteCommandRouter {
       case ConfigCommand.profileGraph:
         await _handleProfileGraphConfig(data, context);
         break;
-      case ConfigCommand.debrifyChannelStart:
-        _handleDebrifyChannelStart(data, context);
+      case ConfigCommand.megawatchChannelStart:
+        _handleMegaWatchChannelStart(data, context);
         break;
-      case ConfigCommand.debrifyChannelChunk:
-        await _handleDebrifyChannelChunk(data, context);
+      case ConfigCommand.megawatchChannelChunk:
+        await _handleMegaWatchChannelChunk(data, context);
         break;
       default:
         debugPrint('RemoteCommandRouter: Unknown config command: $command');
@@ -4291,15 +4291,15 @@ class RemoteCommandRouter {
     }
   }
 
-  /// Handle Debrify TV channel import from remote
-  Future<void> _handleDebrifyChannelConfig(
+  /// Handle MegaWatch TV channel import from remote
+  Future<void> _handleMegaWatchChannelConfig(
     String data,
     RemoteCommandContext context,
     _ProfileCommandBinding? profileBinding,
   ) async {
     final request = parseRemoteChannelTransferBody(data);
     final requestId = request?.requestId;
-    final debrifyUri = request?.uri ?? data;
+    final megawatchUri = request?.uri ?? data;
     final cachedOutcome = requestId == null
         ? null
         : _remoteTransferOutcomes[requestId];
@@ -4315,7 +4315,7 @@ class RemoteCommandRouter {
       return;
     }
     try {
-      debugPrint('RemoteCommandRouter: Importing Debrify TV channel...');
+      debugPrint('RemoteCommandRouter: Importing MegaWatch TV channel...');
 
       final channelArchive = context.channelArchive;
       if (channelArchive != null) {
@@ -4338,11 +4338,11 @@ class RemoteCommandRouter {
         return;
       }
 
-      // 1. Decode the debrify:// URI
-      final decoded = MagnetYamlService.decode(debrifyUri);
+      // 1. Decode the megawatch:// URI
+      final decoded = MagnetYamlService.decode(megawatchUri);
 
       // 2. Parse YAML into channel data
-      final parsed = DebrifyTvZipImporter.parseYaml(
+      final parsed = MegaWatchTvZipImporter.parseYaml(
         sourceName: decoded.channelName,
         content: decoded.yamlContent,
       );
@@ -4359,8 +4359,8 @@ class RemoteCommandRouter {
       // 3. Keep lookup, channel write, and cache write on the one profile DB
       // admitted here. A profile switch waits for this scope to drain instead
       // of redirecting a later await into the newly active profile.
-      await DebrifyTvDatabase.instance.runScoped((_) async {
-        final existingChannels = await DebrifyTvRepository.instance
+      await MegaWatchTvDatabase.instance.runScoped((_) async {
+        final existingChannels = await MegaWatchTvRepository.instance
             .fetchAllChannels();
         final existingMatch = existingChannels
             .where(
@@ -4372,7 +4372,7 @@ class RemoteCommandRouter {
             DateTime.now().microsecondsSinceEpoch.toString();
         final now = DateTime.now();
 
-        final record = DebrifyTvChannelRecord(
+        final record = MegaWatchTvChannelRecord(
           channelId: channelId,
           name: parsed.channelName,
           keywords: parsed.displayKeywords,
@@ -4382,19 +4382,19 @@ class RemoteCommandRouter {
           updatedAt: now,
         );
 
-        final entry = DebrifyTvChannelCacheEntry(
+        final entry = MegaWatchTvChannelCacheEntry(
           version: 1,
           channelId: channelId,
           normalizedKeywords: parsed.normalizedKeywords,
           fetchedAt: now.millisecondsSinceEpoch,
-          status: DebrifyTvCacheStatus.ready,
+          status: MegaWatchTvCacheStatus.ready,
           errorMessage: null,
           torrents: parsed.torrents,
           keywordStats: parsed.keywordStats,
         );
 
-        await DebrifyTvRepository.instance.upsertChannel(record);
-        await DebrifyTvCacheService.saveEntry(entry);
+        await MegaWatchTvRepository.instance.upsertChannel(record);
+        await MegaWatchTvCacheService.saveEntry(entry);
       });
 
       debugPrint('RemoteCommandRouter: channel imported');
@@ -4419,7 +4419,7 @@ class RemoteCommandRouter {
 
   /// Handle start of a chunked transfer. The payload can belong to any config
   /// command — the start packet names it via `kind`.
-  void _handleDebrifyChannelStart(
+  void _handleMegaWatchChannelStart(
     String jsonData,
     RemoteCommandContext context,
   ) {
@@ -4430,7 +4430,7 @@ class RemoteCommandRouter {
       final transferId = data['transferId'] as String;
       final label = data['channelName'] as String;
       final totalChunks = data['totalChunks'] as int;
-      final kind = (data['kind'] as String?) ?? ConfigCommand.debrifyChannel;
+      final kind = (data['kind'] as String?) ?? ConfigCommand.megawatchChannel;
       diagnosticKind = kind;
       final encrypted = data['enc'] == 1;
       final sid = data['sid'] as String?;
@@ -4454,9 +4454,9 @@ class RemoteCommandRouter {
 
       // A transfer that reassembled into another envelope would re-enter this
       // path forever. Nothing legitimate names one, so refuse outright.
-      if (kind == ConfigCommand.debrifyChannelStart ||
-          kind == ConfigCommand.debrifyChannelChunk ||
-          kind == ConfigCommand.debrifyChannelNeed ||
+      if (kind == ConfigCommand.megawatchChannelStart ||
+          kind == ConfigCommand.megawatchChannelChunk ||
+          kind == ConfigCommand.megawatchChannelNeed ||
           kind == ConfigCommand.complete) {
         debugPrint('RemoteCommandRouter: refusing recursive chunk transfer');
         return;
@@ -4639,7 +4639,7 @@ class RemoteCommandRouter {
             session,
             RemoteCommand(
               action: RemoteAction.config,
-              command: ConfigCommand.debrifyChannelNeed,
+              command: ConfigCommand.megawatchChannelNeed,
               data: chunkNeedBody(transferId: transferId, missing: missing),
             ),
           );
@@ -4663,7 +4663,7 @@ class RemoteCommandRouter {
   }
 
   /// Handle a single chunk of a chunked channel transfer
-  Future<void> _handleDebrifyChannelChunk(
+  Future<void> _handleMegaWatchChannelChunk(
     String jsonData,
     RemoteCommandContext context,
   ) async {
@@ -5319,7 +5319,7 @@ class _ChunkBuffer {
 
   /// The config command the reassembled payload belongs to. Senders that
   /// predate the generalized envelope don't name one, so it defaults to the
-  /// Debrify TV channel it was originally built for.
+  /// MegaWatch TV channel it was originally built for.
   final String kind;
 
   final int totalChunks;

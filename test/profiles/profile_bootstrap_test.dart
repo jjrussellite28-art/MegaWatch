@@ -1,18 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/native_profile_projection.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_preference_budget.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_binding_store.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/native_profile_projection.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_preference_budget.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_binding_store.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
@@ -21,7 +21,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const deviceSecretChannel = MethodChannel('debrify/device_secret');
+  const deviceSecretChannel = MethodChannel('megawatch/device_secret');
   late Directory temporaryDirectory;
   late Directory documents;
   late Directory support;

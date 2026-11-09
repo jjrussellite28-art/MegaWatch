@@ -68,7 +68,7 @@ bool FlutterWindow::OnCreate() {
   RegisterPlugins(flutter_controller_->engine());
   device_secret_channel_ =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          flutter_controller_->engine()->messenger(), "debrify/device_secret",
+          flutter_controller_->engine()->messenger(), "megawatch/device_secret",
           &flutter::StandardMethodCodec::GetInstance());
   device_secret_channel_->SetMethodCallHandler(
       [](const flutter::MethodCall<flutter::EncodableValue>& call,
@@ -78,7 +78,7 @@ bool FlutterWindow::OnCreate() {
           return;
         }
         if (call.method_name() == "destroy") {
-          // DPAPI uses the current Windows account and stores no Debrify key.
+          // DPAPI uses the current Windows account and stores no MegaWatch key.
           result->Success();
           return;
         }
@@ -102,7 +102,7 @@ bool FlutterWindow::OnCreate() {
         DATA_BLOB entropy_blob{static_cast<DWORD>(aad.size()), aad.data()};
         DATA_BLOB output_blob{};
         const BOOL ok = call.method_name() == "seal"
-            ? CryptProtectData(&input_blob, L"Debrify profile secret",
+            ? CryptProtectData(&input_blob, L"MegaWatch profile secret",
                                &entropy_blob, nullptr, nullptr,
                                CRYPTPROTECT_UI_FORBIDDEN, &output_blob)
             : CryptUnprotectData(&input_blob, nullptr, &entropy_blob, nullptr,
@@ -125,7 +125,7 @@ bool FlutterWindow::OnCreate() {
   profile_privacy_channel_ =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
           flutter_controller_->engine()->messenger(),
-          "com.debrify.app/profile_privacy",
+          "com.megawatch.app/profile_privacy",
           &flutter::StandardMethodCodec::GetInstance());
   const HWND profile_window = GetHandle();
   profile_privacy_channel_->SetMethodCallHandler(

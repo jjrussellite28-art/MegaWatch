@@ -25,7 +25,7 @@ import '../profiles/profile_registry.dart';
 import '../profiles/profile_runtime.dart';
 import '../profiles/profile_scope.dart';
 import 'webdav_sync_diagnostics.dart';
-import '../debrify_tv_database.dart';
+import '../megawatch_tv_database.dart';
 import '../iptv_catalog_db.dart';
 import '../iptv_catalog_key.dart';
 import '../../models/iptv_playlist.dart';
@@ -279,7 +279,7 @@ abstract interface class WebDavSyncLibraryLocalAdapter {
   });
 }
 
-/// Foreground-only Debrify TV boundary. Keeping it separate lets ambient-only
+/// Foreground-only MegaWatch TV boundary. Keeping it separate lets ambient-only
 /// adapters and existing engine fixtures remain small.
 abstract interface class WebDavSyncTvLibraryLocalAdapter {
   Future<WebDavSyncLocalLibrarySnapshot> readTvLibrary(
@@ -549,7 +549,7 @@ final class ProfileWebDavSyncLocalAdapter
             request.identityMaps,
           )
         : const _CatalogWireMappings();
-    final tv = await DebrifyTvDatabase.instance.readWebDavSyncState(
+    final tv = await MegaWatchTvDatabase.instance.readWebDavSyncState(
       scope,
       clockOffsetMs: request.clockOffsetMs,
       serverNowMs: request.serverNowMs,
@@ -618,7 +618,7 @@ final class ProfileWebDavSyncLocalAdapter
         continue;
       }
       if (kind == WebDavSyncLibraryKinds.iptvLists) {
-        if (state.ownerKey == DebrifyTvDatabase.favoritesListId) continue;
+        if (state.ownerKey == MegaWatchTvDatabase.favoritesListId) continue;
         final wireKey = 'iptv/list/${_base64Part(state.ownerKey)}';
         if (!state.deleted && state.value == null) continue;
         records[wireKey] = WebDavSyncCircleLeaf<Map<String, Object?>>(
@@ -736,7 +736,7 @@ final class ProfileWebDavSyncLocalAdapter
     return WebDavSyncLocalLibrarySnapshot(
       document: document,
       revisions: WebDavSyncDatabaseRevisions(
-        debrifyTv: tv.mutationRevision,
+        megawatchTv: tv.mutationRevision,
         iptvCatalog: catalog.mutationRevision,
       ),
       hiddenGroupNamesByWireKey: Map<String, String>.unmodifiable(
@@ -824,7 +824,7 @@ final class ProfileWebDavSyncLocalAdapter
         final value = entry.value.value;
         final decoded = value == null ? null : _tvChannelValue(value);
         if (channelId == null || value != null && decoded == null) {
-          _diagnostic('Ignored an invalid Debrify TV channel library leaf');
+          _diagnostic('Ignored an invalid MegaWatch TV channel library leaf');
           continue;
         }
         channelTargets.add(
@@ -849,7 +849,7 @@ final class ProfileWebDavSyncLocalAdapter
         if (channelId == null ||
             generationId is! String ||
             !_validGenerationId.hasMatch(generationId)) {
-          _diagnostic('Ignored an invalid Debrify TV generation library leaf');
+          _diagnostic('Ignored an invalid MegaWatch TV generation library leaf');
           continue;
         }
         generationTargets.add(
@@ -870,7 +870,7 @@ final class ProfileWebDavSyncLocalAdapter
             !_validInfohash.hasMatch(infohash) ||
             infohash != infohash.toLowerCase() ||
             decoded == null) {
-          _diagnostic('Ignored an invalid Debrify TV pool library leaf');
+          _diagnostic('Ignored an invalid MegaWatch TV pool library leaf');
           continue;
         }
         poolTargets.add(
@@ -938,7 +938,7 @@ final class ProfileWebDavSyncLocalAdapter
         final value = entry.value.value;
         final decoded = value == null ? null : _iptvListValue(value);
         if (listId == null ||
-            listId == DebrifyTvDatabase.favoritesListId ||
+            listId == MegaWatchTvDatabase.favoritesListId ||
             !_validIptvListId.hasMatch(listId) ||
             value != null && decoded == null) {
           _diagnostic('Ignored an invalid IPTV-list library leaf');
@@ -969,7 +969,7 @@ final class ProfileWebDavSyncLocalAdapter
           url = value['url']! as String;
         }
         if (listId == null ||
-            (listId != DebrifyTvDatabase.favoritesListId &&
+            (listId != MegaWatchTvDatabase.favoritesListId &&
                 !_validIptvListId.hasMatch(listId)) ||
             url == null ||
             url.isEmpty ||
@@ -1081,13 +1081,13 @@ final class ProfileWebDavSyncLocalAdapter
         )
         .toList(growable: false);
     if (ignoredTvInAmbientLibrary) {
-      _diagnostic('Ignored Debrify TV records in an ambient library section');
+      _diagnostic('Ignored MegaWatch TV records in an ambient library section');
     }
     await beforeWrite?.call();
     _validateSession(session);
-    final tvResult = await DebrifyTvDatabase.instance.applyWebDavSyncFamilies(
+    final tvResult = await MegaWatchTvDatabase.instance.applyWebDavSyncFamilies(
       scope,
-      expectedRevision: request.observedRevisions.debrifyTv,
+      expectedRevision: request.observedRevisions.megawatchTv,
       channelTargets: channelTargets,
       generationTargets: applicableGenerations,
       poolTargets: applicablePools,
@@ -1137,7 +1137,7 @@ final class ProfileWebDavSyncLocalAdapter
   }) async {
     _validateSession(session);
     final scope = await _profileScope(session, localProfileId);
-    await DebrifyTvDatabase.instance.completeWebDavTvSync(
+    await MegaWatchTvDatabase.instance.completeWebDavTvSync(
       scope,
       expectedPendingRevision: expectedPendingRevision,
       syncedAtMs: syncedAtMs,

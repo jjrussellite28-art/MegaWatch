@@ -1,4 +1,4 @@
-import 'package:debrify/screens/video_player/services/media_kit_audio_feature_tap.dart';
+import 'package:megawatch/screens/video_player/services/media_kit_audio_feature_tap.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

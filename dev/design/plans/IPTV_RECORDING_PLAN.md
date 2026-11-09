@@ -31,14 +31,14 @@ Recording is **"record from now"** (live edge forward), not timeshift.
 ## Storage (mirrors the app's existing MediaStore idiom)
 
 The app is fully scoped-storage / MediaStore based (`MediaStoreDownloadService.createViaMediaStore`),
-`MediaStore.Downloads`, `RELATIVE_PATH = "Download/Debrify"`, `IS_PENDING` toggle,
-no `WRITE_EXTERNAL_STORAGE`. Recordings go to **`Download/Debrify/Recordings`**.
+`MediaStore.Downloads`, `RELATIVE_PATH = "Download/MegaWatch"`, `IS_PENDING` toggle,
+no `WRITE_EXTERNAL_STORAGE`. Recordings go to **`Download/MegaWatch/Recordings`**.
 
 | Platform / player | How the file is written | Made user-visible |
 | --- | --- | --- |
 | Native TV (ExoPlayer) | Tee writes straight into a `MediaStore.Downloads` **pending** row's fd; clear `IS_PENDING` on stop | Direct — no copy |
-| Android phone (libmpv) | libmpv needs a filesystem path → record to app-external dir, then a **new** native `saveFileToMediaStore` copies it into `Download/Debrify/Recordings` and deletes the temp | Copy on stop |
-| Desktop (libmpv) | Record straight into `<Downloads>/Debrify/Recordings` (reuse `DownloadService.getDownloadsRoot()` idiom) | Direct |
+| Android phone (libmpv) | libmpv needs a filesystem path → record to app-external dir, then a **new** native `saveFileToMediaStore` copies it into `Download/MegaWatch/Recordings` and deletes the temp | Copy on stop |
+| Desktop (libmpv) | Record straight into `<Downloads>/MegaWatch/Recordings` (reuse `DownloadService.getDownloadsRoot()` idiom) | Direct |
 
 ---
 
@@ -75,19 +75,19 @@ no `WRITE_EXTERNAL_STORAGE`. Recordings go to **`Download/Debrify/Recordings`**.
   - `setState(() { _isRecording = false; _recordingTempPath = null; });`
 - `_recordingTargetPath()`:
   - filename: `<sanitized channel name>_<yyyyMMdd_HHmmss>.ts`
-  - dir: Android → `getExternalStorageDirectory()/Debrify/Recordings`;
+  - dir: Android → `getExternalStorageDirectory()/MegaWatch/Recordings`;
     desktop → `DownloadService.getDownloadsRoot()/Recordings`;
     fallback → `getApplicationDocumentsDirectory()/recordings`.
 - **Auto-stop**: call `_stopRecording()` (best-effort, no UI) before an IPTV
   channel switch (in the existing zap/channel-change path) and in `dispose()`.
 
 ### A3. `lib/services/android_native_downloader.dart`
-- Add `static Future<String?> saveLocalFile({ required String path, required String fileName, String subDir = 'Debrify/Recordings', String mimeType = 'video/mp2t' })`
+- Add `static Future<String?> saveLocalFile({ required String path, required String fileName, String subDir = 'MegaWatch/Recordings', String mimeType = 'video/mp2t' })`
   → `invokeMethod('saveFileToMediaStore', {...})`; returns the content URI string or null.
 
-### A4. `android/app/src/main/kotlin/com/debrify/app/MainActivity.kt`
+### A4. `android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt`
 - Add a `"saveFileToMediaStore"` branch to the existing
-  `com.debrify.app/downloader` MethodChannel handler (`:579+`): insert a
+  `com.megawatch.app/downloader` MethodChannel handler (`:579+`): insert a
   `MediaStore.Downloads` pending row (`Download/<subDir>`), copy the temp file
   in, clear `IS_PENDING`, delete the temp, `result.success(uri)`. Runs on a
   background thread (small helper), posts result to main. Mirrors
@@ -100,7 +100,7 @@ no `WRITE_EXTERNAL_STORAGE`. Recordings go to **`Download/Debrify/Recordings`**.
 ### B1. New file `android/.../tv/IptvRecordingController.kt`
 Thread-safe controller owning the destination stream + state:
 - `start(streamUrl, displayName, mimeType): Boolean` — insert MediaStore pending
-  row (`Download/Debrify/Recordings`), open `"rw"` fd → `BufferedOutputStream`,
+  row (`Download/MegaWatch/Recordings`), open `"rw"` fd → `BufferedOutputStream`,
   set `active`, remember `targetUri = Uri.parse(streamUrl)`.
 - `shouldRecord(uri): Boolean` — `active && uri.toString() == targetUri.toString()`.
 - `write(buf, off, len)` — synchronized; write to stream; count bytes; on
@@ -136,7 +136,7 @@ Thread-safe controller owning the destination stream + state:
   but dimmed & non-focusable-clickable.
 - `isCurrentIptvHls()`: `val u = currentIptvStreamUrl; u == null || u.substringBefore('?').endsWith(".m3u8", true) || iptvHlsForcedUrls.contains(u)`.
 - `toggleIptvRecording()`:
-  - if `iptvRecordingController.isActive` → `stop()` + Toast "Saved to Downloads/Debrify" + restyle button to idle.
+  - if `iptvRecordingController.isActive` → `stop()` + Toast "Saved to Downloads/MegaWatch" + restyle button to idle.
   - else → guard HLS (defensive); `start(currentIptvStreamUrl!, channelName, "video/mp2t")`; Toast "Recording…"; restyle button to REC (red).
 - **Auto-stop hooks**:
   - `setIptvMediaItem` / channel zap: if active and the new stream URL differs,
@@ -184,16 +184,16 @@ Thread-safe controller owning the destination stream + state:
 ## Files touched
 
 **New**
-- `android/app/src/main/kotlin/com/debrify/app/tv/IptvRecordingController.kt`
-- `android/app/src/main/kotlin/com/debrify/app/tv/RecordingDataSource.kt`
+- `android/app/src/main/kotlin/com/megawatch/app/tv/IptvRecordingController.kt`
+- `android/app/src/main/kotlin/com/megawatch/app/tv/RecordingDataSource.kt`
 - `android/app/src/main/res/drawable/ic_record.xml`
 
 **Edited**
 - `lib/screens/video_player/widgets/controls.dart`
 - `lib/screens/video_player_screen.dart`
 - `lib/services/android_native_downloader.dart`
-- `android/app/src/main/kotlin/com/debrify/app/MainActivity.kt`
-- `android/app/src/main/kotlin/com/debrify/app/tv/AndroidTvTorrentPlayerActivity.kt`
+- `android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt`
+- `android/app/src/main/kotlin/com/megawatch/app/tv/AndroidTvTorrentPlayerActivity.kt`
 - `android/app/src/main/res/layout/view_torrent_tv_controls.xml`
 
 ---

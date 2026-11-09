@@ -1,8 +1,8 @@
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/services/profiles/profile_policy_guard.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/services/profiles/profile_policy_guard.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -55,9 +55,9 @@ void main() {
       ProfileScope(profileId: 'p1', dataGeneration: 1, sessionEpoch: 1),
     );
     ProfilePolicyGuard.updateActiveProfile(
-      profile(<ProfileFeature>{ProfileFeature.debrifyTv}),
+      profile(<ProfileFeature>{ProfileFeature.megawatchTv}),
     );
-    expect(ProfilePolicyGuard.allowsSync(ProfileFeature.debrifyTv), isTrue);
+    expect(ProfilePolicyGuard.allowsSync(ProfileFeature.megawatchTv), isTrue);
     expect(ProfilePolicyGuard.allowsSync(ProfileFeature.iptv), isFalse);
     expect(
       ProfilePolicyGuard.allowsSync(ProfileFeature.keywordSearch),

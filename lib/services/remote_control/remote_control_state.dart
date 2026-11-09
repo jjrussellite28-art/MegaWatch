@@ -979,8 +979,8 @@ class RemoteControlState extends ChangeNotifier {
     String sourceIp,
   ) {
     if (command.action != RemoteAction.config ||
-        (command.command != ConfigCommand.debrifyChannelStart &&
-            command.command != ConfigCommand.debrifyChannelChunk)) {
+        (command.command != ConfigCommand.megawatchChannelStart &&
+            command.command != ConfigCommand.megawatchChannelChunk)) {
       return null;
     }
     final session = _sessionByIp[sourceIp];
@@ -1040,7 +1040,7 @@ class RemoteControlState extends ChangeNotifier {
     // to save. Handle the request here, where every inbound decrypted
     // command passes regardless of role.
     if (action == RemoteAction.config &&
-        command == ConfigCommand.debrifyChannelNeed) {
+        command == ConfigCommand.megawatchChannelNeed) {
       if (data != null &&
           context.encrypted &&
           context.authorized &&
@@ -1133,7 +1133,7 @@ class RemoteControlState extends ChangeNotifier {
     }
     _sessionManager ??= RemoteSessionManager(
       loadStaticKeyPair: RemotePairingStore.loadOrCreateKeypair,
-      deviceName: () => _receiverName ?? 'Debrify',
+      deviceName: () => _receiverName ?? 'MegaWatch',
       transferPort: reliable.port,
       onEvent: (event, fields) =>
           RemoteTransferDiagnostics.record(event, fields: fields),
@@ -1537,7 +1537,7 @@ class RemoteControlState extends ChangeNotifier {
       command = RemoteCommand.config(
         ConfigCommand.profileGraph,
         configData: jsonEncode({
-          'format': 'debrify-profile-transport',
+          'format': 'megawatch-profile-transport',
           'requestId': requestId,
         }),
       );
@@ -1547,10 +1547,10 @@ class RemoteControlState extends ChangeNotifier {
         throw const RemoteTransferException('Invalid channel transfer receipt');
       }
       command = RemoteCommand.config(
-        ConfigCommand.debrifyChannel,
+        ConfigCommand.megawatchChannel,
         configData: remoteChannelTransferBody(
           requestId: requestId,
-          uri: 'debrify://file',
+          uri: 'megawatch://file',
         ),
       );
     } else if (transfer.metadata['format'] == 'command-gzip-v1') {
@@ -1623,7 +1623,7 @@ class RemoteControlState extends ChangeNotifier {
       }
       if (session.peerProtocolVersion < kLaunchAnimationProtocolVersion) {
         throw const RemoteTransferException(
-          'Update Debrify on the receiving device to support animation transfers.',
+          'Update MegaWatch on the receiving device to support animation transfers.',
         );
       }
       final file = await LaunchAnimationLibrary.instance.originalFile(entry.id);
@@ -1706,7 +1706,7 @@ class RemoteControlState extends ChangeNotifier {
     final peer = _sessionPeers[session.sidB64];
     if (peer == null) return false;
     final service = await _ensureReliableTransfer();
-    final staging = await Directory.systemTemp.createTemp('debrify-send-');
+    final staging = await Directory.systemTemp.createTemp('megawatch-send-');
     try {
       final file = File('${staging.path}/command.gz');
       await RemoteTransferEncoding.writeCommand(file, command.toJson());

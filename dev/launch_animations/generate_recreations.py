@@ -220,7 +220,7 @@ def monogram(w,h,text):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--text',default='DEBRIFY')
+    parser.add_argument('--text',default='MEGAWATCH')
     parser.add_argument('--output',type=Path,default=HERE/'recreations')
     args=parser.parse_args()
     if not args.text.strip() or len(args.text)>24: parser.error('Use 1–24 characters for the main wordmark.')

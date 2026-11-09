@@ -1,9 +1,9 @@
-import 'package:debrify/widgets/hero_trailer_backdrop.dart';
+import 'package:megawatch/widgets/hero_trailer_backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/widgets/see_all/discover_trailer_stage.dart';
-import 'package:debrify/services/youtube_service.dart';
-import 'package:debrify/models/stremio_addon.dart';
+import 'package:megawatch/widgets/see_all/discover_trailer_stage.dart';
+import 'package:megawatch/services/youtube_service.dart';
+import 'package:megawatch/models/stremio_addon.dart';
 
 void main() {
   testWidgets('card-change clears trailer safely during sibling rebuild', (

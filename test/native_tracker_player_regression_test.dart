@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:debrify/screens/video_player/models/playlist_entry.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/mdblist/mdblist_service.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/secret_vault.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/tracking_source_policy.dart';
-import 'package:debrify/services/trakt/trakt_service.dart';
-import 'package:debrify/services/video_player_launcher.dart';
+import 'package:megawatch/screens/video_player/models/playlist_entry.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/mdblist/mdblist_service.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/secret_vault.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/tracking_source_policy.dart';
+import 'package:megawatch/services/trakt/trakt_service.dart';
+import 'package:megawatch/services/video_player_launcher.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -37,18 +37,18 @@ void main() {
       TrackingSource.mdblist,
     });
     IptvMediaStore.debugResetMigration();
-    DebrifyTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
+    MegaWatchTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
         .openDatabase(
           inMemoryDatabasePath,
           options: OpenDatabaseOptions(
             version: 1,
-            onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
+            onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
           ),
         );
   });
   tearDown(() async {
-    await DebrifyTvDatabase.debugDatabaseOverride?.close();
-    DebrifyTvDatabase.debugDatabaseOverride = null;
+    await MegaWatchTvDatabase.debugDatabaseOverride?.close();
+    MegaWatchTvDatabase.debugDatabaseOverride = null;
     IptvMediaStore.debugResetMigration();
     TraktService.instance.resetProfileScope();
     SecretVault.debugReset();

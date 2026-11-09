@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:debrify/screens/video_player_screen.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/video_player_launcher.dart';
+import 'package:megawatch/screens/video_player_screen.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/video_player_launcher.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_media_store.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -15,18 +15,18 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     IptvMediaStore.debugResetMigration();
-    DebrifyTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
+    MegaWatchTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
         .openDatabase(
           inMemoryDatabasePath,
           options: OpenDatabaseOptions(
             version: 1,
-            onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
+            onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
           ),
         );
   });
   tearDown(() async {
-    await DebrifyTvDatabase.debugDatabaseOverride?.close();
-    DebrifyTvDatabase.debugDatabaseOverride = null;
+    await MegaWatchTvDatabase.debugDatabaseOverride?.close();
+    MegaWatchTvDatabase.debugDatabaseOverride = null;
     IptvMediaStore.debugResetMigration();
   });
 

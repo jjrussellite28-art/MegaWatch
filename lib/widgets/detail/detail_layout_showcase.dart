@@ -13,7 +13,7 @@ import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter/services.dart';
 
 import '../../models/stremio_addon.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../services/imdb_enrichment_service.dart';
 import '../../theme/app_theme_scope.dart';
 import '../../theme/widgets/parallax_focus.dart';
@@ -551,7 +551,7 @@ class _DetailShowcaseState extends State<DetailShowcase> {
       providers.add(
         CachedNetworkImageProvider(
           url,
-          cacheManager: DebrifyImageCache.manager,
+          cacheManager: MegaWatchImageCache.manager,
           maxWidth: width,
         ),
       );

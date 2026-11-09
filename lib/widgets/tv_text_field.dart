@@ -16,7 +16,7 @@ import 'text_field_suggestions.dart';
 
 /// Text field that is safe to use on TV.
 ///
-/// On TV (with the Debrify keyboard enabled in Settings) the DPAD stop is a
+/// On TV (with the MegaWatch keyboard enabled in Settings) the DPAD stop is a
 /// SHELL: landing on it never opens any keyboard. OK begins editing — the
 /// in-app [TvKeyboardPanel] appears and the remote navigates it; Back ends
 /// editing and returns to the shell. The backing TextField keeps focus while
@@ -24,7 +24,7 @@ import 'text_field_suggestions.dart';
 /// [TextInputType.none], so the system IME — broken for DPAD on many TVs
 /// (flutter/flutter#177360) — is never involved.
 ///
-/// Off TV, or when the user opts out of the Debrify keyboard, this renders a
+/// Off TV, or when the user opts out of the MegaWatch keyboard, this renders a
 /// plain [TextField] with identical behavior to before the conversion.
 class TvTextField extends StatefulWidget {
   const TvTextField({
@@ -248,7 +248,7 @@ class _KbActivateAction extends Action<_KbActivateIntent> {
   }
 }
 
-/// Passthrough-mode (TV, Debrify keyboard opted out) edge-of-text arrow exits.
+/// Passthrough-mode (TV, MegaWatch keyboard opted out) edge-of-text arrow exits.
 /// Modeled as Shortcuts+Actions with [Action.isEnabled] so a disabled state
 /// falls straight through to the framework's own caret handling.
 class _EdgeLeftIntent extends Intent {
@@ -519,9 +519,9 @@ class TvTextFieldState extends State<TvTextField> {
   /// The field was handed to the system IME (the keyboard's smartphone key):
   /// it runs with a real input type so the Google TV phone-remote keyboard /
   /// voice input engage, and this widget intercepts NOTHING — keys, focus and
-  /// Back behave exactly like the Debrify-keyboard-off mode, which is the
+  /// Back behave exactly like the MegaWatch-keyboard-off mode, which is the
   /// known-good escape path. Restores shell mode the moment focus leaves the
-  /// field, so the next DPAD visit starts on the Debrify keyboard again.
+  /// field, so the next DPAD visit starts on the MegaWatch keyboard again.
   bool _useSystemIme = false;
 
   /// A dictation is in flight — from the permission dialog (a system window
@@ -545,7 +545,7 @@ class TvTextFieldState extends State<TvTextField> {
   /// the focus-loss listener doesn't read it as "editing was abandoned".
   bool _imeSwitch = false;
 
-  /// Apple TV takes this path too when the user opts into the Debrify keyboard.
+  /// Apple TV takes this path too when the user opts into the MegaWatch keyboard.
   /// Its system keyboard is the tvOS default; [TvosKeyboardSignal] bridges the
   /// platform's missing `onSubmitted` callback for that passthrough path.
   bool get _tvShell =>
@@ -642,7 +642,7 @@ class TvTextFieldState extends State<TvTextField> {
       _endEdit(refocusShell: false);
     }
     // System-IME hand-off ends itself when focus leaves the field — shell mode
-    // (and the Debrify keyboard) come back for the next visit.
+    // (and the MegaWatch keyboard) come back for the next visit.
     if (_useSystemIme && !_imeSwitch && !_editNode.hasFocus) {
       _useSystemIme = false;
       if (mounted) setState(() {});
@@ -1126,7 +1126,7 @@ class TvTextFieldState extends State<TvTextField> {
     // press whose down was deliberately left to the screen.
     if (isBackKey && !repeat) _swallowBackUp = false;
     // System-IME hand-off: intercept NOTHING. Keys, Back and focus behave
-    // exactly like the Debrify-keyboard-off mode — the escape paths the
+    // exactly like the MegaWatch-keyboard-off mode — the escape paths the
     // screen already provides (and that are known to work) stay intact.
     if (_useSystemIme) return KeyEventResult.ignored;
 
@@ -1305,7 +1305,7 @@ class TvTextFieldState extends State<TvTextField> {
         (sel.isCollapsed && sel.end >= widget.controller.text.length);
   }
 
-  /// TV with the Debrify keyboard opted out: the converted screens deleted
+  /// TV with the MegaWatch keyboard opted out: the converted screens deleted
   /// their per-field DPAD handlers (the shell replaces them), so this restores
   /// arrow exits for the plain-TextField mode. Up/Down always leave — a
   /// single-line field has no vertical caret, and the focused editable would
@@ -1370,7 +1370,7 @@ class TvTextFieldState extends State<TvTextField> {
   /// commit from a cancel:
   /// * only the field actually being edited reacts, so one keyboard session
   ///   can't submit every mounted field;
-  /// * only when the platform keyboard was really in play — with the Debrify
+  /// * only when the platform keyboard was really in play — with the MegaWatch
   ///   keyboard on, the field is `readOnly` and never opens a platform
   ///   session, so this must not fire there.
   ///
@@ -1431,20 +1431,20 @@ class TvTextFieldState extends State<TvTextField> {
           : TextInputType.none,
       // tvOS presents its fullscreen keyboard for ANY focused text field, and
       // `TextInputType.none` does not stop it the way it does on Android — so
-      // pressing a key on the Debrify keyboard summoned Apple's on top of it.
+      // pressing a key on the MegaWatch keyboard summoned Apple's on top of it.
       // `readOnly` is the stronger statement: Flutter never opens a platform
       // text-input connection at all.
       //
       // The trade, stated honestly: without that connection there is no
       // system caret and a paired Bluetooth keyboard cannot type into the
-      // field either — the Debrify keys write to the controller directly, so
+      // field either — the MegaWatch keys write to the controller directly, so
       // they are unaffected. On tvOS that is the better half of the deal,
       // because the alternative is Apple's keyboard covering ours on every
       // keypress. Lifted for the explicit hand-off below.
       readOnly: PlatformUtil.isTvOS && !_useSystemIme,
       onSubmitted: _onFieldSubmitted,
       // During a system-IME hand-off a tap belongs to the stock field (it
-      // re-shows the IME); otherwise it starts a Debrify-keyboard session.
+      // re-shows the IME); otherwise it starts a MegaWatch-keyboard session.
       onTap: _useSystemIme ? null : _beginEdit,
     );
 
@@ -1467,7 +1467,7 @@ class TvTextFieldState extends State<TvTextField> {
       );
     }
 
-    // While the Debrify keyboard is up, Back must only take the panel down.
+    // While the MegaWatch keyboard is up, Back must only take the panel down.
     // Consuming the Back KeyEvent in [_handleShellKey] is not enough on its
     // own: Android also dispatches Back through the navigation channel
     // (onBackPressed / OnBackInvokedCallback — the predictive-back path), which

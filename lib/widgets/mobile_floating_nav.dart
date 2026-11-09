@@ -58,7 +58,7 @@ class _MobileFloatingNavState extends State<MobileFloatingNav>
     [Color(0xFF6366F1), Color(0xFF8B5CF6)], // Torrent Search - Indigo/Purple
     [Color(0xFF10B981), Color(0xFF059669)], // Playlist - Emerald
     [Color(0xFF3B82F6), Color(0xFF1D4ED8)], // Downloads - Blue
-    [Color(0xFFF59E0B), Color(0xFFD97706)], // Debrify TV - Amber
+    [Color(0xFFF59E0B), Color(0xFFD97706)], // MegaWatch TV - Amber
     [Color(0xFFEF4444), Color(0xFFDC2626)], // Real Debrid - Red
     [Color(0xFF8B5CF6), Color(0xFF7C3AED)], // Torbox - Purple
     [Color(0xFF06B6D4), Color(0xFF0891B2)], // PikPak - Cyan
@@ -252,7 +252,7 @@ class _MobileFloatingNavState extends State<MobileFloatingNav>
                 family: SurfaceFamily.dialog,
                 borderRadius: app.shape.br(20),
                 // STATED, not inherited. The theme's `glassSigma` only applies
-                // under a look that asked for glass; Debrify Classic states no
+                // under a look that asked for glass; MegaWatch Classic states no
                 // surface opinion at all, and a site that omits its own sigma
                 // gets none — which silently deleted this panel's shipped 24px
                 // blur on every phone.

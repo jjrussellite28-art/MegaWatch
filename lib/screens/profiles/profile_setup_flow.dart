@@ -94,7 +94,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
   // The questionnaire's answers. Role selection re-seeds these from the
   // preset in CREATE mode; edit mode seeds them once from the profile.
   bool _keywordSearch = true;
-  bool _debrifyTv = true;
+  bool _megawatchTv = true;
   bool _stremioTv = true;
   bool _iptv = true;
   bool _youtube = true;
@@ -158,7 +158,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
   void _seedFromPolicy(ProfilePolicy policy, UserProfileRole role) {
     bool on(ProfileFeature f) => policy.allows(role, f);
     _keywordSearch = on(ProfileFeature.keywordSearch);
-    _debrifyTv = on(ProfileFeature.debrifyTv);
+    _megawatchTv = on(ProfileFeature.megawatchTv);
     _stremioTv = on(ProfileFeature.stremioTv);
     _iptv = on(ProfileFeature.iptv);
     _youtube = on(ProfileFeature.youtube);
@@ -195,7 +195,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
     }
 
     put(ProfileFeature.keywordSearch, _keywordSearch);
-    put(ProfileFeature.debrifyTv, _debrifyTv);
+    put(ProfileFeature.megawatchTv, _megawatchTv);
     put(ProfileFeature.stremioTv, _stremioTv);
     put(ProfileFeature.iptv, _iptv);
     put(ProfileFeature.youtube, _youtube);
@@ -424,7 +424,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
         // The registry's admin invariant is the one failure retrying can't
         // fix — name it instead of the generic line.
         _error = error is StateError
-            ? 'Debrify needs at least one Admin who can manage profiles — '
+            ? 'MegaWatch needs at least one Admin who can manage profiles — '
                   'this change would remove the last one.'
             : 'Could not save this profile. Try again.';
       });
@@ -545,7 +545,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
       ),
       _QStep.review => (
         _isEdit ? '${_displayName()} · review' : 'New profile · review',
-        "${_displayName()}'s corner of Debrify",
+        "${_displayName()}'s corner of MegaWatch",
         'Presets prefill, they never lock — re-run any step, or open the '
             'full editor for PIN, photo avatars and the rest.',
       ),
@@ -943,10 +943,10 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
       children: [
         tile(
           0,
-          'Debrify TV',
+          'MegaWatch TV',
           'Channels curated on this device',
-          _debrifyTv,
-          (v) => _debrifyTv = v,
+          _megawatchTv,
+          (v) => _megawatchTv = v,
         ),
         tile(
           1,
@@ -1005,7 +1005,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
         tile(
           1,
           'Remote',
-          'Control other Debrify devices and send this setup to them.',
+          'Control other MegaWatch devices and send this setup to them.',
           _remote,
           (v) => _remote = v,
         ),
@@ -1051,7 +1051,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
       'Home shelves',
       'Search by title',
       if (can(ProfileFeature.keywordSearch)) 'Keyword search',
-      if (can(ProfileFeature.debrifyTv)) 'Debrify TV',
+      if (can(ProfileFeature.megawatchTv)) 'MegaWatch TV',
       if (can(ProfileFeature.stremioTv)) 'Stremio TV',
       if (can(ProfileFeature.iptv)) 'Live TV',
       if (can(ProfileFeature.youtube)) 'YouTube',
@@ -1062,7 +1062,7 @@ class _ProfileSetupFlowState extends State<ProfileSetupFlow> {
     ];
     final cantChips = <String>[
       if (!can(ProfileFeature.keywordSearch)) 'Keyword search',
-      if (!can(ProfileFeature.debrifyTv)) 'Debrify TV',
+      if (!can(ProfileFeature.megawatchTv)) 'MegaWatch TV',
       if (!can(ProfileFeature.stremioTv)) 'Stremio TV',
       if (!can(ProfileFeature.iptv)) 'Live TV',
       if (!can(ProfileFeature.youtube)) 'YouTube',

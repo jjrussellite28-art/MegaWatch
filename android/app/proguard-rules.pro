@@ -49,7 +49,7 @@
 }
 
 # Keep HTTP client classes
--keep class com.debrify.app.** { *; }
+-keep class com.megawatch.app.** { *; }
 -keep class * extends java.net.HttpURLConnection { *; }
 
 # Keep JSON parsing classes
@@ -147,28 +147,28 @@
 -keep class android.support.v17.leanback.** { *; }
 -dontwarn android.support.v17.leanback.**
 
-# ============ Debrify Custom App Classes ============
+# ============ MegaWatch Custom App Classes ============
 # Keep MainActivity - used by Flutter method channels
--keep class com.debrify.app.MainActivity { *; }
--keep class com.debrify.app.MainActivity$Companion { *; }
+-keep class com.megawatch.app.MainActivity { *; }
+-keep class com.megawatch.app.MainActivity$Companion { *; }
 
 # Keep Activities launched by class name from Dart
--keep class com.debrify.app.tv.TorboxTvPlayerActivity { *; }
--keep class com.debrify.app.tv.AndroidTvTorrentPlayerActivity { *; }
--keep class com.debrify.app.tv.SeekFeedbackManager { *; }
+-keep class com.megawatch.app.tv.TorboxTvPlayerActivity { *; }
+-keep class com.megawatch.app.tv.AndroidTvTorrentPlayerActivity { *; }
+-keep class com.megawatch.app.tv.SeekFeedbackManager { *; }
 
 # Keep download service and bridge
--keep class com.debrify.app.download.MediaStoreDownloadService { *; }
--keep class com.debrify.app.download.ChannelBridge { *; }
+-keep class com.megawatch.app.download.MediaStoreDownloadService { *; }
+-keep class com.megawatch.app.download.ChannelBridge { *; }
 
 # Keep all inner classes and data classes
--keep class com.debrify.app.download.MediaStoreDownloadService$** { *; }
--keep class com.debrify.app.tv.AndroidTvTorrentPlayerActivity$** { *; }
+-keep class com.megawatch.app.download.MediaStoreDownloadService$** { *; }
+-keep class com.megawatch.app.tv.AndroidTvTorrentPlayerActivity$** { *; }
 
 # Keep subtitle service and settings
--keep class com.debrify.app.subtitle.StremioSubtitleService { *; }
--keep class com.debrify.app.subtitle.StremioSubtitleService$** { *; }
--keep class com.debrify.app.util.SubtitleSettings { *; }
+-keep class com.megawatch.app.subtitle.StremioSubtitleService { *; }
+-keep class com.megawatch.app.subtitle.StremioSubtitleService$** { *; }
+-keep class com.megawatch.app.util.SubtitleSettings { *; }
 
 # Keep method channel result implementations
 -keepclassmembers class * {

@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:debrify/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const deviceSecretChannel = MethodChannel('debrify/device_secret');
+  const deviceSecretChannel = MethodChannel('megawatch/device_secret');
   void restart() {
     DeviceKeyProvider.debugReset();
     DeviceKeyProvider.debugLinuxOverride = true;

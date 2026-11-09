@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/models/quick_play_rules.dart';
-import 'package:debrify/services/torrent_playback_service.dart';
-import 'package:debrify/services/series_source_fetcher.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/services/torrent_service.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/models/quick_play_rules.dart';
+import 'package:megawatch/services/torrent_playback_service.dart';
+import 'package:megawatch/services/series_source_fetcher.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/services/torrent_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -108,7 +108,7 @@ void main() {
     final recovery = TorrentPlaybackService.earlyDirectRecovery(
       [failed, replacement, duplicate],
       failed: failed,
-      rules: QuickPlayRules.debrifyDefault(isMovie: false),
+      rules: QuickPlayRules.megawatchDefault(isMovie: false),
     );
     expect(recovery.sources, [replacement]);
   });
@@ -140,7 +140,7 @@ void main() {
         rules.copyWith(allowDirectLinks: false),
         rules.copyWith(tryNextOnFailure: false),
         rules.copyWith(maxAttempts: 1),
-        QuickPlayRules.debrifyDefault(isMovie: false),
+        QuickPlayRules.megawatchDefault(isMovie: false),
       ]) {
         expect(
           TorrentPlaybackService.earlyDirectCandidate([direct], rules: other),

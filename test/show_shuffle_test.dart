@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/utils/show_shuffle.dart';
+import 'package:megawatch/utils/show_shuffle.dart';
 
 void main() {
   test('visits every season before repeating across pack changes', () {

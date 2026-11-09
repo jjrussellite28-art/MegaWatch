@@ -30,7 +30,7 @@ matching incoming account is offered for sync, including after onboarding.
 The sender rechecks pending logout as well as the active binding before returning
 sync credentials; namespace-only logout changes cannot bypass revalidation.
 
-Setup reuses `WebDavSyncConnectController`: the folder is `Debrify`, a new sync
+Setup reuses `WebDavSyncConnectController`: the folder is `MegaWatch`, a new sync
 secret is generated for an empty account, and an existing account supplies its
 sync secret through the authenticated authority file. No folder or passphrase
 entry is added. Successful setup registers the receiver and completes the first

@@ -68,14 +68,14 @@
 
     <application
         android:label="@string/app_name"
-        android:name=".DebrifyApplication"
+        android:name=".MegaWatchApplication"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:usesCleartextTraffic="true"
         android:largeHeap="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        android:banner="@drawable/banner_debrify">
+        android:banner="@drawable/banner_megawatch">
         <!-- Force the Skia renderer instead of Impeller/Vulkan. Some Android TV
              SoCs (e.g. MediaTek/Amlogic in certain TCL sets) advertise Vulkan 1.1
              but ship broken drivers, causing a hard crash on launch. Skia is the
@@ -154,12 +154,12 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="stremio" />
             </intent-filter>
-            <!-- Debrify deep link handler (OAuth callbacks, etc.) -->
+            <!-- MegaWatch deep link handler (OAuth callbacks, etc.) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="debrify" />
+                <data android:scheme="megawatch" />
             </intent-filter>
             <!-- HTTPS manifest.json handler for Stremio addons -->
             <intent-filter>

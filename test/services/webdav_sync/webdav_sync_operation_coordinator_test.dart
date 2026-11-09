@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/services/webdav_sync/webdav_sync_operation_coordinator.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_operation_coordinator.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

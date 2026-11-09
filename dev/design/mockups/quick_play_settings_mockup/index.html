@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Debrify — Quick Play settings concept</title>
+  <title>MegaWatch — Quick Play settings concept</title>
   <style>
     :root {
       color-scheme: dark;
@@ -389,7 +389,7 @@
   <main>
     <div class="eyebrow">Playback</div>
     <h1>Quick Play</h1>
-    <p class="lede">Choose the result Debrify should play automatically. Start with one behavior, then fine-tune only if you want to.</p>
+    <p class="lede">Choose the result MegaWatch should play automatically. Start with one behavior, then fine-tune only if you want to.</p>
 
     <div class="content-tabs" role="tablist" aria-label="Content type">
       <button class="content-tab active" data-kind="movie" role="tab" aria-selected="true">Movies <span>rules</span></button>
@@ -397,14 +397,14 @@
     </div>
 
     <div class="section-heading">
-      <h2>How should Debrify choose?</h2>
+      <h2>How should MegaWatch choose?</h2>
       <span class="hint">Separate choice for movies and series</span>
     </div>
 
     <div class="preset-grid" role="radiogroup" aria-label="Quick Play behavior">
       <button class="preset selected" data-preset="default" role="radio" aria-checked="true">
         <span class="preset-check"></span><div class="preset-icon">✦</div>
-        <strong>Debrify default</strong>
+        <strong>MegaWatch default</strong>
         <p>Balanced quality and reliability. This is exactly how Quick Play works today.</p>
         <span class="current-badge">Current behavior</span>
       </button>
@@ -428,12 +428,12 @@
     <section class="route-card" aria-live="polite">
       <div class="route-head">
         <div><h2 id="route-title">What happens for a movie</h2><p id="route-summary">Pinned first, then filtered torrent results, with addon fallback.</p></div>
-        <span class="mode-chip" id="mode-chip">Debrify default</span>
+        <span class="mode-chip" id="mode-chip">MegaWatch default</span>
       </div>
       <div class="route" id="route"></div>
     </section>
 
-    <div class="notice" id="notice"><span>ⓘ</span><span><b>“Debrify default” is not a mystery mode.</b> The exact active order is always shown above. Selecting it restores today’s shipped behavior.</span></div>
+    <div class="notice" id="notice"><span>ⓘ</span><span><b>“MegaWatch default” is not a mystery mode.</b> The exact active order is always shown above. Selecting it restores today’s shipped behavior.</span></div>
 
     <div class="section-heading"><h2>Useful adjustments</h2><span class="hint">The choices most people need</span></div>
     <section class="essentials">
@@ -478,7 +478,7 @@
       <div class="advanced-section">
         <div class="advanced-title"><h3>How to rank results</h3><span>First playable result wins</span></div>
         <div class="option-grid">
-          <div class="option-line"><label for="ranking">Result order</label><select id="ranking" class="mini-select"><option value="curated">Filters, then Debrify relevance</option><option value="exact">Exact provider order</option><option value="quality">Highest quality first</option><option value="size">Smallest file first</option><option value="cached">Cached first</option></select></div>
+          <div class="option-line"><label for="ranking">Result order</label><select id="ranking" class="mini-select"><option value="curated">Filters, then MegaWatch relevance</option><option value="exact">Exact provider order</option><option value="quality">Highest quality first</option><option value="size">Smallest file first</option><option value="cached">Cached first</option></select></div>
           <div class="option-line"><label>Relax filters when needed</label><label class="switch"><input id="relax" type="checkbox" checked><span></span></label></div>
           <div class="option-line series-only"><label for="pack-order">Pack preference</label><select id="pack-order" class="mini-select"><option>Complete → multi-season → season</option><option>Season → multi-season → complete</option><option>Exact episode only</option></select></div>
           <div class="option-line series-only"><label>Pack must contain requested episode</label><label class="switch"><input type="checkbox" checked><span></span></label></div>
@@ -498,7 +498,7 @@
 
     <div class="footer-actions">
       <button class="reset" id="reset">Restore today’s behavior</button>
-      <span class="saved" id="saved">Movie rules · Debrify default</span>
+      <span class="saved" id="saved">Movie rules · MegaWatch default</span>
     </div>
   </main>
 
@@ -515,7 +515,7 @@
         },
         addon: {
           summary: 'Pinned first, then the exact order returned by your addons.',
-          steps: [['Pinned source','Use it if it still plays'],['Ask addons','Include direct links'],['Keep exact order','No Debrify re-ranking'],['Try in sequence','Move on only if one fails']]
+          steps: [['Pinned source','Use it if it still plays'],['Ask addons','Include direct links'],['Keep exact order','No MegaWatch re-ranking'],['Try in sequence','Move on only if one fails']]
         },
         quality: {
           summary: 'Search every enabled source and rank the strongest filter match first.',
@@ -533,7 +533,7 @@
         },
         addon: {
           summary: 'Use series results in the exact order returned by your addons.',
-          steps: [['Pinned source','Reuse it when possible'],['Ask addons','For this exact episode'],['Keep exact order','Direct links included'],['Try in sequence','No Debrify re-ranking']]
+          steps: [['Pinned source','Reuse it when possible'],['Ask addons','For this exact episode'],['Keep exact order','Direct links included'],['Try in sequence','No MegaWatch re-ranking']]
         },
         quality: {
           summary: 'Prefer a reusable pack with the strongest filter and quality match.',
@@ -545,7 +545,7 @@
         }
       }
     };
-    const names = { default: 'Debrify default', addon: 'Follow addon order', quality: 'Best quality', fast: 'Start fastest' };
+    const names = { default: 'MegaWatch default', addon: 'Follow addon order', quality: 'Best quality', fast: 'Start fastest' };
     const body = document.body;
     const route = document.querySelector('#route');
     const routeTitle = document.querySelector('#route-title');

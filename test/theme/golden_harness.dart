@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:debrify/services/text_brightness.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_adapter.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/theme/legacy_theme_boundary.dart';
+import 'package:megawatch/services/text_brightness.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_adapter.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/theme/legacy_theme_boundary.dart';
 
 /// Golden infrastructure for the theme rollout.
 ///

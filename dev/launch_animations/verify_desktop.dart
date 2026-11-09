@@ -1,5 +1,5 @@
 // Run this entry point in profile mode; sample_data.dart embeds QA-only files.
-// Uses temporary storage and never opens Debrify's user preferences or database.
+// Uses temporary storage and never opens MegaWatch's user preferences or database.
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -8,8 +8,8 @@ import 'recreation_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:debrify/services/launch_animation/launch_animation_library.dart';
-import 'package:debrify/widgets/launch/imported_launch_player.dart';
+import 'package:megawatch/services/launch_animation/launch_animation_library.dart';
+import 'package:megawatch/widgets/launch/imported_launch_player.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,9 +46,9 @@ class _VerificationAppState extends State<VerificationApp>
   void _record(List<FrameTiming> frames) => _timings.addAll(frames);
   Future<void> _verify() async {
     final output = await Directory.systemTemp.createTemp(
-      'debrify-launch-verification-',
+      'megawatch-launch-verification-',
     );
-    final root = await Directory.systemTemp.createTemp('debrify-launch-qa-');
+    final root = await Directory.systemTemp.createTemp('megawatch-launch-qa-');
     final library = LaunchAnimationLibrary(
       directory: () async => Directory('${root.path}/library'),
     );

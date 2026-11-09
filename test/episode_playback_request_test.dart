@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/utils/episode_playback_request.dart';
+import 'package:megawatch/utils/episode_playback_request.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

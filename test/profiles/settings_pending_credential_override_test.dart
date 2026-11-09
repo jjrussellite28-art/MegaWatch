@@ -1,5 +1,5 @@
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/screens/settings_screen.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/screens/settings_screen.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

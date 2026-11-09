@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/theme/app_surfaces.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_controller.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/theme/legacy_theme_boundary.dart';
-import 'package:debrify/widgets/detail/theme/detail_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/theme/app_surfaces.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_controller.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/theme/legacy_theme_boundary.dart';
+import 'package:megawatch/widgets/detail/theme/detail_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
 
 import 'golden_harness.dart' show disableRuntimeFonts;
 

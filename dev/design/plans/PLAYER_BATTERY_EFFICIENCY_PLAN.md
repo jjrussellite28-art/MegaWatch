@@ -18,13 +18,13 @@ native output paths are different on each platform.
 The first release should contain the shared Flutter UI fix and better
 measurement. Renderer or backend changes ship only when their own device gate
 passes. The existing media-kit path remains the rollback path until a replacement
-has proved the full Debrify feature contract.
+has proved the full MegaWatch feature contract.
 
 ---
 
 ## What is known now
 
-| Platform | Current Debrify path | Confirmed or likely state | First action |
+| Platform | Current MegaWatch path | Confirmed or likely state | First action |
 |---|---|---|---|
 | Android phone/tablet | media-kit/libmpv -> Flutter `SurfaceProducer` texture | On the OnePlus CPH2573, HEVC 1080p decoded in hardware as `mediacodec-copy`; this avoids software decode but copies decoded frames back before GPU presentation | Remove Flutter rebuild waste, then compare Android renderer modes |
 | Android TV | Native Media3 activities -> `PlayerView` -> `SurfaceView` | Already uses Android's preferred power-efficient surface and enables decoder fallback | Measure; do not move it back to the Flutter texture path |
@@ -107,7 +107,7 @@ transition line if the decoder or output changes, containing:
 - renderer/surface type for native Android;
 - whether controls and subtitles were visible during the sample.
 
-The existing `DEBRIFY_PLAYER_DECODER` release-safe line is only the starting
+The existing `MEGAWATCH_PLAYER_DECODER` release-safe line is only the starting
 point. Its current `VideoParams` trigger can arrive while libmpv is still
 attaching the output—the OnePlus capture demonstrated this with `output=null`.
 Do not treat that as a completed diagnosis. Observe `hwdec-current` and
@@ -129,7 +129,7 @@ Capture channels:
 - iOS/iPadOS/tvOS: unified device console or an explicit native logging bridge
   that survives release mode.
 - desktop: process/system log from a release build.
-- web: browser media diagnostics plus Debrify's non-native marker.
+- web: browser media diagnostics plus MegaWatch's non-native marker.
 
 ### 0.2 Fixed media suite
 
@@ -157,7 +157,7 @@ and mobile streaming so network-radio power is not mistaken for renderer power.
   record variance.
 - Record CPU, GPU, energy/power, thermal state, dropped frames and Flutter
   build/raster activity.
-- Compare Debrify with a platform-native reference using the exact same media
+- Compare MegaWatch with a platform-native reference using the exact same media
   only where that reference supports the container, codecs and tracks. For an
   unsupported MKV/remux, use a capable third-party reference as a directional
   comparison; never compare two different files as a numeric renderer result.
@@ -245,7 +245,7 @@ direct Android MediaCodec interop. Mode 3 may remove more of the GPU/copy path,
 but media-kit's `SurfaceProducer` integration must first prove that this mode can
 present frames correctly; it must not be described as equivalent to a native
 Media3 `SurfaceView` without measurement. mpv also documents that OSD, subtitle
-rendering and video filters are unavailable. Debrify draws subtitles in Flutter,
+rendering and video filters are unavailable. MegaWatch draws subtitles in Flutter,
 which may help, but that does not waive the full feature matrix.
 
 For each mode verify:
@@ -317,7 +317,7 @@ handheld-only change must continue to exclude `PlatformUtil.isTvOS`.
 ### 3B. AVPlayer decision gate
 
 AVPlayer/AVPlayerLayer is the Apple-native candidate for supported HLS/MP4
-content, but it does not automatically cover Debrify's broad MKV, codec, audio,
+content, but it does not automatically cover MegaWatch's broad MKV, codec, audio,
 subtitle and recording requirements. A hybrid backend is therefore a later
 optimization, not the first fix.
 
@@ -408,7 +408,7 @@ activities, vendored tvOS media-kit renderer, and the separate tvOS 4K plan.
    session and restart-only fallback after first frame.
 6. **Android TV already has the desired Android surface architecture.** Resolved
    by keeping it and limiting work to measurement and optional tested tunneling.
-7. **AVPlayer is not a drop-in replacement for Debrify's content surface.**
+7. **AVPlayer is not a drop-in replacement for MegaWatch's content surface.**
    Resolved by making it a measurement-triggered later phase with per-content
    selection and the existing backend as fallback.
 8. **tvOS battery work could accidentally restart the rejected 4K integration.**
@@ -428,7 +428,7 @@ activities, vendored tvOS media-kit renderer, and the separate tvOS 4K plan.
    stopping only clock-control notifications while keeping an isolated,
    boundary-only skip notifier.
 3. **The reference-player wording could force an invalid comparison.** Apple's
-   native player, for example, cannot open every remux Debrify supports.
+   native player, for example, cannot open every remux MegaWatch supports.
    Resolved by same-file numeric comparisons only for mutually supported media
    and directional third-party comparisons for broader formats.
 4. **The proposed UI tests lacked a practical seam.** Existing navigation tests

@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/viewport_artwork_scope.dart';
+import 'package:megawatch/widgets/viewport_artwork_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_test/flutter_test.dart';

@@ -2,19 +2,19 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_runtime.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_scheduler.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_save_feedback.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_transport.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_runtime.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_scheduler.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_save_feedback.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_transport.dart';
 // Flutter's test SDK supplies fake_async transitively for deterministic timers.
 // ignore: depend_on_referenced_packages
 import 'package:fake_async/fake_async.dart';

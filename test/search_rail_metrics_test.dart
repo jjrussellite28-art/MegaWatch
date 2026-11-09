@@ -1,4 +1,4 @@
-import 'package:debrify/utils/home_rail_metrics.dart';
+import 'package:megawatch/utils/home_rail_metrics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 

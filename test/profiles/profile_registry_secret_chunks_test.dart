@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';

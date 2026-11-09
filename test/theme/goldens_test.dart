@@ -2,8 +2,8 @@ import 'dart:ui' show Size;
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/services/text_brightness.dart';
-import 'package:debrify/theme/app_theme.dart';
+import 'package:megawatch/services/text_brightness.dart';
+import 'package:megawatch/theme/app_theme.dart';
 
 import 'golden_harness.dart';
 import 'surface_gallery.dart';

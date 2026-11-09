@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:debrify/services/mdblist/mdblist_service.dart';
-import 'package:debrify/services/mdblist/mdblist_sync_coordinator.dart';
+import 'package:megawatch/services/mdblist/mdblist_service.dart';
+import 'package:megawatch/services/mdblist/mdblist_sync_coordinator.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

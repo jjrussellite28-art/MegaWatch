@@ -31,7 +31,7 @@ void main() {
       adaptive,
       matches(
         RegExp(
-          r'case 13:[\s\S]*?SettingsRows\.syncAndMigrate[\s\S]*?case 14:[\s\S]*?SettingsRows\.downloadLocation[\s\S]*?case 15:[\s\S]*?SettingsRows\.autoUpdate[\s\S]*?case 16:[\s\S]*?SettingsRows\.resetDebrify',
+          r'case 13:[\s\S]*?SettingsRows\.syncAndMigrate[\s\S]*?case 14:[\s\S]*?SettingsRows\.downloadLocation[\s\S]*?case 15:[\s\S]*?SettingsRows\.autoUpdate[\s\S]*?case 16:[\s\S]*?SettingsRows\.resetMegaWatch',
         ),
       ),
     );

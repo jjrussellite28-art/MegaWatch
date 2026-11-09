@@ -1,4 +1,4 @@
-import 'package:debrify/screens/search_screen.dart';
+import 'package:megawatch/screens/search_screen.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

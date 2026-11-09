@@ -1,8 +1,8 @@
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/utils/platform_util.dart';
-import 'package:debrify/widgets/onboarding/tv_keyboard_slot.dart';
-import 'package:debrify/widgets/tv_keyboard.dart';
-import 'package:debrify/widgets/tv_text_field.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/utils/platform_util.dart';
+import 'package:megawatch/widgets/onboarding/tv_keyboard_slot.dart';
+import 'package:megawatch/widgets/tv_keyboard.dart';
+import 'package:megawatch/widgets/tv_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

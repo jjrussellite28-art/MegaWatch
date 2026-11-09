@@ -10,7 +10,7 @@ green at **53.8 MB**, unchanged.
 
 The theme system now reaches everything that isn't colour — shape, type,
 motion, texture — and the app has one **Look** picker instead of fourteen
-independent style dropdowns. **Nothing changes for anyone on Debrify Classic.**
+independent style dropdowns. **Nothing changes for anyone on MegaWatch Classic.**
 
 ## What shipped, by phase
 
@@ -28,7 +28,7 @@ independent style dropdowns. **Nothing changes for anyone on Debrify Classic.**
 
 ## What a user will actually notice
 
-**On Debrify Classic: nothing.** That is the point, and it is enforced rather
+**On MegaWatch Classic: nothing.** That is the point, and it is enforced rather
 than hoped — `shape_type_motion_test.dart` pins every new token to an
 arithmetic identity, and the legacy surface-gallery golden came through the
 entire 500-site shape sweep unchanged.

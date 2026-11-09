@@ -17,7 +17,7 @@ class AudioEffectSessionService {
   AudioEffectSessionService._();
 
   static const MethodChannel _channel = MethodChannel(
-    'com.debrify.app/audio_effects',
+    'com.megawatch.app/audio_effects',
   );
 
   static bool get isSupported => Platform.isAndroid;

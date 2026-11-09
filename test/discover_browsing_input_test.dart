@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/widgets/see_all/discover_browsing_input.dart';
+import 'package:megawatch/widgets/see_all/discover_browsing_input.dart';
 
 void main() {
   testWidgets('browsing keys reveal controls and still reach focused cards', (

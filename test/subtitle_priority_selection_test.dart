@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:debrify/models/stremio_subtitle.dart';
-import 'package:debrify/screens/video_player/utils/subtitle_priority_selection.dart';
+import 'package:megawatch/models/stremio_subtitle.dart';
+import 'package:megawatch/screens/video_player/utils/subtitle_priority_selection.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 AddonSubtitleSlot slot(String id, {bool loading = false, String? language}) =>

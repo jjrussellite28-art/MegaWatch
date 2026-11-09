@@ -20,7 +20,7 @@ import '../models/playlist_view_mode.dart';
 import '../services/analytics_service.dart';
 import '../services/series_source_service.dart';
 import '../services/app_route_observer.dart';
-import '../services/debrify_image_cache.dart';
+import '../services/megawatch_image_cache.dart';
 import '../services/imdb_enrichment_service.dart';
 import '../services/imdb_parents_guide_service.dart';
 import '../services/main_page_bridge.dart';
@@ -465,7 +465,7 @@ class _MergedDetailScreenState extends State<MergedDetailScreen>
   List<TraktMenuOption> get _menuOptions =>
       widget.traktMenuBuilder?.call(_traktStatus) ?? widget.traktMenuOptions;
 
-  /// Debrify's own actions. They arrive inside the Trakt option list (that list
+  /// MegaWatch's own actions. They arrive inside the Trakt option list (that list
   /// has always carried both), but none of them touch Trakt — so they get the
   /// neutral "More" sheet and the Trakt sheet stays purely Trakt. Being app
   /// actions they're also available when Trakt is disconnected, which the old
@@ -497,7 +497,7 @@ class _MergedDetailScreenState extends State<MergedDetailScreen>
   bool _localMovieFinished = false;
   bool _showcaseOpeningDataReady = false;
 
-  /// Debrify's local watchlist is independent of tracker connectivity.
+  /// MegaWatch's local watchlist is independent of tracker connectivity.
   bool _inMyWatchlist = false;
   bool get _supportsMyWatchlist =>
       StorageService.supportsMyWatchlistItem(_item);
@@ -2742,7 +2742,7 @@ class _MergedDetailScreenState extends State<MergedDetailScreen>
               if (mounted) setState(() {});
             },
           ),
-        // Debrify's own actions (bind source, Stremio TV, random episode,
+        // MegaWatch's own actions (bind source, Stremio TV, random episode,
         // season packs, local Continue Watching) — no tracker involved, so a
         // neutral button rather than a branded one.
         if (_metadataExploreAction != null)
@@ -2886,7 +2886,7 @@ class _MergedDetailScreenState extends State<MergedDetailScreen>
     }
   }
 
-  /// Debrify's own actions, in a plain labelled list. Closes on selection —
+  /// MegaWatch's own actions, in a plain labelled list. Closes on selection —
   /// each of these leaves the sheet anyway (a picker, a search, playback).
   void _showAppActionsMenu() {
     final options = _appMenuOptions;
@@ -3657,7 +3657,7 @@ class _CastTileState extends State<_CastTile> {
                       ? CachedNetworkImage(
                           imageUrl: m.imageUrl!,
                           fit: BoxFit.cover,
-                          cacheManager: DebrifyImageCache.manager,
+                          cacheManager: MegaWatchImageCache.manager,
                           // 56 logical px avatar (up to dpr 3 on phones) —
                           // never decode a full-res headshot.
                           memCacheWidth: 180,
@@ -3734,7 +3734,7 @@ class _RecCardState extends State<_RecCard> {
                     CachedNetworkImage(
                       imageUrl: rec.poster!,
                       fit: BoxFit.cover,
-                      cacheManager: DebrifyImageCache.manager,
+                      cacheManager: MegaWatchImageCache.manager,
                       // 100 logical px card (up to dpr 3 on phones) — decode
                       // small so ten posters at once don't lean on a 2GB box.
                       memCacheWidth: 300,
@@ -5504,7 +5504,7 @@ class _AmbientStill extends StatelessWidget {
       key: ValueKey(url),
       imageUrl: url,
       fit: BoxFit.cover,
-      cacheManager: DebrifyImageCache.manager,
+      cacheManager: MegaWatchImageCache.manager,
       memCacheWidth: 1280,
       fadeInDuration: Duration.zero,
       fadeOutDuration: Duration.zero,

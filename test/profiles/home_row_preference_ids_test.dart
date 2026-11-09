@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:debrify/services/profiles/home_row_preference_ids.dart';
+import 'package:megawatch/services/profiles/home_row_preference_ids.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

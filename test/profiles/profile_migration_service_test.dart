@@ -1,22 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/desktop_schedule_service.dart';
-import 'package:debrify/services/download_service.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_migration_service.dart';
-import 'package:debrify/services/profiles/profile_preference_budget.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/secret_vault.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/desktop_schedule_service.dart';
+import 'package:megawatch/services/download_service.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_migration_service.dart';
+import 'package:megawatch/services/profiles/profile_preference_budget.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/secret_vault.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -116,7 +116,7 @@ void main() {
       await File(p.join(documents.path, 'engines', 'custom.json'))
           .create(recursive: true)
           .then((file) => file.writeAsString('{"enabled":true}'));
-      final legacyDbPath = p.join(documents.path, 'debrify_tv.db');
+      final legacyDbPath = p.join(documents.path, 'megawatch_tv.db');
       final legacyDb = await openDatabase(legacyDbPath);
       await legacyDb.execute(
         'CREATE TABLE migration_sentinel (id INTEGER PRIMARY KEY, value TEXT)',
@@ -198,7 +198,7 @@ void main() {
         sessionEpoch: 0,
       );
       final migratedDbPath = migratedScope
-          .fileIn(documents, 'documents', 'debrify_tv.db')
+          .fileIn(documents, 'documents', 'megawatch_tv.db')
           .path;
       expect(await File(migratedDbPath).exists(), isTrue);
       final migratedDb = await openDatabase(migratedDbPath, readOnly: true);

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/utils/player_audio_config.dart';
+import 'package:megawatch/utils/player_audio_config.dart';
 
 List<(String, String)> _props({
   bool isAndroid = false,

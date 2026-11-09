@@ -2,11 +2,11 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:debrify/models/profiles/profile_avatar.dart';
-import 'package:debrify/services/profiles/profile_avatar_ingest.dart';
-import 'package:debrify/services/profiles/profile_avatar_policy.dart';
-import 'package:debrify/services/profiles/profile_avatar_storage.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/profile_avatar.dart';
+import 'package:megawatch/services/profiles/profile_avatar_ingest.dart';
+import 'package:megawatch/services/profiles/profile_avatar_policy.dart';
+import 'package:megawatch/services/profiles/profile_avatar_storage.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

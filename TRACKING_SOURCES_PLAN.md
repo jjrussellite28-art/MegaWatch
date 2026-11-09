@@ -2,7 +2,7 @@
 
 Driven by Discord (2026-08-27): Ramsy ("choose which one we want to use"),
 king c0llier (gym case: Trakt/Simkl evict a show from Continue Watching at
-80% while his Debrify watched-at setting says 90%+; wants Debrify-local CW
+80% while his MegaWatch watched-at setting says 90%+; wants MegaWatch-local CW
 while still scrobbling to trackers; posted Nuvio's "Tracking" menu as the
 reference shape).
 
@@ -95,7 +95,7 @@ shown per their own rules.
   catalog/addon content too", not "scrobble at all" (tracker-native items
   always scrobbled regardless). New per-tracker master keys, seeded from the
   old SyncCatalogItems values — the closest reading of existing intent, since
-  the bulk of Debrify playback IS catalog/addon content. Accepted behavior
+  the bulk of MegaWatch playback IS catalog/addon content. Accepted behavior
   change: unticked = tracker-native items stop scrobbling too (what the
   checkbox says). Old rows removed.
 - **Migrate the old keys' readers BY ROLE, not wholesale** (review 2026-08-27):
@@ -266,7 +266,7 @@ shown per their own rules.
   ([[project_tv_filter_two_pane]]); single-select uses the house dropdown.
 
 ## Copy (drafted, adjust tone)
-- Scrobble: "Which services record what you watch. Debrify always keeps its
+- Scrobble: "Which services record what you watch. MegaWatch always keeps its
   own progress."
 - Progress source · Smart: "Combines this device with your connected
   trackers — the most recent activity wins." (NOT "furthest wins" — review

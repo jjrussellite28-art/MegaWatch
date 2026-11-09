@@ -1086,7 +1086,7 @@ class ConnectionResourceService {
     required int publicSchemaVersion,
     required int payloadVersion,
   }) => utf8.encode(
-    'debrify-resource|id=$resourceId|type=${type.name}|owner=$ownerProfileId|'
+    'megawatch-resource|id=$resourceId|type=${type.name}|owner=$ownerProfileId|'
     'public=$publicSchemaVersion|secret=$payloadVersion',
   );
 

@@ -1,4 +1,4 @@
-# Debrify code map
+# MegaWatch code map
 
 An **area → owning-files** index so triage/estimate tooling (and humans) can jump straight to the
 right code instead of re-discovering it. Flutter app; code under `lib/{screens,services,widgets,models,utils}`.
@@ -56,7 +56,7 @@ right code instead of re-discovering it. Flutter app; code under `lib/{screens,s
   `screens/video_player/widgets/controls.dart`. Track/source sheets: `screens/video_player/widgets/*`.
 - Launch + native TV: `services/video_player_launcher.dart` 🔴 (`_launchOnAndroidTv`, `_push`),
   `services/android_tv_player_bridge.dart`, native Kotlin
-  `android/app/src/main/kotlin/com/debrify/app/{MainActivity.kt,tv/AndroidTvTorrentPlayerActivity.kt}`.
+  `android/app/src/main/kotlin/com/megawatch/app/{MainActivity.kt,tv/AndroidTvTorrentPlayerActivity.kt}`.
 - External players: `services/external_player_service.dart`, `models/*_external_player.dart`.
 
 ## IPTV
@@ -66,11 +66,11 @@ right code instead of re-discovering it. Flutter app; code under `lib/{screens,s
 - Stremio-addon-as-IPTV bridge: `services/stremio_iptv_service.dart` (treats each catalog meta as one
   channel). UI: `widgets/iptv/*`, `screens/settings/iptv_settings_page.dart`.
 
-## Debrify TV (keyword channels)
+## MegaWatch TV (keyword channels)
 - `screens/magic_tv_screen.dart` 🔴 (favourites are an unordered `Set`; literal keyword match
   `_parseKeywords`; per-provider native launch `_launch{RealDebrid,Torbox}OnAndroidTv`).
-- Data: `models/debrify_tv/*`, `services/debrify_tv_{repository,database,cache_service,channel_add_service}.dart`,
-  `services/debrify_tv_zip_importer.dart`. Dialogs: `screens/debrify_tv/*`.
+- Data: `models/megawatch_tv/*`, `services/megawatch_tv_{repository,database,cache_service,channel_add_service}.dart`,
+  `services/megawatch_tv_zip_importer.dart`. Dialogs: `screens/megawatch_tv/*`.
 
 ## Stremio TV (random-play channels)
 - `screens/stremio_tv/stremio_tv_screen.dart`, `stremio_tv/widgets/stremio_tv_tuner.dart` (dial,

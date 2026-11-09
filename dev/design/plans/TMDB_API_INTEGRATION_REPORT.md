@@ -1,12 +1,12 @@
-# TMDB API Integration Report for Debrify
+# TMDB API Integration Report for MegaWatch
 
-Reviewed against Debrify's current worktree and the official TMDB v3/v4 documentation on August 24, 2026.
+Reviewed against MegaWatch's current worktree and the official TMDB v3/v4 documentation on August 24, 2026.
 
 No implementation work was performed as part of this report.
 
 ## Executive conclusion
 
-TMDB would fit Debrify very well as its primary:
+TMDB would fit MegaWatch very well as its primary:
 
 - Metadata and ID-resolution layer
 - Artwork and title-logo provider
@@ -19,7 +19,7 @@ TMDB would fit Debrify very well as its primary:
 It should not replace:
 
 - Trakt, Simkl, and MDBList scrobbling, history, progress, calendars, or personalized tracking
-- Debrify's local continue-watching and local watchlist behavior
+- MegaWatch's local continue-watching and local watchlist behavior
 - Stremio addons as stream and catalog providers
 - IMDb Parents Guide, trivia, quotes, goofs, Top 250, Metacritic, or awards data
 - TVMaze as an immediate fallback until TMDB episode coverage has been proven in practice
@@ -28,9 +28,9 @@ The strongest strategy is a hybrid:
 
 > TMDB becomes the canonical metadata backbone; IMDb IDs remain the playback and search interoperability key; trackers remain user-state authorities; Stremio and TVMaze become fallbacks or specialized sources.
 
-## 1. Current Debrify state
+## 1. Current MegaWatch state
 
-Debrify has no first-class TMDB client today. Its central content model already acknowledges `tmdb:` IDs but primarily stores an IMDb ID and a small metadata subset: title, poster, backdrop, overview, year, IMDb rating, genres, runtime, trailer, and logo (`lib/models/stremio_addon.dart`).
+MegaWatch has no first-class TMDB client today. Its central content model already acknowledges `tmdb:` IDs but primarily stores an IMDb ID and a small metadata subset: title, poster, backdrop, overview, year, IMDb rating, genres, runtime, trailer, and logo (`lib/models/stremio_addon.dart`).
 
 Metadata currently comes from several independent paths:
 
@@ -39,13 +39,13 @@ Metadata currently comes from several independent paths:
 - Undocumented IMDb GraphQL supplies cast, runtime, certificates, ratings, awards, trivia, quotes, goofs, connections, companies, box office, and Metacritic (`lib/services/imdb_enrichment_service.dart`).
 - TVMaze fills episode metadata and artwork gaps after Stremio (`lib/services/episode_artwork_service.dart`).
 - Trakt, Simkl, and MDBList provide discovery and user state. Trakt alone currently exposes continue watching, watchlist, history, collection, ratings, recommendations, trending, popular, and anticipated surfaces (`lib/services/trakt/trakt_list_source.dart`).
-- Debrify also has its own tracker-independent local movie/series watchlist (`lib/screens/search_screen.dart`).
+- MegaWatch also has its own tracker-independent local movie/series watchlist (`lib/screens/search_screen.dart`).
 
 This works, but it means metadata quality and availability depend on multiple third-party or undocumented interfaces. TMDB can consolidate much of that read-only metadata surface.
 
 ## 2. Best integration opportunities
 
-| Priority | Debrify surface | TMDB APIs | Recommended use |
+| Priority | MegaWatch surface | TMDB APIs | Recommended use |
 | --- | --- | --- | --- |
 | P0 | Universal ID resolution | `/find/{external_id}`, external IDs | Resolve IMDb IDs into stable TMDB movie/TV IDs and preserve both. This is the foundation for everything else. |
 | P0 | Detail screens | Movie/TV details plus appended responses | Hydrate sparse Stremio, Trakt, Simkl, MDBList, local-watchlist, and catalog items consistently. |
@@ -64,7 +64,7 @@ This works, but it means metadata quality and availability depend on multiple th
 
 ### P0: Canonical ID resolution
 
-Debrify's playback flows depend heavily on IMDb IDs. That should continue because torrent searches, Stremio IDs, Trakt, Simkl, and other integrations often interoperate through IMDb.
+MegaWatch's playback flows depend heavily on IMDb IDs. That should continue because torrent searches, Stremio IDs, Trakt, Simkl, and other integrations often interoperate through IMDb.
 
 TMDB's `/find/{external_id}?external_source=imdb_id` can resolve an IMDb ID into movies, TV shows, people, and episodes. It also supports TVDB, Wikidata, and several social identifiers. This is materially better than fuzzy title/year matching when an external ID already exists.
 
@@ -152,7 +152,7 @@ TMDB exposes posters, backdrops, logos, profile images, and episode stills. Imag
 
 Official documentation: <https://developer.themoviedb.org/docs/image-basics>
 
-Recommended Debrify mappings:
+Recommended MegaWatch mappings:
 
 - Poster grids: appropriately sized poster rendition
 - TV hero: backdrop rendition sized for the display class
@@ -197,7 +197,7 @@ Recommended UI integration:
 - Preserve TMDB result order until the user explicitly changes sorting.
 - Require a sensible vote-count floor for Top Rated; otherwise obscure titles with very few votes dominate.
 
-TMDB can also power Debrify TV recipes based on genre, keywords, actors, studios, language, decade, or runtime. It should supply the title lineup; existing engines and debrid services should continue resolving playable sources.
+TMDB can also power MegaWatch TV recipes based on genre, keywords, actors, studios, language, decade, or runtime. It should supply the title lineup; existing engines and debrid services should continue resolving playable sources.
 
 ### P1: Home and discovery rails
 
@@ -261,7 +261,7 @@ Good placements:
 - Search-result badges
 - A region-aware `Streaming now` Home row
 
-This must remain visually and semantically separate from Debrify's debrid/source picker. Provider availability describes licensed availability; it is not a playable source returned to Debrify.
+This must remain visually and semantically separate from MegaWatch's debrid/source picker. Provider availability describes licensed availability; it is not a playable source returned to MegaWatch.
 
 ### P1: People, cast, and crew
 
@@ -305,7 +305,7 @@ Official documentation: <https://developer.themoviedb.org/v4/docs/authentication
 
 V4 is preferable for new authentication and mixed-media custom lists; v3 sessions remain useful for established account endpoints.
 
-However, TMDB does not replace Trakt, Simkl, or MDBList because it does not offer Debrify's required:
+However, TMDB does not replace Trakt, Simkl, or MDBList because it does not offer MegaWatch's required:
 
 - Playback heartbeats and scrobbling
 - Watched-history semantics
@@ -323,7 +323,7 @@ Official documentation: <https://developer.themoviedb.org/docs/authentication-gu
 
 ## 3. Complete relevant API-family inventory
 
-| TMDB family | Available operations | Debrify decision |
+| TMDB family | Available operations | MegaWatch decision |
 | --- | --- | --- |
 | Authentication | Validate key; guest session; v3 request token/session; v4 request/access tokens; logout; v4-to-v3 conversion | Application auth required; user auth optional later |
 | Account | Details, favorites, watchlists, rated movies/TV/episodes, custom lists, account states, mutations | Optional tracker/library integration |
@@ -337,7 +337,7 @@ Official documentation: <https://developer.themoviedb.org/docs/authentication-gu
 | Find | Resolve external identifiers | Essential identity bridge |
 | Genres | Movie and TV genre lists | Required for filters and genre-ID mapping |
 | Guest sessions | Retrieve a guest's rated movie/TV/episode lists | Only if guest rating is exposed |
-| Keywords | Keyword details and associated movies | Use for thematic discovery and Debrify TV |
+| Keywords | Keyword details and associated movies | Use for thematic discovery and MegaWatch TV |
 | Lists v3 | Legacy list details/create/add/remove/check/clear/delete | Avoid for new mixed-media list work |
 | Lists v4 | Create, read, update, add/remove, clear, delete, item status | Preferred if TMDB custom lists are added |
 | Movies | Details, credits, images, videos, external IDs, keywords, releases, reviews, recommendations, similar, providers, translations, account state/rating | Core metadata |
@@ -394,10 +394,10 @@ Official documentation: <https://developer.themoviedb.org/docs/authentication-ap
 A token compiled into an open-source Flutter application must be treated as public and extractable. Viable choices are:
 
 1. **User-supplied TMDB read token/API key:** Best security and cost model for this project, but adds setup friction.
-2. **Debrify-operated proxy:** Best onboarding, but introduces hosting, privacy, reliability, and abuse responsibilities.
+2. **MegaWatch-operated proxy:** Best onboarding, but introduces hosting, privacy, reliability, and abuse responsibilities.
 3. **Bundled shared token:** Easiest UX but weakest control; susceptible to extraction and quota abuse.
 
-Given Debrify already uses user-configured integrations, a user-supplied token is the most natural initial model.
+Given MegaWatch already uses user-configured integrations, a user-supplied token is the most natural initial model.
 
 User session and access tokens must be stored using the project's secret-vault/profile credential facilities, isolated by profile, excluded from backups unless explicitly protected, revoked on disconnect, and never logged.
 
@@ -425,7 +425,7 @@ Official documentation: <https://developer.themoviedb.org/docs/faq>
 
 ### Attribution and licensing
 
-Debrify is licensed under `AGPL-3.0-only`, which permits commercial use and redistribution. The project license therefore does not by itself establish noncommercial use under TMDB's developer API model. The integration must include:
+MegaWatch is licensed under `AGPL-3.0-only`, which permits commercial use and redistribution. The project license therefore does not by itself establish noncommercial use under TMDB's developer API model. The integration must include:
 
 - An approved TMDB logo in About/Credits
 - The required notice that the product uses TMDB but is not endorsed or certified by TMDB
@@ -434,7 +434,7 @@ Debrify is licensed under `AGPL-3.0-only`, which permits commercial use and redi
 - Cache expiration and refresh so TMDB content is not retained longer than six months
 - Immediate purge capability if API authorization terminates
 
-TMDB's terms prohibit commercial use without a written agreement and describe revenue broadly. Because Debrify displays donation links, the maintainer should obtain TMDB confirmation that the intended distribution and funding model qualifies before shipping a shared application key. This is a licensing-risk recommendation, not a legal conclusion.
+TMDB's terms prohibit commercial use without a written agreement and describe revenue broadly. Because MegaWatch displays donation links, the maintainer should obtain TMDB confirmation that the intended distribution and funding model qualifies before shipping a shared application key. This is a licensing-risk recommendation, not a legal conclusion.
 
 Official sources:
 
@@ -470,7 +470,7 @@ Official sources:
 - Recommendations, similar titles, and collections
 - Cast and crew navigation
 - Where-to-watch presentation
-- Keyword-driven Debrify TV catalog generation
+- Keyword-driven MegaWatch TV catalog generation
 
 ### Phase 4: Optional account integration
 
@@ -500,4 +500,4 @@ The highest-value initial package is:
 5. Recommendations, people, and collections
 6. Region-aware watch providers
 
-Defer TMDB account synchronization. It duplicates existing library surfaces but cannot replace Debrify's mature tracker, scrobble, progress, calendar, or local playback behavior.
+Defer TMDB account synchronization. It duplicates existing library surfaces but cannot replace MegaWatch's mature tracker, scrobble, progress, calendar, or local playback behavior.

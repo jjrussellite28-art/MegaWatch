@@ -1,4 +1,4 @@
-import 'package:debrify/screens/settings/iptv_settings_two_pane.dart';
+import 'package:megawatch/screens/settings/iptv_settings_two_pane.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

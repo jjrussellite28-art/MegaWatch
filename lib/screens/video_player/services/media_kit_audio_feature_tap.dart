@@ -63,7 +63,7 @@ class MediaKitAudioFeatureTap {
     _fileMode = fileMode;
   }
 
-  static const String filterLabel = 'debrify_autosync';
+  static const String filterLabel = 'megawatch_autosync';
   static const String metadataProperty = 'af-metadata/$filterLabel';
 
   // astats is sample-transparent. aspectralstats adds frequency-domain
@@ -218,7 +218,7 @@ class MediaKitAudioFeatureTap {
       await for (final entry in (await _metadataLogDirectory()).list()) {
         if (entry is! File) continue;
         final name = entry.uri.pathSegments.last;
-        if (!name.startsWith('debrify_autosync_') || !name.endsWith('.log')) {
+        if (!name.startsWith('megawatch_autosync_') || !name.endsWith('.log')) {
           continue;
         }
         try {
@@ -237,7 +237,7 @@ class MediaKitAudioFeatureTap {
     try {
       final path =
           '${(await _metadataLogDirectory()).path}${Platform.pathSeparator}'
-          'debrify_autosync_${DateTime.now().microsecondsSinceEpoch}.log';
+          'megawatch_autosync_${DateTime.now().microsecondsSinceEpoch}.log';
       // The path is spliced into a lavfi graph, where these characters are
       // syntax. Temp paths never contain them on our platforms; if one ever
       // does, use the fallback instead of building a broken graph.

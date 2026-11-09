@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../models/stremio_addon.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../services/imdb_enrichment_service.dart';
 import '../../services/imdb_parents_guide_service.dart';
 import '../../services/series_source_service.dart';
@@ -303,7 +303,7 @@ class ShowcaseAmbient extends StatelessWidget {
             child: CachedNetworkImage(
               imageUrl: url!,
               fit: BoxFit.cover,
-              cacheManager: DebrifyImageCache.manager,
+              cacheManager: MegaWatchImageCache.manager,
               memCacheWidth: 32,
               filterQuality: FilterQuality.low,
               placeholder: (_, __) => ColoredBox(color: bed),
@@ -439,7 +439,7 @@ class ShowcaseStickyLogo extends StatelessWidget {
                       imageUrl: url!,
                       height: 37 * m.k,
                       fit: BoxFit.contain,
-                      cacheManager: DebrifyImageCache.manager,
+                      cacheManager: MegaWatchImageCache.manager,
                       // Decode cap follows the k-scaled display size, or the
                       // one scaled element of the header renders soft.
                       memCacheWidth: (420 * m.k).round(),
@@ -785,7 +785,7 @@ class _LogoOrTitle extends StatelessWidget {
                 height: 60 * m.k,
                 fit: BoxFit.contain,
                 alignment: alignment,
-                cacheManager: DebrifyImageCache.manager,
+                cacheManager: MegaWatchImageCache.manager,
                 memCacheWidth: 520,
                 placeholder: (_, __) => const SizedBox.expand(),
                 errorWidget: (_, __, ___) => FittedBox(
@@ -1615,7 +1615,7 @@ class ShowcaseEpisodeCell extends StatelessWidget {
                       CachedNetworkImage(
                         imageUrl: url,
                         fit: BoxFit.cover,
-                        cacheManager: DebrifyImageCache.manager,
+                        cacheManager: MegaWatchImageCache.manager,
                         memCacheWidth: 500,
                         placeholder: (_, __) => ColoredBox(color: slot),
                         errorWidget: (_, __, ___) => ColoredBox(color: slot),
@@ -1790,7 +1790,7 @@ class ShowcaseEpisodeCardCompact extends StatelessWidget {
                       CachedNetworkImage(
                         imageUrl: url,
                         fit: BoxFit.cover,
-                        cacheManager: DebrifyImageCache.manager,
+                        cacheManager: MegaWatchImageCache.manager,
                         memCacheWidth: 500,
                         placeholder: (_, __) => ColoredBox(color: slot),
                         errorWidget: (_, __, ___) => ColoredBox(color: slot),
@@ -2058,7 +2058,7 @@ class _CastTileState extends State<_CastTile> {
                         ? CachedNetworkImage(
                             imageUrl: url,
                             fit: BoxFit.cover,
-                            cacheManager: DebrifyImageCache.manager,
+                            cacheManager: MegaWatchImageCache.manager,
                             memCacheWidth: 260,
                             placeholder: (_, __) =>
                                 const ColoredBox(color: Color(0xFF4A4A55)),
@@ -2367,7 +2367,7 @@ class _PosterState extends State<_Poster> {
                       ? CachedNetworkImage(
                           imageUrl: url,
                           fit: BoxFit.cover,
-                          cacheManager: DebrifyImageCache.manager,
+                          cacheManager: MegaWatchImageCache.manager,
                           memCacheWidth: 300,
                           placeholder: (_, __) => ColoredBox(color: slot),
                           errorWidget: (_, __, ___) => ColoredBox(color: slot),
@@ -2951,7 +2951,7 @@ class _UniverseCardState extends State<_UniverseCard> {
                             ? CachedNetworkImage(
                                 imageUrl: url,
                                 fit: BoxFit.cover,
-                                cacheManager: DebrifyImageCache.manager,
+                                cacheManager: MegaWatchImageCache.manager,
                                 memCacheWidth: 300,
                                 placeholder: (_, __) => ColoredBox(color: slot),
                                 errorWidget: (_, __, ___) =>

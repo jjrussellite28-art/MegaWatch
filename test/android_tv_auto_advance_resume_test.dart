@@ -12,7 +12,7 @@ String _between(String source, String start, String end) {
 
 void main() {
   final nativePlayer = File(
-    'android/app/src/main/kotlin/com/debrify/app/tv/AndroidTvTorrentPlayerActivity.kt',
+    'android/app/src/main/kotlin/com/megawatch/app/tv/AndroidTvTorrentPlayerActivity.kt',
   ).readAsStringSync();
 
   test('native TV auto-advance ignores every saved resume position', () {

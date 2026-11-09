@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:debrify/services/profiles/profile_database_snapshot.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/services/profiles/profile_database_snapshot.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -52,7 +52,7 @@ void main() {
       final source = sourceScope.fileIn(
         documents,
         'documents',
-        'debrify_tv.db',
+        'megawatch_tv.db',
       );
       await source.parent.create(recursive: true);
       final database = await openDatabase(source.path);
@@ -61,7 +61,7 @@ void main() {
       await database.close();
 
       final export = await ProfileDatabaseSnapshot.export(sourceScope);
-      expect(export.attachments.keys, contains('debrify_tv.db'));
+      expect(export.attachments.keys, contains('megawatch_tv.db'));
       expect(
         await ProfileDatabaseSnapshot.restore(
           destinationScope,
@@ -71,7 +71,7 @@ void main() {
       );
 
       final restored = await openDatabase(
-        destinationScope.fileIn(documents, 'documents', 'debrify_tv.db').path,
+        destinationScope.fileIn(documents, 'documents', 'megawatch_tv.db').path,
         readOnly: true,
       );
       try {
@@ -101,7 +101,7 @@ void main() {
       sessionEpoch: 1,
     );
     final documents = await AppStorage.documents();
-    final source = sourceScope.fileIn(documents, 'documents', 'debrify_tv.db');
+    final source = sourceScope.fileIn(documents, 'documents', 'megawatch_tv.db');
     await source.parent.create(recursive: true);
     final database = await openDatabase(source.path);
     await database.execute('CREATE TABLE sample (value TEXT NOT NULL)');
@@ -109,7 +109,7 @@ void main() {
     await database.close();
 
     final export = await ProfileDatabaseSnapshot.export(sourceScope);
-    expect(export.attachments.keys, contains('debrify_tv.db'));
+    expect(export.attachments.keys, contains('megawatch_tv.db'));
     expect(
       await ProfileDatabaseSnapshot.restore(
         destinationScope,
@@ -118,7 +118,7 @@ void main() {
       1,
     );
     final restored = await openDatabase(
-      destinationScope.fileIn(documents, 'documents', 'debrify_tv.db').path,
+      destinationScope.fileIn(documents, 'documents', 'megawatch_tv.db').path,
       readOnly: true,
     );
     try {
@@ -130,7 +130,7 @@ void main() {
     }
   });
 
-  test('full snapshot keeps Debrify TV channels and saved hashes', () async {
+  test('full snapshot keeps MegaWatch TV channels and saved hashes', () async {
     final sourceScope = ProfileScope(
       profileId: 'profile-full-tv-source',
       dataGeneration: 1,
@@ -142,7 +142,7 @@ void main() {
       sessionEpoch: 1,
     );
     final documents = await AppStorage.documents();
-    final source = sourceScope.fileIn(documents, 'documents', 'debrify_tv.db');
+    final source = sourceScope.fileIn(documents, 'documents', 'megawatch_tv.db');
     await source.parent.create(recursive: true);
     final database = await openDatabase(source.path, singleInstance: false);
     await database.execute(
@@ -163,11 +163,11 @@ void main() {
 
     final export = await ProfileDatabaseSnapshot.export(sourceScope);
     expect(export.compacted, isEmpty);
-    expect(export.debrifyTvOmission.isEmpty, isTrue);
+    expect(export.megawatchTvOmission.isEmpty, isTrue);
     await ProfileDatabaseSnapshot.restore(destinationScope, export.attachments);
 
     final restored = await openDatabase(
-      destinationScope.fileIn(documents, 'documents', 'debrify_tv.db').path,
+      destinationScope.fileIn(documents, 'documents', 'megawatch_tv.db').path,
       readOnly: true,
       singleInstance: false,
     );
@@ -194,7 +194,7 @@ void main() {
       sessionEpoch: 1,
     );
     final documents = await AppStorage.documents();
-    final source = sourceScope.fileIn(documents, 'documents', 'debrify_tv.db');
+    final source = sourceScope.fileIn(documents, 'documents', 'megawatch_tv.db');
     await source.parent.create(recursive: true);
     final database = await openDatabase(source.path);
     await database.execute('CREATE TABLE sample (value TEXT NOT NULL)');
@@ -214,7 +214,7 @@ void main() {
   });
 
   test(
-    'compaction omits complete Debrify TV channels and keeps IPTV rows',
+    'compaction omits complete MegaWatch TV channels and keeps IPTV rows',
     () async {
       ProfileDatabaseSnapshot.debugExportBudgetOverride = 64 * 1024;
       addTearDown(
@@ -234,7 +234,7 @@ void main() {
       final source = sourceScope.fileIn(
         documents,
         'documents',
-        'debrify_tv.db',
+        'megawatch_tv.db',
       );
       await source.parent.create(recursive: true);
       final database = await openDatabase(source.path, singleInstance: false);
@@ -297,11 +297,11 @@ void main() {
       await database.close();
 
       final export = await ProfileDatabaseSnapshot.export(sourceScope);
-      expect(export.compacted, contains('debrify_tv.db'));
-      expect(export.debrifyTvOmission.channels, 2);
-      expect(export.debrifyTvOmission.savedHashes, 2);
-      expect(export.debrifyTvOmission.profilesAffected, 1);
-      expect(export.attachments, contains('debrify_tv.db'));
+      expect(export.compacted, contains('megawatch_tv.db'));
+      expect(export.megawatchTvOmission.channels, 2);
+      expect(export.megawatchTvOmission.savedHashes, 2);
+      expect(export.megawatchTvOmission.profilesAffected, 1);
+      expect(export.attachments, contains('megawatch_tv.db'));
 
       // Restore is replacement semantics. A compact backup must not preserve
       // destination channels, because a later dedicated Remote transfer owns
@@ -309,7 +309,7 @@ void main() {
       final destination = destinationScope.fileIn(
         documents,
         'documents',
-        'debrify_tv.db',
+        'megawatch_tv.db',
       );
       await destination.parent.create(recursive: true);
       final destinationDatabase = await openDatabase(
@@ -338,7 +338,7 @@ void main() {
       );
 
       final restored = await openDatabase(
-        destinationScope.fileIn(documents, 'documents', 'debrify_tv.db').path,
+        destinationScope.fileIn(documents, 'documents', 'megawatch_tv.db').path,
         readOnly: true,
         singleInstance: false,
       );
@@ -374,7 +374,7 @@ void main() {
       sessionEpoch: 1,
     );
     final documents = await AppStorage.documents();
-    final source = sourceScope.fileIn(documents, 'documents', 'debrify_tv.db');
+    final source = sourceScope.fileIn(documents, 'documents', 'megawatch_tv.db');
     await source.parent.create(recursive: true);
     final database = await openDatabase(source.path, singleInstance: false);
     await database.execute('CREATE TABLE durable_proof (value TEXT NOT NULL)');
@@ -391,8 +391,8 @@ void main() {
       compact: true,
     );
     expect(export.compacted, isEmpty);
-    expect(export.debrifyTvOmission.isEmpty, isTrue);
-    expect(export.attachments, contains('debrify_tv.db'));
+    expect(export.megawatchTvOmission.isEmpty, isTrue);
+    expect(export.attachments, contains('megawatch_tv.db'));
   });
 
   test('catalog compaction keeps manual category order', () async {
@@ -468,7 +468,7 @@ void main() {
         sessionEpoch: 1,
       );
       final documents = await AppStorage.documents();
-      final media = scope.fileIn(documents, 'documents', 'debrify_tv.db');
+      final media = scope.fileIn(documents, 'documents', 'megawatch_tv.db');
       await media.parent.create(recursive: true);
       final mediaDb = await openDatabase(media.path, singleInstance: false);
       await mediaDb.execute(
@@ -591,7 +591,7 @@ void main() {
       sessionEpoch: 1,
     );
     final attachments = <Object?, Object?>{
-      'debrify_tv.db': <String, Object?>{
+      'megawatch_tv.db': <String, Object?>{
         'encoding': 'base64',
         'bytes': 2,
         'sha256': 'not-the-real-digest',

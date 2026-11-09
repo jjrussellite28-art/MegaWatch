@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/services/storage_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +45,7 @@ void main() {
       // Gen 0 → 3 in one pass ends on spotlight: the gen-1 block wrote
       // `app_theme` FIRST, and the gen-3 block reads what it wrote. This is
       // the ordering the gen-3 block depends on.
-      expect(prefs.getString('debrify_tv_style'), 'spotlight');
+      expect(prefs.getString('megawatch_tv_style'), 'spotlight');
       expect(prefs.getInt('defaults_generation'), 5);
 
       // The getters resolve the migrated values (they validate the sets).
@@ -53,7 +53,7 @@ void main() {
       expect(await StorageService.getTvHomeStyle(), 'spotlight');
       expect(await StorageService.getTvSidebarStyle(), 'pill');
       expect(await StorageService.getDesktopSidebarStyle(), 'pill');
-      expect(await StorageService.getDebrifyTvStyle(), 'spotlight');
+      expect(await StorageService.getMegaWatchTvStyle(), 'spotlight');
     });
 
     test('explicit choices survive; only unwritten prefs adopt', () async {
@@ -70,9 +70,9 @@ void main() {
       // ...while the never-written prefs adopt.
       expect(prefs.getString('tv_home_style'), 'spotlight');
       expect(prefs.getString('desktop_sidebar_style'), 'pill');
-      // Gen 3's proxy is the theme: signal is not spotlight, so Debrify TV
+      // Gen 3's proxy is the theme: signal is not spotlight, so MegaWatch TV
       // keeps the grid rather than restyling a non-flagship install.
-      expect(prefs.getString('debrify_tv_style'), 'grid');
+      expect(prefs.getString('megawatch_tv_style'), 'grid');
       expect(prefs.getInt('defaults_generation'), 5);
     });
 
@@ -83,7 +83,7 @@ void main() {
       expect(await StorageService.getTvHomeStyle(), 'spotlight');
       expect(await StorageService.getTvSidebarStyle(), 'pill');
       expect(await StorageService.getDesktopSidebarStyle(), 'pill');
-      expect(await StorageService.getDebrifyTvStyle(), 'spotlight');
+      expect(await StorageService.getMegaWatchTvStyle(), 'spotlight');
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getString('detail_page_style'), 'showcase');
       expect(prefs.getString('detail_theme'), 'spotlight');
@@ -99,7 +99,7 @@ void main() {
       expect(prefs.getString('app_theme'), isNull);
       expect(prefs.getString('tv_sidebar_style'), isNull);
       expect(prefs.getBool('home_hero_trailer_enabled'), isNull);
-      expect(prefs.getString('debrify_tv_style'), isNull);
+      expect(prefs.getString('megawatch_tv_style'), isNull);
       expect(prefs.getInt('defaults_generation'), 5);
     });
 
@@ -165,7 +165,7 @@ void main() {
         // Gen 3 does NOT restyle a Classic install — and because the stored
         // value equals the pin the Classic bundle now carries, the Presets
         // picker keeps reporting Classic rather than flipping to Custom.
-        expect(prefs.getString('debrify_tv_style'), 'grid');
+        expect(prefs.getString('megawatch_tv_style'), 'grid');
       },
     );
 
@@ -173,7 +173,7 @@ void main() {
       'generation 3: an install on the Spotlight Look adopts spotlight',
       () async {
         // A Spotlight-era install that already passed generations 1 and 2.
-        // Without the gen-3 write, adding `debrify_tv_style` to the Spotlight
+        // Without the gen-3 write, adding `megawatch_tv_style` to the Spotlight
         // bundle would flip these users to "Custom" in the Presets picker —
         // isActive compares every key a bundle names against stored prefs.
         SharedPreferences.setMockInitialValues({
@@ -184,7 +184,7 @@ void main() {
         });
         await StorageService.migrateDefaultsGeneration();
         final prefs = await SharedPreferences.getInstance();
-        expect(prefs.getString('debrify_tv_style'), 'spotlight');
+        expect(prefs.getString('megawatch_tv_style'), 'spotlight');
         expect(prefs.getInt('defaults_generation'), 5);
       },
     );
@@ -204,7 +204,7 @@ void main() {
         });
         await StorageService.migrateDefaultsGeneration();
         final prefs = await SharedPreferences.getInstance();
-        expect(prefs.getString('debrify_tv_style'), 'spotlight');
+        expect(prefs.getString('megawatch_tv_style'), 'spotlight');
       },
     );
 
@@ -216,11 +216,11 @@ void main() {
         SharedPreferences.setMockInitialValues({
           'defaults_generation': 2,
           'app_theme': 'spotlight',
-          'debrify_tv_style': 'grid',
+          'megawatch_tv_style': 'grid',
         });
         await StorageService.migrateDefaultsGeneration();
         final prefs = await SharedPreferences.getInstance();
-        expect(prefs.getString('debrify_tv_style'), 'grid');
+        expect(prefs.getString('megawatch_tv_style'), 'grid');
       },
     );
 

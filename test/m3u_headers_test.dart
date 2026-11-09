@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/utils/m3u_parser.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/utils/m3u_parser.dart';
 
 /// Per-channel HTTP headers: playlists declare them in several dialects and a
 /// player is expected to honor all of them. Dropping them makes a channel that

@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_device_removal.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_transport.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_device_removal.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_transport.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _Transport extends Fake

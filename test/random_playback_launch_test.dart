@@ -1,6 +1,6 @@
-import 'package:debrify/models/advanced_search_selection.dart';
-import 'package:debrify/services/torrent_playback_service.dart';
-import 'package:debrify/services/stremio_service.dart';
+import 'package:megawatch/models/advanced_search_selection.dart';
+import 'package:megawatch/services/torrent_playback_service.dart';
+import 'package:megawatch/services/stremio_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

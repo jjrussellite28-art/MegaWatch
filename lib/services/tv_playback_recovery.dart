@@ -18,7 +18,7 @@ class TvPlaybackRecovery {
   TvPlaybackRecovery._();
 
   static const MethodChannel _channel = MethodChannel(
-    'debrify/tv_playback_recovery',
+    'megawatch/tv_playback_recovery',
   );
   static const Duration _staleAfter = Duration(days: 7);
   static ProfileScope? _gateBypass;

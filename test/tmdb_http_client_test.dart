@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:debrify/services/tmdb_http_client.dart';
+import 'package:megawatch/services/tmdb_http_client.dart';
 
 class _Socket extends Fake implements Socket {
   bool destroyed = false;
@@ -17,7 +17,7 @@ class _Socket extends Fake implements Socket {
 }
 
 Future<Directory> _tlsFixture({String host = 'api.themoviedb.org'}) async {
-  final dir = await Directory.systemTemp.createTemp('debrify-tmdb-tls-');
+  final dir = await Directory.systemTemp.createTemp('megawatch-tmdb-tls-');
   addTearDown(() => dir.delete(recursive: true));
   Future<void> openssl(List<String> args) async {
     final result = await Process.run(
@@ -43,7 +43,7 @@ Future<Directory> _tlsFixture({String host = 'api.themoviedb.org'}) async {
     '-days',
     '365',
     '-subj',
-    '/CN=Debrify test CA',
+    '/CN=MegaWatch test CA',
     '-addext',
     'basicConstraints=critical,CA:TRUE',
   ]);

@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/filtered_catalog_pager.dart';
-import 'package:debrify/services/hide_watched_prefs.dart';
-import 'package:debrify/services/watched_filter.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/filtered_catalog_pager.dart';
+import 'package:megawatch/services/hide_watched_prefs.dart';
+import 'package:megawatch/services/watched_filter.dart';
 
 StremioMeta _meta(String id, {String type = 'movie', String? imdb}) =>
     StremioMeta(id: id, type: type, name: id, imdbId: imdb);

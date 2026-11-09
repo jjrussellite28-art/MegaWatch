@@ -1,8 +1,8 @@
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/tvos_top_shelf_service.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/tvos_top_shelf_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -127,7 +127,7 @@ void main() {
         items.map((item) => (item as Map<String, dynamic>)['imdbId']).toSet(),
         hasLength(8),
       );
-      expect(snapshot['contextTitle'], 'Spotlight on Debrify');
+      expect(snapshot['contextTitle'], 'Spotlight on MegaWatch');
     });
   });
 
@@ -137,7 +137,7 @@ void main() {
       () {
         final source = <String, dynamic>{
           'version': 1,
-          'contextTitle': 'Spotlight on Debrify',
+          'contextTitle': 'Spotlight on MegaWatch',
           'items': [
             <String, dynamic>{'imdbId': 'tt1234567', 'title': 'One'},
             <String, dynamic>{'imdbId': 'tt7654321', 'title': 'Two'},

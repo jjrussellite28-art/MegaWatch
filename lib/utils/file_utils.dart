@@ -1,7 +1,7 @@
 class FileUtils {
   /// What counts as a playable video anywhere in the app. This ONE list is
   /// what every cloud browser (Real-Debrid, TorBox, PikPak, Premiumize,
-  /// AllDebrid, playlists, Debrify TV) asks before offering Play instead of
+  /// AllDebrid, playlists, MegaWatch TV) asks before offering Play instead of
   /// download-only — so a format missing here isn't "unsupported", it's
   /// invisible.
   static const List<String> _videoExtensions = [

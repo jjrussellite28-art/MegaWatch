@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/home_catalog_refresh.dart';
-import 'package:debrify/services/home_load_deadline.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/home_catalog_refresh.dart';
+import 'package:megawatch/services/home_load_deadline.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-# Debrify Android database lifecycle patch
+# MegaWatch Android database lifecycle patch
 
 Based on sqflite_android 2.4.1, retaining its upstream license and public Dart API.
 Only SqflitePlugin.java and Database.java change at runtime.
@@ -17,7 +17,7 @@ close. Retained cursors and queued operations are released with the connection.
 Worker-count changes with live connections are rejected instead of discarding
 pending work.
 
-The Android build uses Debrify's existing API 24 minimum. Robolectric 4.15.1 is
+The Android build uses MegaWatch's existing API 24 minimum. Robolectric 4.15.1 is
 used only for JVM tests. EngineLifecycleTest covers separate live engines,
 abandoned transactions and queued reads, committed-data preservation, another
 engine continuing work, detach during a queued open, closing multiple handles,

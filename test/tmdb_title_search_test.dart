@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:debrify/services/tmdb_metadata_repository.dart';
-import 'package:debrify/services/tmdb_title_search.dart';
+import 'package:megawatch/services/tmdb_metadata_repository.dart';
+import 'package:megawatch/services/tmdb_title_search.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

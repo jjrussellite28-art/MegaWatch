@@ -1,7 +1,7 @@
 enum ContentDisplayMatchMode {
   /// Preserve the platform/player behavior from before display matching was
   /// configurable. On Android TV this includes Media3's seamless frame-rate
-  /// hinting; on tvOS Debrify does not publish display criteria.
+  /// hinting; on tvOS MegaWatch does not publish display criteria.
   systemDefault('system', 'System managed'),
 
   /// Explicitly disable player-owned display matching requests.

@@ -13,7 +13,7 @@ class ProfileLockController {
 
   static final ProfileLockController instance = ProfileLockController._();
   static const MethodChannel _privacy = MethodChannel(
-    'com.debrify.app/profile_privacy',
+    'com.megawatch.app/profile_privacy',
   );
 
   final ValueNotifier<String?> lockedProfileId = ValueNotifier<String?>(null);

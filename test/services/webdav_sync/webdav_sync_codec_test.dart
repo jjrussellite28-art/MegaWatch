@@ -5,8 +5,8 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:cryptography/cryptography.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const String _legacyDocumentFixture =
@@ -542,7 +542,7 @@ Future<Uint8List> _encryptDocumentPlaintext({
   required List<int> clear,
 }) async {
   final header = <String, Object?>{
-    'format': 'debrify-webdav-sync-document',
+    'format': 'megawatch-webdav-sync-document',
     'version': 1,
     'circleId': 'circle-test-1',
     'deviceId': 'device-test-1',

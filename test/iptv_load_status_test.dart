@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/iptv_load_phase.dart';
-import 'package:debrify/widgets/iptv/iptv_results_view.dart';
+import 'package:megawatch/services/iptv_load_phase.dart';
+import 'package:megawatch/widgets/iptv/iptv_results_view.dart';
 
 /// What the blocking-load screen is allowed to claim.
 ///

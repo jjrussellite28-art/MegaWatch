@@ -114,7 +114,7 @@ abstract final class SanitizedProfilePreferences {
         return value is String && _validDiscoverDefaultSource(value);
       case 'discover_last_source':
         return value is String && _validDiscoverSource(value);
-      case 'debrify_tv_style':
+      case 'megawatch_tv_style':
         return value is String &&
             const <String>{'grid', 'spotlight'}.contains(value);
       case 'detail_page_style':
@@ -158,7 +158,7 @@ abstract final class SanitizedProfilePreferences {
               'pulse',
               'ticket',
             }.contains(value);
-      case 'debrify_tv_player_style':
+      case 'megawatch_tv_player_style':
         return value is String &&
             const <String>{
               'classic',

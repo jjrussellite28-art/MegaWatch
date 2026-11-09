@@ -1,7 +1,7 @@
-import 'package:debrify/services/player_visibility.dart';
+import 'package:megawatch/services/player_visibility.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_save_feedback.dart';
-import 'package:debrify/widgets/webdav_sync/webdav_save_status.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_save_feedback.dart';
+import 'package:megawatch/widgets/webdav_sync/webdav_save_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

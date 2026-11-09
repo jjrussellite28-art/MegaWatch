@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/models/detail_page_section_visibility.dart';
-import 'package:debrify/services/imdb_enrichment_service.dart';
-import 'package:debrify/services/imdb_parents_guide_service.dart';
-import 'package:debrify/services/trakt/trakt_episode_model.dart';
-import 'package:debrify/theme/app_motion.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/widgets/detail/detail_layout_showcase.dart';
-import 'package:debrify/widgets/detail/detail_model.dart';
-import 'package:debrify/widgets/detail/showcase_parts.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/episodes_panel.dart';
-import 'package:debrify/widgets/section_reveal.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/models/detail_page_section_visibility.dart';
+import 'package:megawatch/services/imdb_enrichment_service.dart';
+import 'package:megawatch/services/imdb_parents_guide_service.dart';
+import 'package:megawatch/services/trakt/trakt_episode_model.dart';
+import 'package:megawatch/theme/app_motion.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/widgets/detail/detail_layout_showcase.dart';
+import 'package:megawatch/widgets/detail/detail_model.dart';
+import 'package:megawatch/widgets/detail/showcase_parts.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/episodes_panel.dart';
+import 'package:megawatch/widgets/section_reveal.dart';
 
 /// Showcase's compact (phone) presentation and touch drivers.
 ///

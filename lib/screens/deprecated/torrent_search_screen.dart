@@ -46,7 +46,7 @@
 // import '../services/alldebrid_service.dart';
 // import '../models/alldebrid_file.dart';
 // import '../services/torrent_file_service.dart';
-// import '../services/debrify_tv_channel_add_service.dart';
+// import '../services/megawatch_tv_channel_add_service.dart';
 // import '../models/torbox_torrent.dart';
 // import '../models/torbox_file.dart';
 // import '../screens/torbox/torbox_downloads_screen.dart';
@@ -54,8 +54,8 @@
 //     show kEpisodesRouteName, kCatalogDetailRouteName;
 // import '../widgets/shimmer.dart';
 // import '../widgets/search_loading_animation.dart';
-// import '../services/debrify_tv_repository.dart';
-// import '../models/debrify_tv_channel_record.dart';
+// import '../services/megawatch_tv_repository.dart';
+// import '../models/megawatch_tv_channel_record.dart';
 // import '../services/community/channel_yaml_builder.dart';
 // import '../services/community/magnet_yaml_service.dart';
 // import '../widgets/torrent_filters_sheet.dart';
@@ -67,7 +67,7 @@
 // import '../widgets/provider_status_cards.dart';
 // import '../widgets/home_favorites_section.dart';
 // import '../widgets/home_playlist_section.dart';
-// import '../widgets/home_debrify_tv_favorites_section.dart';
+// import '../widgets/home_megawatch_tv_favorites_section.dart';
 // import '../widgets/home_stremio_tv_favorites_section.dart';
 // import '../widgets/home_iptv_favorites_section.dart';
 // import '../widgets/home_continue_watching_section.dart';
@@ -4481,7 +4481,7 @@
 //       String? subFolderId;
 //       try {
 //         subFolderId = await pikpak.findOrCreateSubfolder(
-//           folderName: 'debrify-torrents',
+//           folderName: 'megawatch-torrents',
 //           parentFolderId: parentFolderId,
 //           getCachedId: StorageService.getPikPakTorrentsFolderId,
 //           setCachedId: StorageService.setPikPakTorrentsFolderId,
@@ -8664,11 +8664,11 @@
 //       // Get parent folder ID (restricted folder or root)
 //       final parentFolderId = await StorageService.getPikPakRestrictedFolderId();
 // 
-//       // Find or create "debrify-torrents" subfolder
+//       // Find or create "megawatch-torrents" subfolder
 //       String? subFolderId;
 //       try {
 //         subFolderId = await pikpak.findOrCreateSubfolder(
-//           folderName: 'debrify-torrents',
+//           folderName: 'megawatch-torrents',
 //           parentFolderId: parentFolderId,
 //           getCachedId: StorageService.getPikPakTorrentsFolderId,
 //           setCachedId: StorageService.setPikPakTorrentsFolderId,
@@ -9349,7 +9349,7 @@
 //             _buildBulkOptionTile(
 //               icon: Icons.live_tv_rounded,
 //               color: const Color(0xFF14B8A6),
-//               title: 'Debrify TV Channel',
+//               title: 'MegaWatch TV Channel',
 //               subtitle: 'Save as a local channel',
 //               onTap: () => Navigator.of(context).pop('create_channel'),
 //             ),
@@ -9403,13 +9403,13 @@
 //     }
 // 
 //     try {
-//       // Get or create the debrify-torrents subfolder once
+//       // Get or create the megawatch-torrents subfolder once
 //       final parentFolderId = await StorageService.getPikPakRestrictedFolderId();
 //       String? subFolderId;
 // 
 //       try {
 //         subFolderId = await pikpak.findOrCreateSubfolder(
-//           folderName: 'debrify-torrents',
+//           folderName: 'megawatch-torrents',
 //           parentFolderId: parentFolderId,
 //           getCachedId: StorageService.getPikPakTorrentsFolderId,
 //           setCachedId: StorageService.setPikPakTorrentsFolderId,
@@ -10972,7 +10972,7 @@
 //     }
 //   }
 // 
-//   /// Create a Debrify TV channel from selected torrents
+//   /// Create a MegaWatch TV channel from selected torrents
 //   Future<void> _createChannelFromSelection() async {
 //     final torrentsToAdd =
 //         (_isSelectionMode
@@ -11453,7 +11453,7 @@
 //                             color: const Color(0xFF10B981),
 //                             title: 'Add to channel',
 //                             subtitle:
-//                                 'Cache this torrent in a Debrify TV channel.',
+//                                 'Cache this torrent in a MegaWatch TV channel.',
 //                             enabled: true,
 //                             onTap: () {
 //                               Navigator.of(ctx).pop();
@@ -12325,7 +12325,7 @@
 //     );
 //   }
 // 
-//   /// Add a single torrent to a Debrify TV channel
+//   /// Add a single torrent to a MegaWatch TV channel
 //   Future<void> _addTorrentToChannel(
 //     Torrent torrent,
 //     String searchKeyword,
@@ -12333,14 +12333,14 @@
 //     await _addTorrentsToChannel([torrent], searchKeyword);
 //   }
 // 
-//   /// Add multiple torrents to a Debrify TV channel via the picker dialog
+//   /// Add multiple torrents to a MegaWatch TV channel via the picker dialog
 //   Future<void> _addTorrentsToChannel(
 //     List<Torrent> torrents,
 //     String searchKeyword, {
 //     bool showShareDialogOnCreate = false,
 //   }) async {
 //     try {
-//       final result = await DebrifyTvChannelAddService.addTorrentsToChannel(
+//       final result = await MegaWatchTvChannelAddService.addTorrentsToChannel(
 //         context,
 //         torrents: torrents,
 //         searchKeyword: searchKeyword,
@@ -12363,7 +12363,7 @@
 //           debugPrint('[AddToChannel] Share dialog error (non-fatal): $e');
 //         }
 //       }
-//     } on DebrifyTvChannelAddException catch (e) {
+//     } on MegaWatchTvChannelAddException catch (e) {
 //       if (!mounted) return;
 //       ScaffoldMessenger.of(context).showSnackBar(
 //         SnackBar(
@@ -12385,10 +12385,10 @@
 //   }
 // 
 //   Future<void> _showChannelCreatedDialog(String channelId) async {
-//     final repo = DebrifyTvRepository.instance;
+//     final repo = MegaWatchTvRepository.instance;
 //     final channels = await repo.fetchAllChannels();
 //     if (!mounted) return;
-//     DebrifyTvChannelRecord? found;
+//     MegaWatchTvChannelRecord? found;
 //     for (final ch in channels) {
 //       if (ch.channelId == channelId) {
 //         found = ch;
@@ -12398,16 +12398,16 @@
 //     if (found == null) return;
 //     final channel = found;
 // 
-//     String? debrifyLink;
+//     String? megawatchLink;
 //     String? encodeError;
 //     try {
 //       final yamlContent = await ChannelYamlBuilder.build(channel);
-//       debrifyLink = MagnetYamlService.encode(
+//       megawatchLink = MagnetYamlService.encode(
 //         yamlContent: yamlContent,
 //         channelName: channel.name,
 //       );
 //       try {
-//         await Clipboard.setData(ClipboardData(text: debrifyLink));
+//         await Clipboard.setData(ClipboardData(text: megawatchLink));
 //       } catch (_) {
 //         // Clipboard write is best-effort
 //       }
@@ -12459,18 +12459,18 @@
 //             children: [
 //               const SizedBox(height: 8),
 //               Text(
-//                 debrifyLink != null
-//                     ? 'A shareable Debrify link was copied to your clipboard.'
+//                 megawatchLink != null
+//                     ? 'A shareable MegaWatch link was copied to your clipboard.'
 //                     : 'Failed to generate shareable link${encodeError != null ? ': $encodeError' : ''}.',
 //                 style: TextStyle(
 //                   color: Colors.white.withValues(alpha: 0.7),
 //                   height: 1.4,
 //                 ),
 //               ),
-//               if (debrifyLink != null) ...[
+//               if (megawatchLink != null) ...[
 //                 const SizedBox(height: 16),
 //                 SelectableText(
-//                   debrifyLink,
+//                   megawatchLink,
 //                   style: const TextStyle(color: Colors.white70, fontSize: 13),
 //                 ),
 //               ],
@@ -14095,7 +14095,7 @@
 //                             color: const Color(0xFF818CF8),
 //                             title: 'Add to playlist',
 //                             subtitle: hasVideo
-//                                 ? 'Save to your Debrify playlist.'
+//                                 ? 'Save to your MegaWatch playlist.'
 //                                 : 'Available for torrents with video files.',
 //                             enabled: hasVideo,
 //                             onTap: () {
@@ -14126,7 +14126,7 @@
 //                             color: const Color(0xFF10B981),
 //                             title: 'Add to channel',
 //                             subtitle:
-//                                 'Cache this torrent in a Debrify TV channel.',
+//                                 'Cache this torrent in a MegaWatch TV channel.',
 //                             enabled: true,
 //                             onTap: () {
 //                               Navigator.of(ctx).pop();
@@ -15059,7 +15059,7 @@
 //                             color: const Color(0xFF10B981),
 //                             title: 'Add to channel',
 //                             subtitle:
-//                                 'Cache this torrent in a Debrify TV channel.',
+//                                 'Cache this torrent in a MegaWatch TV channel.',
 //                             enabled: true,
 //                             onTap: () {
 //                               Navigator.of(ctx).pop();
@@ -16332,7 +16332,7 @@
 //                             color: const Color(0xFFA855F7),
 //                             title: 'Add to playlist',
 //                             subtitle: hasVideo
-//                                 ? 'Keep this torrent handy in your Debrify playlist.'
+//                                 ? 'Keep this torrent handy in your MegaWatch playlist.'
 //                                 : 'Available for video torrents only.',
 //                             enabled: hasVideo,
 //                             onTap: () {
@@ -16346,7 +16346,7 @@
 //                             color: const Color(0xFF10B981),
 //                             title: 'Add to channel',
 //                             subtitle:
-//                                 'Cache this torrent in a Debrify TV channel.',
+//                                 'Cache this torrent in a MegaWatch TV channel.',
 //                             enabled: true,
 //                             onTap: () {
 //                               Navigator.of(ctx).pop();
@@ -17984,7 +17984,7 @@
 //                         icon: Icons.live_tv_rounded,
 //                         color: const Color(0xFFF472B6),
 //                         title: 'Add to channel',
-//                         subtitle: 'Cache in a Debrify TV channel',
+//                         subtitle: 'Cache in a MegaWatch TV channel',
 //                         enabled: true,
 //                         onTap: () {
 //                           Navigator.of(ctx).pop();
@@ -19553,7 +19553,7 @@
 //       String? subFolderId;
 //       try {
 //         subFolderId = await pikpak.findOrCreateSubfolder(
-//           folderName: 'debrify-torrents',
+//           folderName: 'megawatch-torrents',
 //           parentFolderId: parentFolderId,
 //           getCachedId: StorageService.getPikPakTorrentsFolderId,
 //           setCachedId: StorageService.setPikPakTorrentsFolderId,
@@ -23065,9 +23065,9 @@
 //             onPlayChannel: _playIptvChannelFromHome,
 //           ),
 //         ),
-//         // Debrify TV favorites section (horizontal scroll)
+//         // MegaWatch TV favorites section (horizontal scroll)
 //         RepaintBoundary(
-//           child: HomeDebrifyTvFavoritesSection(
+//           child: HomeMegaWatchTvFavoritesSection(
 //             focusController: _homeFocusController,
 //             isTelevision: _isTelevision,
 //             onRequestFocusAbove: () {
@@ -23186,9 +23186,9 @@
 //                     },
 //                   ),
 //                   HomeEmptyAction(
-//                     title: 'Set Up Debrify TV',
+//                     title: 'Set Up MegaWatch TV',
 //                     subtitle:
-//                         'Create channels and favorite them to pin your Debrify TV picks on Home.',
+//                         'Create channels and favorite them to pin your MegaWatch TV picks on Home.',
 //                     icon: Icons.live_tv_rounded,
 //                     accentColor: const Color(0xFF8B5CF6),
 //                     onActivate: () async {

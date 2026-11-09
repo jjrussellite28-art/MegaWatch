@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:debrify/models/stream_badge_rules.dart';
-import 'package:debrify/services/stream_badge_matcher.dart';
-import 'package:debrify/services/stream_badges_service.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/utils/platform_util.dart';
-import 'package:debrify/widgets/source_list_scroll_anchor.dart';
-import 'package:debrify/widgets/source_row.dart';
+import 'package:megawatch/models/stream_badge_rules.dart';
+import 'package:megawatch/services/stream_badge_matcher.dart';
+import 'package:megawatch/services/stream_badges_service.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/utils/platform_util.dart';
+import 'package:megawatch/widgets/source_list_scroll_anchor.dart';
+import 'package:megawatch/widgets/source_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

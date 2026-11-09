@@ -701,7 +701,7 @@ class StremioService {
     return canonical;
   }
 
-  /// Import addons from a Debrify Stremio Importer JSON file or a raw Stremio
+  /// Import addons from a MegaWatch Stremio Importer JSON file or a raw Stremio
   /// addon collection JSON payload.
   Future<StremioAddonImportResult> importAddonsFromJson(
     String jsonContent, {
@@ -2419,7 +2419,7 @@ class StremioService {
       // A debrid addon may return a ready-to-play URL while retaining the
       // source torrent hash in `infoHash` or `behaviorHints.bingeGroup`.
       // Preserve both transports as separate rows: the URL row plays through
-      // the addon, while the hash row remains available to Debrify's provider.
+      // the addon, while the hash row remains available to MegaWatch's provider.
       final variants =
           <
             ({
@@ -3695,7 +3695,7 @@ class StremioService {
     // Must have at least one useful resource
     if (!hasStreams && !hasCatalogs && !hasSubtitles) {
       return 'This addon doesn\'t provide streams, catalogs, or subtitles. '
-          'Debrify requires addons with stream, catalog, or subtitle support.';
+          'MegaWatch requires addons with stream, catalog, or subtitle support.';
     }
 
     return null; // Valid

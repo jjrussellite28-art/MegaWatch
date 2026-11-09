@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/screens/collections/collection_folder_screen.dart';
-import 'package:debrify/services/home_collections_store.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/widgets/see_all/stremio_dropdown.dart';
-import 'package:debrify/widgets/home/spotlight_board.dart';
-import 'package:debrify/widgets/collections/collection_category_tabs.dart';
-import 'package:debrify/widgets/collections/collection_list_gallery.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/screens/collections/collection_folder_screen.dart';
+import 'package:megawatch/services/home_collections_store.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/widgets/see_all/stremio_dropdown.dart';
+import 'package:megawatch/widgets/home/spotlight_board.dart';
+import 'package:megawatch/widgets/collections/collection_category_tabs.dart';
+import 'package:megawatch/widgets/collections/collection_list_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
@@ -331,7 +331,7 @@ void main() {
                 format: ui.ImageByteFormat.png,
               );
               await File(
-                '/tmp/debrify-collection-header.png',
+                '/tmp/megawatch-collection-header.png',
               ).writeAsBytes(bytes!.buffer.asUint8List());
               image.dispose();
             });

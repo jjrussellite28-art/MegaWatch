@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 class PlatformUtil {
   PlatformUtil._();
 
-  static const MethodChannel _channel = MethodChannel('com.debrify.app/downloader');
+  static const MethodChannel _channel = MethodChannel('com.megawatch.app/downloader');
 
   static bool? _isAndroidTVCached;
 

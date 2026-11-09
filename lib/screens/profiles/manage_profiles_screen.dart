@@ -223,7 +223,7 @@ class _ManageProfilesScreenState extends State<ManageProfilesScreen> {
           // kProfileAudit is a compile-time const defaulting to false, so a
           // build that did not opt in has neither this button nor the code
           // behind it — the tooling cannot ship by being forgotten. Opt in with
-          // --dart-define=DEBRIFY_PROFILE_AUDIT=true.
+          // --dart-define=MEGAWATCH_PROFILE_AUDIT=true.
           if (kProfileAudit)
             IconButton(
               tooltip: 'Profile data',

@@ -27,7 +27,7 @@ through a callback rather than an import (main.dart:2400, :2416):
     youtube     lib/widgets/youtube/youtube_results_view.dart lib/screens/browse_screen.dart
     playlist    lib/screens/playlist_screen.dart
     stremio_tv  lib/screens/stremio_tv/stremio_tv_screen.dart
-    debrify_tv  lib/screens/magic_tv_screen.dart
+    megawatch_tv  lib/screens/magic_tv_screen.dart
     iptv        lib/widgets/iptv/iptv_results_view.dart lib/screens/browse_screen.dart
 """
 import glob
@@ -78,8 +78,8 @@ def phase_one_files():
 def resolve(importer, target, stop_at_boundaries):
     if target.startswith(("dart:", "package:flutter/", "package:flutter_")):
         return None
-    if target.startswith("package:debrify/"):
-        rel = "lib/" + target[len("package:debrify/"):]
+    if target.startswith("package:megawatch/"):
+        rel = "lib/" + target[len("package:megawatch/"):]
     elif target.startswith("package:"):
         return None
     else:

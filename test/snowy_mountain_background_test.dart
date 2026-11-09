@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/home/snowy_mountain_background.dart';
+import 'package:megawatch/widgets/home/snowy_mountain_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

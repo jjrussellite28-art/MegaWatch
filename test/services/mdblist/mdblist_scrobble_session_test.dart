@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:debrify/services/mdblist/mdblist_models.dart';
-import 'package:debrify/services/mdblist/mdblist_scrobble_session.dart';
+import 'package:megawatch/services/mdblist/mdblist_models.dart';
+import 'package:megawatch/services/mdblist/mdblist_scrobble_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

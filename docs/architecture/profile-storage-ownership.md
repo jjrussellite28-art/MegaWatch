@@ -1,7 +1,7 @@
 # Profile storage ownership
 
 This manifest is the compatibility contract for the profiles rollout. Unless a
-key or path is explicitly device/job-owned below, existing Debrify state is
+key or path is explicitly device/job-owned below, existing MegaWatch state is
 profile-owned and migrates to the initial Admin.
 
 Portable backup/restore coverage, transformations, and intentional exclusions
@@ -16,7 +16,7 @@ are specified separately in [Profile backup coverage](profile-backup-coverage.md
 | Device pending actions | `pending-external-actions-v1.json` | Bounded, device-key sealed, 24-hour launch/share queue; consumed before dispatch after local profile unlock. |
 | Device jobs | download pending/paused/history, Android recording engine/concurrency, desktop schedules, recording history | Execution continues when its owner is inactive or PIN-locked. Every durable record must gain owner/revision fields. |
 | Device platform | approved executable catalog, writable destination grants, battery/setup notices, OS capability probes | A profile stores only its selected reference. |
-| Profile | all remaining `StorageService` keys | Includes presentation, navigation, playback, provider selection, Home, IPTV, Debrify TV, integrations, content policy preferences, and history. |
+| Profile | all remaining `StorageService` keys | Includes presentation, navigation, playback, provider selection, Home, IPTV, MegaWatch TV, integrations, content policy preferences, and history. |
 | Profile dynamic | `engine_*`, `series_source_*`, `discover_sort_*`, subtitle keys, Stremio addon JSON, `tvmaze_cache_*`, `tvmaze_timestamp_*` | Accessed only through `ProfilePreferences`. TVMaze responses stay memory-only on tvOS because CFPreferences aborts the process when its payload ceiling is exceeded. |
 | Resource | provider/tracker/WebDAV/IPTV/addon/indexer credentials and shareable connection configuration | Converted from legacy preference/vault keys into sealed resource payloads; never copied by profile-copy UI. |
 | Profile migration | essential-addon seeding state | Version markers are device-wide; seeding markers are profile-owned. |
@@ -30,7 +30,7 @@ retains those unprefixed keys read-only for the rollback window.
 | State | Owner | Location rule |
 |---|---|---|
 | `profiles.db` | Device registry | Durable application-support storage except tvOS, where it is a purgeable projection reconstructed from the recovery store. |
-| `debrify_tv.db` | Profile | Profile generation directory; tvOS treats it as reconstructible activity/cache. |
+| `megawatch_tv.db` | Profile | Profile generation directory; tvOS treats it as reconstructible activity/cache. |
 | `iptv_catalog.db` | Profile | Profile generation directory; credential-bearing rows must be normalized or sealed. |
 | imported engine YAML/config | Profile | Profile generation documents directory. |
 | private EPG data | Profile/resource | Profile generation cache/support directory; public account-independent guide data may use global cache. |

@@ -116,7 +116,7 @@ No backup/restore app code or sync code was changed by this validation.
 Compile from the repository root:
 
 ```sh
-dart compile exe --packages=.dart_tool/package_config.json dev/design/prototypes/backup_archive_probe.dart -o /private/tmp/debrify-backup-probe.P7GKvI/probe
+dart compile exe --packages=.dart_tool/package_config.json dev/design/prototypes/backup_archive_probe.dart -o /private/tmp/megawatch-backup-probe.P7GKvI/probe
 ```
 
 Use a fresh fixture directory, then invoke the executable with:
@@ -136,5 +136,5 @@ truncated <directory> store
 The fixture parameter is approximate random payload MiB; SQLite overhead and
 M3U content increase actual size. Tested parameters: 10, 100, 500.
 Synthetic files and executable remain under
-`/private/tmp/debrify-backup-probe.P7GKvI` for inspection. They are disposable
+`/private/tmp/megawatch-backup-probe.P7GKvI` for inspection. They are disposable
 and are not user backups. The OS may eventually purge this temporary directory.

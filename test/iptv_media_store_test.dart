@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_channel_order.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_mutation.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_channel_order.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_mutation.dart';
 
-/// IPTV favorites / watch history / video resume on debrify_tv.db, including
+/// IPTV favorites / watch history / video resume on megawatch_tv.db, including
 /// the one-time import of the legacy SharedPreferences JSON blobs. Everything
 /// is driven through the public StorageService API, which is what the app
 /// actually calls.
@@ -30,7 +30,7 @@ void main() {
     IptvMediaStore.debugLibraryClock = DateTime.now;
     WebDavSyncLibraryMutation.originDeviceId = 'local-device';
     WebDavSyncLibraryMutation.debugUserMutationObserver = null;
-    DebrifyTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
+    MegaWatchTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
         .openDatabase(
           inMemoryDatabasePath,
           options: OpenDatabaseOptions(
@@ -39,14 +39,14 @@ void main() {
             // foreign key onto iptv_lists — without it the cascade rules under
             // test here simply wouldn't fire.
             onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
-            onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
+            onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
           ),
         );
   });
 
   tearDown(() async {
-    await DebrifyTvDatabase.debugDatabaseOverride?.close();
-    DebrifyTvDatabase.debugDatabaseOverride = null;
+    await MegaWatchTvDatabase.debugDatabaseOverride?.close();
+    MegaWatchTvDatabase.debugDatabaseOverride = null;
     IptvMediaStore.debugResetMigration();
     IptvMediaStore.debugLibraryClock = DateTime.now;
     WebDavSyncLibraryMutation.originDeviceId = 'local-device';
@@ -129,7 +129,7 @@ void main() {
       );
       expect(prefs.getString(historyKey), isNull);
       expect(prefs.getString(resumeKey), isNull);
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       expect(
         (await db.query(
           'webdav_sync_record_state',
@@ -186,7 +186,7 @@ void main() {
           reason: 'the import honors the same retention as the live writer',
         );
 
-        final db = DebrifyTvDatabase.debugDatabaseOverride!;
+        final db = MegaWatchTvDatabase.debugDatabaseOverride!;
         expect(
           await db.query(
             'webdav_sync_record_state',
@@ -238,7 +238,7 @@ void main() {
             },
           }),
         });
-        final db = DebrifyTvDatabase.debugDatabaseOverride!;
+        final db = MegaWatchTvDatabase.debugDatabaseOverride!;
         final batch = db.batch();
         for (final state in <(String, String, String)>[
           (
@@ -300,7 +300,7 @@ void main() {
       expect(alpha, isNot(beta));
       await IptvMediaStore.renameList(alpha, 'Renamed');
 
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       var alphaState = (await db.query(
         'webdav_sync_record_state',
         where: 'kind = ? AND owner_key = ?',
@@ -362,7 +362,7 @@ void main() {
 
       await IptvMediaStore.deleteList(listId);
 
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       expect(
         await db.query(
           'iptv_list_channels',
@@ -403,7 +403,7 @@ void main() {
           playlistId: 'source-1',
         );
 
-        final db = DebrifyTvDatabase.debugDatabaseOverride!;
+        final db = MegaWatchTvDatabase.debugDatabaseOverride!;
         final states = await db.query(
           'webdav_sync_record_state',
           where: 'kind = ?',
@@ -443,7 +443,7 @@ void main() {
 
       await IptvMediaStore.removeFavoritesByPlaylistId('source-1');
 
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       final states = await db.query(
         'webdav_sync_record_state',
         where: 'kind = ?',
@@ -483,7 +483,7 @@ void main() {
         ],
       );
 
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       final states = await db.query(
         'webdav_sync_record_state',
         where: 'kind = ?',
@@ -520,7 +520,7 @@ void main() {
           IptvChannel(name: 'Seven', url: newUrl),
         ]);
 
-        final db = DebrifyTvDatabase.debugDatabaseOverride!;
+        final db = MegaWatchTvDatabase.debugDatabaseOverride!;
         final states = await db.query(
           'webdav_sync_record_state',
           where: 'kind = ?',
@@ -568,7 +568,7 @@ void main() {
         origin: WebDavSyncMutationOrigin.maintenance,
       );
 
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       expect(await db.query('webdav_sync_record_state'), isEmpty);
       expect(
         (await db.query(
@@ -605,7 +605,7 @@ void main() {
 
       await IptvMediaStore.removeCategoryOrdersForSource('source-1');
 
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       expect(await db.query('iptv_category_channel_orders'), isEmpty);
       final states = await db.query(
         'webdav_sync_record_state',
@@ -738,7 +738,7 @@ void main() {
     });
 
     test('history is pruned to the 100 most recent', () async {
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       for (var i = 0; i < 100; i++) {
         await db.insert('iptv_watch_history', {
           'url': 'http://h/movie/u/p/$i.mp4',
@@ -776,7 +776,7 @@ void main() {
         );
       }
 
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       expect(await db.query('iptv_watch_history'), hasLength(100));
       final states = await db.query(
         'webdav_sync_record_state',
@@ -1020,7 +1020,7 @@ void main() {
       'a resume lookup spanning multiple IN-chunks finds every row',
       () async {
         final urls = [for (var i = 0; i < 1200; i++) 'http://h/v$i.mp4'];
-        final db = DebrifyTvDatabase.debugDatabaseOverride!;
+        final db = MegaWatchTvDatabase.debugDatabaseOverride!;
         final batch = db.batch();
         for (final url in urls) {
           batch.insert('video_resume', {
@@ -1065,7 +1065,7 @@ void main() {
 
       await IptvMediaStore.clearVideoResume();
 
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       final states = await db.query(
         'webdav_sync_record_state',
         where: 'kind = ?',
@@ -1097,7 +1097,7 @@ void main() {
           'generic-title',
           const <String, dynamic>{'positionMs': 1, 'durationMs': 2},
         );
-        final db = DebrifyTvDatabase.debugDatabaseOverride!;
+        final db = MegaWatchTvDatabase.debugDatabaseOverride!;
         await db.delete(
           'video_resume',
           where: 'resume_key = ?',
@@ -1139,7 +1139,7 @@ void main() {
         'generic-title',
         const <String, dynamic>{'positionMs': 1, 'durationMs': 2},
       );
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       final revisionBefore = (await db.query(
         'webdav_sync_meta',
         columns: const <String>['value'],

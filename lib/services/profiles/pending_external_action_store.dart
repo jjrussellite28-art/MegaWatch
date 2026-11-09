@@ -148,7 +148,7 @@ class PendingExternalActionStore {
     int createdAtMs,
     int expiresAtMs,
   ) => utf8.encode(
-    'debrify-pending-action-v1|id=$id|created=$createdAtMs|expires=$expiresAtMs',
+    'megawatch-pending-action-v1|id=$id|created=$createdAtMs|expires=$expiresAtMs',
   );
 
   static String _newId() {

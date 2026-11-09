@@ -6,7 +6,7 @@ From the repository root:
 zsh tool/tv_test.sh
 ```
 
-Reuses or starts the `debrify_tv` AVD, opens the installed app, and opens
+Reuses or starts the `megawatch_tv` AVD, opens the installed app, and opens
 http://127.0.0.1:18766/ for D-pad control. Keep the terminal open when it
 starts the remote. View playback in the emulator window. Click the remote
 page before using arrows, Enter, or Escape. Hold OK sends an Android long press.

@@ -1,7 +1,7 @@
-import 'package:debrify/services/engine/remote_engine_manager.dart';
-import 'package:debrify/widgets/onboarding/onboarding_focus.dart';
-import 'package:debrify/widgets/onboarding/onboarding_models.dart';
-import 'package:debrify/widgets/onboarding/steps/engines_step.dart';
+import 'package:megawatch/services/engine/remote_engine_manager.dart';
+import 'package:megawatch/widgets/onboarding/onboarding_focus.dart';
+import 'package:megawatch/widgets/onboarding/onboarding_models.dart';
+import 'package:megawatch/widgets/onboarding/steps/engines_step.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;

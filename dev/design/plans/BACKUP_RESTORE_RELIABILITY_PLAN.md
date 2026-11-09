@@ -1,7 +1,7 @@
 # Backup and restore reliability on TVs
 
 Status: Milestones 2-4 implemented on branch `local-backup-archive`
-(worktree `../debrify-backup-archive`, cut from `webdav-sync` at 65899f29).
+(worktree `../megawatch-backup-archive`, cut from `webdav-sync` at 65899f29).
 Mac test evidence below; physical TV, Android save bridge, iOS, Windows and
 Linux validation are PENDING. See "Implementation status" at the end. See [Mac validation results](BACKUP_RESTORE_MAC_VALIDATION.md).
 Baseline: `v0.9.0-beta.1` compared with the current `webdav-sync` branch.
@@ -38,13 +38,13 @@ the ongoing sync work or its plan.
 - Restore runs in an isolate but still reads and parses whole envelopes.
 - Clearing references before save/upload helps after encryption, not its peak.
 - Default snapshots retain rebuildable IPTV catalog and EPG caches until size
-  compaction; current compaction can also omit Debrify TV and its saved hashes.
+  compaction; current compaction can also omit MegaWatch TV and its saved hashes.
 - The supplied TV log confirms the beta build but contains no failure or memory
   measurements. An out-of-memory diagnosis has not been established.
 
 ## Proposed local format
 
-Use a separately versioned archive format, provisionally `.debrify`, with ZIP
+Use a separately versioned archive format, provisionally `.megawatch`, with ZIP
 container semantics and compact JSON metadata. Verify the installed archive
 library's actual file-streaming APIs before choosing the implementation; an
 archive API that materializes entire entries does not satisfy the requirement.
@@ -110,7 +110,7 @@ Drop: `meta`, `catalogs`, `channels`, `epg_programmes`, `epg_guides`.
 
 This matches the existing compaction list in
 `lib/services/profiles/profile_database_snapshot.dart:298`. For
-`debrify_tv.db` nothing is dropped in the new local format. Any new table
+`megawatch_tv.db` nothing is dropped in the new local format. Any new table
 added to either database must be classified here; unclassified tables fail
 export loudly rather than being silently kept or dropped.
 
@@ -154,7 +154,7 @@ live beside them. Existing tests must stay green unchanged.
 Preserve existing portable profile settings, accounts, permissions, PIN records
 where already supported, avatars, addons, engines, IPTV provider definitions,
 file-imported M3U content, favorites, lists, history, resume, hidden categories,
-ordering, numbering, and Debrify TV channels with their saved hash pools.
+ordering, numbering, and MegaWatch TV channels with their saved hash pools.
 
 Always exclude rebuildable IPTV catalog/channel and EPG caches from new local
 backups. Explain that guide/catalog data refreshes after restore, potentially
@@ -172,7 +172,7 @@ The agreed IPTV coverage is durable user data only:
 Saved channel entries inside favorites/lists are durable data even though the
 full provider channel catalog is a cache. Preserve their source references and
 provider setup so arrangements can reconnect to refreshed catalogs after
-restore. This policy applies to IPTV, not Debrify TV channel/hash libraries.
+restore. This policy applies to IPTV, not MegaWatch TV channel/hash libraries.
 
 Create consistent snapshots in private scratch storage. Never mutate live
 databases. Benchmark a local-only durable-table export into a fresh database
@@ -184,8 +184,8 @@ the correctness baseline if a selective path is not proven. Shared snapshot
 export defaults remain unchanged. Measure integrity checks and snapshot disk
 cost: streaming alone does not eliminate the reported packaging delay.
 
-Do not reuse the existing compact mode wholesale: it can omit Debrify TV.
-Preserve durable Debrify TV data regardless of size, subject to explicit disk
+Do not reuse the existing compact mode wholesale: it can omit MegaWatch TV.
+Preserve durable MegaWatch TV data regardless of size, subject to explicit disk
 limits. No silent omissions. Continue excluding media binaries, running jobs,
 device credentials, pairings, OS grants, and other existing device-only state.
 
@@ -218,7 +218,7 @@ instant completion or show success before verification and publication.
 - Process one database/file at a time with bounded buffers. Run CPU-heavy work
   off the UI isolate without passing giant in-memory payloads to workers.
 - Show the busy UI immediately, before snapshot work begins. Report concrete
-  stages such as “Saving IPTV favorites…”, “Saving Debrify TV: 18 MB of 40 MB”,
+  stages such as “Saving IPTV favorites…”, “Saving MegaWatch TV: 18 MB of 40 MB”,
   and “Checking backup…”. Show byte totals only when actually known; otherwise
   use a stage indicator, not a fabricated percentage or ETA.
 - Allow cooperative cancellation before publication. Keep input/animations
@@ -228,7 +228,7 @@ instant completion or show success before verification and publication.
   a clear notice that listings/guides may still be loading. Network failure
   must not roll back an otherwise successful restore or erase saved user data.
 - Compare old/new export and restore stage timings on settings-only,
-  cache-heavy IPTV, imported-M3U, and large Debrify TV libraries. Report backup
+  cache-heavy IPTV, imported-M3U, and large MegaWatch TV libraries. Report backup
   completion separately from subsequent catalog/EPG refresh time.
 
 ## Implementation milestones
@@ -322,7 +322,7 @@ instant completion or show success before verification and publication.
 ### 5. Verification and release gates
 
 - Round-trip one/all profiles and every durable data category above, including
-  imported M3U attachments, large Debrify TV pools, credentials, and custom files.
+  imported M3U attachments, large MegaWatch TV pools, credentials, and custom files.
 - Assert cache omission while durable rows and settings survive unchanged.
 - Restore with network unavailable: favorites/lists, provider definitions, and
   arrangements must survive; catalog/EPG refresh can succeed later. Verify
@@ -418,7 +418,7 @@ Built:
   cancel button, stage + MB progress); local restore probes the ZIP header and
   routes archives to staging, then the existing confirm/restore path.
 
-Evidence (Mac, `flutter test`, 302 MiB `debrify_tv.db`, one profile):
+Evidence (Mac, `flutter test`, 302 MiB `megawatch_tv.db`, one profile):
 
 | Stage | Time | Process RSS |
 | --- | ---: | ---: |

@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/models/home_collection_inventory.dart';
-import 'package:debrify/services/profiles/profile_preference_budget.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_collection_capacity.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine_state.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/models/home_collection_inventory.dart';
+import 'package:megawatch/services/profiles/profile_preference_budget.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_collection_capacity.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

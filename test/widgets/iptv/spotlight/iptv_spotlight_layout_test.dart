@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/iptv/spotlight/iptv_spotlight_layout.dart';
+import 'package:megawatch/widgets/iptv/spotlight/iptv_spotlight_layout.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 

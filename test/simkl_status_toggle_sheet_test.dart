@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/screens/merged_series_detail_screen.dart';
-import 'package:debrify/services/simkl/simkl_menu_helpers.dart';
-import 'package:debrify/services/simkl/simkl_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/screens/merged_series_detail_screen.dart';
+import 'package:megawatch/services/simkl/simkl_menu_helpers.dart';
+import 'package:megawatch/services/simkl/simkl_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

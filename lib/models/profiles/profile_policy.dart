@@ -8,7 +8,7 @@ enum ProfileFeature {
   cloud,
 
   /// OPERATION feature: engine/indexer/torrent-service execution — what
-  /// resolves streams for titles, feeds Debrify TV channels, and serves
+  /// resolves streams for titles, feeds MegaWatch TV channels, and serves
   /// magnet deep links. The keyword-search UI is [keywordSearch]; a Kid
   /// with this on and [keywordSearch] off plays curated titles fine but
   /// never sees a raw release list.
@@ -16,7 +16,7 @@ enum ProfileFeature {
   addonsAndEngines,
   trackersAndDiscovery,
   iptv,
-  debrifyTv,
+  megawatchTv,
   stremioTv,
   youtube,
   downloads,
@@ -103,7 +103,7 @@ class ProfilePolicy {
   /// — mock v6 matrix). Operations stay on where the mock only hides a
   /// surface: a Member without [ProfileFeature.cloudFiles] still streams
   /// through debrid; a Kid without [ProfileFeature.keywordSearch] still
-  /// plays curated titles through engines and keeps Debrify TV (whose
+  /// plays curated titles through engines and keeps MegaWatch TV (whose
   /// channels ARE keyword operations under the hood).
   factory ProfilePolicy.defaultsFor(UserProfileRole role) {
     final features = ProfileFeature.values.toSet();
@@ -128,9 +128,9 @@ class ProfilePolicy {
           ..remove(ProfileFeature.downloads)
           ..remove(ProfileFeature.recordings)
           ..remove(ProfileFeature.allowAdultContent)
-          // The Kid preset: shelves + Debrify TV + title search only.
+          // The Kid preset: shelves + MegaWatch TV + title search only.
           // Surfaces off; the operation features (cloud, torrentSearch)
-          // stay on so playback and Debrify TV keep working.
+          // stay on so playback and MegaWatch TV keep working.
           ..remove(ProfileFeature.keywordSearch)
           ..remove(ProfileFeature.cloudFiles)
           ..remove(ProfileFeature.addonsAndEngines)

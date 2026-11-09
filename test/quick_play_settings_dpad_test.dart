@@ -5,12 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/screens/settings/quick_play_settings_page.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/screens/settings/quick_play_settings_page.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/utils/platform_util.dart';
 
 /// TV DPAD reachability of the "Addon priority" list.
 ///

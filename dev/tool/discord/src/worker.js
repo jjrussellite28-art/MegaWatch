@@ -1,5 +1,5 @@
 /**
- * Debrify Discord bot — Cloudflare Worker (HTTP interactions endpoint).
+ * MegaWatch Discord bot — Cloudflare Worker (HTTP interactions endpoint).
  *
  * Flow:
  *   /bug  <platform>  → modal form → creates a labelled GitHub issue in the tracker
@@ -32,7 +32,7 @@ const CATEGORY_NAME = {
 export default {
   async fetch(request, env, ctx) {
     if (request.method !== 'POST') {
-      return new Response('Debrify Discord bot is running.', { status: 200 });
+      return new Response('MegaWatch Discord bot is running.', { status: 200 });
     }
     const body = await request.text();
     if (!(await verify(request, body, env.DISCORD_PUBLIC_KEY))) {
@@ -153,7 +153,7 @@ async function createIssue(env, title, body, labels) {
         Authorization: `Bearer ${env.GITHUB_TOKEN}`,
         Accept: 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
-        'User-Agent': 'debrify-discord-bot',
+        'User-Agent': 'megawatch-discord-bot',
       },
       body: JSON.stringify({ title, body, labels }),
     });

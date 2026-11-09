@@ -269,7 +269,7 @@ class UdpCommandService {
         InternetAddress(targetIp),
         kCommandPort,
       );
-      if (command.command != ConfigCommand.debrifyChannelChunk) {
+      if (command.command != ConfigCommand.megawatchChannelChunk) {
         debugPrint('UdpCommandService: Sent command to peer');
       }
       return true;
@@ -360,7 +360,7 @@ class UdpCommandService {
         onHeartbeatReceived?.call();
       } else if (type == RemoteMessageType.command) {
         final command = RemoteCommand.fromJson(json);
-        if (command.command != ConfigCommand.debrifyChannelChunk) {
+        if (command.command != ConfigCommand.megawatchChannelChunk) {
           debugPrint('UdpCommandService: Received command');
         }
         onCommandReceived?.call(command, datagram.address.address);

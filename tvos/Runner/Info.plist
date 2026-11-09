@@ -10,9 +10,9 @@
 		<string>infuse</string>
 	</array>
 	<key>CFBundleDisplayName</key>
-	<string>$(DEBRIFY_APP_DISPLAY_NAME)</string>
-	<key>DebrifyAppGroup</key>
-	<string>$(DEBRIFY_APP_GROUP)</string>
+	<string>$(MEGAWATCH_APP_DISPLAY_NAME)</string>
+	<key>MegaWatchAppGroup</key>
+	<string>$(MEGAWATCH_APP_GROUP)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -25,15 +25,15 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>com.varunsalian.debrifytv.topshelf</string>
+			<string>com.varunsalian.megawatchtv.topshelf</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>debrify</string>
+				<string>megawatch</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleName</key>
-	<string>debrify</string>
+	<string>megawatch</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

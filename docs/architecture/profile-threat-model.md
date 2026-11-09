@@ -1,6 +1,6 @@
 # Profile security and privacy model
 
-Profiles isolate accidental access inside Debrify; they are not separate OS
+Profiles isolate accidental access inside MegaWatch; they are not separate OS
 users and do not defend against a device owner with filesystem/root/debugger
 access. Public download and recording files may remain visible to other apps.
 
@@ -33,7 +33,7 @@ access. Public download and recording files may remain visible to other apps.
 
 Automatic OS backup/device transfer excludes registries, device-bound keys,
 native job stores, profile generations, App Group projections, and retained
-legacy secrets. Debrify comprehensive portable backups are passphrase-
+legacy secrets. MegaWatch comprehensive portable backups are passphrase-
 encrypted, and Remote profile graphs ride an authenticated encrypted session.
 If a carried PIN verifier is absent or malformed, the imported protected
 profile requires Admin PIN reassignment before entry. Single-profile merge
@@ -45,7 +45,7 @@ journaled registry publication; partial data is never exposed as current.
 
 ## Explicit non-claims
 
-Debrify does not claim protection from rooted/jailbroken hosts, malicious OS
+MegaWatch does not claim protection from rooted/jailbroken hosts, malicious OS
 administrators, memory inspection in an unlocked process, compromised provider
 accounts, or media copied outside the app. Desktop secret-store fallbacks and
 the current legacy device-identifier vault are weaker than hardware keystores;

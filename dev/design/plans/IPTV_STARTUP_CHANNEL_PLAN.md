@@ -19,7 +19,7 @@ stays off unless deliberately enabled.
 
 Commit `0377e9e` (2026-07-15) removed the whole "Launch on Startup" pipeline:
 `startup_settings_page.dart` (906 lines), `auto_launch_overlay.dart` (281 lines),
-~400 lines of dispatch in `main.dart`, five modes (Debrify TV, Stremio TV,
+~400 lines of dispatch in `main.dart`, five modes (MegaWatch TV, Stremio TV,
 playlist item, Continue Watching, Trakt CW). **IPTV was never one of the modes.**
 It was removed for lack of use, not because it misbehaved.
 

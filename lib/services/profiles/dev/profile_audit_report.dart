@@ -85,7 +85,7 @@ abstract final class ProfileAuditReport {
 
     final report = <String, Object?>{
       'schemaVersion': schemaVersion,
-      'generatedBy': 'debrify-profile-audit',
+      'generatedBy': 'megawatch-profile-audit',
       'runtime': _runtime(aliases),
       'registry': await registry.privacySafeDiagnostics(),
       'profiles': [for (final p in profiles) _profile(p, aliases)],

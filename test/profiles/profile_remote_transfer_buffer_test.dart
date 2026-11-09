@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_remote_lease.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/remote_control/remote_chunked_send.dart';
-import 'package:debrify/services/remote_control/remote_command_router.dart';
-import 'package:debrify/services/remote_control/remote_constants.dart';
-import 'package:debrify/services/remote_control/remote_session.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_remote_lease.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/remote_control/remote_chunked_send.dart';
+import 'package:megawatch/services/remote_control/remote_command_router.dart';
+import 'package:megawatch/services/remote_control/remote_constants.dart';
+import 'package:megawatch/services/remote_control/remote_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -89,7 +89,7 @@ void main() {
     await router.debugDispatchAndWait(
       RemoteAction.config,
       ConfigCommand.profileGraph,
-      '{"format":"debrify-profile-package"}',
+      '{"format":"megawatch-profile-package"}',
       peer,
     );
     expect(router.debugProfileTransferScope, isNull);

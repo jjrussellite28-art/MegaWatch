@@ -129,7 +129,7 @@ class IptvService {
     final client = http.Client();
     try {
       final request = http.Request('GET', Uri.parse(url));
-      request.headers['User-Agent'] = 'Debrify/1.0';
+      request.headers['User-Agent'] = 'MegaWatch/1.0';
       request.headers['Accept'] = '*/*';
       final streamed = await client
           .send(request)
@@ -171,7 +171,7 @@ class IptvService {
               ? Directory.systemTemp
               : Directory(debugDownloadDirectoryOverride!);
           await root.create(recursive: true);
-          stagingDirectory = await root.createTemp('debrify-iptv-');
+          stagingDirectory = await root.createTemp('megawatch-iptv-');
           stagingFile = File('${stagingDirectory.path}/playlist.m3u');
           stagingOutput = await stagingFile.open(mode: FileMode.write);
         }

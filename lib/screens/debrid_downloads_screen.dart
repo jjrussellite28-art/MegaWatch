@@ -22,7 +22,7 @@ import 'video_player_screen.dart';
 import '../services/video_player_launcher.dart';
 import '../services/download_service.dart';
 import '../services/main_page_bridge.dart';
-import '../services/debrify_tv_channel_add_service.dart';
+import '../services/megawatch_tv_channel_add_service.dart';
 import '../widgets/cloud/cloud_file_row.dart';
 import '../widgets/cloud/cloud_row_skeleton.dart';
 import '../widgets/cloud/cloud_segmented_tabs.dart';
@@ -3693,8 +3693,8 @@ class _DebridDownloadsScreenState extends State<DebridDownloadsScreen> {
       ),
       CloudRowAction(
         icon: Icons.live_tv_rounded,
-        label: 'Add to Debrify TV',
-        onSelected: () => _handleAddTorrentToDebrifyTv(torrent),
+        label: 'Add to MegaWatch TV',
+        onSelected: () => _handleAddTorrentToMegaWatchTv(torrent),
       ),
       CloudRowAction(
         icon: Icons.delete_outline,
@@ -3852,22 +3852,22 @@ class _DebridDownloadsScreenState extends State<DebridDownloadsScreen> {
     }
   }
 
-  Future<void> _handleAddTorrentToDebrifyTv(RDTorrent torrent) async {
+  Future<void> _handleAddTorrentToMegaWatchTv(RDTorrent torrent) async {
     try {
-      final result = await DebrifyTvChannelAddService.addTorrentsToChannel(
+      final result = await MegaWatchTvChannelAddService.addTorrentsToChannel(
         context,
-        torrents: [DebrifyTvChannelAddService.fromRealDebridTorrent(torrent)],
+        torrents: [MegaWatchTvChannelAddService.fromRealDebridTorrent(torrent)],
         searchKeyword: _torrentSearchQuery,
       );
 
       if (result == null || !mounted) return;
       _showSuccess(result.successMessage);
-    } on DebrifyTvChannelAddException catch (e) {
+    } on MegaWatchTvChannelAddException catch (e) {
       if (!mounted) return;
       _showError(e.message);
     } catch (e) {
       if (!mounted) return;
-      _showError('Failed to add torrent to Debrify TV: $e');
+      _showError('Failed to add torrent to MegaWatch TV: $e');
     }
   }
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Debrify Settings — Spotlight mockup</title>
+  <title>MegaWatch Settings — Spotlight mockup</title>
   <style>
     @font-face{font-family:SpaceGrotesk;src:url('../../../assets/fonts/SpaceGrotesk-Medium.ttf') format('truetype');font-weight:500}
     @font-face{font-family:SpaceGrotesk;src:url('../../../assets/fonts/SpaceGrotesk-Bold.ttf') format('truetype');font-weight:700}
@@ -232,7 +232,7 @@
 </head>
 <body>
   <header class="docbar">
-    <div class="docbrand">Debrify · Settings</div>
+    <div class="docbrand">MegaWatch · Settings</div>
     <div class="docnote">Spotlight direction · rooted in the new onboarding flow</div>
     <div class="viewtabs" role="group" aria-label="Preview size">
       <button class="on" data-view="wide">TV / desktop</button>
@@ -257,7 +257,7 @@
       <div class="wide-stage" id="wideStage" tabindex="0" aria-label="Interactive TV settings mockup">
         <div class="appmark">
           <span class="appmark-logo" data-icon="play"></span>
-          <span class="appmark-name">Debrify</span>
+          <span class="appmark-name">MegaWatch</span>
         </div>
         <aside class="settings-rail">
           <div class="rail-heading">
@@ -344,15 +344,15 @@
     const categories=[
       {id:'connections',icon:'link',label:'Connections',short:'Debrid, cloud, IPTV & more',title:'Services, all in one place.',subtitle:'See what is ready, what needs attention, and where playback will go before opening a provider.',kind:'connections'},
       {id:'trackers',icon:'sync',label:'Trackers',short:'Trakt & Simkl watch history',title:'Keep every watch in sync.',subtitle:'Connect watch-history services and see their health without digging through account screens.',rows:[['Trakt','Active as varun','sync','Connected'],['Simkl','Not connected','sync','Connect'],['Scrobbling','Movies and episodes','playback','On'],['History conflict policy','Prefer newest activity','tune','Newest']]},
-      {id:'home',icon:'home',label:'Home & Display',short:'Rows, artwork & keyboard',title:'Shape the room you come home to.',subtitle:'Arrange the home screen, tune artwork quality, and set the display for this device.',rows:[['Home Screen','Layout, rows and continue watching','home','Spotlight'],['Screen Size','UI scale for this television','screen','100%'],['Rendering','Resolution used for the interface','screen','Automatic'],['Hero Artwork Quality','Backdrop download quality','sparkle','High'],['Debrify Keyboard','Remote-friendly text entry','tune','On']]},
+      {id:'home',icon:'home',label:'Home & Display',short:'Rows, artwork & keyboard',title:'Shape the room you come home to.',subtitle:'Arrange the home screen, tune artwork quality, and set the display for this device.',rows:[['Home Screen','Layout, rows and continue watching','home','Spotlight'],['Screen Size','UI scale for this television','screen','100%'],['Rendering','Resolution used for the interface','screen','Automatic'],['Hero Artwork Quality','Backdrop download quality','sparkle','High'],['MegaWatch Keyboard','Remote-friendly text entry','tune','On']]},
       {id:'appearance',icon:'sparkle',label:'Appearance',short:'Look, text, motion & layouts',title:'Make the interface feel like yours.',subtitle:'A Look sets the room. Individual controls below let you adjust only what matters.',kind:'appearance',rows:[['Text Brightness','Legibility across every surface','text','Bright'],['Launch Animation','The opening ident','rocket','Horizon'],['Details Page','Movie and series presentation','layout','Showcase'],['IPTV Appearance','Guide and channel presentation','tv','Command'],['Player Controls','Dock style and palette','tune','Classic'],['Parents Guide','Ratings and advisory layout','info','Compass']]},
       {id:'playback',icon:'playback',label:'Playback',short:'Player, subtitles & audio',title:'Playback without surprises.',subtitle:'Player behavior, language choices, skip actions, and output live together here.',rows:[['Player','Internal or external playback','playback','Internal'],['Subtitles','Language, size and styling','captions','English'],['Audio','Preferred tracks and passthrough','audio','Automatic'],['Skip Segments','Intros, recaps and credits','bolt','On'],['VR & Display','Aspect, refresh rate and VR','screen','Automatic']]},
       {id:'search',icon:'tune',label:'Search',short:'Engines, filters & providers',title:'Find the right source faster.',subtitle:'Search engines, default filters, and provider routing form one clear pipeline.',rows:[['Engines','Search engine defaults and indexers','search','8 enabled'],['Filters','Quality, source and language','filter','4K first'],['Default Provider','Where added torrents go','cloud','Real Debrid'],['Quick Play','Timeouts and cache fallback','bolt','Balanced']]},
-      {id:'livetv',icon:'tv',label:'Live TV & DVR',short:'Channels, guide & recordings',title:'Live television, organized.',subtitle:'Manage channel sources, recordings, and the guide from one focused area.',rows:[['Debrify TV','Limits, channels and playback','tv','Ready'],['Recordings','Schedules and recording library','storage','3 scheduled'],['IPTV Playlists','Playlists, lists and startup channel','layout','2 active'],['Player Guide','Guide shown over playback','tv','Classic']]},
-      {id:'devices',icon:'devices',label:'Devices',short:'Remote & setup transfer',title:'Let your devices work together.',subtitle:'Control another screen or move this setup without re-entering every service.',rows:[['Remote Control','Use this device as a remote','remote','Open'],['Send Setup','Transfer services and preferences','devices','Send'],['Receive Setup','Listen for another Debrify device','download','Receive']]},
-      {id:'data',icon:'storage',label:'Data & Backup',short:'Downloads, backup & restore',title:'Your data, under your control.',subtitle:'Downloads, playback state, and portable backups are separated into clear actions.',rows:[['Download Location','Where offline files are saved','folder','Default'],['Clear Download Data','Queue history and active entries','download','Review'],['Clear Playback Data','Resume points and sessions','playback','Review'],['Create Backup','Export services and settings','backup','Create'],['Restore from Backup','Import a Debrify backup','update','Restore']]},
-      {id:'about',icon:'info',label:'About',short:'Updates, version & community',title:'Debrify, up to date.',subtitle:'Version, release checks, and the places where the community meets.',rows:[['Auto Check for Updates','Notify on startup','update','On'],['Check for Updates','Latest GitHub release','update','Up to date'],['Reddit Community','Questions, tips and discussion','community','Open'],['Discord','Help, updates and discussion','community','Open'],['GitHub','Source code and contributions','backup','Open'],['Version','Current installed build','info','0.8.2 alpha']]},
-      {id:'danger',icon:'warning',label:'Danger Zone',short:'Reset Debrify',title:'Start over, deliberately.',subtitle:'Destructive actions stay isolated and explain exactly what they remove.',rows:[['Reset Debrify','Connections, preferences and caches','warning','Review']]}
+      {id:'livetv',icon:'tv',label:'Live TV & DVR',short:'Channels, guide & recordings',title:'Live television, organized.',subtitle:'Manage channel sources, recordings, and the guide from one focused area.',rows:[['MegaWatch TV','Limits, channels and playback','tv','Ready'],['Recordings','Schedules and recording library','storage','3 scheduled'],['IPTV Playlists','Playlists, lists and startup channel','layout','2 active'],['Player Guide','Guide shown over playback','tv','Classic']]},
+      {id:'devices',icon:'devices',label:'Devices',short:'Remote & setup transfer',title:'Let your devices work together.',subtitle:'Control another screen or move this setup without re-entering every service.',rows:[['Remote Control','Use this device as a remote','remote','Open'],['Send Setup','Transfer services and preferences','devices','Send'],['Receive Setup','Listen for another MegaWatch device','download','Receive']]},
+      {id:'data',icon:'storage',label:'Data & Backup',short:'Downloads, backup & restore',title:'Your data, under your control.',subtitle:'Downloads, playback state, and portable backups are separated into clear actions.',rows:[['Download Location','Where offline files are saved','folder','Default'],['Clear Download Data','Queue history and active entries','download','Review'],['Clear Playback Data','Resume points and sessions','playback','Review'],['Create Backup','Export services and settings','backup','Create'],['Restore from Backup','Import a MegaWatch backup','update','Restore']]},
+      {id:'about',icon:'info',label:'About',short:'Updates, version & community',title:'MegaWatch, up to date.',subtitle:'Version, release checks, and the places where the community meets.',rows:[['Auto Check for Updates','Notify on startup','update','On'],['Check for Updates','Latest GitHub release','update','Up to date'],['Reddit Community','Questions, tips and discussion','community','Open'],['Discord','Help, updates and discussion','community','Open'],['GitHub','Source code and contributions','backup','Open'],['Version','Current installed build','info','0.8.2 alpha']]},
+      {id:'danger',icon:'warning',label:'Danger Zone',short:'Reset MegaWatch',title:'Start over, deliberately.',subtitle:'Destructive actions stay isolated and explain exactly what they remove.',rows:[['Reset MegaWatch','Connections, preferences and caches','warning','Review']]}
     ];
     const providers=[
       ['RD','Real Debrid','Active','Premium · expires 24 Sep 2026',''],

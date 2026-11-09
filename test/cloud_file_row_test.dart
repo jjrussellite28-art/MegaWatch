@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/widgets/cloud/cloud_file_row.dart';
+import 'package:megawatch/widgets/cloud/cloud_file_row.dart';
 
 void main() {
   Widget harness(List<Widget> rows) {

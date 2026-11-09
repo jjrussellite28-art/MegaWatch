@@ -1,7 +1,7 @@
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/screens/video_player_screen.dart';
-import 'package:debrify/screens/video_player/widgets/iptv_channel_sheet.dart';
-import 'package:debrify/services/video_player_launcher.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/screens/video_player_screen.dart';
+import 'package:megawatch/screens/video_player/widgets/iptv_channel_sheet.dart';
+import 'package:megawatch/services/video_player_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

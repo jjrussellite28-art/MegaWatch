@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/profiles/profile_pin_service.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_lock_controller.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/profiles/profile_pin_service.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_lock_controller.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';

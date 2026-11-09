@@ -23,7 +23,7 @@ import 'theme_overrides.dart';
 class AppThemeController extends ChangeNotifier {
   AppThemeController._() {
     // The preset is an input to both derived values, so preset changes flow
-    // through the same recompute path as theme changes. DebrifyApp also
+    // through the same recompute path as theme changes. MegaWatchApp also
     // listens to the preset notifier directly (its long-standing pattern);
     // the double notification is two cheap reads, not two ThemeData builds.
     TextBrightnessController.notifier.addListener(_recompute);

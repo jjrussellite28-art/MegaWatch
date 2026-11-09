@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:debrify/models/media_server.dart';
-import 'package:debrify/services/media_server_client.dart';
+import 'package:megawatch/models/media_server.dart';
+import 'package:megawatch/services/media_server_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

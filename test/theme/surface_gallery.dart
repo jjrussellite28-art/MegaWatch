@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:debrify/screens/settings/widgets/settings_widgets.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/screens/stremio_tv/widgets/stremio_tv_empty_state.dart';
-import 'package:debrify/widgets/cloud/cloud_segmented_tabs.dart';
-import 'package:debrify/widgets/desktop_sidebar_nav.dart';
-import 'package:debrify/widgets/iptv/iptv_empty_state.dart';
-import 'package:debrify/widgets/youtube/youtube_empty_state.dart';
+import 'package:megawatch/screens/settings/widgets/settings_widgets.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/screens/stremio_tv/widgets/stremio_tv_empty_state.dart';
+import 'package:megawatch/widgets/cloud/cloud_segmented_tabs.dart';
+import 'package:megawatch/widgets/desktop_sidebar_nav.dart';
+import 'package:megawatch/widgets/iptv/iptv_empty_state.dart';
+import 'package:megawatch/widgets/youtube/youtube_empty_state.dart';
 
 /// REAL widgets from each themed family, composed with fixture data.
 ///

@@ -1,22 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/screens/settings/indexer_managers_settings_page.dart';
-import 'package:debrify/screens/settings/iptv_settings_page.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/screens/settings/indexer_managers_settings_page.dart';
+import 'package:megawatch/screens/settings/iptv_settings_page.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
@@ -69,7 +69,7 @@ void main() {
   });
 
   tearDown(() async {
-    await DebrifyTvDatabase.instance.closeScope();
+    await MegaWatchTvDatabase.instance.closeScope();
     IptvMediaStore.debugResetMigration();
     IptvCatalogDb.debugClose();
     IptvCatalogDb.debugDirectoryOverride = null;
@@ -246,7 +246,7 @@ void main() {
           });
           await tester.pumpWidget(const SizedBox.shrink());
           await settleIo(tester);
-          await tester.runAsync(() => DebrifyTvDatabase.instance.closeScope());
+          await tester.runAsync(() => MegaWatchTvDatabase.instance.closeScope());
         },
       );
     }

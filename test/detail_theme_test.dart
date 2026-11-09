@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/widgets/detail/theme/detail_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/home/home_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/home/home_theme.dart';
 
 void main() {
   _literalGuard();

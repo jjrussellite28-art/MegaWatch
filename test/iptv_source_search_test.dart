@@ -1,20 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/advanced_search_selection.dart';
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/models/quick_play_rules.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/iptv_catalog_key.dart';
-import 'package:debrify/services/iptv_source_search.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/secret_vault.dart';
-import 'package:debrify/services/series_source_fetcher.dart';
-import 'package:debrify/services/series_source_service.dart';
-import 'package:debrify/services/source_priority.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/torrent_playback_service.dart';
+import 'package:megawatch/models/advanced_search_selection.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/models/quick_play_rules.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/iptv_catalog_key.dart';
+import 'package:megawatch/services/iptv_source_search.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/secret_vault.dart';
+import 'package:megawatch/services/series_source_fetcher.dart';
+import 'package:megawatch/services/series_source_service.dart';
+import 'package:megawatch/services/source_priority.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/torrent_playback_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -89,7 +89,7 @@ void main() {
           false,
           1,
           1,
-          QuickPlayRules.debrifyDefault(
+          QuickPlayRules.megawatchDefault(
             isMovie: false,
           ).copyWith(addonTimeoutSeconds: 5),
           null,
@@ -359,7 +359,7 @@ void main() {
             contentType: 'vod',
           ),
       ]);
-      final rules = QuickPlayRules.debrifyDefault(isMovie: true);
+      final rules = QuickPlayRules.megawatchDefault(isMovie: true);
       Future<List<Torrent>> search(QuickPlayRules r) =>
           TorrentPlaybackService.searchIptvForQuickPlay(
             'tt1',
@@ -426,7 +426,7 @@ void main() {
         true,
         null,
         null,
-        QuickPlayRules.debrifyDefault(isMovie: true),
+        QuickPlayRules.megawatchDefault(isMovie: true),
         null,
       ),
       isEmpty,
@@ -445,7 +445,7 @@ void main() {
     final descriptors = <Torrent>[];
     await http.runWithClient(
       () async {
-        final rules = QuickPlayRules.debrifyDefault(isMovie: false);
+        final rules = QuickPlayRules.megawatchDefault(isMovie: false);
         for (final episode in [1, 2]) {
           final sources = await TorrentPlaybackService.searchIptvForQuickPlay(
             'tt2',
@@ -504,7 +504,7 @@ void main() {
             attributes: {'series_id': 'revival-$id'},
           ),
         ]);
-        final rules = QuickPlayRules.debrifyDefault(isMovie: false);
+        final rules = QuickPlayRules.megawatchDefault(isMovie: false);
         Future<List<Torrent>> search(
           QuickPlayRules value, {
           String? identity,
@@ -588,7 +588,7 @@ void main() {
           ),
       ]);
       for (final id in ['tmdb:438631', 'tmdb:movie:438631', 'simkl:100']) {
-        final rules = QuickPlayRules.debrifyDefault(isMovie: true);
+        final rules = QuickPlayRules.megawatchDefault(isMovie: true);
         Future<List<Torrent>> search(QuickPlayRules value) =>
             TorrentPlaybackService.searchIptvForQuickPlay(
               id,

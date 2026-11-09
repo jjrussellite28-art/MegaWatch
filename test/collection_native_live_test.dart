@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/services/collection_native_source_service.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/services/collection_native_source_service.dart';
 
 /// Opt-in read-only integration check:
 /// flutter test --dart-define-from-file=.env.local.json

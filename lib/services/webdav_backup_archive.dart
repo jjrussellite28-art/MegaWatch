@@ -22,7 +22,7 @@ final class WebDavArchiveExport {
 final class WebDavBackupArchive {
   const WebDavBackupArchive(this.exporter);
   final LocalBackupExporter exporter;
-  static const String encryptionContext = 'debrify/manual-backup/v2';
+  static const String encryptionContext = 'megawatch/manual-backup/v2';
 
   Future<WebDavArchiveExport> export({
     required ProfileAuthorizationContext context,

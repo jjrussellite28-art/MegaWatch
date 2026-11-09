@@ -1,7 +1,7 @@
-import 'package:debrify/models/tv_hero_artwork_quality.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/tv_hero_artwork_quality_controller.dart';
-import 'package:debrify/utils/tvos_device.dart';
+import 'package:megawatch/models/tv_hero_artwork_quality.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/tv_hero_artwork_quality_controller.dart';
+import 'package:megawatch/utils/tvos_device.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

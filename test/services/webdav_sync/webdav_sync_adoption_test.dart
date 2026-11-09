@@ -1,10 +1,10 @@
-import 'package:debrify/services/profiles/profile_database_snapshot.dart';
-import 'package:debrify/services/profiles/portable_profile_package.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_restore_coordinator.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_adoption.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_adoption_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine_state.dart';
+import 'package:megawatch/services/profiles/profile_database_snapshot.dart';
+import 'package:megawatch/services/profiles/portable_profile_package.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_restore_coordinator.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_adoption.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_adoption_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

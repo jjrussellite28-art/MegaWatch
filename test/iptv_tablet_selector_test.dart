@@ -1,8 +1,8 @@
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/widgets/iptv/iptv_centered_selector.dart';
-import 'package:debrify/widgets/iptv/iptv_epg_panel.dart';
-import 'package:debrify/widgets/iptv/iptv_results_view.dart';
-import 'package:debrify/widgets/see_all/see_all_theme.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/widgets/iptv/iptv_centered_selector.dart';
+import 'package:megawatch/widgets/iptv/iptv_epg_panel.dart';
+import 'package:megawatch/widgets/iptv/iptv_results_view.dart';
+import 'package:megawatch/widgets/see_all/see_all_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

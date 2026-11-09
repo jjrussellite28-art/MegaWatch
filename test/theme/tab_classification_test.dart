@@ -2,7 +2,7 @@ import 'dart:io' as io;
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/theme/app_surfaces.dart';
+import 'package:megawatch/theme/app_surfaces.dart';
 
 /// The containment plan's first gate: every destination index has an explicit
 /// themed/frozen entry. A new tab added without classifying it here fails the
@@ -28,8 +28,8 @@ void main() {
         if (e.value == SurfaceKind.frozen) e.key,
     ]..sort();
     // 0 inert slot, 1 Playlist (deferred), 2 Downloads (deferred),
-    // 3 Debrify TV, 9 Stremio TV, 13 IPTV, 14 YouTube.
-    // Phase two flipped 1/2/3/9/13/14 (Playlist, Downloads, Debrify TV,
+    // 3 MegaWatch TV, 9 Stremio TV, 13 IPTV, 14 YouTube.
+    // Phase two flipped 1/2/3/9/13/14 (Playlist, Downloads, MegaWatch TV,
     // Stremio TV, IPTV, YouTube). Index 0 is the inert deprecated-Home slot
     // and stays frozen — it is unreachable, not deferred, so the end state is
     // [0] rather than empty. Playback is excluded at its ENTRY POINTS rather

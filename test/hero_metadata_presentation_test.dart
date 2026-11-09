@@ -1,7 +1,7 @@
-import 'package:debrify/services/metadata_provider_service.dart';
-import 'package:debrify/models/hero_metadata_presentation.dart';
-import 'package:debrify/models/metadata_preferences.dart';
-import 'package:debrify/models/stremio_addon.dart';
+import 'package:megawatch/services/metadata_provider_service.dart';
+import 'package:megawatch/models/hero_metadata_presentation.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
+import 'package:megawatch/models/stremio_addon.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

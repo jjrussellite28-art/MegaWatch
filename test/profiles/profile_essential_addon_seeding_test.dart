@@ -1,7 +1,7 @@
-import 'package:debrify/services/app_migration_service.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/app_migration_service.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

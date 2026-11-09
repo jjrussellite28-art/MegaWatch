@@ -1,5 +1,5 @@
-import 'package:debrify/screens/settings/settings_search.dart';
-import 'package:debrify/screens/settings/widgets/settings_widgets.dart';
+import 'package:megawatch/screens/settings/settings_search.dart';
+import 'package:megawatch/screens/settings/widgets/settings_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

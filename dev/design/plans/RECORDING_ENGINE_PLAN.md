@@ -35,7 +35,7 @@ Not in v1 (unchanged from the DVR gap list):
 ## Architecture decisions
 
 1. **Sibling service, not an extension of `MediaStoreDownloadService`.**
-   `LiveRecordingService` is a new file in `com.debrify.app.recording`, copying
+   `LiveRecordingService` is a new file in `com.megawatch.app.recording`, copying
    the download service's hardened idioms (foreground-first onStartCommand,
    AtomicBoolean claim/finish guards, main-handler stop paths, watchdog) rather
    than sharing code with it. The download service is reviewer-hardened and
@@ -47,7 +47,7 @@ Not in v1 (unchanged from the DVR gap list):
    accounts — documented caveat, surfaced in the snackbar copy). In exchange the
    recording is immune to zaps, source switches, Home, player death, app death.
 
-3. **Destination: MediaStore `Download/Debrify/Recordings`, API 29+ only** —
+3. **Destination: MediaStore `Download/MegaWatch/Recordings`, API 29+ only** —
    identical to the tee's publishing idiom. The file is written IN PLACE via an
    `IS_PENDING=1` row (no temp copy, no double space, unlike the phone tee path).
    `IS_PENDING` is cleared on stop. On failure the row is deleted only when it
@@ -136,7 +136,7 @@ running/finished). Worker thread per task:
 
 ### A2. `RecordingTaskStore.kt` (same package)
 
-Persisted JSON map (prefs `debrify_recording_service`), entries: taskId, url,
+Persisted JSON map (prefs `megawatch_recording_service`), entries: taskId, url,
 headers, fileName, channelName, uri, status (recording/done/failed), bytes-at-
 last-persist, startedAtMs, endAtMs, updatedAt. On service (re)start and on
 `queryLiveRecordings`, any entry status=recording with no live worker = process
@@ -144,7 +144,7 @@ died mid-recording → finalize its row (clear IS_PENDING; it holds real bytes),
 flip to done. That is the whole crash story: the bytes already live in the
 destination file, so death loses at most the unflushed tail.
 
-### A3. `MainActivity` channel methods (existing `com.debrify.app/downloader`)
+### A3. `MainActivity` channel methods (existing `com.megawatch.app/downloader`)
 
 - `startLiveRecording{url, headers, fileName, channelName, maxDurationMs?}` →
   taskId or `fgs_not_allowed` / `engine_unsupported` (<Q).
@@ -311,7 +311,7 @@ record button's text/color states first).
 
 1. TV: record progressive channel → zap around, open other screens, press Home,
    relaunch → recording still running (notification), Stop → file in
-   Downloads/Debrify/Recordings, plays.
+   Downloads/MegaWatch/Recordings, plays.
 2. Phone: record progressive channel → leave player → REC pill/notification →
    stop from notification.
 3. Phone: record HLS channel → tee path banner ("stops if you leave") →

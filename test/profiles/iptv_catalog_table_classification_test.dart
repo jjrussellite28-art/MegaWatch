@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/profiles/profile_database_snapshot.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/profiles/profile_database_snapshot.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart' as raw;
 

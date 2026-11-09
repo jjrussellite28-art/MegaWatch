@@ -436,14 +436,14 @@ class DesktopRecordingService {
     }
   }
 
-  /// Where desktop recordings live: `<Downloads>/Debrify/Recordings`. One
+  /// Where desktop recordings live: `<Downloads>/MegaWatch/Recordings`. One
   /// truth shared by the capture path builder and the library listing. Not
   /// created here — captures create it on first write.
   static Future<Directory> recordingsDir() async {
     final base =
         (await getDownloadsDirectory()) ?? await AppStorage.documents();
     final sep = Platform.pathSeparator;
-    return Directory('${base.path}${sep}Debrify${sep}Recordings');
+    return Directory('${base.path}${sep}MegaWatch${sep}Recordings');
   }
 
   static const _libraryExtensions = {'ts', 'mts', 'm2ts', 'mkv', 'mp4'};

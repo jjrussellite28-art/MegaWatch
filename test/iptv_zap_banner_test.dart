@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/screens/video_player/widgets/iptv_zap_banner.dart';
-import 'package:debrify/services/iptv_epg_service.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/screens/video_player/widgets/iptv_zap_banner.dart';
+import 'package:megawatch/services/iptv_epg_service.dart';
 
 void main() {
   final now = DateTime(2026, 7, 31, 20, 24);

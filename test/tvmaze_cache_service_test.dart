@@ -1,5 +1,5 @@
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/tvmaze_cache_service.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/tvmaze_cache_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,7 +1,7 @@
 # Personal installation
 
 The Personal build is an opt-in second installation whose operating-system
-identity and private data container are separate from the normal Debrify app.
+identity and private data container are separate from the normal MegaWatch app.
 Existing `flutter run`, `flutter build`, Gradle, Xcode, and release commands keep
 their original identifiers and behaviour.
 
@@ -21,9 +21,9 @@ uses Flutter's normal `build/app/outputs/` directory.
 
 | Platform | Normal identity | Personal identity |
 | --- | --- | --- |
-| Android | `com.debrify.app` | `com.debrify.app.personal` |
-| iOS | `com.varunsalian.debrify` | `com.varunsalian.debrify.personal` |
-| tvOS | `com.varunsalian.debrifytv` | `com.varunsalian.debrifytv.personal` |
+| Android | `com.megawatch.app` | `com.megawatch.app.personal` |
+| iOS | `com.varunsalian.megawatch` | `com.varunsalian.megawatch.personal` |
+| tvOS | `com.varunsalian.megawatchtv` | `com.varunsalian.megawatchtv.personal` |
 | macOS | `com.example.torrentSearchApp` | `com.example.torrentSearchApp.personal` |
 
 The tvOS Personal build intentionally strips App Group entitlements. This keeps
@@ -31,4 +31,4 @@ it away from the normal installation's Top Shelf container; Top Shelf is not
 expected to work in that build.
 
 Deep-link schemes are unchanged, so when both copies are installed the OS may
-choose either app for a shared scheme such as `debrify://` or `magnet:`.
+choose either app for a shared scheme such as `megawatch://` or `magnet:`.

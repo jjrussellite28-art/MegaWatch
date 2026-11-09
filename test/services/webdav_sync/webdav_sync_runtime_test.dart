@@ -1,30 +1,30 @@
-import 'package:debrify/services/profiles/profile_lock_controller.dart';
+import 'package:megawatch/services/profiles/profile_lock_controller.dart';
 import 'dart:convert';
-import 'package:debrify/services/webdav_sync/webdav_sync_backup.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_backup.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
 import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_database_adoption_gate.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_binding_store.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_feature.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_operation_coordinator.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_runtime.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_scheduler.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_transport.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_database_adoption_gate.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_binding_store.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_feature.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_operation_coordinator.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_runtime.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_scheduler.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_transport.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleState;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -293,7 +293,7 @@ void main() {
       password: 'secret',
     );
     var binding = await store.stageBinding(
-      location: WebDavSyncFolderLocation.fromConfig(config, 'Debrify'),
+      location: WebDavSyncFolderLocation.fromConfig(config, 'MegaWatch'),
       config: config,
       syncPassphrase: 'circle-secret',
       completeOnboarding: true,

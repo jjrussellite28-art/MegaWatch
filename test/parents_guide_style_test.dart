@@ -3,12 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/screens/settings/parents_guide_style_page.dart';
-import 'package:debrify/services/imdb_parents_guide_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/widgets/detail/theme/detail_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/parents_guide_section.dart';
+import 'package:megawatch/screens/settings/parents_guide_style_page.dart';
+import 'package:megawatch/services/imdb_parents_guide_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/widgets/detail/theme/detail_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/parents_guide_section.dart';
 
 const _guide = ParentsGuideResult(
   categories: [

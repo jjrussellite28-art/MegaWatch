@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:debrify/services/profiles/profile_cleanup_ledger.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/services/profiles/profile_cleanup_ledger.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';

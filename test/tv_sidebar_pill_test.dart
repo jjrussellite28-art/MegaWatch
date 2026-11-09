@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/screens/settings/tv_sidebar_style_page.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/widgets/tv_sidebar_nav.dart';
+import 'package:megawatch/screens/settings/tv_sidebar_style_page.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/widgets/tv_sidebar_nav.dart';
 
 /// 'pill' is the first sidebar style that changes LAYOUT, not just chrome.
 ///

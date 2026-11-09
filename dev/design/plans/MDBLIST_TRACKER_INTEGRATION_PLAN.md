@@ -4,7 +4,7 @@
 
 **Validated:** 2026-08-22 against the official OpenAPI schema and a live, non-supporter API-key account
 
-**Scope:** finish MDBList as a tracker, bring it to functional parity with Debrify's Trakt and Simkl integrations, and repair the list implementation before rollout
+**Scope:** finish MDBList as a tracker, bring it to functional parity with MegaWatch's Trakt and Simkl integrations, and repair the list implementation before rollout
 
 ## 1. Outcome
 
@@ -42,13 +42,13 @@ state was removed after the probes.
 | `POST /scrobble/clear` | Removes the paused playback row | Correct removal operation for a paused Continue Watching card. |
 | Pause followed by start | The paused row disappears; active row remains | Do not assume a prior pause remains as a crash-safe checkpoint after restart. |
 | Active expiry | A one-minute test film was observed through its roughly ten-minute minimum lifetime; at expiry the active row vanished, with no playback row and no watched state | `start` and start-heartbeats are not crash-safe resume checkpoints. |
-| Bare pause | A pause request without a preceding start created a playback row at the supplied progress | Use pause-centric checkpoints, as Debrify does for Simkl. |
+| Bare pause | A pause request without a preceding start created a playback row at the supplied progress | Use pause-centric checkpoints, as MegaWatch does for Simkl. |
 | Movie playback payload | `movie`, string progress, runtime, paused/updated timestamps | Parser must accept numeric strings. |
 | Episode playback payload | parent `show` plus `episode {season, number, ids}` | Retain parent IMDb ID and episode coordinates together. |
 | `GET /upnext/watchlist` | Returned a never-started watchlisted show's first episode immediately | This is a Watchlist affordance, not Continue Watching. |
 | `GET /upnext` | Appeared about four seconds after recording S01E01 | Treat aggregate/up-next writes as eventually consistent; refresh with bounded retry. |
 | `POST /sync/state/*` | Supports TMDB or MDBList IDs, not IMDb IDs | Add an IMDb-to-TMDB resolver/cache before detail status can use this endpoint. |
-| IMDb media lookup | `/imdb/movie/{id}` and `/imdb/show/{id}` return all IDs and rich metadata | Use as the resolver fallback when Debrify has only an IMDb ID. |
+| IMDb media lookup | `/imdb/movie/{id}` and `/imdb/show/{id}` return all IDs and rich metadata | Use as the resolver fallback when MegaWatch has only an IMDb ID. |
 | Movie/show rating | Flat movie/show entries work | Use the existing Trakt-style 1–10 UI. |
 | Episode rating | Nested `show -> seasons -> episodes` works | A top-level episode entry using its TMDB episode ID returned `updated: 0`; use only the proven nested form. |
 | Whole-show collection | Expanded one test show into 6 seasons and 71 episodes | UI copy must say that collecting a show collects its episodes; never use this as a lightweight bookmark. |
@@ -60,7 +60,7 @@ state was removed after the probes.
 | List pagination | Cursor and `pagination.next_cursor` worked; offset is deprecated | Replace offset walking with cursor walking. |
 | Public discovery | Top/search/curated are arrays; recommended is `{sections: ...}` | Parse each endpoint explicitly rather than sharing an unchecked cast. |
 
-## 3. Current Debrify gaps
+## 3. Current MegaWatch gaps
 
 The existing MDBList code implements account settings and list browsing only.
 It has no methods or wiring for scrobble, playback sessions, Up Next, watched
@@ -163,7 +163,7 @@ Do not blindly copy Trakt's heartbeat or Simkl's pause-only behavior:
 - pause creates the durable resume row;
 - a subsequent start removes that row again.
 
-Use a pause-centric strategy, as Debrify does for Simkl:
+Use a pause-centric strategy, as MegaWatch does for Simkl:
 
 - issue a bare pause checkpoint when playback starts;
 - refresh it periodically while playing;
@@ -184,7 +184,7 @@ needed. Do not emit pause+start as a “checkpoint”; start deletes the durable
 ### 4.4 Multiple trackers
 
 MDBList remains an independent tracker, like Trakt and Simkl. If users enable
-more than one, Debrify will scrobble to all enabled trackers and render separate
+more than one, MegaWatch will scrobble to all enabled trackers and render separate
 provider rows. Local Continue Watching must be suppressed when any enabled
 tracker owns the playback so the local row is not a fourth duplicate.
 
@@ -229,20 +229,20 @@ Those effects must disappear completely when MDBList is disabled.
 The current official schema also exposes check-ins, discussions/comments,
 following activity, people favorites, notification-device registration,
 watch-provider links, external/shared lists, and account deletion. They are not
-needed for Trakt/Simkl parity in Debrify and must not be pulled into this tracker
+needed for Trakt/Simkl parity in MegaWatch and must not be pulled into this tracker
 release:
 
 - `/checkin` is a manual presence session, not durable playback; the verified
   pause-centric scrobble policy is the playback integration.
-- discussion/social/follow/person-favorite APIs have no equivalent Debrify UI;
+- discussion/social/follow/person-favorite APIs have no equivalent MegaWatch UI;
   adding them would be a new product feature, not tracker completion.
 - APNS/notification preferences belong to MDBList's own notification system;
-  Debrify must not register devices without a separate privacy/product design.
+  MegaWatch must not register devices without a separate privacy/product design.
 - account deletion is intentionally never exposed through an embedded API-key
   integration.
 
 `/calendar/events`, `/user` usage, rich media lookup, and `/upnext/*` are in
-scope where they support existing Debrify surfaces. `/user/stats`, public
+scope where they support existing MegaWatch surfaces. `/user/stats`, public
 catalog/search, and streaming-chart endpoints are optional enhancements, not
 rollout blockers and must not be fetched in the background without a UI
 consumer.
@@ -449,7 +449,7 @@ Feed the same state machine from the native activity's Dart event handler in
 
 ### External players
 
-Seed a 1% paused MDBList row before handing off, as Debrify already does for
+Seed a 1% paused MDBList row before handing off, as MegaWatch already does for
 tracker-owned Continue Watching. This is an honest “playback launched” marker,
 not real external-player progress. Document that external progress cannot be
 known unless that external player independently integrates MDBList.

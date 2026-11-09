@@ -1,9 +1,9 @@
 import 'dart:ui' as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:debrify/models/stream_badge_rules.dart';
-import 'package:debrify/utils/stream_badge_appearance.dart';
-import 'package:debrify/widgets/stream_badge_strip.dart';
+import 'package:megawatch/models/stream_badge_rules.dart';
+import 'package:megawatch/utils/stream_badge_appearance.dart';
+import 'package:megawatch/widgets/stream_badge_strip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';

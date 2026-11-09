@@ -957,7 +957,7 @@ final class WebDavSyncBindingStore {
   ) => bindings.any((binding) => binding.namespaceId == namespaceId);
 
   static List<int> _secretsAad(String bindingId) =>
-      utf8.encode('debrify-webdav-sync-secrets-v1:$bindingId');
+      utf8.encode('megawatch-webdav-sync-secrets-v1:$bindingId');
 
   static String _boundedError(Object error) {
     final value = error.toString().replaceAll('\n', ' ').trim();

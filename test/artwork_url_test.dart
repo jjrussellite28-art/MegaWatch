@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/utils/artwork_url.dart';
+import 'package:megawatch/utils/artwork_url.dart';
 
 void main() {
   group('highQualityArtworkUrl', () {

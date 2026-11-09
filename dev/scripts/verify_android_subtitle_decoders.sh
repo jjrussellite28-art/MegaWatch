@@ -5,7 +5,7 @@
 set -euo pipefail
 
 INPUT="${1:?usage: $0 <jar-directory-or-apk>}"
-WORK="$(mktemp -d "${TMPDIR:-/tmp}/debrify-verify-android-subs.XXXXXX")"
+WORK="$(mktemp -d "${TMPDIR:-/tmp}/megawatch-verify-android-subs.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
 
 required=(

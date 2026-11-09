@@ -2,15 +2,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/utils/app_storage.dart';
-import 'package:debrify/services/launch_animation/launch_animation_library.dart';
-import 'package:debrify/screens/settings/imported_launch_animations.dart';
-import 'package:debrify/widgets/launch/imported_launch_player.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/utils/app_storage.dart';
+import 'package:megawatch/services/launch_animation/launch_animation_library.dart';
+import 'package:megawatch/screens/settings/imported_launch_animations.dart';
+import 'package:megawatch/widgets/launch/imported_launch_player.dart';
 
 void main() {
   testWidgets(

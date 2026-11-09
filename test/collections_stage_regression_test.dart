@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/home_collections_store.dart';
-import 'package:debrify/services/home_row_order.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/home_collections_store.dart';
+import 'package:megawatch/services/home_row_order.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

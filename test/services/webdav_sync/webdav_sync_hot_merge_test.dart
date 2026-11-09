@@ -1,21 +1,21 @@
 import 'dart:async';
-import 'package:debrify/services/profiles/profile_appearance_preferences.dart';
-import 'package:debrify/services/profiles/profile_preference_portability.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_scheduler.dart';
+import 'package:megawatch/services/profiles/profile_appearance_preferences.dart';
+import 'package:megawatch/services/profiles/profile_preference_portability.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_scheduler.dart';
 import 'dart:convert';
-import 'package:debrify/models/media_server_source.dart';
-import 'package:debrify/models/quick_play_rules.dart';
-import 'package:debrify/services/series_source_service.dart';
+import 'package:megawatch/models/media_server_source.dart';
+import 'package:megawatch/models/quick_play_rules.dart';
+import 'package:megawatch/services/series_source_service.dart';
 
 import 'package:crypto/crypto.dart';
-import 'package:debrify/services/playlist_dedupe_key.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine_state.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_publication_digests.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_models.dart';
+import 'package:megawatch/services/playlist_dedupe_key.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine_state.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_publication_digests.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -966,7 +966,7 @@ void main() {
       'subtitle_selected_font_id': 'notosans',
       'phone_nav_style': 'floating',
       'tv_player_controls_style': 'frost',
-      'debrify_tv_player_style': 'cinema',
+      'megawatch_tv_player_style': 'cinema',
       'player_dock_style': 'compact',
       'subtitle_source_priority_v1':
           '["addon:config-b","embedded","addon:config-a"]',
@@ -1753,7 +1753,7 @@ void main() {
           for (final movie in [true, false])
             movie ? 'quick_play_movie_rules_v2' : 'quick_play_series_rules_v2':
                 jsonEncode(
-                  QuickPlayRules.debrifyDefault(isMovie: movie)
+                  QuickPlayRules.megawatchDefault(isMovie: movie)
                       .copyWith(sourcePriority: priorities)
                       .toJson(),
                 ),

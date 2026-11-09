@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=MegaWatch
+Comment=Debrid client for torrents and streaming
+Exec=megawatch %u
+Icon=megawatch
+Terminal=false
+Categories=Network;AudioVideo;
+MimeType=x-scheme-handler/stremio;x-scheme-handler/magnet;x-scheme-handler/megawatch;
+StartupNotify=true

@@ -604,9 +604,9 @@ class ExternalPlayerService {
 
 /// The tvOS URL bridge — url_launcher has no tvOS implementation in this
 /// fork, so the Runner exposes UIApplication over a channel (same idiom as
-/// debrify/tvlog and debrify/tvkeyboard).
+/// megawatch/tvlog and megawatch/tvkeyboard).
 class _TvosUrl {
-  static const MethodChannel _channel = MethodChannel('debrify/tvurl');
+  static const MethodChannel _channel = MethodChannel('megawatch/tvurl');
 
   static Future<bool> canOpen(String url) async {
     try {

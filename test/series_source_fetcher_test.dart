@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/services/series_source_fetcher.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/services/series_source_fetcher.dart';
 
 Torrent t(String name, {String infohash = '', String? directUrl}) => Torrent(
   rowid: 0,

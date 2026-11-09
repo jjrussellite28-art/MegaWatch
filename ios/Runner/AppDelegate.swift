@@ -9,11 +9,11 @@ private enum DeviceSecretError: Error {
 }
 
 private final class DeviceSecretCipher {
-  private let service = "com.debrify.app.profile-device-secret"
+  private let service = "com.megawatch.app.profile-device-secret"
   private let account = "device-key-v1"
 
   func install(on messenger: FlutterBinaryMessenger) -> FlutterMethodChannel {
-    let channel = FlutterMethodChannel(name: "debrify/device_secret", binaryMessenger: messenger)
+    let channel = FlutterMethodChannel(name: "megawatch/device_secret", binaryMessenger: messenger)
     channel.setMethodCallHandler { [weak self] call, result in
       guard let self else { result(FlutterError(code: "unavailable", message: nil, details: nil)); return }
       do {
@@ -113,7 +113,7 @@ private final class ProfilePrivacyController {
   private var cover: UIView?
 
   func install(on messenger: FlutterBinaryMessenger) -> FlutterMethodChannel {
-    let channel = FlutterMethodChannel(name: "com.debrify.app/profile_privacy", binaryMessenger: messenger)
+    let channel = FlutterMethodChannel(name: "com.megawatch.app/profile_privacy", binaryMessenger: messenger)
     channel.setMethodCallHandler { [weak self] call, result in
       guard call.method == "setSensitive",
             let args = call.arguments as? [String: Any] else {
@@ -194,7 +194,7 @@ private final class ProfilePrivacyController {
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "DebrifyDeviceSecret") {
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "MegaWatchDeviceSecret") {
       deviceSecretChannel = deviceSecretCipher.install(on: registrar.messenger())
       profilePrivacyChannel = profilePrivacy.install(on: registrar.messenger())
     }

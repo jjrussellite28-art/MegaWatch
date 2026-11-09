@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:debrify/screens/settings/discover_layout_page.dart';
-import 'package:debrify/screens/settings/provider_settings_page.dart';
-import 'package:debrify/screens/settings/simkl_settings_page.dart';
-import 'package:debrify/screens/settings/widgets/settings_load_error.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
+import 'package:megawatch/screens/settings/discover_layout_page.dart';
+import 'package:megawatch/screens/settings/provider_settings_page.dart';
+import 'package:megawatch/screens/settings/simkl_settings_page.dart';
+import 'package:megawatch/screens/settings/widgets/settings_load_error.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:debrify/services/android_native_downloader.dart';
+import 'package:megawatch/services/android_native_downloader.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Only Android registers the downloader event channel. Every other platform

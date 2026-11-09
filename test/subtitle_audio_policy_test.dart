@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:debrify/models/stremio_subtitle.dart';
-import 'package:debrify/screens/video_player/utils/subtitle_audio_policy.dart';
-import 'package:debrify/screens/video_player/utils/subtitle_priority_selection.dart';
+import 'package:megawatch/models/stremio_subtitle.dart';
+import 'package:megawatch/screens/video_player/utils/subtitle_audio_policy.dart';
+import 'package:megawatch/screens/video_player/utils/subtitle_priority_selection.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/profiles/profile_preference_portability.dart';
-import 'package:debrify/services/profiles/sanitized_profile_preferences.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/profiles/profile_preference_portability.dart';
+import 'package:megawatch/services/profiles/sanitized_profile_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

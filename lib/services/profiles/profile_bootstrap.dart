@@ -29,11 +29,11 @@ class ProfileBootstrap {
   ProfileBootstrap._();
 
   static const bool profilesEnabled = bool.fromEnvironment(
-    'DEBRIFY_PROFILES',
+    'MEGAWATCH_PROFILES',
     defaultValue: true,
   );
   static const bool migrationRolloutReady = bool.fromEnvironment(
-    'DEBRIFY_PROFILES_MIGRATION_READY',
+    'MEGAWATCH_PROFILES_MIGRATION_READY',
     defaultValue: true,
   );
 
@@ -425,7 +425,7 @@ class ProfileBootstrap {
     ProfileRegistry registry,
     SharedPreferences legacy,
   ) async {
-    final legacyKeys = legacy.getKeys().where(_isDebrifyLegacyKey).toSet();
+    final legacyKeys = legacy.getKeys().where(_isMegaWatchLegacyKey).toSet();
     final isExistingInstall =
         legacyKeys.isNotEmpty ||
         _hasLegacyDeviceJobAuthority(legacy) ||
@@ -536,7 +536,7 @@ class ProfileBootstrap {
     for (final root in roots) {
       if (!checked.add(root.absolute.path)) continue;
       for (final name in const <String>[
-        'debrify_tv.db',
+        'megawatch_tv.db',
         'iptv_catalog.db',
         'downloads_db_v1.json',
       ]) {
@@ -564,7 +564,7 @@ class ProfileBootstrap {
   static Future<bool> _hasLegacyNativeJobAuthority() async {
     if (!Platform.isAndroid) return false;
     final value = await const MethodChannel(
-      'com.debrify.app/profile_privacy',
+      'com.megawatch.app/profile_privacy',
     ).invokeMethod<bool>('hasLegacyProfileAuthority');
     if (value == null) {
       throw StateError('Native profile-authority inventory is unavailable');
@@ -744,10 +744,10 @@ class ProfileBootstrap {
     await NativeProfileProjection.publish(scope);
   }
 
-  static bool _isDebrifyLegacyKey(String key) {
+  static bool _isMegaWatchLegacyKey(String key) {
     if (key.startsWith('p.')) return false;
     if (_deviceOwnedLegacyKeys.contains(key)) return false;
-    // Plugin-owned values are not part of Debrify's profile namespace.
+    // Plugin-owned values are not part of MegaWatch's profile namespace.
     if (key.startsWith('flutter.') ||
         key.startsWith('firebase_') ||
         key.startsWith('pug_')) {

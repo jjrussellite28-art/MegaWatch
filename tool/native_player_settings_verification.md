@@ -18,7 +18,7 @@ patch does not replace the pending Fire TV Cube confirmation below.
 - Balance a rejected non-trailer launch with a content-playback stop notification
   before releasing its loader, so TV sync and remote polling are not left blocked.
   Trailer rejection must not stop an existing content session.
-- In Debrify TV, explicitly disable subtitle tracks when the saved setting is
+- In MegaWatch TV, explicitly disable subtitle tracks when the saved setting is
   Off. Previously an empty preferred language could still permit default or
   forced tracks. Manual subtitle selection can still turn them back on.
 
@@ -34,7 +34,7 @@ or existing live IPTV controls layout was changed.
    incomplete publication: the old getters return OTT / unset subtitle language /
    night mode 0 despite saved custom values. The new launch rejects that snapshot;
    the Dart launch barrier rebuilds it first.
-3. The Activity consumption test failed for Debrify TV's Off setting before the
+3. The Activity consumption test failed for MegaWatch TV's Off setting before the
    explicit track-disable fix. It now verifies the actual track selector,
    night-mode field and style in both players, including manual subtitle re-enable.
 
@@ -76,18 +76,18 @@ The final warm run and cold restart produced **18 passing checks**:
 
 - Movie and episode launches, including repeat launches.
 - IPTV live-mode, VOD and episode launches.
-- Debrify TV's Torbox and Real-Debrid launch methods.
+- MegaWatch TV's Torbox and Real-Debrid launch methods.
 - Defaults: OTT / automatic subtitle preference / night mode 0.
-- Custom profile A: Frost / subtitles Off / night mode 3, with Debrify TV Network.
+- Custom profile A: Frost / subtitles Off / night mode 3, with MegaWatch TV Network.
 - Profile B starts with its own defaults, then Classic / Spanish / night mode 1.
 - Switching back to A restores A's values.
 - All three bridge methods reject locked profiles; a subsequent unlocked launch works.
 - After process termination/restart, saved A preferences are restored in the movie
-  player and Debrify TV.
+  player and MegaWatch TV.
 
 All 15 native handoff log records in those two runs match the expected profile
 values. Movie, episode and IPTV VOD/episode runs also assert an advancing native
-playback checkpoint. Live IPTV and Debrify TV do not provide that same checkpoint
+playback checkpoint. Live IPTV and MegaWatch TV do not provide that same checkpoint
 callback; their smoke assertions cover handoff/exit, alongside native Activity
 consumption tests. This is not an end-to-end test of any remote provider.
 
@@ -97,8 +97,8 @@ claimed. The existing live IPTV controls-style override remains unchanged.
 Device-specific decoding/audio behavior still needs real hardware verification.
 
 `emulator-smoke.log` contains the latest warm-run PID 9063 and cold-run PID 9529.
-The original `com.debrify.app` installation was not replaced or cleared. Testing
-used `com.debrify.app.personal`. The probe was stopped and its temporary host HTTP
+The original `com.megawatch.app` installation was not replaced or cleared. Testing
+used `com.megawatch.app.personal`. The probe was stopped and its temporary host HTTP
 server and ADB port reverse were removed afterward.
 
 ## Repeat the checks
@@ -130,17 +130,17 @@ env JAVA_HOME='/Applications/Android Studio.app/Contents/jbr/Contents/Home' \
 
 For the isolated emulator probe, serve the synthetic fixture directory on
 localhost port 18769 (`python3 -m http.server 18769 --bind 127.0.0.1 --directory
-<fixture-directory>`). The expected file is `Debrify Test Movie (2008).mp4`.
+<fixture-directory>`). The expected file is `MegaWatch Test Movie (2008).mp4`.
 Use `adb -s emulator-5554 reverse tcp:18769 tcp:18769`. Then build:
 
 ```sh
 env JAVA_HOME='/Applications/Android Studio.app/Contents/jbr/Contents/Home' \
   ./android/gradlew -p android :app:assembleDebug \
-  -PdebrifyPersonalBuild=true -Ptarget-platform=android-arm64 \
+  -PmegawatchPersonalBuild=true -Ptarget-platform=android-arm64 \
   -Ptarget="$PWD/tool/native_player_settings_smoke.dart"
 ```
 
-Only install this probe in an isolated emulator where `com.debrify.app.personal`
+Only install this probe in an isolated emulator where `com.megawatch.app.personal`
 does not contain real data. It creates synthetic profiles in that app. The first
 run checks the full matrix; force-stop/restart the same probe for the saved-profile
 cold-start check. Do not distribute the smoke APK as a normal app.
@@ -149,12 +149,12 @@ cold-start check. Do not distribute the smoke APK as a normal app.
 
 A separate **normal-app** debug APK (not the smoke entry point) is available at:
 
-`build/player-settings-review/debrify-settings-fix-debug.apk`
+`build/player-settings-review/megawatch-settings-fix-debug.apk`
 
-It includes ARM32 and ARM64, package `com.debrify.app.personal`, version `0.9.7-settings-review+51`,
-and labeled Debrify Personal. It installs separately from the standard app and
+It includes ARM32 and ARM64, package `com.megawatch.app.personal`, version `0.9.7-settings-review+51`,
+and labeled MegaWatch Personal. It installs separately from the standard app and
 does not automatically inherit that app's profiles or settings. If the reporter
-already uses Debrify Personal, do not overwrite it without backing up/approval.
+already uses MegaWatch Personal, do not overwrite it without backing up/approval.
 This is a local review build, not a published release.
 
 Reporter checklist:
@@ -165,7 +165,7 @@ Reporter checklist:
 3. Start a movie and an episode. Verify the appearance and the player menu's
    subtitle/night-mode state. Use content with an actual subtitle track.
 4. Exit and reopen playback, then restart the app and repeat. Check IPTV and
-   Debrify TV if those are part of the original report.
+   MegaWatch TV if those are part of the original report.
 5. Manually turn subtitles on and off in the player to confirm the controls still
    work. If using multiple profiles, verify that switching does not copy settings
    from another profile. Confirm night mode audibly on the Cube's normal audio setup.

@@ -1,4 +1,4 @@
-import 'package:debrify/utils/iptv_title.dart';
+import 'package:megawatch/utils/iptv_title.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

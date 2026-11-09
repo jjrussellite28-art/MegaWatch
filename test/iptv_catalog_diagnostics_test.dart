@@ -1,4 +1,4 @@
-import 'package:debrify/services/iptv_catalog_diagnostics.dart';
+import 'package:megawatch/services/iptv_catalog_diagnostics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 

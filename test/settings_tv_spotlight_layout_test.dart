@@ -1,10 +1,10 @@
-import 'package:debrify/screens/settings/playback_settings_section.dart';
-import 'package:debrify/screens/settings/settings_tv_layout.dart';
-import 'package:debrify/screens/settings/widgets/settings_widgets.dart';
-import 'package:debrify/services/text_brightness.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_adapter.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
+import 'package:megawatch/screens/settings/playback_settings_section.dart';
+import 'package:megawatch/screens/settings/settings_tv_layout.dart';
+import 'package:megawatch/screens/settings/widgets/settings_widgets.dart';
+import 'package:megawatch/services/text_brightness.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_adapter.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -48,10 +48,10 @@ SettingsTvLayout _layout(
   onOpenProviderSettings: _noop,
   onOpenQuickPlaySettings: _noop,
   onOpenDiscoverSettings: _noop,
-  onOpenDebrifyTvSettings: _noop,
+  onOpenMegaWatchTvSettings: _noop,
   onClearDownloads: _noop,
   onClearPlayback: _noop,
-  downloadLocationSubtitle: 'Downloads/Debrify',
+  downloadLocationSubtitle: 'Downloads/MegaWatch',
   onCreateBackup: _noop,
   onRestoreBackup: _noop,
   onOpenSyncAndMigrate: onOpenSyncAndMigrate ?? _noop,
@@ -84,16 +84,16 @@ SettingsTvLayout _layout(
   onOpenTvHomeStyle: _noop,
   iptvStyleLabel: 'Command',
   onOpenIptvStyle: _noop,
-  debrifyTvStyleLabel: 'Spotlight',
-  onOpenDebrifyTvStyle: _noop,
+  megawatchTvStyleLabel: 'Spotlight',
+  onOpenMegaWatchTvStyle: _noop,
   playerGuideStyleLabel: 'Classic',
   onOpenPlayerGuideStyle: _noop,
   playLoaderStyleLabel: 'Marquee',
   onOpenPlayLoaderStyle: _noop,
   tvPlayerControlsStyleLabel: 'OTT',
   onOpenTvPlayerControlsStyle: _noop,
-  debrifyTvPlayerStyleLabel: 'Network',
-  onOpenDebrifyTvPlayerStyle: _noop,
+  megawatchTvPlayerStyleLabel: 'Network',
+  onOpenMegaWatchTvPlayerStyle: _noop,
   detailPageStyleLabel: 'Showcase',
   onOpenDetailPageStyle: _noop,
   looksLabel: 'Spotlight',
@@ -112,7 +112,7 @@ SettingsTvLayout _layout(
   onOpenRecordings: _noop,
   onOpenIptvSettings: _noop,
   showSupportDonation: false,
-  supportDonationLabel: 'Support Debrify',
+  supportDonationLabel: 'Support MegaWatch',
   supportDonationSubtitle: 'Help fund development',
   onOpenSupportDonation: _noop,
 );

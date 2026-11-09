@@ -538,7 +538,7 @@ class _HolePunchPainter extends CustomPainter {
   bool shouldRepaint(_HolePunchPainter oldDelegate) => false;
 }
 
-/// Owns the `com.debrify.app/tv_trailer` channel and dispatches native → Dart
+/// Owns the `com.megawatch.app/tv_trailer` channel and dispatches native → Dart
 /// events to the right [ExoTrailerEngine] by textureId. Lazily constructed the
 /// first time an Exo engine is used (never touched off-TV).
 class _TvTrailerChannel {
@@ -548,7 +548,7 @@ class _TvTrailerChannel {
 
   static final _TvTrailerChannel instance = _TvTrailerChannel._();
   static const MethodChannel _channel = MethodChannel(
-    'com.debrify.app/tv_trailer',
+    'com.megawatch.app/tv_trailer',
   );
 
   final Map<int, ExoTrailerEngine> _engines = {};

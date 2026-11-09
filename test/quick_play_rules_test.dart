@@ -5,17 +5,17 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/quick_play_rules.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/models/torrent_filter_state.dart';
-import 'package:debrify/services/series_source_fetcher.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/stream_url_validator.dart';
-import 'package:debrify/services/torrent_playback_service.dart';
-import 'package:debrify/services/startup_stream_policy.dart';
-import 'package:debrify/utils/filter_ladder.dart';
+import 'package:megawatch/models/quick_play_rules.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/models/torrent_filter_state.dart';
+import 'package:megawatch/services/series_source_fetcher.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/stream_url_validator.dart';
+import 'package:megawatch/services/torrent_playback_service.dart';
+import 'package:megawatch/services/startup_stream_policy.dart';
+import 'package:megawatch/utils/filter_ladder.dart';
 
 Torrent _torrent(
   String name, {
@@ -94,7 +94,7 @@ void main() {
         });
         service.invalidateCache();
         await StorageService.setQuickPlayRules(
-          QuickPlayRules.debrifyDefault(isMovie: false).copyWith(
+          QuickPlayRules.megawatchDefault(isMovie: false).copyWith(
             preset: QuickPlayPreset.custom,
             sourceMode: QuickPlaySourceMode.addonsThenTorrents,
             preferSeriesPacks: false,
@@ -150,7 +150,7 @@ void main() {
         });
         service.invalidateCache();
         await StorageService.setQuickPlayRules(
-          QuickPlayRules.debrifyDefault(isMovie: false).copyWith(
+          QuickPlayRules.megawatchDefault(isMovie: false).copyWith(
             preset: QuickPlayPreset.custom,
             sourceMode: QuickPlaySourceMode.addonsThenTorrents,
             preferSeriesPacks: false,
@@ -227,10 +227,10 @@ void main() {
     );
   });
 
-  group('Debrify default compatibility contract', () {
+  group('MegaWatch default compatibility contract', () {
     test('movie defaults preserve the pre-profile behavior', () {
-      final rules = QuickPlayRules.debrifyDefault(isMovie: true);
-      expect(rules.preset, QuickPlayPreset.debrifyDefault);
+      final rules = QuickPlayRules.megawatchDefault(isMovie: true);
+      expect(rules.preset, QuickPlayPreset.megawatchDefault);
       expect(rules.sourceMode, QuickPlaySourceMode.torrentsThenAddons);
       expect(rules.ranking, QuickPlayRanking.exactOrder);
       expect(rules.useFilters, isTrue);
@@ -249,7 +249,7 @@ void main() {
     });
 
     test('series adds the existing pack-first and six-hour behavior', () {
-      final rules = QuickPlayRules.debrifyDefault(isMovie: false);
+      final rules = QuickPlayRules.megawatchDefault(isMovie: false);
       expect(rules.preferSeriesPacks, isTrue);
       expect(rules.packPreference, QuickPlayPackPreference.widestFirst);
       expect(rules.preserveLegacyCombinedPackSearch, isTrue);
@@ -266,7 +266,7 @@ void main() {
         ];
         final ordered = TorrentPlaybackService.orderCandidatesForRules(
           input,
-          rules: QuickPlayRules.debrifyDefault(isMovie: true),
+          rules: QuickPlayRules.megawatchDefault(isMovie: true),
         );
         expect(ordered, orderedEquals(input));
       },
@@ -275,16 +275,16 @@ void main() {
 
   group('profile persistence and legacy migration', () {
     test(
-      'untouched installs resolve to Debrify default for both types',
+      'untouched installs resolve to MegaWatch default for both types',
       () async {
         SharedPreferences.setMockInitialValues({});
         expect(
           await StorageService.getQuickPlayRules(isMovie: true),
-          QuickPlayRules.debrifyDefault(isMovie: true),
+          QuickPlayRules.megawatchDefault(isMovie: true),
         );
         expect(
           await StorageService.getQuickPlayRules(isMovie: false),
-          QuickPlayRules.debrifyDefault(isMovie: false),
+          QuickPlayRules.megawatchDefault(isMovie: false),
         );
       },
     );
@@ -318,11 +318,11 @@ void main() {
       await StorageService.restoreQuickPlayDefaults();
       expect(
         await StorageService.getQuickPlayRules(isMovie: true),
-        QuickPlayRules.debrifyDefault(isMovie: true),
+        QuickPlayRules.megawatchDefault(isMovie: true),
       );
       expect(
         await StorageService.getQuickPlayRules(isMovie: false),
-        QuickPlayRules.debrifyDefault(isMovie: false),
+        QuickPlayRules.megawatchDefault(isMovie: false),
       );
     });
 
@@ -333,7 +333,7 @@ void main() {
       // ALL series pinning — Smart mode then never found a pin and Quick Play
       // lost its fast path. They must stay independent.
       await StorageService.setQuickPlayRules(
-        QuickPlayRules.debrifyDefault(
+        QuickPlayRules.megawatchDefault(
           isMovie: false,
         ).copyWith(preset: QuickPlayPreset.custom, preferSeriesPacks: false),
         isMovie: false,
@@ -369,7 +369,7 @@ void main() {
 
     test('saving movies cannot leak retry settings into series', () async {
       SharedPreferences.setMockInitialValues({});
-      final movies = QuickPlayRules.debrifyDefault(isMovie: true).copyWith(
+      final movies = QuickPlayRules.megawatchDefault(isMovie: true).copyWith(
         preset: QuickPlayPreset.custom,
         tryNextOnFailure: true,
         maxAttempts: 10,
@@ -378,13 +378,13 @@ void main() {
 
       expect(
         await StorageService.getQuickPlayRules(isMovie: false),
-        QuickPlayRules.debrifyDefault(isMovie: false),
+        QuickPlayRules.megawatchDefault(isMovie: false),
       );
     });
 
     test('saving series cannot leak retry settings into movies', () async {
       SharedPreferences.setMockInitialValues({});
-      final series = QuickPlayRules.debrifyDefault(isMovie: false).copyWith(
+      final series = QuickPlayRules.megawatchDefault(isMovie: false).copyWith(
         preset: QuickPlayPreset.custom,
         tryNextOnFailure: false,
         maxAttempts: 1,
@@ -393,7 +393,7 @@ void main() {
 
       expect(
         await StorageService.getQuickPlayRules(isMovie: true),
-        QuickPlayRules.debrifyDefault(isMovie: true),
+        QuickPlayRules.megawatchDefault(isMovie: true),
       );
     });
 
@@ -446,8 +446,8 @@ void main() {
     });
 
     test('old implicit ranking migrates to provider-returned order', () {
-      final json = QuickPlayRules.debrifyDefault(isMovie: true).toJson()
-        ..['ranking'] = QuickPlayRanking.debrify.name;
+      final json = QuickPlayRules.megawatchDefault(isMovie: true).toJson()
+        ..['ranking'] = QuickPlayRanking.megawatch.name;
 
       expect(
         QuickPlayRules.fromJson(json, isMovie: true).ranking,
@@ -577,7 +577,7 @@ void main() {
       );
       final aioTorrent = _torrent('aio torrent', source: 'stremio:AIOStreams');
       final engineTorrent = _torrent('engine torrent', source: 'comet');
-      final rules = QuickPlayRules.debrifyDefault(
+      final rules = QuickPlayRules.megawatchDefault(
         isMovie: true,
       ).copyWith(sourcePriority: const ['stremio:aiostreams', 'engine:comet']);
 
@@ -598,7 +598,7 @@ void main() {
         source: 'stremio:AIOStreams',
       );
       final engineTorrent = _torrent('engine torrent', source: 'comet');
-      final rules = QuickPlayRules.debrifyDefault(
+      final rules = QuickPlayRules.megawatchDefault(
         isMovie: true,
       ).copyWith(sourcePriority: const ['stremio:aiostreams', 'engine:comet']);
 
@@ -619,7 +619,7 @@ void main() {
       );
       final aioTorrent = _torrent('aio torrent', source: 'stremio:AIOStreams');
       final engineTorrent = _torrent('engine torrent', source: 'comet');
-      final rules = QuickPlayRules.debrifyDefault(isMovie: true).copyWith(
+      final rules = QuickPlayRules.megawatchDefault(isMovie: true).copyWith(
         sourceMode: QuickPlaySourceMode.addonsThenTorrents,
         sourcePriority: const ['stremio:aiostreams', 'engine:comet'],
       );
@@ -642,7 +642,7 @@ void main() {
         source: 'stremio:AIOStreams',
         infohash: hash,
       );
-      final rules = QuickPlayRules.debrifyDefault(
+      final rules = QuickPlayRules.megawatchDefault(
         isMovie: true,
       ).copyWith(sourcePriority: const ['stremio:aiostreams', 'engine:comet']);
 
@@ -670,7 +670,7 @@ void main() {
       final ladder = FilterLadder(
         TorrentFilterState(qualities: {QualityTier.ultraHd}),
       );
-      final rules = QuickPlayRules.debrifyDefault(isMovie: true).copyWith(
+      final rules = QuickPlayRules.megawatchDefault(isMovie: true).copyWith(
         sourcePriority: const ['stremio:aiostreams', 'engine:comet'],
         relaxFilters: false,
       );
@@ -724,7 +724,7 @@ void main() {
       final ladder = FilterLadder(
         TorrentFilterState(qualities: {QualityTier.ultraHd}),
       );
-      final rules = QuickPlayRules.debrifyDefault(
+      final rules = QuickPlayRules.megawatchDefault(
         isMovie: true,
       ).copyWith(sourcePriority: const ['stremio:aiostreams', 'engine:comet']);
 
@@ -787,7 +787,7 @@ void main() {
         'uncached pack',
         source: 'stremio:AIOStreams',
       );
-      final rules = QuickPlayRules.debrifyDefault(
+      final rules = QuickPlayRules.megawatchDefault(
         isMovie: false,
       ).copyWith(sourcePriority: const ['stremio:aiostreams', 'engine:comet']);
 
@@ -841,7 +841,7 @@ void main() {
     test('disabling direct links removes them before selection', () {
       final torrent = _torrent('torrent');
       final direct = _torrent('direct', type: StreamType.directUrl);
-      final rules = QuickPlayRules.debrifyDefault(
+      final rules = QuickPlayRules.megawatchDefault(
         isMovie: true,
       ).copyWith(preset: QuickPlayPreset.custom, allowDirectLinks: false);
       expect(
@@ -854,7 +854,7 @@ void main() {
     });
 
     test('torrent retry count does not change direct validation budget', () {
-      final oneAttempt = QuickPlayRules.debrifyDefault(isMovie: true).copyWith(
+      final oneAttempt = QuickPlayRules.megawatchDefault(isMovie: true).copyWith(
         preset: QuickPlayPreset.custom,
         tryNextOnFailure: false,
         maxAttempts: 1,
@@ -1042,7 +1042,7 @@ void main() {
     });
 
     test('source preference selects the dual-source transport order', () {
-      final torrentFirst = QuickPlayRules.debrifyDefault(isMovie: true);
+      final torrentFirst = QuickPlayRules.megawatchDefault(isMovie: true);
       final addonFirst = torrentFirst.copyWith(
         sourceMode: QuickPlaySourceMode.addonsThenTorrents,
       );
@@ -1068,8 +1068,8 @@ void main() {
     });
 
     test('only addon-only mode defers the provider prompt', () {
-      final movieDefault = QuickPlayRules.debrifyDefault(isMovie: true);
-      final seriesDefault = QuickPlayRules.debrifyDefault(isMovie: false);
+      final movieDefault = QuickPlayRules.megawatchDefault(isMovie: true);
+      final seriesDefault = QuickPlayRules.megawatchDefault(isMovie: false);
       final mixed = movieDefault.copyWith(
         sourceMode: QuickPlaySourceMode.addonsThenTorrents,
       );
@@ -1116,17 +1116,17 @@ void main() {
     });
 
     test('torrents-only disables addon fast paths', () {
-      final torrentsOnly = QuickPlayRules.debrifyDefault(
+      final torrentsOnly = QuickPlayRules.megawatchDefault(
         isMovie: true,
       ).copyWith(sourceMode: QuickPlaySourceMode.torrentsOnly);
-      final defaultRules = QuickPlayRules.debrifyDefault(isMovie: true);
+      final defaultRules = QuickPlayRules.megawatchDefault(isMovie: true);
 
       expect(TorrentPlaybackService.allowsAddonSearch(torrentsOnly), isFalse);
       expect(TorrentPlaybackService.allowsAddonSearch(defaultRules), isTrue);
     });
 
     test('direct-stream paths combine mixed providers', () {
-      final defaultSeries = QuickPlayRules.debrifyDefault(isMovie: false);
+      final defaultSeries = QuickPlayRules.megawatchDefault(isMovie: false);
       final explicit = defaultSeries.copyWith(
         preset: QuickPlayPreset.custom,
         preserveLegacyCombinedPackSearch: false,
@@ -1200,14 +1200,14 @@ void main() {
     });
 
     test('default keeps the shipped combined pack search', () {
-      final rules = QuickPlayRules.debrifyDefault(isMovie: false);
+      final rules = QuickPlayRules.megawatchDefault(isMovie: false);
       expect(TorrentPlaybackService.seriesPackSearchPlan(rules), [
         QuickPlaySourceMode.together,
       ]);
     });
 
     test('explicit source priority keeps pack searches combined', () {
-      final base = QuickPlayRules.debrifyDefault(isMovie: false).copyWith(
+      final base = QuickPlayRules.megawatchDefault(isMovie: false).copyWith(
         preset: QuickPlayPreset.custom,
         preserveLegacyCombinedPackSearch: false,
       );

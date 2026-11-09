@@ -1,5 +1,5 @@
-import 'package:debrify/screens/video_player/services/skip_segment_ui_controller.dart';
-import 'package:debrify/services/skip_segment_service.dart';
+import 'package:megawatch/screens/video_player/services/skip_segment_ui_controller.dart';
+import 'package:megawatch/services/skip_segment_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

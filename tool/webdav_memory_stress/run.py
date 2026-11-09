@@ -12,9 +12,9 @@ import uuid
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-IMAGE = "debrify-webdav-memory-stress:local"
-INPUT_LABEL = "dev.debrify.memory-input"
-PROVENANCE_LABEL = "dev.debrify.memory-provenance"
+IMAGE = "megawatch-webdav-memory-stress:local"
+INPUT_LABEL = "dev.megawatch.memory-input"
+PROVENANCE_LABEL = "dev.megawatch.memory-provenance"
 BUILD_FILES = ("Dockerfile", "pubspec.yaml", "pubspec.lock", "worker.dart")
 SOURCES = [
     "models/home_collection.dart",
@@ -83,7 +83,7 @@ def input_fingerprint(context=None):
 def build():
     # Only the worker, pinned dependencies and selected production source files
     # enter the local Docker build. No Flutter SDK, app secrets or user data.
-    with tempfile.TemporaryDirectory(prefix="debrify-memory-build-") as temp:
+    with tempfile.TemporaryDirectory(prefix="megawatch-memory-build-") as temp:
         context = pathlib.Path(temp) / "context"
         context.mkdir()
         image_id_file = pathlib.Path(temp) / "image-id"
@@ -127,7 +127,7 @@ def verified_fingerprint(image):
 
 def run_case(case, report, timeout, image_id, allow_probe_oom=False):
     label, limit, expected, arguments = case
-    name = f"debrify-memory-{uuid.uuid4().hex[:12]}"
+    name = f"megawatch-memory-{uuid.uuid4().hex[:12]}"
     limit_bytes = limit * 1024 * 1024
     started = time.monotonic()
     created = False

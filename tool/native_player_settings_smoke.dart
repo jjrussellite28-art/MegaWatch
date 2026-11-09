@@ -1,39 +1,39 @@
 // Isolated Android TV smoke entry point. Never use as a release entry point.
-// Build with -PdebrifyPersonalBuild=true and -Ptarget=tool/native_player_settings_smoke.dart.
+// Build with -PmegawatchPersonalBuild=true and -Ptarget=tool/native_player_settings_smoke.dart.
 // See native_player_settings_verification.md for fixture and run instructions.
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 import 'dart:async';
 import 'dart:io';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/services/android_tv_player_bridge.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/native_profile_projection.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_lock_controller.dart';
-import 'package:debrify/services/profiles/profile_native_lock_bridge.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/subtitle_font_service.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/services/android_tv_player_bridge.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/native_profile_projection.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_lock_controller.dart';
+import 'package:megawatch/services/profiles/profile_native_lock_bridge.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/subtitle_font_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const _fixture = 'http://127.0.0.1:18769/Debrify%20Test%20Movie%20(2008).mp4';
-const _remote = MethodChannel('com.debrify.app/remote_control');
-const _privacy = MethodChannel('com.debrify.app/profile_privacy');
+const _fixture = 'http://127.0.0.1:18769/MegaWatch%20Test%20Movie%20(2008).mp4';
+const _remote = MethodChannel('com.megawatch.app/remote_control');
+const _privacy = MethodChannel('com.megawatch.app/profile_privacy');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final package = await PackageInfo.fromPlatform();
   if (!kDebugMode ||
       !Platform.isAndroid ||
-      package.packageName != 'com.debrify.app.personal') {
+      package.packageName != 'com.megawatch.app.personal') {
     throw StateError(
       'This probe must run in an isolated personal debug build.',
     );
@@ -121,7 +121,7 @@ Future<void> _run() async {
   }
   await _play('defaults-movie');
   await StorageService.setTvPlayerControlsStyle('frost');
-  await StorageService.setDebrifyTvPlayerStyle('network');
+  await StorageService.setMegaWatchTvPlayerStyle('network');
   await StorageService.setDefaultSubtitleLanguage('off');
   await StorageService.setPlayerNightModeIndex(3);
   for (final kind in [

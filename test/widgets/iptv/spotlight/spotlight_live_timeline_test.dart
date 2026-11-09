@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:ui' show Tristate;
 
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/iptv_epg_service.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_live_timeline.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/iptv_epg_service.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_live_timeline.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

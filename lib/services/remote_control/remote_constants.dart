@@ -34,7 +34,7 @@ class RemoteMessageType {
 /// Protocol version advertised in discovery. v1 = plaintext only (implied by
 /// the field's absence), v2 = X25519/AES-GCM sessions + pairing codes, v3 =
 /// correlated receiver outcomes for single-addon transfers, v4 = correlated
-/// outcomes for configuration batches and Debrify TV channels, v5 = complete
+/// outcomes for configuration batches and MegaWatch TV channels, v5 = complete
 /// profile-graph transfers (including disabled resources, profile-local
 /// settings, lock policy, reference remapping, and bounded compression), v6 =
 /// reliable TCP transfers, v7 = badge transfers including the master switch,
@@ -55,7 +55,7 @@ const int kAddonResultProtocolVersion = 3;
 const int kRemoteTransferResultProtocolVersion = 4;
 const int kComprehensiveProfileGraphProtocolVersion = 5;
 
-/// First Debrify release whose RECEIVER speaks [kProtoVersion] 2, quoted to
+/// First MegaWatch release whose RECEIVER speaks [kProtoVersion] 2, quoted to
 /// the user when a send is refused. v2 landed after 0.8.1-alpha.1 shipped, so
 /// every build released before this one is a v1 receiver and cannot be set up
 /// from a phone. Bump only if the v2 receiver's first release changes.
@@ -185,19 +185,19 @@ class ConfigCommand {
 
   /// Stream badge rulesets (imported badges.json sources), as one JSON array.
   static const String streamBadges = 'stream_badges';
-  static const String debrifyChannel = 'debrify_channel';
-  // The chunked-transfer envelope. Named for Debrify TV channels because that
+  static const String megawatchChannel = 'megawatch_channel';
+  // The chunked-transfer envelope. Named for MegaWatch TV channels because that
   // was the first thing big enough to need it, but the start packet carries a
   // `kind` naming the command its reassembled payload belongs to, so any
   // config command can travel this way.
-  static const String debrifyChannelStart = 'debrify_channel_start';
-  static const String debrifyChannelChunk = 'debrify_channel_chunk';
+  static const String megawatchChannelStart = 'megawatch_channel_start';
+  static const String megawatchChannelChunk = 'megawatch_channel_chunk';
   // Gap repair, receiver → sender: "these chunk indices never arrived,
   // resend them." This is what lets the sender pace aggressively — a lost
   // datagram costs one small repair round instead of the whole transfer.
   // v2-only by construction: it rides the encrypted session, and v1 senders
   // (which keep the old slow pace) never receive one.
-  static const String debrifyChannelNeed = 'debrify_channel_need';
+  static const String megawatchChannelNeed = 'megawatch_channel_need';
   // A picked avatar image from the paired phone. NOT setup data: it applies
   // to the active profile immediately instead of joining the staged import.
   static const String profileAvatar = 'profile_avatar';
@@ -218,7 +218,7 @@ class ConfigCommand {
   // the add-on.
   static const String addonTransferResult = 'addon_transfer_result';
   // Receiver → sender: correlated application outcome for v4 configuration
-  // batches and Debrify TV channel imports.
+  // batches and MegaWatch TV channel imports.
   static const String remoteTransferResult = 'remote_transfer_result';
   // Sender → receiver: opens a fresh correlated v4 batch before any config
   // or addon items are emitted, preventing reuse of stale staged data.
@@ -262,7 +262,7 @@ const int kMaxProfileGraphWireBytes = 10 * 1024 * 1024;
 
 /// Soft expanded-JSON threshold for a full profile graph. Above this size the
 /// sender offers a compact re-export: rebuildable IPTV caches are removed and
-/// Debrify TV channels are omitted together with their saved hash pools after
+/// MegaWatch TV channels are omitted together with their saved hash pools after
 /// explicit user confirmation, keeping the receiver's working set near 32 MB.
 const int kProfileGraphCompactionThresholdBytes = 32 * 1024 * 1024;
 

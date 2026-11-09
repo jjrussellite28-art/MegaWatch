@@ -2,34 +2,34 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/media_server.dart';
-import 'package:debrify/models/media_server_library.dart';
-import 'package:debrify/services/media_server_library_playback.dart';
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/models/torrent_filter_state.dart';
-import 'package:debrify/models/quick_play_rules.dart';
-import 'package:debrify/utils/filter_ladder.dart';
-import 'package:debrify/utils/torrent_filter_matcher.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/direct_source_authorization.dart';
-import 'package:debrify/services/media_server_client.dart';
-import 'package:debrify/services/media_server_service.dart';
-import 'package:debrify/services/media_server_watch_sync.dart';
-import 'package:debrify/services/native_playback_progress_session.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_collection_resource_facade.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/series_source_service.dart';
-import 'package:debrify/services/torrent_service.dart';
-import 'package:debrify/services/torrent_playback_service.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/models/media_server.dart';
+import 'package:megawatch/models/media_server_library.dart';
+import 'package:megawatch/services/media_server_library_playback.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/models/torrent_filter_state.dart';
+import 'package:megawatch/models/quick_play_rules.dart';
+import 'package:megawatch/utils/filter_ladder.dart';
+import 'package:megawatch/utils/torrent_filter_matcher.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/direct_source_authorization.dart';
+import 'package:megawatch/services/media_server_client.dart';
+import 'package:megawatch/services/media_server_service.dart';
+import 'package:megawatch/services/media_server_watch_sync.dart';
+import 'package:megawatch/services/native_playback_progress_session.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_collection_resource_facade.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/series_source_service.dart';
+import 'package:megawatch/services/torrent_service.dart';
+import 'package:megawatch/services/torrent_playback_service.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -1111,7 +1111,7 @@ void main() {
         expect(
           TorrentPlaybackService.orderCandidatesForRules(
             sources,
-            rules: QuickPlayRules.debrifyDefault(
+            rules: QuickPlayRules.megawatchDefault(
               isMovie: true,
             ).copyWith(relaxFilters: false),
             ladder: FilterLadder(filter),
@@ -1149,7 +1149,7 @@ void main() {
         expect(
           TorrentPlaybackService.orderCandidatesForRules(
             sources,
-            rules: QuickPlayRules.debrifyDefault(
+            rules: QuickPlayRules.megawatchDefault(
               isMovie: true,
             ).copyWith(relaxFilters: false),
             ladder: FilterLadder(sdr),
@@ -1180,7 +1180,7 @@ void main() {
         await tester.runAsync(() async {
           await connect();
           await StorageService.setQuickPlayRules(
-            QuickPlayRules.debrifyDefault(
+            QuickPlayRules.megawatchDefault(
               isMovie: true,
             ).copyWith(sourceMode: mode),
             isMovie: true,
@@ -1272,7 +1272,7 @@ void main() {
       List<Torrent> strict(List<Torrent> sources, AudioLanguage language) =>
           TorrentPlaybackService.orderCandidatesForRules(
             sources,
-            rules: QuickPlayRules.debrifyDefault(
+            rules: QuickPlayRules.megawatchDefault(
               isMovie: true,
             ).copyWith(relaxFilters: false),
             ladder: FilterLadder(TorrentFilterState(languages: {language})),
@@ -1503,7 +1503,7 @@ void main() {
         expect(
           TorrentPlaybackService.orderCandidatesForRules(
             sources,
-            rules: QuickPlayRules.debrifyDefault(
+            rules: QuickPlayRules.megawatchDefault(
               isMovie: true,
             ).copyWith(relaxFilters: false),
             ladder: FilterLadder(filter),

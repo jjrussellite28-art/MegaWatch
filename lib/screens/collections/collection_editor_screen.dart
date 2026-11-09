@@ -53,7 +53,7 @@ class _CollectionEditorScreenState extends State<CollectionEditorScreen> {
   void _save() {
     if (!_form.currentState!.validate()) return;
     _form.currentState!.save();
-    _draft['debrifyCollectionVersion'] = 2;
+    _draft['megawatchCollectionVersion'] = 2;
     final collection = HomeCollection.fromJson(_draft);
     if (collection != null) Navigator.of(context).pop(collection);
   }

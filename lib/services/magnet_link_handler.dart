@@ -312,7 +312,7 @@ class MagnetLinkHandler {
       String? subFolderId;
       try {
         subFolderId = await PikPakApiService.instance.findOrCreateSubfolder(
-          folderName: 'debrify-torrents',
+          folderName: 'megawatch-torrents',
           parentFolderId: parentFolderId,
           getCachedId: StorageService.getPikPakTorrentsFolderId,
           setCachedId: StorageService.setPikPakTorrentsFolderId,
@@ -639,11 +639,11 @@ class MagnetLinkHandler {
       // Get parent folder ID (restricted folder or root)
       final parentFolderId = await StorageService.getPikPakRestrictedFolderId();
 
-      // Find or create "debrify-torrents" subfolder (same as search)
+      // Find or create "megawatch-torrents" subfolder (same as search)
       String? subFolderId;
       try {
         subFolderId = await PikPakApiService.instance.findOrCreateSubfolder(
-          folderName: 'debrify-torrents',
+          folderName: 'megawatch-torrents',
           parentFolderId: parentFolderId,
           getCachedId: StorageService.getPikPakTorrentsFolderId,
           setCachedId: StorageService.setPikPakTorrentsFolderId,

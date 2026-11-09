@@ -62,7 +62,7 @@ class SettingsTvLayout extends StatefulWidget {
   final Future<void> Function() onOpenProviderSettings;
   final Future<void> Function() onOpenQuickPlaySettings;
   final Future<void> Function() onOpenDiscoverSettings;
-  final Future<void> Function() onOpenDebrifyTvSettings;
+  final Future<void> Function() onOpenMegaWatchTvSettings;
   final Future<void> Function() onClearDownloads;
   final Future<void> Function() onClearPlayback;
   // Android-only custom download folder (SAF); null hides the row.
@@ -108,8 +108,8 @@ class SettingsTvLayout extends StatefulWidget {
   final Future<void> Function() onOpenTvHomeStyle;
   final String iptvStyleLabel;
   final Future<void> Function() onOpenIptvStyle;
-  final String debrifyTvStyleLabel;
-  final Future<void> Function() onOpenDebrifyTvStyle;
+  final String megawatchTvStyleLabel;
+  final Future<void> Function() onOpenMegaWatchTvStyle;
   final String playerGuideStyleLabel;
   final Future<void> Function() onOpenPlayerGuideStyle;
   final String playLoaderStyleLabel;
@@ -120,10 +120,10 @@ class SettingsTvLayout extends StatefulWidget {
   // only reader — doesn't exist.
   final String tvPlayerControlsStyleLabel;
   final Future<void> Function() onOpenTvPlayerControlsStyle;
-  // Debrify TV playback-screen style — same Android-TV-only gating story as
+  // MegaWatch TV playback-screen style — same Android-TV-only gating story as
   // the control skin row above.
-  final String debrifyTvPlayerStyleLabel;
-  final Future<void> Function() onOpenDebrifyTvPlayerStyle;
+  final String megawatchTvPlayerStyleLabel;
+  final Future<void> Function() onOpenMegaWatchTvPlayerStyle;
   final String detailPageStyleLabel;
   final Future<void> Function() onOpenDetailPageStyle;
   final String looksLabel;
@@ -179,7 +179,7 @@ class SettingsTvLayout extends StatefulWidget {
     required this.onOpenProviderSettings,
     required this.onOpenQuickPlaySettings,
     required this.onOpenDiscoverSettings,
-    required this.onOpenDebrifyTvSettings,
+    required this.onOpenMegaWatchTvSettings,
     required this.onClearDownloads,
     required this.onClearPlayback,
     this.onOpenDownloadLocation,
@@ -218,16 +218,16 @@ class SettingsTvLayout extends StatefulWidget {
     required this.onOpenTvHomeStyle,
     required this.iptvStyleLabel,
     required this.onOpenIptvStyle,
-    required this.debrifyTvStyleLabel,
-    required this.onOpenDebrifyTvStyle,
+    required this.megawatchTvStyleLabel,
+    required this.onOpenMegaWatchTvStyle,
     required this.playerGuideStyleLabel,
     required this.onOpenPlayerGuideStyle,
     required this.playLoaderStyleLabel,
     required this.onOpenPlayLoaderStyle,
     required this.tvPlayerControlsStyleLabel,
     required this.onOpenTvPlayerControlsStyle,
-    required this.debrifyTvPlayerStyleLabel,
-    required this.onOpenDebrifyTvPlayerStyle,
+    required this.megawatchTvPlayerStyleLabel,
+    required this.onOpenMegaWatchTvPlayerStyle,
     required this.detailPageStyleLabel,
     required this.onOpenDetailPageStyle,
     required this.looksLabel,
@@ -351,7 +351,7 @@ const List<_Category> _kCategories = [
   _Category(
     Icons.fiber_dvr_rounded,
     'Live TV & DVR',
-    'Debrify TV, recordings & IPTV',
+    'MegaWatch TV, recordings & IPTV',
     'Live television, organized.',
     'Manage channel sources, recordings, and the on-screen guide.',
   ),
@@ -387,13 +387,13 @@ const List<_Category> _kCategories = [
     Icons.info_outline_rounded,
     'About',
     'Updates, version & community',
-    'Debrify, up to date.',
+    'MegaWatch, up to date.',
     'Version, release checks, and the places where the community meets.',
   ),
   _Category(
     Icons.warning_amber_rounded,
     'Danger Zone',
-    'Reset Debrify',
+    'Reset MegaWatch',
     'Start over, deliberately.',
     'Destructive actions stay isolated and explain what they remove.',
   ),
@@ -1090,9 +1090,9 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
                 focusNode: _paneNodes[9],
               ),
               SettingsTile.spec(
-                SettingsRows.debrifyTvAppearance,
-                subtitle: widget.debrifyTvStyleLabel,
-                onTap: widget.onOpenDebrifyTvStyle,
+                SettingsRows.megawatchTvAppearance,
+                subtitle: widget.megawatchTvStyleLabel,
+                onTap: widget.onOpenMegaWatchTvStyle,
                 focusNode: _paneNodes[10],
               ),
               SettingsTile.spec(
@@ -1168,9 +1168,9 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
                   focusNode: _paneNodes[18],
                 ),
                 SettingsTile.spec(
-                  SettingsRows.debrifyTvPlayer,
-                  subtitle: widget.debrifyTvPlayerStyleLabel,
-                  onTap: widget.onOpenDebrifyTvPlayerStyle,
+                  SettingsRows.megawatchTvPlayer,
+                  subtitle: widget.megawatchTvPlayerStyleLabel,
+                  onTap: widget.onOpenMegaWatchTvPlayerStyle,
                   focusNode: _paneNodes[19],
                 ),
               ],
@@ -1241,8 +1241,8 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
             title: '',
             children: [
               SettingsTile.spec(
-                SettingsRows.debrifyTv,
-                onTap: widget.onOpenDebrifyTvSettings,
+                SettingsRows.megawatchTv,
+                onTap: widget.onOpenMegaWatchTvSettings,
                 focusNode: _paneNodes[0],
               ),
               SettingsTile.spec(
@@ -1448,7 +1448,7 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
               children: [
                 if (widget.showSupportDonation)
                   SettingsTile(
-                    icon: SettingsRows.supportDebrify.icon,
+                    icon: SettingsRows.supportMegaWatch.icon,
                     title: widget.supportDonationLabel,
                     subtitle: widget.supportDonationSubtitle,
                     onTap: widget.onOpenSupportDonation,
@@ -1479,7 +1479,7 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
             title: '',
             children: [
               SettingsTile.spec(
-                SettingsRows.resetDebrify,
+                SettingsRows.resetMegaWatch,
                 onTap: widget.onDangerAction,
                 destructive: true,
                 focusNode: _paneNodes[0],
@@ -1489,7 +1489,7 @@ class _SettingsTvLayoutState extends State<SettingsTvLayout> {
         ];
       // Deliberately NOT sharing a body with Danger Zone, which is how this
       // read before: an index nobody wrote a case for used to fall through
-      // and render Reset Debrify. A forgotten case should show nothing, never
+      // and render Reset MegaWatch. A forgotten case should show nothing, never
       // the destructive pane.
       default:
         return const [];

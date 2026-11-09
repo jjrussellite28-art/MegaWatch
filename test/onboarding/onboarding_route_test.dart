@@ -1,9 +1,9 @@
-import 'package:debrify/services/remote_control/remote_command_router.dart';
-import 'package:debrify/services/remote_control/remote_constants.dart';
-import 'package:debrify/services/remote_control/remote_session.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/utils/platform_util.dart';
-import 'package:debrify/widgets/initial_setup_flow.dart';
+import 'package:megawatch/services/remote_control/remote_command_router.dart';
+import 'package:megawatch/services/remote_control/remote_constants.dart';
+import 'package:megawatch/services/remote_control/remote_session.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/utils/platform_util.dart';
+import 'package:megawatch/widgets/initial_setup_flow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

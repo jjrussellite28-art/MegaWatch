@@ -1,6 +1,6 @@
-import 'package:debrify/screens/profiles/profile_recovery_screen.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/screens/profiles/profile_recovery_screen.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -86,7 +86,7 @@ void main() {
     expect(find.textContaining('temporarily unavailable'), findsOneWidget);
     expect(find.textContaining('Erase private'), findsNothing);
     expect(find.text('Restore a backup'), findsNothing);
-    final close = find.widgetWithText(FilledButton, 'Close Debrify');
+    final close = find.widgetWithText(FilledButton, 'Close MegaWatch');
     expect(close, findsOneWidget);
     await tester.tap(close);
     await tester.pump();

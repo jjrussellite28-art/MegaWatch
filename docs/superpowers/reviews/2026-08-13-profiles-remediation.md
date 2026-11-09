@@ -12,7 +12,7 @@
 **Finding source:** [Multi-Profile Implementation Review Report](./2026-08-13-profiles-review-report.md)
 **Supported platforms:** Android, Android TV, iOS, tvOS, macOS, Windows, and Linux. Web is not supported.
 **Code status:** All 29 original findings and all 23 delta findings have a remediation in the uncommitted working tree. Profile-specific automated checks pass; the repository-wide suite matches its nine-failure baseline exactly.
-**Release status:** **Code-complete and enabled for owner testing, but public rollout remains blocked.** `DEBRIFY_PROFILES` and `DEBRIFY_PROFILES_MIGRATION_READY` now default on so the device matrix below can be exercised. They must not be treated as publicly released until those gates pass.
+**Release status:** **Code-complete and enabled for owner testing, but public rollout remains blocked.** `MEGAWATCH_PROFILES` and `MEGAWATCH_PROFILES_MIGRATION_READY` now default on so the device matrix below can be exercised. They must not be treated as publicly released until those gates pass.
 
 This record closes the review finding-by-finding. “Automated” means exercised on the current macOS host. “Source verified” means the platform implementation compiles or parses where its toolchain is available, but it is not a substitute for the required kill, eviction, low-storage, backup, or device journey.
 

@@ -1,7 +1,7 @@
-import 'package:debrify/screens/video_player/services/subtitle_settings_service.dart';
-import 'package:debrify/services/profiles/profile_appearance_preferences.dart';
-import 'package:debrify/services/profiles/subtitle_appearance_preferences.dart';
-import 'package:debrify/services/subtitle_font_service.dart';
+import 'package:megawatch/screens/video_player/services/subtitle_settings_service.dart';
+import 'package:megawatch/services/profiles/profile_appearance_preferences.dart';
+import 'package:megawatch/services/profiles/subtitle_appearance_preferences.dart';
+import 'package:megawatch/services/subtitle_font_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

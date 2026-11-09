@@ -3,8 +3,8 @@ import TVServices
 
 private enum TopShelfStore {
     static var appGroup: String {
-        Bundle.main.object(forInfoDictionaryKey: "DebrifyAppGroup") as? String
-            ?? "group.com.varunsalian.debrifytv"
+        Bundle.main.object(forInfoDictionaryKey: "MegaWatchAppGroup") as? String
+            ?? "group.com.varunsalian.megawatchtv"
     }
     static let snapshotPath = "Library/Caches/top-shelf-v1.json"
     static let actionsPath = "Library/Caches/top-shelf-actions-v1.json"
@@ -146,7 +146,7 @@ final class ContentProvider: TVTopShelfContentProvider {
         document: ActionDocument?
     ) -> URL? {
         var components = URLComponents()
-        components.scheme = "debrify"
+        components.scheme = "megawatch"
         components.host = "topshelf"
         components.path = "/display"
         if snapshot.version == 2 {

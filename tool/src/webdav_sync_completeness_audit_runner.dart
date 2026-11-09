@@ -3,14 +3,14 @@ import 'dart:io';
 
 import 'webdav_sync_audit_root.dart';
 
-import 'package:debrify/services/profiles/portable_profile_package.dart';
-import 'package:debrify/services/profiles/profile_database_snapshot.dart';
-import 'package:debrify/services/profiles/profile_preference_portability.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_graph.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/profiles/portable_profile_package.dart';
+import 'package:megawatch/services/profiles/profile_database_snapshot.dart';
+import 'package:megawatch/services/profiles/profile_preference_portability.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_graph.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _passphraseVariable = 'WEBDAV_SYNC_AUDIT_PASSPHRASE';
@@ -272,8 +272,8 @@ final class _CompletenessAudit {
     final entries = omissions.entries.toList()
       ..sort((left, right) => left.key.compareTo(right.key));
     for (final entry in entries) {
-      if (entry.key == DebrifyTvBackupOmission.key) {
-        final parsed = DebrifyTvBackupOmission.fromOmissions(omissions);
+      if (entry.key == MegaWatchTvBackupOmission.key) {
+        final parsed = MegaWatchTvBackupOmission.fromOmissions(omissions);
         stdout.writeln(
           '- ${entry.key}: presence=true, channels=${parsed?.channels ?? 'invalid'}, '
           'savedHashes=${parsed?.savedHashes ?? 'invalid'}, '
@@ -998,12 +998,12 @@ final class _CompletenessAudit {
       '${right.contains('rebuildableDatabaseCachesOmitted')}',
     );
     stdout.writeln(
-      'debrifyTvChannelsOmitted visible in backup: '
-      '${left.contains(DebrifyTvBackupOmission.key)}',
+      'megawatchTvChannelsOmitted visible in backup: '
+      '${left.contains(MegaWatchTvBackupOmission.key)}',
     );
     stdout.writeln(
-      'debrifyTvChannelsOmitted visible in sync: '
-      '${right.contains(DebrifyTvBackupOmission.key)}',
+      'megawatchTvChannelsOmitted visible in sync: '
+      '${right.contains(MegaWatchTvBackupOmission.key)}',
     );
     if (left.contains('rebuildableDatabaseCachesOmitted') &&
         !right.contains('rebuildableDatabaseCachesOmitted')) {
@@ -1018,9 +1018,9 @@ final class _CompletenessAudit {
         'IPTV catalogue/EPG cache compaction is explicitly recorded and is rebuilt, not silently transferred.',
       );
     }
-    if (right.contains(DebrifyTvBackupOmission.key)) {
+    if (right.contains(MegaWatchTvBackupOmission.key)) {
       explainedGaps.add(
-        'Debrify TV channels/saved hash pools are explicitly recorded as the deliberate v1 carve-out.',
+        'MegaWatch TV channels/saved hash pools are explicitly recorded as the deliberate v1 carve-out.',
       );
     }
   }
@@ -1051,10 +1051,10 @@ final class _CompletenessAudit {
         '- No rebuildableDatabaseCachesOmitted record is present in either package.',
       );
     }
-    if (!backup.package.omissions.containsKey(DebrifyTvBackupOmission.key) &&
-        !sync.package.omissions.containsKey(DebrifyTvBackupOmission.key)) {
+    if (!backup.package.omissions.containsKey(MegaWatchTvBackupOmission.key) &&
+        !sync.package.omissions.containsKey(MegaWatchTvBackupOmission.key)) {
       stdout.writeln(
-        '- No debrifyTvChannelsOmitted record is present in either package.',
+        '- No megawatchTvChannelsOmitted record is present in either package.',
       );
     }
     for (final item in explainedGaps.toSet()) {
@@ -1656,8 +1656,8 @@ bool _databaseOmissionExplains(String name, Map<String, dynamic> omissions) {
   if (name == 'iptv_catalog.db') {
     return omissions.containsKey('rebuildableDatabaseCachesOmitted');
   }
-  if (name == ProfileDatabaseSnapshot.debrifyTvDatabaseName) {
-    return omissions.containsKey(DebrifyTvBackupOmission.key);
+  if (name == ProfileDatabaseSnapshot.megawatchTvDatabaseName) {
+    return omissions.containsKey(MegaWatchTvBackupOmission.key);
   }
   return false;
 }

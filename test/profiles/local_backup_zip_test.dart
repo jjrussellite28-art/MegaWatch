@@ -3,7 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
-import 'package:debrify/services/profiles/local_backup/local_backup_zip.dart';
+import 'package:megawatch/services/profiles/local_backup/local_backup_zip.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

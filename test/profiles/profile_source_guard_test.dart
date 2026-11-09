@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:debrify/services/profiles/privacy_log.dart';
+import 'package:megawatch/services/profiles/privacy_log.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -57,7 +57,7 @@ void main() {
     const allowed = <String>{
       // These two legacy services are migrated by ProfileDatabasePaths. The
       // allowlist is intentionally exact so another bypass cannot appear.
-      'lib/services/debrify_tv_database.dart',
+      'lib/services/megawatch_tv_database.dart',
       'lib/services/iptv_catalog_db.dart',
       'lib/services/profiles/profile_registry.dart',
       'lib/services/profiles/profile_bootstrap.dart',
@@ -70,7 +70,7 @@ void main() {
       final path = entity.path.replaceAll('\\', '/');
       if (allowed.contains(path)) continue;
       final source = entity.readAsStringSync();
-      if (source.contains("'debrify_tv.db'") ||
+      if (source.contains("'megawatch_tv.db'") ||
           source.contains("'iptv_catalog.db'")) {
         violations.add(path);
       }
@@ -177,7 +177,7 @@ void main() {
     'Android protects recents before pause and notifications stay generic',
     () {
       final activity = File(
-        'android/app/src/main/kotlin/com/debrify/app/MainActivity.kt',
+        'android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt',
       ).readAsStringSync();
       final onPause = activity.substring(
         activity.indexOf('override fun onPause()'),
@@ -191,15 +191,15 @@ void main() {
       );
 
       final download = File(
-        'android/app/src/main/kotlin/com/debrify/app/download/'
+        'android/app/src/main/kotlin/com/megawatch/app/download/'
         'MediaStoreDownloadService.kt',
       ).readAsStringSync();
       final recording = File(
-        'android/app/src/main/kotlin/com/debrify/app/recording/'
+        'android/app/src/main/kotlin/com/megawatch/app/recording/'
         'LiveRecordingService.kt',
       ).readAsStringSync();
       final alarm = File(
-        'android/app/src/main/kotlin/com/debrify/app/recording/'
+        'android/app/src/main/kotlin/com/megawatch/app/recording/'
         'RecordingAlarmReceiver.kt',
       ).readAsStringSync();
       expect(download, isNot(contains('.setContentTitle(state.fileName)')));
@@ -219,7 +219,7 @@ void main() {
 
   test('Android low-resolution rendering is strictly TV-only', () {
     final activity = File(
-      'android/app/src/main/kotlin/com/debrify/app/MainActivity.kt',
+      'android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt',
     ).readAsStringSync();
     final renderScale = activity.substring(
       activity.indexOf('private fun computeRenderScale('),
@@ -236,11 +236,11 @@ void main() {
 
   test('native subtitle fonts follow the active profile scope', () {
     final fontManager = File(
-      'android/app/src/main/kotlin/com/debrify/app/util/'
+      'android/app/src/main/kotlin/com/megawatch/app/util/'
       'SubtitleFontManager.kt',
     ).readAsStringSync();
     final settings = File(
-      'android/app/src/main/kotlin/com/debrify/app/util/SubtitleSettings.kt',
+      'android/app/src/main/kotlin/com/megawatch/app/util/SubtitleSettings.kt',
     ).readAsStringSync();
 
     expect(
@@ -259,29 +259,29 @@ void main() {
     );
   });
 
-  test('Debrify TV access stays behind the profile-switch scope gate', () {
+  test('MegaWatch TV access stays behind the profile-switch scope gate', () {
     final files = <String>[
-      'lib/services/debrify_tv_cache_service.dart',
-      'lib/services/debrify_tv_repository.dart',
+      'lib/services/megawatch_tv_cache_service.dart',
+      'lib/services/megawatch_tv_repository.dart',
       'lib/services/iptv_media_store.dart',
     ];
     final directWrite = RegExp(
       r'await\s+db\.(?:insert|update|delete|execute|rawInsert|rawUpdate|rawDelete)\s*\(',
     );
     final rawHandle = RegExp(
-      r'DebrifyTvDatabase\s*\.\s*instance\s*\.\s*database',
+      r'MegaWatchTvDatabase\s*\.\s*instance\s*\.\s*database',
     );
     for (final path in files) {
       final source = File(path).readAsStringSync();
       expect(
         directWrite.hasMatch(source),
         isFalse,
-        reason: '$path can race DebrifyTvDatabase.closeScope()',
+        reason: '$path can race MegaWatchTvDatabase.closeScope()',
       );
       expect(
         rawHandle.hasMatch(source),
         isFalse,
-        reason: '$path reads can race DebrifyTvDatabase.closeScope()',
+        reason: '$path reads can race MegaWatchTvDatabase.closeScope()',
       );
     }
   });
@@ -346,7 +346,7 @@ void main() {
     expect(reset, contains("'diagnostics',"));
 
     final nativeLog = File(
-      'android/app/src/main/kotlin/com/debrify/app/diagnostics/'
+      'android/app/src/main/kotlin/com/megawatch/app/diagnostics/'
       'DiagnosticFileLog.kt',
     ).readAsStringSync();
     final nativeClear = nativeLog.substring(
@@ -367,7 +367,7 @@ void main() {
     );
 
     final activity = File(
-      'android/app/src/main/kotlin/com/debrify/app/MainActivity.kt',
+      'android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt',
     ).readAsStringSync();
     expect(activity, contains('"clearForDeviceReset" ->'));
   });

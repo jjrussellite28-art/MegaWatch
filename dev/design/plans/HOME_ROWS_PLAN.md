@@ -28,7 +28,7 @@ Simkl calendars, per-channel IPTV hiding.
 - Row families:
   - `_CwRow` continue-watching rows — hardcoded list at `_cwRows` (:823), with
     a duplicated allocation-free `_cwVisible` gate (:953).
-  - Favourites rows — `enum _FavKind {iptv, debrify, stremio, playlist}`;
+  - Favourites rows — `enum _FavKind {iptv, megawatch, stremio, playlist}`;
     visible list `_favRowKinds` (:2308); per-kind helpers `_favNodesFor`
     (:2319), `_canvasFavItemCount` (:4843), `_canvasFavTitle` (:4856),
     `_buildFavRow` (:14618); ~50 `favKind` touchpoints across the 6 stage
@@ -127,7 +127,7 @@ A new `HomeListSection extends CatalogSection` (lives in
 `home_list_rows.dart`): carries `rowId` + `traktChoice`/`simklList`,
 constructed with a shared **placeholder addon** (same shape as
 `_addonForContinue`'s fallback: empty `manifestUrl`/`baseUrl`, ids
-`debrify.home.trakt` / `debrify.home.simkl`), a synthetic catalog, and
+`megawatch.home.trakt` / `megawatch.home.simkl`), a synthetic catalog, and
 `exhausted: true` (no paging, `_loadMoreRow` early-returns on it; the
 horizontal spinner never shows).
 

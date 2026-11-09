@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,7 +56,7 @@ void main() {
   test('user data is durable by default; only named caches drop', () async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(scoped('my_watchlist_v1'), '[{"key":"movie:tt1"}]');
-    await prefs.setString(scoped('debrify_tv_favorite_channels_v1'), '["ch1"]');
+    await prefs.setString(scoped('megawatch_tv_favorite_channels_v1'), '["ch1"]');
     await prefs.setString(scoped('playback_state_v1'), '{}');
     await prefs.setBool(scoped('home_continue_watching_enabled'), false);
     await prefs.setInt(scoped('theme_index'), 3);
@@ -67,7 +67,7 @@ void main() {
 
     final exported = await exportedPreferences();
     expect(exported[scoped('my_watchlist_v1')], '[{"key":"movie:tt1"}]');
-    expect(exported[scoped('debrify_tv_favorite_channels_v1')], '["ch1"]');
+    expect(exported[scoped('megawatch_tv_favorite_channels_v1')], '["ch1"]');
     expect(exported[scoped('playback_state_v1')], '{}');
     expect(exported[scoped('home_continue_watching_enabled')], false);
     expect(exported[scoped('theme_index')], 3);

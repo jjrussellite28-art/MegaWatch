@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:debrify/services/profiles/sanitized_profile_preferences.dart';
-import 'package:debrify/services/profiles/profile_preference_portability.dart';
-import 'package:debrify/models/metadata_preferences.dart';
+import 'package:megawatch/services/profiles/sanitized_profile_preferences.dart';
+import 'package:megawatch/services/profiles/profile_preference_portability.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

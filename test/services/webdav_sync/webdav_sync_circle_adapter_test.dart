@@ -1,30 +1,30 @@
 import 'dart:convert';
-import 'package:debrify/services/stremio_service.dart';
+import 'package:megawatch/services/stremio_service.dart';
 import 'dart:io';
-import 'package:debrify/services/engine/local_engine_storage.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_active_profile_refresh.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/services/engine/local_engine_storage.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_active_profile_refresh.dart';
+import 'package:megawatch/utils/app_storage.dart';
 
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_lock_controller.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine_state.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_local_adapter.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_tombstones.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_lock_controller.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine_state.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_local_adapter.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_tombstones.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -70,7 +70,7 @@ void main() {
         'defaults_generation': 3,
         'phone_nav_style': 'floating',
         'tv_player_controls_style': 'frost',
-        'debrify_tv_player_style': 'cinema',
+        'megawatch_tv_player_style': 'cinema',
         'player_dock_style': 'compact',
         'subtitle_source_priority_v1':
             '["addon:config-b","embedded","addon:config-a"]',
@@ -97,7 +97,7 @@ void main() {
       expect(prefs.getString('phone_nav_style'), 'floating');
       expect(prefs.getString('tv_sidebar_style'), 'pill');
       expect(prefs.getString('tv_player_controls_style'), 'frost');
-      expect(prefs.getString('debrify_tv_player_style'), 'cinema');
+      expect(prefs.getString('megawatch_tv_player_style'), 'cinema');
       expect(prefs.getString('player_dock_style'), 'compact');
       expect(
         prefs.getString('subtitle_source_priority_v1'),
@@ -117,7 +117,7 @@ void main() {
         'subtitle_selected_font_id',
         'subtitle_extreme_bottom_default_adopted_v1',
         'tv_player_controls_style',
-        'debrify_tv_player_style',
+        'megawatch_tv_player_style',
         'player_dock_style',
         'subtitle_source_priority_v1',
         'default_torrent_provider_v1',

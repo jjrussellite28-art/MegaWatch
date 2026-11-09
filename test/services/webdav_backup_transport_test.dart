@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/services/webdav_backup_transport.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/services/webdav_backup_transport.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -13,7 +13,7 @@ void main() {
 
   setUp(() async {
     scratch = await Directory.systemTemp.createTemp(
-      'debrify_webdav_backup_transport_',
+      'megawatch_webdav_backup_transport_',
     );
     source = File('${scratch.path}/source.json');
     await source.writeAsString('{"backup":true}', flush: true);
@@ -86,7 +86,7 @@ void main() {
             directoryPath: 'backups/',
             stagedFile: source,
             scratchDirectory: scratch,
-            fileNamePrefix: 'debrify-profile',
+            fileNamePrefix: 'megawatch-profile',
             beforeSend: () async => beforeSendCount++,
           );
 
@@ -133,7 +133,7 @@ void main() {
         directoryPath: '',
         stagedFile: source,
         scratchDirectory: scratch,
-        fileNamePrefix: 'debrify-profile',
+        fileNamePrefix: 'megawatch-profile',
       ),
       throwsA(isA<WebDavBackupVerificationException>()),
     );
@@ -171,7 +171,7 @@ void main() {
         directoryPath: '',
         stagedFile: source,
         scratchDirectory: scratch,
-        fileNamePrefix: 'debrify-profile',
+        fileNamePrefix: 'megawatch-profile',
       ),
       throwsA(
         isA<WebDavBackupVerificationException>().having(
@@ -212,7 +212,7 @@ void main() {
         directoryPath: '',
         stagedFile: source,
         scratchDirectory: scratch,
-        fileNamePrefix: 'debrify-profile',
+        fileNamePrefix: 'megawatch-profile',
       ),
       throwsA(isA<WebDavBackupVerificationException>()),
     );

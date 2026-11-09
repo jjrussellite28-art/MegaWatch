@@ -1,11 +1,11 @@
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/home_collection_rows.dart';
-import 'package:debrify/services/home_load_progress.dart';
-import 'package:debrify/services/home_list_rows.dart';
-import 'package:debrify/services/trakt/trakt_list_source.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/home_collection_rows.dart';
+import 'package:megawatch/services/home_load_progress.dart';
+import 'package:megawatch/services/home_list_rows.dart';
+import 'package:megawatch/services/trakt/trakt_list_source.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 CatalogSection catalog(String id) => CatalogSection(

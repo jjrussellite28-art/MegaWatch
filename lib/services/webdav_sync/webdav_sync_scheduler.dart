@@ -24,7 +24,7 @@ typedef WebDavSyncLocalChangeDeferredObserver =
     void Function(String reason, int attempt, Duration delay);
 
 const bool webDavSyncRemotePollEnabled = bool.fromEnvironment(
-  'DEBRIFY_WEBDAV_SYNC_POLL',
+  'MEGAWATCH_WEBDAV_SYNC_POLL',
   defaultValue: true,
 );
 

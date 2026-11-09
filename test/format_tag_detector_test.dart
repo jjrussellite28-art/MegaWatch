@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/utils/format_tag_detector.dart';
+import 'package:megawatch/utils/format_tag_detector.dart';
 
 void main() {
   group('FormatTagDetector.detect', () {

@@ -2,7 +2,7 @@ import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/screens/video_player/services/iptv_live_recovery.dart';
+import 'package:megawatch/screens/video_player/services/iptv_live_recovery.dart';
 
 /// The recovery state machine is the one piece of the IPTV resilience plan
 /// that is pure logic — so it gets real tests. The semantics pinned here are

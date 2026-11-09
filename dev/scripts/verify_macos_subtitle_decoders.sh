@@ -12,7 +12,7 @@ if [[ "$MODE" != "full" && "$MODE" != "--architectures-only" ]]; then
   echo "error: unsupported verification mode: $MODE" >&2
   exit 1
 fi
-WORK="$(mktemp -d "${TMPDIR:-/tmp}/debrify-verify-macos-subs.XXXXXX")"
+WORK="$(mktemp -d "${TMPDIR:-/tmp}/megawatch-verify-macos-subs.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
 
 required_frameworks=(

@@ -2,18 +2,18 @@ import 'dart:convert';
 import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
 
-/// Service for encoding/decoding channel YAML configs as debrify links
+/// Service for encoding/decoding channel YAML configs as megawatch links
 ///
-/// Debrify link format:
-/// debrify://channel?v=1&name=ChannelName&data=base64&hash=sha256
+/// MegaWatch link format:
+/// megawatch://channel?v=1&name=ChannelName&data=base64&hash=sha256
 class MagnetYamlService {
-  static const String _debrifyPrefix = 'debrify://channel';
+  static const String _megawatchPrefix = 'megawatch://channel';
   static const String _currentVersion = '1';
   static const int _maxNameLength = 50;
 
-  /// Encode YAML content into a debrify link
+  /// Encode YAML content into a megawatch link
   ///
-  /// Returns a debrify URI that can be shared via QR code, clipboard, etc.
+  /// Returns a megawatch URI that can be shared via QR code, clipboard, etc.
   static String encode({
     required String yamlContent,
     required String channelName,
@@ -46,7 +46,7 @@ class MagnetYamlService {
     final hash = sha256.convert(yamlBytes);
     final hashHex = hash.toString().substring(0, 16); // First 16 chars
 
-    // 5. Build debrify URI
+    // 5. Build megawatch URI
     final params = [
       'v=$_currentVersion',
       'name=$sanitizedName',
@@ -54,21 +54,21 @@ class MagnetYamlService {
       'hash=$hashHex',
     ];
 
-    return '$_debrifyPrefix?${params.join('&')}';
+    return '$_megawatchPrefix?${params.join('&')}';
   }
 
-  /// Decode a debrify link back to YAML content
+  /// Decode a megawatch link back to YAML content
   ///
   /// Returns the decoded YAML string
   /// Throws [MagnetYamlException] if the link is invalid or corrupted
-  static MagnetYamlDecodeResult decode(String debrifyLink) {
-    if (!isMagnetLink(debrifyLink)) {
-      throw MagnetYamlException('Not a valid Debrify link');
+  static MagnetYamlDecodeResult decode(String megawatchLink) {
+    if (!isMagnetLink(megawatchLink)) {
+      throw MagnetYamlException('Not a valid MegaWatch link');
     }
 
     try {
       // Parse URI
-      final uri = Uri.parse(debrifyLink);
+      final uri = Uri.parse(megawatchLink);
       final params = uri.queryParameters;
 
       // Extract parameters
@@ -124,28 +124,28 @@ class MagnetYamlService {
         version: version,
       );
     } on FormatException catch (e) {
-      throw MagnetYamlException('Invalid debrify link format: ${e.message}');
+      throw MagnetYamlException('Invalid megawatch link format: ${e.message}');
     } on ArchiveException catch (e) {
       throw MagnetYamlException('Failed to decompress data: $e');
     } catch (e) {
-      throw MagnetYamlException('Failed to decode debrify link: $e');
+      throw MagnetYamlException('Failed to decode megawatch link: $e');
     }
   }
 
-  /// Check if a string is a valid Debrify link
+  /// Check if a string is a valid MegaWatch link
   static bool isMagnetLink(String input) {
     if (input.isEmpty) return false;
 
     final normalized = input.trim().toLowerCase();
-    return normalized.startsWith('debrify://channel');
+    return normalized.startsWith('megawatch://channel');
   }
 
-  /// Normalize a debrify link (trim whitespace, decode URL encoding if needed)
+  /// Normalize a megawatch link (trim whitespace, decode URL encoding if needed)
   static String normalizeMagnetLink(String input) {
     return input.trim();
   }
 
-  /// Get estimated size of debrify link for given YAML content
+  /// Get estimated size of megawatch link for given YAML content
   static int estimateMagnetLinkSize(String yamlContent) {
     if (yamlContent.isEmpty) return 0;
 
@@ -158,7 +158,7 @@ class MagnetYamlService {
       final base64Data = base64Url.encode(compressedBytes);
 
       // Rough estimate: prefix + params + base64 data
-      return _debrifyPrefix.length + 100 + base64Data.length;
+      return _megawatchPrefix.length + 100 + base64Data.length;
     } catch (e) {
       return 0;
     }
@@ -191,12 +191,12 @@ class MagnetYamlService {
     return Uri.encodeComponent(sanitized);
   }
 
-  /// Extract channel name from debrify link without full decode
-  static String? extractChannelName(String debrifyLink) {
-    if (!isMagnetLink(debrifyLink)) return null;
+  /// Extract channel name from megawatch link without full decode
+  static String? extractChannelName(String megawatchLink) {
+    if (!isMagnetLink(megawatchLink)) return null;
 
     try {
-      final uri = Uri.parse(debrifyLink);
+      final uri = Uri.parse(megawatchLink);
       final name = uri.queryParameters['name'];
       if (name == null) return null;
 

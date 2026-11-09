@@ -6,8 +6,8 @@ import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 
-import 'package:debrify/screens/video_player/services/external_subtitle_payload.dart';
-import 'package:debrify/screens/video_player/services/subtitle_track_utils.dart';
+import 'package:megawatch/screens/video_player/services/external_subtitle_payload.dart';
+import 'package:megawatch/screens/video_player/services/subtitle_track_utils.dart';
 
 void main() {
   group('external subtitle payload', () {

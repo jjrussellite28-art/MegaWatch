@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/utils/torrent_coverage_detector.dart';
+import 'package:megawatch/utils/torrent_coverage_detector.dart';
 
 CoverageType detect(String name) =>
     TorrentCoverageDetector.detectCoverage(title: name).coverageType;

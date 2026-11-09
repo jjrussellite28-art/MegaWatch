@@ -150,7 +150,7 @@ class MobileClassicNav extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'ALL OF DEBRIFY',
+                    'ALL OF MEGAWATCH',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,

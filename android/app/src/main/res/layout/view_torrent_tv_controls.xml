@@ -5,7 +5,7 @@
      ═══════════════════════════════════════════════════════════════════════════════ -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/debrify_controls_root"
+    android:id="@+id/megawatch_controls_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
@@ -42,7 +42,7 @@
             android:layout_marginBottom="6dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:nextFocusDown="@+id/debrify_pause_button"
+            android:nextFocusDown="@+id/megawatch_pause_button"
             android:clipChildren="false"
             android:clipToPadding="false">
 
@@ -72,7 +72,7 @@
 
                 <!-- Played progress (red) -->
                 <View
-                    android:id="@+id/debrify_progress_line"
+                    android:id="@+id/megawatch_progress_line"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/cinema_progress_played" />
@@ -91,7 +91,7 @@
 
             <!-- Current Time (Left) - becomes editable during seek -->
             <TextView
-                android:id="@+id/debrify_time_current"
+                android:id="@+id/megawatch_time_current"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
@@ -103,7 +103,7 @@
 
             <!-- Total Time (Right) -->
             <TextView
-                android:id="@+id/debrify_time_total"
+                android:id="@+id/megawatch_time_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
@@ -133,7 +133,7 @@
              FLOATING DOCK - Premium glass control bar
              ═══════════════════════════════════════════════════════════ -->
         <LinearLayout
-            android:id="@+id/debrify_controls_buttons"
+            android:id="@+id/megawatch_controls_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -153,35 +153,35 @@
 
             <!-- Audio -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/debrify_audio_button"
+                android:id="@+id/megawatch_audio_button"
                 style="@style/CinemaControlButton"
                 android:drawableStart="@drawable/ic_audio"
                 android:text="Audio" />
 
             <!-- Subtitles -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/debrify_subtitle_button"
+                android:id="@+id/megawatch_subtitle_button"
                 style="@style/CinemaControlButton"
                 android:drawableStart="@drawable/ic_subtitles"
                 android:text="Subs" />
 
             <!-- Aspect -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/debrify_aspect_button"
+                android:id="@+id/megawatch_aspect_button"
                 style="@style/CinemaControlButton"
                 android:drawableStart="@drawable/ic_aspect"
                 android:text="Fill" />
 
             <!-- Playlist -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/debrify_playlist_button"
+                android:id="@+id/megawatch_playlist_button"
                 style="@style/CinemaControlButton"
                 android:drawableStart="@drawable/ic_guide"
                 android:text="List" />
 
             <!-- ══ DIVIDER ══ -->
             <View
-                android:id="@+id/debrify_controls_left_divider"
+                android:id="@+id/megawatch_controls_left_divider"
                 android:layout_width="1dp"
                 android:layout_height="18dp"
                 android:layout_marginStart="6dp"
@@ -190,14 +190,14 @@
 
             <!-- ══ CENTER: PLAY/PAUSE (Hero Button) ══ -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/debrify_pause_button"
+                android:id="@+id/megawatch_pause_button"
                 style="@style/CinemaPlayButton"
                 android:drawableStart="@drawable/ic_play"
                 android:text="Play" />
 
             <!-- ══ DIVIDER ══ -->
             <View
-                android:id="@+id/debrify_controls_right_divider"
+                android:id="@+id/megawatch_controls_right_divider"
                 android:layout_width="1dp"
                 android:layout_height="18dp"
                 android:layout_marginStart="6dp"
@@ -208,7 +208,7 @@
 
             <!-- Previous Episode (shown at runtime when a predecessor exists) -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/debrify_prev_button"
+                android:id="@+id/megawatch_prev_button"
                 style="@style/CinemaControlButton"
                 android:drawableStart="@drawable/ic_prev_stream"
                 android:visibility="gone"
@@ -216,28 +216,28 @@
 
             <!-- Next Episode -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/debrify_next_button"
+                android:id="@+id/megawatch_next_button"
                 style="@style/CinemaControlButton"
                 android:drawableStart="@drawable/ic_next_stream"
                 android:text="Next" />
 
             <!-- Random -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/debrify_random_button"
+                android:id="@+id/megawatch_random_button"
                 style="@style/CinemaControlButton"
                 android:drawableStart="@drawable/ic_random"
                 android:text="Shuffle" />
 
             <!-- Speed -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/debrify_speed_button"
+                android:id="@+id/megawatch_speed_button"
                 style="@style/CinemaControlButton"
                 android:drawableStart="@drawable/ic_speed"
                 android:text="1x" />
 
             <!-- Night Mode -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/debrify_night_mode_button"
+                android:id="@+id/megawatch_night_mode_button"
                 style="@style/CinemaControlButton"
                 android:drawableStart="@drawable/ic_night_mode"
                 android:text="Night"
@@ -287,7 +287,7 @@
 
     <!-- Hidden legacy time display for compatibility -->
     <TextView
-        android:id="@+id/debrify_time_display"
+        android:id="@+id/megawatch_time_display"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"

@@ -1,9 +1,9 @@
 // Manual native regression (no profile data is read or changed):
-// mkdir -p /tmp/debrify-native-video-fixture
+// mkdir -p /tmp/megawatch-native-video-fixture
 // ffmpeg -f lavfi -i testsrc2=size=320x180:rate=24 -t 2 -c:v libx264
-//   -pix_fmt yuv420p /tmp/debrify-native-video-fixture/video.mp4
+//   -pix_fmt yuv420p /tmp/megawatch-native-video-fixture/video.mp4
 // python3 -m http.server 38837 --bind 127.0.0.1
-//   --directory /tmp/debrify-native-video-fixture
+//   --directory /tmp/megawatch-native-video-fixture
 // flutter run -d macos --release -t tool/native_video_disposal_probe.dart
 // Each command above is a single shell command; run the server separately.
 // Local HTTP is used because the release app's sandbox cannot read arbitrary

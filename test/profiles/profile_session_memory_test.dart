@@ -1,6 +1,6 @@
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/profiles/profile_session_memory.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/profiles/profile_session_memory.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,6 +1,6 @@
-import 'package:debrify/models/metadata_preferences.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/widgets/home/spotlight_board.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/widgets/home/spotlight_board.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,5 +1,5 @@
-import 'package:debrify/services/webdav_sync/webdav_sync_clock.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_clock.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

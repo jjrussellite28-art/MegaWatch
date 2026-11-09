@@ -7,7 +7,7 @@ still needs a route we do not own.**
 
 Earlier: **M2 + M3 GATES PASSED.** 23 xcframeworks packaged
 (97 MB, all `tvos-arm64`), symbol gate green on the *packaged* binary, and
-Debrify builds for tvOS against them — a 107 MB `Runner.app` with
+MegaWatch builds for tvOS against them — a 107 MB `Runner.app` with
 `ao_avfoundation` linked into the app binary. M4 (regression on Bedroom) and
 M6 (the Atmos question) remain.
 
@@ -60,9 +60,9 @@ same symptom, setup not yet confirmed.
 
 **Only one audio output exists in the shipped binary.**
 `AUDIO_FIDELITY_PLAN.md:38` — tvOS static libmpv (karelrooted) has
-`ao_audiounit` ONLY, no `ao_avfoundation`. Debrify sets nothing by default:
+`ao_audiounit` ONLY, no `ao_avfoundation`. MegaWatch sets nothing by default:
 `PlayerAudioConfig.audioProperties()` returns an empty list on tvOS unless the
-opt-in multichannel toggle is on, and Debrify never touches `AVAudioSession`
+opt-in multichannel toggle is on, and MegaWatch never touches `AVAudioSession`
 anywhere — not in `tvos/Runner/AppDelegate.swift`, not from Dart.
 
 **`ao_avfoundation` exists upstream and we predate it.**
@@ -222,7 +222,7 @@ names matching what `fetch_frameworks.sh` constructs), point the script at the
 new `REPO`/`TAG`, reconcile the podspec link line if the library set changed,
 and **update the `tvos` job in `.github/workflows/build.yml`**, which calls the
 same script.
-*Gate:* Debrify builds for tvOS in CI and installs on Bedroom.
+*Gate:* MegaWatch builds for tvOS in CI and installs on Bedroom.
 
 **M4 — regression on everything Bedroom can reach.** A new mpv and ffmpeg move
 far more than audio: decode, HDR, 4K output, subtitles, IPTV, seeking,
@@ -399,7 +399,7 @@ signature of a 5.1 fold done badly.
 That is a regression affecting every Bluetooth listener, not only the Atmos
 case being fixed, so it is capped automatically rather than behind a setting:
 
-- New read-only `outputChannelCount` on the existing `debrify/tvlog` channel
+- New read-only `outputChannelCount` on the existing `megawatch/tvlog` channel
   returns `max(currentRoute.outputs.first.channels.count,
   maximumOutputNumberOfChannels)`. It **only reads** the session — no category,
   no activation. The AOs own the session and configuring it underneath them is

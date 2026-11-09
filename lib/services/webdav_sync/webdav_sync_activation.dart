@@ -757,8 +757,8 @@ final class WebDavSyncNewRootInitializer {
       await transport.ensureActivationLayout();
       final folder = binding.location.folderPath;
       final syncRootPath = folder.isEmpty
-          ? 'debrify-sync'
-          : '$folder/debrify-sync';
+          ? 'megawatch-sync'
+          : '$folder/megawatch-sync';
       await transport.verifyLinearizability(syncRootPath: syncRootPath);
 
       var markerBeforeWrite = await _readMarkerIfPresent(transport);

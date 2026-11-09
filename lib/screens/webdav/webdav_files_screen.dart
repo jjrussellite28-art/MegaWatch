@@ -76,7 +76,7 @@ class WebDavFilesScreen extends StatefulWidget {
 
   /// A dedicated migration picker. Folder mode exposes an explicit
   /// DPAD-focusable "Choose this folder" action; backup mode selects only
-  /// plausible Debrify JSON packages. Browse mode retains the media browser's
+  /// plausible MegaWatch JSON packages. Browse mode retains the media browser's
   /// existing play/download/delete behavior.
   final WebDavPickerMode pickerMode;
   final WebDavFilesDataSource dataSource;
@@ -295,7 +295,7 @@ class _WebDavFilesScreenState extends State<WebDavFilesScreen> {
             .where(
               (item) =>
                   item.isDirectory ||
-                  item.name.toLowerCase().endsWith('.debrify.enc'),
+                  item.name.toLowerCase().endsWith('.megawatch.enc'),
             )
             .toList(),
       WebDavPickerMode.browse =>

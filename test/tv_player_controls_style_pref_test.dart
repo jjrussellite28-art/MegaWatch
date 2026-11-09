@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/profiles/sanitized_profile_preferences.dart';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/profiles/sanitized_profile_preferences.dart';
+import 'package:megawatch/services/storage_service.dart';
 
 /// `tv_player_controls_style` is read by the NATIVE Android TV player via the
 /// profile projection, so its registration is a cross-language contract: a

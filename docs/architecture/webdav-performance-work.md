@@ -34,7 +34,7 @@ WebDAV wire compatibility is required.
   rollback before handoff, and deferred predecessor cleanup remain.
 - WebDAV manual backups and bootstrap use the local file-backed ZIP snapshot
   pipeline, wrapped in `DBRFENC2` authenticated binary encryption. New WebDAV
-  filenames end in `.debrify.enc`. Normal local exports remain archive version
+  filenames end in `.megawatch.enc`. Normal local exports remain archive version
   1; WebDAV exports use version 2 with separately paged preference metadata.
 - Database files and imported playlist attachments travel as archive entries,
   without base64 database envelopes. Preference JSON is emitted in 128 KiB

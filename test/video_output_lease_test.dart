@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/widgets/video_output_lease.dart';
+import 'package:megawatch/widgets/video_output_lease.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The lease is the only thing standing between two media_kit video outputs and

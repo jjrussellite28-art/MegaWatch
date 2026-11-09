@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/update_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/update_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

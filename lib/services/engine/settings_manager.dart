@@ -299,7 +299,7 @@ class SettingsManager {
   // Global TV Settings - Background Torrent Prefetch
   // ============================================================
 
-  /// Whether Debrify TV may add and prepare upcoming torrents while playback
+  /// Whether MegaWatch TV may add and prepare upcoming torrents while playback
   /// is active. This only applies to providers without a separate cache-check
   /// API (currently Real-Debrid and AllDebrid).
   ///

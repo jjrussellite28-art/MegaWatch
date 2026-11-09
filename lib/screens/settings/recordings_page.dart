@@ -506,7 +506,7 @@ class _RecordingsPageState extends State<RecordingsPage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text(
-            'Allow "Alarms & reminders" for Debrify to schedule recordings',
+            'Allow "Alarms & reminders" for MegaWatch to schedule recordings',
           ),
           action: SnackBarAction(
             label: 'Settings',
@@ -951,11 +951,11 @@ class _RecordingsPageState extends State<RecordingsPage>
                         const SizedBox(height: 20),
                         Text(
                           _desktop
-                              ? 'Recordings run while Debrify is open and '
+                              ? 'Recordings run while MegaWatch is open and '
                                     'the computer is awake · saved in '
-                                    'Downloads/Debrify/Recordings'
+                                    'Downloads/MegaWatch/Recordings'
                               : 'Recordings run even with the app closed '
-                                    '· saved in Downloads/Debrify/Recordings',
+                                    '· saved in Downloads/MegaWatch/Recordings',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 11,
@@ -1725,8 +1725,8 @@ class _BatteryBanner extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'The phone likely put Debrify to sleep mid-capture. Tap '
-                    'to exclude Debrify from battery optimization so long '
+                    'The phone likely put MegaWatch to sleep mid-capture. Tap '
+                    'to exclude MegaWatch from battery optimization so long '
                     'recordings run to the end.',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.55),

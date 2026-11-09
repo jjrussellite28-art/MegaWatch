@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_models.dart';
-import 'package:debrify/widgets/iptv/iptv_results_view.dart'
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_models.dart';
+import 'package:megawatch/widgets/iptv/iptv_results_view.dart'
     show IptvResultsViewState;
 import 'package:sqlite3/sqlite3.dart' as raw;
 

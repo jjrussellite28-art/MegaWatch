@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/resolved_playback_link_cache.dart';
-import 'package:debrify/services/series_source_service.dart';
-import 'package:debrify/services/secret_vault.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/services/torrent_playback_service.dart';
-import 'package:debrify/services/stream_url_validator.dart';
-import 'package:debrify/services/profiles/profile_preference_portability.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/resolved_playback_link_cache.dart';
+import 'package:megawatch/services/series_source_service.dart';
+import 'package:megawatch/services/secret_vault.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/services/torrent_playback_service.dart';
+import 'package:megawatch/services/stream_url_validator.dart';
+import 'package:megawatch/services/profiles/profile_preference_portability.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

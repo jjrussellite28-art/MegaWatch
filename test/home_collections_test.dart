@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/collection_folder_loader.dart';
-import 'package:debrify/services/home_collection_rows.dart';
-import 'package:debrify/services/home_collections_store.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/collection_folder_loader.dart';
+import 'package:megawatch/services/home_collection_rows.dart';
+import 'package:megawatch/services/home_collections_store.dart';
 
 const _xperienceSample = '''
 [

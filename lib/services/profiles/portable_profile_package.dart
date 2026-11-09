@@ -70,7 +70,7 @@ class PortableProfilePackage {
     'profiles',
     'historyAndResume',
     'localFiles',
-    DebrifyTvBackupOmission.key,
+    MegaWatchTvBackupOmission.key,
   };
 
   /// Format version read from the source envelope. Newly created packages use
@@ -96,7 +96,7 @@ class PortableProfilePackage {
 
   Map<String, dynamic> toJson() {
     final body = <String, dynamic>{
-      'format': 'debrify-profile-package',
+      'format': 'megawatch-profile-package',
       'version': version,
       'mode': mode,
       'createdAt': createdAt.toUtc().toIso8601String(),
@@ -210,7 +210,7 @@ class PortableProfilePackage {
       if (decoded is! Map<String, dynamic>) {
         throw const FormatException('Backup must be a JSON object');
       }
-      final isPackage = decoded['format'] == 'debrify-profile-package';
+      final isPackage = decoded['format'] == 'megawatch-profile-package';
       return (
         isProfilePackage: isPackage,
         encrypted: isPackage && decoded['encrypted'] == true,
@@ -370,7 +370,7 @@ class PortableProfilePackage {
       }
       final compressed = gzip.encode(plain);
       final wrapped = jsonEncode(<String, Object?>{
-        'format': 'debrify-profile-transport',
+        'format': 'megawatch-profile-transport',
         'version': 1,
         'compression': 'gzip',
         'expandedBytes': plain.length,
@@ -416,7 +416,7 @@ class PortableProfilePackage {
         throw const FormatException('Profile graph must be an object');
       }
       Map<String, dynamic> decoded = outer;
-      if (outer['format'] == 'debrify-profile-transport') {
+      if (outer['format'] == 'megawatch-profile-transport') {
         if (outer['version'] != 1 ||
             outer['compression'] != 'gzip' ||
             outer['expandedBytes'] is! int ||
@@ -497,7 +497,7 @@ class PortableProfilePackage {
     if (decoded['encrypted'] == true) {
       throw const FormatException('Encrypted package must be unlocked first');
     }
-    if (decoded['format'] != 'debrify-profile-package' ||
+    if (decoded['format'] != 'megawatch-profile-package' ||
         !_supportsVersion(decoded['version'])) {
       throw const FormatException('Unsupported profile backup format');
     }
@@ -526,12 +526,12 @@ class PortableProfilePackage {
     _validateTree(body, 0, _Counter(), path: r'$');
     final omissions = body['omissions'];
     if (omissions is Map &&
-        omissions.containsKey(DebrifyTvBackupOmission.key) &&
-        DebrifyTvBackupOmission.fromOmissions(
+        omissions.containsKey(MegaWatchTvBackupOmission.key) &&
+        MegaWatchTvBackupOmission.fromOmissions(
               Map<String, dynamic>.from(omissions),
             ) ==
             null) {
-      throw const FormatException('Invalid Debrify TV backup omission');
+      throw const FormatException('Invalid MegaWatch TV backup omission');
     }
     final profiles = body['profiles'];
     final resources = body['resources'];
@@ -620,7 +620,7 @@ class PortableProfilePackage {
       aad: utf8.encode(aadText),
     );
     final envelope = <String, dynamic>{
-      'format': 'debrify-profile-package',
+      'format': 'megawatch-profile-package',
       'version': version,
       'encrypted': true,
       'createdAt': package.createdAt.toUtc().toIso8601String(),
@@ -649,7 +649,7 @@ class PortableProfilePackage {
   }
 
   /// True only for the bounded-package error callers may retry in compact
-  /// mode. Compact mode can omit Debrify TV, so callers must obtain explicit
+  /// mode. Compact mode can omit MegaWatch TV, so callers must obtain explicit
   /// user consent before saving or sending the resulting package.
   static bool isExportTooLarge(Object error) =>
       error is ProfilePackageTooLargeException;
@@ -663,7 +663,7 @@ class PortableProfilePackage {
     required String aadText,
   }) {
     final shell = <String, dynamic>{
-      'format': 'debrify-profile-package',
+      'format': 'megawatch-profile-package',
       'version': version,
       'encrypted': true,
       'createdAt': createdAt.toUtc().toIso8601String(),
@@ -698,7 +698,7 @@ class PortableProfilePackage {
     final expectedAad = _supportsVersion(envelopeVersion)
         ? _aadForVersion(envelopeVersion as int)
         : null;
-    if (envelope['format'] != 'debrify-profile-package' ||
+    if (envelope['format'] != 'megawatch-profile-package' ||
         expectedAad == null ||
         envelope['encrypted'] != true ||
         kdf is! Map ||
@@ -795,7 +795,7 @@ class PortableProfilePackage {
       value is int && value >= oldestSupportedVersion && value <= version;
 
   static String _aadForVersion(int packageVersion) =>
-      'debrify-profile-backup-v$packageVersion';
+      'megawatch-profile-backup-v$packageVersion';
 
   static void _validateTree(
     Object? value,

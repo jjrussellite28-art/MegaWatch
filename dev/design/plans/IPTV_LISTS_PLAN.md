@@ -151,7 +151,7 @@ special case. Phase 1 is Dart-only; native TV player parity is Phase 2.
 
 ## 3. Storage layer
 
-### 3.1 Schema (debrify_tv.db — `lib/services/debrify_tv_database.dart`, version 4 today)
+### 3.1 Schema (megawatch_tv.db — `lib/services/megawatch_tv_database.dart`, version 4 today)
 
 Bump to v5. New tables:
 
@@ -381,7 +381,7 @@ active. Keep heart fill animation only for direct-toggle mode.
 ## 7. New widget: IptvListPickerDialog
 
 `lib/widgets/iptv/iptv_list_picker_dialog.dart`. REVISED expectation:
-`ChannelPickerDialog` is **low reuse** — it's Debrify-TV-domain
+`ChannelPickerDialog` is **low reuse** — it's MegaWatch-TV-domain
 (repo/cache imports), single-select-pop control flow, different result type.
 What we take from it: the Dialog + FocusNode/DPAD scaffolding, the Back-key
 trap (:381-396), the inline `TvTextField` create form (:398) with

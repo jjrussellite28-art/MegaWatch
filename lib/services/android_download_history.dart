@@ -25,7 +25,7 @@ class AndroidDownloadHistory {
   static const String _legacyPrefsKey = 'android_download_history_v1';
   static const String _deviceFileName = 'android_download_history_v2.json';
   static final List<int> _deviceAad = utf8.encode(
-    'debrify-android-download-history-v2',
+    'megawatch-android-download-history-v2',
   );
   static const int _maxRecordsPerOwner = 20000;
   static const int _maxFileBytes = 16 * 1024 * 1024;

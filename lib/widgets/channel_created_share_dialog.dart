@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../models/debrify_tv_channel_record.dart';
+import '../models/megawatch_tv_channel_record.dart';
 import '../services/community/channel_yaml_builder.dart';
 import '../services/community/magnet_yaml_service.dart';
-import '../services/debrify_tv_repository.dart';
+import '../services/megawatch_tv_repository.dart';
 
-/// After a new Debrify TV channel is created, build a shareable Debrify link,
+/// After a new MegaWatch TV channel is created, build a shareable MegaWatch link,
 /// copy it to the clipboard, and show it in a dialog. Ported verbatim from
 /// Home's `_showChannelCreatedDialog` so the Search tab's bulk "Create Channel"
 /// offers the same share flow.
@@ -14,11 +14,11 @@ Future<void> showChannelCreatedShareDialog(
   BuildContext context,
   String channelId,
 ) async {
-  final repo = DebrifyTvRepository.instance;
+  final repo = MegaWatchTvRepository.instance;
   final channels = await repo.fetchAllChannels();
   if (!context.mounted) return;
 
-  DebrifyTvChannelRecord? found;
+  MegaWatchTvChannelRecord? found;
   for (final ch in channels) {
     if (ch.channelId == channelId) {
       found = ch;
@@ -28,16 +28,16 @@ Future<void> showChannelCreatedShareDialog(
   if (found == null) return;
   final channel = found;
 
-  String? debrifyLink;
+  String? megawatchLink;
   String? encodeError;
   try {
     final yamlContent = await ChannelYamlBuilder.build(channel);
-    debrifyLink = MagnetYamlService.encode(
+    megawatchLink = MagnetYamlService.encode(
       yamlContent: yamlContent,
       channelName: channel.name,
     );
     try {
-      await Clipboard.setData(ClipboardData(text: debrifyLink));
+      await Clipboard.setData(ClipboardData(text: megawatchLink));
     } catch (_) {
       // Clipboard write is best-effort.
     }
@@ -88,18 +88,18 @@ Future<void> showChannelCreatedShareDialog(
           children: [
             const SizedBox(height: 8),
             Text(
-              debrifyLink != null
-                  ? 'A shareable Debrify link was copied to your clipboard.'
+              megawatchLink != null
+                  ? 'A shareable MegaWatch link was copied to your clipboard.'
                   : 'Failed to generate shareable link${encodeError != null ? ': $encodeError' : ''}.',
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.7),
                 height: 1.4,
               ),
             ),
-            if (debrifyLink != null) ...[
+            if (megawatchLink != null) ...[
               const SizedBox(height: 16),
               SelectableText(
-                debrifyLink,
+                megawatchLink,
                 style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
             ],

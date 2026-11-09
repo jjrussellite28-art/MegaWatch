@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
-import 'package:debrify/services/stream_url_validator.dart';
+import 'package:megawatch/services/stream_url_validator.dart';
 
 const _big = 100 * 1024 * 1024; // 100 MB
 const _small = 5 * 1024 * 1024; // 5 MB

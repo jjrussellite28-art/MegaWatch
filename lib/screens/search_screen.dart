@@ -50,7 +50,7 @@ import '../theme/artwork_accent.dart';
 import '../utils/home_rail_metrics.dart';
 import '../utils/platform_util.dart';
 import '../utils/tvos_device.dart';
-import '../models/debrify_tv/channel.dart';
+import '../models/megawatch_tv/channel.dart';
 import '../models/home_collection.dart';
 import '../models/iptv_playlist.dart';
 import '../models/play_loader_art.dart';
@@ -61,7 +61,7 @@ import '../models/stremio_tv/stremio_tv_now_playing.dart';
 import '../models/torrent.dart';
 import '../models/torrent_filter_state.dart';
 import '../services/analytics_service.dart';
-import '../services/debrify_tv_repository.dart';
+import '../services/megawatch_tv_repository.dart';
 import '../services/discover_prefs.dart';
 import '../services/engine/dynamic_engine.dart';
 import '../services/engine/settings_manager.dart';
@@ -1102,11 +1102,11 @@ class _SearchScreenState extends State<SearchScreen>
         DateTime.now().difference(at) < const Duration(seconds: 3);
   }
 
-  // Debrify TV favourites — a leading "Debrify TV" row of the user's starred
+  // MegaWatch TV favourites — a leading "MegaWatch TV" row of the user's starred
   // keyword channels, shown between Continue Watching and the catalog rows.
   // Channels have no artwork, so they render as Stremio-shaped cards with a
   // gradient + glyph placeholder (see [_ArtPoster]).
-  List<DebrifyTvChannel> _tvFavChannels = [];
+  List<MegaWatchTvChannel> _tvFavChannels = [];
   final List<FocusNode> _tvFavNodes = [];
 
   // Stremio TV favourites — a leading row of the user's starred Stremio
@@ -1125,7 +1125,7 @@ class _SearchScreenState extends State<SearchScreen>
   List<IptvChannel> _iptvFavChannels = [];
   final List<FocusNode> _iptvFavNodes = [];
 
-  // Debrify's account-independent movie/series watchlist. Full metadata is
+  // MegaWatch's account-independent movie/series watchlist. Full metadata is
   // stored locally and presented as separate movie and series rows, so neither
   // row needs a tracker or catalog network request.
   List<StremioMeta> _watchlistMovieItems = [];
@@ -3900,7 +3900,7 @@ class _SearchScreenState extends State<SearchScreen>
       !_catalogSearching;
   bool get _tvFavVisible =>
       _tvFavChannels.isNotEmpty &&
-      !_homeDisabled.contains('fav:debrify') &&
+      !_homeDisabled.contains('fav:megawatch') &&
       _catalogQuery.isEmpty &&
       !_catalogSearching;
   bool get _stvFavVisible =>
@@ -3925,7 +3925,7 @@ class _SearchScreenState extends State<SearchScreen>
       !_catalogSearching;
 
   /// The visible saved-content rows in render order: Watchlist Movies,
-  /// Watchlist Series, Playlist, Debrify TV, Stremio TV, IPTV favourites, then
+  /// Watchlist Series, Playlist, MegaWatch TV, Stremio TV, IPTV favourites, then
   /// opted-in IPTV custom lists.
   /// This is the single source of truth for both rendering ([_buildBoard]) and
   /// the index-based DPAD focus wiring below, so the two never drift out of
@@ -3939,8 +3939,8 @@ class _SearchScreenState extends State<SearchScreen>
     if (_watchlistSeriesVisible) const _FavRowRef(_FavKind.watchlistSeries),
     if (_playlistFavVisible) const _FavRowRef(_FavKind.playlist),
     if (_tvFavVisible &&
-        ProfilePolicyGuard.allowsSync(ProfileFeature.debrifyTv))
-      const _FavRowRef(_FavKind.debrify),
+        ProfilePolicyGuard.allowsSync(ProfileFeature.megawatchTv))
+      const _FavRowRef(_FavKind.megawatch),
     if (_stvFavVisible &&
         ProfilePolicyGuard.allowsSync(ProfileFeature.stremioTv))
       const _FavRowRef(_FavKind.stremio),
@@ -3964,7 +3964,7 @@ class _SearchScreenState extends State<SearchScreen>
       _FavKind.watchlistMovies => 'watchlist:movies',
       _FavKind.watchlistSeries => 'watchlist:series',
       _FavKind.playlist => 'fav:playlist',
-      _FavKind.debrify => 'fav:debrify',
+      _FavKind.megawatch => 'fav:megawatch',
       _FavKind.stremio => 'fav:stremio',
       _FavKind.iptv => 'fav:iptv',
     };
@@ -3989,7 +3989,7 @@ class _SearchScreenState extends State<SearchScreen>
         return _watchlistSeriesNodes;
       case _FavKind.iptv:
         return _iptvFavNodes;
-      case _FavKind.debrify:
+      case _FavKind.megawatch:
         return _tvFavNodes;
       case _FavKind.stremio:
         return _stvFavNodes;
@@ -4144,19 +4144,19 @@ class _SearchScreenState extends State<SearchScreen>
   Future<void> _loadTvFavorites() async {
     final revision = ++_tvFavoritesRevision;
     try {
-      final ids = await StorageService.getDebrifyTvFavoriteChannelIds();
+      final ids = await StorageService.getMegaWatchTvFavoriteChannelIds();
       if (ids.isEmpty) {
         if (!mounted || revision != _tvFavoritesRevision) return;
         setState(() => _tvFavChannels = const []);
         _syncTvFavNodes();
         return;
       }
-      final records = await DebrifyTvRepository.instance.fetchAllChannels();
+      final records = await MegaWatchTvRepository.instance.fetchAllChannels();
       // fetchAllChannels() is already ordered by channel number; preserve that
       // order (matching the Home row) rather than a redundant, non-stable
       // re-sort that could shuffle channels sharing channelNumber 0.
       final favs = records
-          .map(DebrifyTvChannel.fromRecord)
+          .map(MegaWatchTvChannel.fromRecord)
           .where((c) => ids.contains(c.id))
           .toList();
       if (!mounted || revision != _tvFavoritesRevision) return;
@@ -4180,15 +4180,15 @@ class _SearchScreenState extends State<SearchScreen>
     }
   }
 
-  /// Launch a Debrify TV channel (same path the Home screen uses): hand off to
+  /// Launch a MegaWatch TV channel (same path the Home screen uses): hand off to
   /// the live player if it's mounted, else queue an auto-play and switch tabs.
-  void _playChannel(DebrifyTvChannel channel) {
-    if (MainPageBridge.watchDebrifyTvChannel != null) {
-      MainPageBridge.watchDebrifyTvChannel!(channel.id);
+  void _playChannel(MegaWatchTvChannel channel) {
+    if (MainPageBridge.watchMegaWatchTvChannel != null) {
+      MainPageBridge.watchMegaWatchTvChannel!(channel.id);
       return;
     }
-    MainPageBridge.notifyDebrifyTvChannelToAutoPlay(channel.id);
-    MainPageBridge.switchTab?.call(MainTab.debrifyTv);
+    MainPageBridge.notifyMegaWatchTvChannelToAutoPlay(channel.id);
+    MainPageBridge.switchTab?.call(MainTab.megawatchTv);
   }
 
   /// Load the user's starred Stremio TV channels for the leading favourites row.
@@ -7392,7 +7392,7 @@ class _SearchScreenState extends State<SearchScreen>
             ),
           ),
         );
-      case _FavKind.debrify:
+      case _FavKind.megawatch:
         final channel = _tvFavChannels[col];
         final number = channel.channelNumber > 0
             ? channel.channelNumber
@@ -7422,7 +7422,7 @@ class _SearchScreenState extends State<SearchScreen>
               _CanvasFavFocus(
                 art: null,
                 title: channel.name,
-                subtitle: 'DEBRIFY TV · CHANNEL $number',
+                subtitle: 'MEGAWATCH TV · CHANNEL $number',
               ),
             ),
           ),
@@ -7991,10 +7991,10 @@ class _SearchScreenState extends State<SearchScreen>
               ),
           ],
         );
-      case _FavKind.debrify:
+      case _FavKind.megawatch:
         return SpotlightShelf(
           id: id,
-          title: 'Debrify TV',
+          title: 'MegaWatch TV',
           nodes: nodes,
           items: [
             for (final ch in _tvFavChannels)
@@ -8414,7 +8414,7 @@ class _SearchScreenState extends State<SearchScreen>
         return _watchlistSeriesItems.length;
       case _FavKind.iptv:
         return _iptvFavChannels.length;
-      case _FavKind.debrify:
+      case _FavKind.megawatch:
         return _tvFavChannels.length;
       case _FavKind.stremio:
         return _stvFavChannels.length;
@@ -8432,8 +8432,8 @@ class _SearchScreenState extends State<SearchScreen>
         return 'Watchlist Series';
       case _FavKind.iptv:
         return 'IPTV Favorites';
-      case _FavKind.debrify:
-        return 'Debrify TV';
+      case _FavKind.megawatch:
+        return 'MegaWatch TV';
       case _FavKind.stremio:
         return 'Stremio TV';
       case _FavKind.playlist:
@@ -16525,7 +16525,7 @@ class _SearchScreenState extends State<SearchScreen>
         valueListenable: _searchController,
         builder: (context, value, _) {
           final hasText = value.text.isNotEmpty;
-          // TvTextField: on TV (Debrify keyboard on) this is a shell — DPAD
+          // TvTextField: on TV (MegaWatch keyboard on) this is a shell — DPAD
           // landing draws the focus ring but never opens a keyboard; OK
           // starts editing with the in-app DPAD keyboard. Off TV / opted out
           // it renders the same plain TextField as before.
@@ -19099,7 +19099,7 @@ class _SearchScreenState extends State<SearchScreen>
       _maybeAutoFocusBoard();
     }
     if (_loading) {
-      // The brand moment: DEBRIFY centred on the ink while catalogs load —
+      // The brand moment: MEGAWATCH centred on the ink while catalogs load —
       // replaces the old skeleton-rail wall, which read as a broken app.
       return BrandLoadingStage(isTelevision: widget.isTelevision);
     }
@@ -20504,7 +20504,7 @@ class _SearchScreenState extends State<SearchScreen>
         return _buildWatchlistRow(ref, homeRowId);
       case _FavKind.iptv:
         return _buildIptvFavRow(homeRowId);
-      case _FavKind.debrify:
+      case _FavKind.megawatch:
         return _buildTvFavRow(homeRowId);
       case _FavKind.stremio:
         return _buildStremioTvFavRow(homeRowId);
@@ -20618,12 +20618,12 @@ class _SearchScreenState extends State<SearchScreen>
     );
   }
 
-  /// The "Debrify TV" row of favourited keyword channels, styled to match the
+  /// The "MegaWatch TV" row of favourited keyword channels, styled to match the
   /// catalog rows (same poster-shaped cards + title below).
   Widget _buildTvFavRow(String homeRowId) {
     final tv = widget.isTelevision;
     return _buildFavRowShell(
-      title: 'Debrify TV',
+      title: 'MegaWatch TV',
       tags: const [
         _CategoryTag('Channels'),
         // Make it explicit this row is the user's STARRED channels, not every
@@ -20642,7 +20642,7 @@ class _SearchScreenState extends State<SearchScreen>
           rowNodes: _tvFavNodes,
           onUp: _favRowOnUp(homeRowId, col),
           onDown: _favRowOnDown(homeRowId, col),
-          // Debrify channels have no artwork — the glyph fallback + channel
+          // MegaWatch channels have no artwork — the glyph fallback + channel
           // number badge is the intended look.
           child: _ArtPoster(
             imageUrl: null,

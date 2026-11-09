@@ -1,7 +1,7 @@
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_connect_controller.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/widgets/webdav_sync/remote_webdav_sync_offer.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_connect_controller.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/widgets/webdav_sync/remote_webdav_sync_offer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -56,7 +56,7 @@ void main() {
         return WebDavSyncConnectActive(
           WebDavSyncBinding(
             id: 'binding',
-            location: WebDavSyncFolderLocation.fromConfig(second, 'Debrify'),
+            location: WebDavSyncFolderLocation.fromConfig(second, 'MegaWatch'),
             lifecycle: WebDavSyncLifecycle.active,
             namespaceId: 'circle',
             sealedSecrets: 'sealed',

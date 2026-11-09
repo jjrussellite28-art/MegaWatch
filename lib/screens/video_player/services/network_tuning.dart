@@ -1,6 +1,6 @@
 import '../../../services/storage_service.dart';
 
-/// User-selected network presets for the Debrify (mpv) player — the escape
+/// User-selected network presets for the MegaWatch (mpv) player — the escape
 /// hatch for slow/unstable stream origins (Plex-backed addons, remote
 /// seedboxes) that time out or stall under the player's stock configuration.
 ///
@@ -13,7 +13,7 @@ import '../../../services/storage_service.dart';
 /// (and TV keyboards make them miserable to enter); three vetted rungs per
 /// knob cover the real cases.
 ///
-/// Scope: VOD playback in both players. The Debrify (mpv) player consumes
+/// Scope: VOD playback in both players. The MegaWatch (mpv) player consumes
 /// [mpvProperties]/[vodLavfOptions] in `_openMedia`; the native Android TV
 /// player receives the raw preset strings via the launch payload
 /// (`networkPatience`/`networkBuffer`, injected in AndroidTvPlayerBridge)

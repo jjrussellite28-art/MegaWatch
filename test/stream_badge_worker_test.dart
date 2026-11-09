@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
-import 'package:debrify/models/stream_badge_rules.dart';
-import 'package:debrify/services/stream_badge_matcher.dart';
+import 'package:megawatch/models/stream_badge_rules.dart';
+import 'package:megawatch/services/stream_badge_matcher.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 StreamBadgeMatcher matcher(String pattern) => StreamBadgeMatcher([

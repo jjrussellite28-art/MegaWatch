@@ -550,7 +550,7 @@ class Controls extends StatelessWidget {
                           // Separates the seek row from the buttons. Dropped
                           // only when there is no seek row AND a panel above
                           // it, where it would be a band of dead space under
-                          // the panel. Other seekbar-less flows (Debrify TV)
+                          // the panel. Other seekbar-less flows (MegaWatch TV)
                           // keep the spacing they have always had.
                           if (!(hideSeekbar && infoPanel != null))
                             const SizedBox(height: 16),

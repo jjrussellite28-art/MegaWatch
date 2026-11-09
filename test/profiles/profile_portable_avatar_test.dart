@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:debrify/models/profiles/profile_avatar.dart';
-import 'package:debrify/services/profiles/profile_avatar_policy.dart';
-import 'package:debrify/services/profiles/profile_avatar_storage.dart';
-import 'package:debrify/services/profiles/profile_portable_files.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/profile_avatar.dart';
+import 'package:megawatch/services/profiles/profile_avatar_policy.dart';
+import 'package:megawatch/services/profiles/profile_avatar_storage.dart';
+import 'package:megawatch/services/profiles/profile_portable_files.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 

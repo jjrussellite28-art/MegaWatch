@@ -2,14 +2,14 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/screens/collections/collection_editor_screen.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/widgets/collections/collection_focus_art.dart';
-import 'package:debrify/widgets/collections/folder_hero_band.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/home/spotlight_board.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/screens/collections/collection_editor_screen.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/widgets/collections/collection_focus_art.dart';
+import 'package:megawatch/widgets/collections/folder_hero_band.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/home/spotlight_board.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -24,7 +24,7 @@ Future<void> capture(WidgetTester tester, String name) async {
     final image = await boundary.toImage();
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
     await File(
-      '/tmp/debrify-$name.png',
+      '/tmp/megawatch-$name.png',
     ).writeAsBytes(bytes!.buffer.asUint8List());
     image.dispose();
   });

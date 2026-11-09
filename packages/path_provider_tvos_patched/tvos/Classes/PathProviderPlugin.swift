@@ -49,7 +49,7 @@ public class PathProviderPlugin: NSObject, FlutterPlugin {
       _ = PathProviderPlugin.warnDocumentsNotWritable
       result(directory(.documentDirectory))
     case "getApplicationSupportDirectory":
-      // PATCHED (Debrify): upstream returns nil here, because Application
+      // PATCHED (MegaWatch): upstream returns nil here, because Application
       // Support cannot be created in the tvOS sandbox. nil becomes a
       // MissingPlatformDirectoryException in Dart, which is honest but breaks
       // every DEPENDENCY that asks for this path and has no tvOS branch to

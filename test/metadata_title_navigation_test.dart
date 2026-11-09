@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/widgets/metadata_title_navigation.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/widgets/metadata_title_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

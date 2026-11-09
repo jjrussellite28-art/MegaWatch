@@ -15,7 +15,7 @@ import '../utils/platform_util.dart';
 class PipService {
   PipService._();
 
-  static const MethodChannel _channel = MethodChannel('com.debrify.app/pip');
+  static const MethodChannel _channel = MethodChannel('com.megawatch.app/pip');
 
   @visibleForTesting
   static TargetPlatform? debugPlatform;

@@ -1,7 +1,7 @@
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/simkl/simkl_item_transformer.dart';
-import 'package:debrify/services/trakt/trakt_item_transformer.dart';
-import 'package:debrify/widgets/see_all/see_all_sort.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/simkl/simkl_item_transformer.dart';
+import 'package:megawatch/services/trakt/trakt_item_transformer.dart';
+import 'package:megawatch/widgets/see_all/see_all_sort.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 StremioMeta _meta(String name, int? added) =>

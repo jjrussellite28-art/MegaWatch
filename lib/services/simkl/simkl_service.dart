@@ -588,7 +588,7 @@ class SimklService {
     );
     return _getOrNull(
       uri,
-      headers: {'User-Agent': 'Debrify'},
+      headers: {'User-Agent': 'MegaWatch'},
       label: 'public fetch $url',
     );
   }

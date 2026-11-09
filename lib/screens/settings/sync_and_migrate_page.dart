@@ -77,7 +77,7 @@ class _SyncAndMigratePageState extends State<SyncAndMigratePage>
   bool _statusReadFailed = false;
   bool _tvSyncLaunching = false;
   bool _guideOpen = false;
-  _DebrifyTvSyncOperation? _tvSyncOperation;
+  _MegaWatchTvSyncOperation? _tvSyncOperation;
   WebDavSyncTvManualAvailability _tvManualAvailability =
       WebDavSyncTvManualAvailability.inactive;
 
@@ -439,7 +439,7 @@ class _SyncAndMigratePageState extends State<SyncAndMigratePage>
               'Existing profiles and connections on this device will be '
               'replaced. Create a manual backup first if you want to keep '
               'a copy of your current data. IPTV channel and '
-              'guide caches rebuild; Debrify TV channels are not included.',
+              'guide caches rebuild; MegaWatch TV channels are not included.',
             ),
             actions: [
               TextButton(
@@ -590,7 +590,7 @@ class _SyncAndMigratePageState extends State<SyncAndMigratePage>
           report.localChangeFollowUp ||
                   !report.localPublicationConfirmed ||
                   report.localProfilesSuppressed
-              ? 'Sync still has pending changes. Keep Debrify open and retry.'
+              ? 'Sync still has pending changes. Keep MegaWatch open and retry.'
               : report.statusHint ?? 'WebDAV Sync is up to date.',
         WebDavSyncCycleDisposition.clockPaused =>
           'Sync is paused because the device or server clock needs attention.',
@@ -623,45 +623,45 @@ class _SyncAndMigratePageState extends State<SyncAndMigratePage>
     }
   }
 
-  Future<void> _syncDebrifyTv() async {
+  Future<void> _syncMegaWatchTv() async {
     final controller = _tvManualController;
     if (_syncBusy || _tvSyncLaunching || controller == null) return;
     _tvSyncLaunching = true;
-    _DebrifyTvSyncOperation? operation;
+    _MegaWatchTvSyncOperation? operation;
     try {
       final availability = await controller.tvManualAvailability();
       if (!mounted) return;
       setState(() => _tvManualAvailability = availability);
       if (availability != WebDavSyncTvManualAvailability.available) return;
       setState(() => _syncBusy = true);
-      operation = _DebrifyTvSyncOperation(controller);
+      operation = _MegaWatchTvSyncOperation(controller);
       _tvSyncOperation = operation;
       var report = await showSettingsDialog<WebDavSyncTvManualReport>(
         context: context,
         barrierDismissible: false,
-        builder: (_) => _DebrifyTvSyncProgressDialog(operation: operation!),
+        builder: (_) => _MegaWatchTvSyncProgressDialog(operation: operation!),
       );
       report ??= await operation.terminal;
       if (!mounted) return;
       final message = switch (report.disposition) {
         WebDavSyncTvManualDisposition.completed =>
-          'Debrify TV sync is up to date.',
+          'MegaWatch TV sync is up to date.',
         WebDavSyncTvManualDisposition.cancelled =>
-          'Debrify TV sync stopped safely.',
+          'MegaWatch TV sync stopped safely.',
         WebDavSyncTvManualDisposition.inactive =>
-          'Enable WebDAV Sync before syncing Debrify TV.',
+          'Enable WebDAV Sync before syncing MegaWatch TV.',
         WebDavSyncTvManualDisposition.firstJoinPending =>
-          'Finish the first sync before syncing Debrify TV.',
+          'Finish the first sync before syncing MegaWatch TV.',
         WebDavSyncTvManualDisposition.cycleRunning =>
-          'Another sync is running. Try Debrify TV again when it finishes.',
+          'Another sync is running. Try MegaWatch TV again when it finishes.',
         WebDavSyncTvManualDisposition.televisionPlayback =>
-          'Stop TV playback, then run Debrify TV sync again.',
+          'Stop TV playback, then run MegaWatch TV sync again.',
         WebDavSyncTvManualDisposition.tvOsLowMemory =>
           'Apple TV is low on memory. Wait a few minutes, then try again.',
         WebDavSyncTvManualDisposition.clockPaused =>
-          'Debrify TV sync is paused because the device or server clock needs attention.',
+          'MegaWatch TV sync is paused because the device or server clock needs attention.',
         WebDavSyncTvManualDisposition.conflict =>
-          'Debrify TV changed during sync. Run it again to finish.',
+          'MegaWatch TV changed during sync. Run it again to finish.',
       };
       ScaffoldMessenger.of(
         context,
@@ -971,7 +971,7 @@ class _SyncAndMigratePageState extends State<SyncAndMigratePage>
       WebDavSyncTvManualAvailability.inactive =>
         'Enable WebDAV Sync to use manual TV sync',
       WebDavSyncTvManualAvailability.firstJoinPending =>
-        'Finish the first sync before syncing Debrify TV',
+        'Finish the first sync before syncing MegaWatch TV',
       WebDavSyncTvManualAvailability.cycleRunning =>
         'Wait for the current sync to finish',
       WebDavSyncTvManualAvailability.televisionPlayback =>
@@ -1172,7 +1172,7 @@ class _SyncAndMigratePageState extends State<SyncAndMigratePage>
         ],
         const SizedBox(height: 16),
         SettingsSection(
-          title: 'Debrify TV channels',
+          title: 'MegaWatch TV channels',
           blurb:
               'Channels and saved torrent pools transfer only when you sync them here. Run this on both devices after changing channels.',
           children: [
@@ -1183,7 +1183,7 @@ class _SyncAndMigratePageState extends State<SyncAndMigratePage>
                   ? tvSubtitle
                   : 'Connect WebDAV to sync your channels',
               enabled: tvButtonEnabled,
-              onTap: _syncDebrifyTv,
+              onTap: _syncMegaWatchTv,
             ),
           ],
         ),
@@ -1267,18 +1267,18 @@ class _SyncAndMigratePageState extends State<SyncAndMigratePage>
   }
 }
 
-final class _DebrifyTvSyncProgressDialog extends StatefulWidget {
-  const _DebrifyTvSyncProgressDialog({required this.operation});
+final class _MegaWatchTvSyncProgressDialog extends StatefulWidget {
+  const _MegaWatchTvSyncProgressDialog({required this.operation});
 
-  final _DebrifyTvSyncOperation operation;
+  final _MegaWatchTvSyncOperation operation;
 
   @override
-  State<_DebrifyTvSyncProgressDialog> createState() =>
-      _DebrifyTvSyncProgressDialogState();
+  State<_MegaWatchTvSyncProgressDialog> createState() =>
+      _MegaWatchTvSyncProgressDialogState();
 }
 
-final class _DebrifyTvSyncProgressDialogState
-    extends State<_DebrifyTvSyncProgressDialog> {
+final class _MegaWatchTvSyncProgressDialogState
+    extends State<_MegaWatchTvSyncProgressDialog> {
   WebDavSyncTvManualStage _stage = WebDavSyncTvManualStage.reading;
   bool _stopping = false;
 
@@ -1325,7 +1325,7 @@ final class _DebrifyTvSyncProgressDialogState
     return PopScope(
       canPop: false,
       child: AlertDialog(
-        title: const Text('Syncing Debrify TV'),
+        title: const Text('Syncing MegaWatch TV'),
         content: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1348,8 +1348,8 @@ final class _DebrifyTvSyncProgressDialogState
   }
 }
 
-final class _DebrifyTvSyncOperation {
-  _DebrifyTvSyncOperation(this._controller);
+final class _MegaWatchTvSyncOperation {
+  _MegaWatchTvSyncOperation(this._controller);
 
   final WebDavSyncTvManualController _controller;
   final WebDavSyncTvCancellationToken _token = WebDavSyncTvCancellationToken();
@@ -1357,7 +1357,7 @@ final class _DebrifyTvSyncOperation {
 
   Future<WebDavSyncTvManualReport> start({
     WebDavSyncTvStageCallback? onStage,
-  }) => _terminal ??= _controller.syncDebrifyTv(
+  }) => _terminal ??= _controller.syncMegaWatchTv(
     cancellationToken: _token,
     onStage: onStage,
   );

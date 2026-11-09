@@ -1,6 +1,6 @@
-import 'package:debrify/utils/tv_search_focus_handoff.dart';
-import 'package:debrify/widgets/tv_keyboard.dart';
-import 'package:debrify/widgets/tv_text_field.dart';
+import 'package:megawatch/utils/tv_search_focus_handoff.dart';
+import 'package:megawatch/widgets/tv_keyboard.dart';
+import 'package:megawatch/widgets/tv_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,7 +25,7 @@ void main() {
     expect(find.byKey(const ValueKey('result-focus')), findsOneWidget);
   });
 
-  testWidgets('Debrify keyboard Search keeps the same result handoff', (
+  testWidgets('MegaWatch keyboard Search keeps the same result handoff', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -33,7 +33,7 @@ void main() {
     );
     await tester.pump();
 
-    // Shell OK opens the Debrify keyboard. Four downs reach its action row;
+    // Shell OK opens the MegaWatch keyboard. Four downs reach its action row;
     // left wraps from the first action to Search, then OK submits.
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
     for (var i = 0; i < 4; i++) {

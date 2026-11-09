@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_mutation.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_mutation.dart';
 
 /// The v5 migration: favorites stop being their own table and become the
 /// built-in list of the custom-lists schema.
@@ -25,8 +25,8 @@ void main() {
   });
 
   setUp(() async {
-    dir = await Directory.systemTemp.createTemp('debrify_tv_migration');
-    dbPath = p.join(dir.path, 'debrify_tv.db');
+    dir = await Directory.systemTemp.createTemp('megawatch_tv_migration');
+    dbPath = p.join(dir.path, 'megawatch_tv.db');
   });
 
   tearDown(() async {
@@ -35,7 +35,7 @@ void main() {
 
   Future<void> configure(Database db) => db.execute('PRAGMA foreign_keys = ON');
 
-  /// The v1 shape: Debrify-TV channels only, before channel_number and
+  /// The v1 shape: MegaWatch-TV channels only, before channel_number and
   /// before any IPTV table existed.
   Future<void> createV1(Database db, int _) async {
     await db.execute('''
@@ -155,8 +155,8 @@ void main() {
       options: OpenDatabaseOptions(
         version: 5,
         onConfigure: configure,
-        onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
-        onUpgrade: DebrifyTvDatabase.runUpgrade,
+        onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
+        onUpgrade: MegaWatchTvDatabase.runUpgrade,
       ),
     );
   }
@@ -167,8 +167,8 @@ void main() {
       options: OpenDatabaseOptions(
         version: 6,
         onConfigure: configure,
-        onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
-        onUpgrade: DebrifyTvDatabase.runUpgrade,
+        onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
+        onUpgrade: MegaWatchTvDatabase.runUpgrade,
       ),
     );
   }
@@ -179,8 +179,8 @@ void main() {
       options: OpenDatabaseOptions(
         version: 7,
         onConfigure: configure,
-        onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
-        onUpgrade: DebrifyTvDatabase.runUpgrade,
+        onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
+        onUpgrade: MegaWatchTvDatabase.runUpgrade,
       ),
     );
   }
@@ -191,8 +191,8 @@ void main() {
       options: OpenDatabaseOptions(
         version: 8,
         onConfigure: configure,
-        onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
-        onUpgrade: DebrifyTvDatabase.runUpgrade,
+        onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
+        onUpgrade: MegaWatchTvDatabase.runUpgrade,
       ),
     );
   }
@@ -203,8 +203,8 @@ void main() {
       options: OpenDatabaseOptions(
         version: 9,
         onConfigure: configure,
-        onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
-        onUpgrade: DebrifyTvDatabase.runUpgrade,
+        onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
+        onUpgrade: MegaWatchTvDatabase.runUpgrade,
       ),
     );
   }
@@ -215,8 +215,8 @@ void main() {
       options: OpenDatabaseOptions(
         version: 10,
         onConfigure: configure,
-        onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
-        onUpgrade: DebrifyTvDatabase.runUpgrade,
+        onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
+        onUpgrade: MegaWatchTvDatabase.runUpgrade,
       ),
     );
   }
@@ -358,8 +358,8 @@ void main() {
       // were seeded with INSERT OR REPLACE, the conflicting parent row would
       // be DELETEd with foreign-key actions firing and cascade every
       // membership away — data loss on launch, not an edge case.
-      await DebrifyTvDatabase.createIptvStoreTables(db);
-      await DebrifyTvDatabase.seedBuiltinList(db);
+      await MegaWatchTvDatabase.createIptvStoreTables(db);
+      await MegaWatchTvDatabase.seedBuiltinList(db);
 
       expect(
         await db.query('iptv_list_channels'),
@@ -372,7 +372,7 @@ void main() {
     test('deleting a custom list cascades its memberships away', () async {
       final db = await openAt(
         5,
-        (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
+        (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
       );
       addTearDown(db.close);
 
@@ -447,7 +447,7 @@ void main() {
 
     await File(dbPath).delete();
     db = await openAt(6, (db, _) async {
-      await DebrifyTvDatabase.createIptvStoreTables(db);
+      await MegaWatchTvDatabase.createIptvStoreTables(db);
       await db.delete('webdav_sync_meta');
       await db.execute('DROP TABLE webdav_sync_record_state');
       await db.execute('DROP TABLE webdav_sync_meta');
@@ -463,7 +463,7 @@ void main() {
     'v7→v8 adds resume source identity and backfills all IPTV states',
     () async {
       var db = await openAt(7, (db, _) async {
-        await DebrifyTvDatabase.createIptvStoreTables(db);
+        await MegaWatchTvDatabase.createIptvStoreTables(db);
         await db.execute('DROP TABLE video_resume');
         await db.execute('''
         CREATE TABLE video_resume (
@@ -519,7 +519,7 @@ void main() {
     WebDavSyncLibraryMutation.debugTvGenerationId = () => 'migration-gen';
     addTearDown(WebDavSyncLibraryMutation.resetDebugTvHooks);
     var db = await openAt(8, (db, _) async {
-      await DebrifyTvDatabase.createIptvStoreTables(db);
+      await MegaWatchTvDatabase.createIptvStoreTables(db);
       await db.execute('''
         CREATE TABLE tv_channels (
           channel_id TEXT PRIMARY KEY,
@@ -594,7 +594,7 @@ void main() {
   test('v9→v10 seeds custom lists and every membership', () async {
     var db = await openAt(
       9,
-      (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
+      (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
     );
     await db.insert('iptv_lists', <String, Object?>{
       'id': 'list_100_1',

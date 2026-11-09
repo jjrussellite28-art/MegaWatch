@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/screens/settings/collections_settings_page.dart';
-import 'package:debrify/services/home_collections_store.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/screens/collections/collection_editor_screen.dart';
+import 'package:megawatch/screens/settings/collections_settings_page.dart';
+import 'package:megawatch/services/home_collections_store.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/screens/collections/collection_editor_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

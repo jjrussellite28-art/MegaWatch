@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/theme/app_ambience.dart';
-import 'package:debrify/theme/app_surfaces.dart';
-import 'package:debrify/theme/app_theme_controller.dart';
-import 'package:debrify/theme/idle_dim.dart';
+import 'package:megawatch/theme/app_ambience.dart';
+import 'package:megawatch/theme/app_surfaces.dart';
+import 'package:megawatch/theme/app_theme_controller.dart';
+import 'package:megawatch/theme/idle_dim.dart';
 
 /// The transition table from plan §3.7, as tests.
 ///

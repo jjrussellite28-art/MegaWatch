@@ -159,7 +159,7 @@ class CollectionCatalogSource {
       provider: provider,
       addonId: provider,
       catalogId:
-          _str(raw['debrifySourceId']) ??
+          _str(raw['megawatchSourceId']) ??
           HomeCollection.stableId(encodeCanonicalJson(identity)),
       type: media == 'TV' || media == 'SERIES' ? 'series' : 'movie',
       title: _str(raw['title']),
@@ -185,7 +185,7 @@ class CollectionCatalogSource {
         }
       : {
           ...extra,
-          'debrifySourceId': catalogId,
+          'megawatchSourceId': catalogId,
           'provider': provider,
           if (title != null) 'title': title,
           'mediaType': type == 'series' ? 'TV' : 'MOVIE',
@@ -286,7 +286,7 @@ class HomeCollectionFolder {
           while (!localSeen.add(s.key)) {
             s = CollectionCatalogSource.fromJson({
               ...s.toJson(),
-              'debrifySourceId': '$baseId-${++ordinal}',
+              'megawatchSourceId': '$baseId-${++ordinal}',
             })!;
           }
         }
@@ -433,7 +433,7 @@ class HomeCollection {
       folders: folders,
       enabled: json['enabled'] != false,
       importedAtMs: importedAt is num ? importedAt.toInt() : null,
-      serializationVersion: json['debrifyCollectionVersion'] == 1 ? 1 : 2,
+      serializationVersion: json['megawatchCollectionVersion'] == 1 ? 1 : 2,
     );
   }
 
@@ -442,8 +442,8 @@ class HomeCollection {
   Map<String, dynamic> toJson() => {
     'id': id,
     'title': title,
-    'debrifyCollectionVersion': serializationVersion,
-    'debrifyVisualVersion': 2,
+    'megawatchCollectionVersion': serializationVersion,
+    'megawatchVisualVersion': 2,
     'pinToTop': pinToTop,
     'focusGlowEnabled': focusGlowEnabled,
     'showAllTab': showAllTab,
@@ -464,7 +464,7 @@ class HomeCollection {
 ///
 /// Accepts:
 ///   - a bare list of collections (the Nuvio / Xperience export),
-///   - `{ "collections": [ … ] }` (a wrapped export or a Debrify backup),
+///   - `{ "collections": [ … ] }` (a wrapped export or a MegaWatch backup),
 ///   - a single collection object,
 ///   - a bare list of folders (wrapped into one "Imported" collection).
 ///

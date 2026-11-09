@@ -1,21 +1,21 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:debrify/screens/settings/settings_summary_reads.dart';
-import 'package:debrify/screens/settings/widgets/settings_widgets.dart';
-import 'package:debrify/screens/settings_screen.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/profiles/profile_lifecycle.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
+import 'package:megawatch/screens/settings/settings_summary_reads.dart';
+import 'package:megawatch/screens/settings/widgets/settings_widgets.dart';
+import 'package:megawatch/screens/settings_screen.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/profiles/profile_lifecycle.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -85,8 +85,8 @@ void main() {
       ProfileRuntime.initializeLegacy();
       addTearDown(ProfileRuntime.debugReset);
       PackageInfo.setMockInitialValues(
-        appName: 'Debrify',
-        packageName: 'test.debrify',
+        appName: 'MegaWatch',
+        packageName: 'test.megawatch',
         version: '1.0',
         buildNumber: '1',
         buildSignature: '',

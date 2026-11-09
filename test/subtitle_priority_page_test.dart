@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/models/subtitle_source_priority.dart';
-import 'package:debrify/screens/settings/subtitle_priority_page.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/models/subtitle_source_priority.dart';
+import 'package:megawatch/screens/settings/subtitle_priority_page.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

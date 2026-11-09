@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:debrify/services/playback_recovery_intent.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/profiles/profile_preference_budget.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/tv_playback_recovery.dart';
+import 'package:megawatch/services/playback_recovery_intent.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/profiles/profile_preference_budget.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/tv_playback_recovery.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -23,18 +23,18 @@ void main() {
     PlaybackRecoveryIntent.debugReset();
     PlaybackRecoveryIntent.debugSupportedOverride = true;
     IptvMediaStore.debugResetMigration();
-    DebrifyTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
+    MegaWatchTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
         .openDatabase(
           inMemoryDatabasePath,
           options: OpenDatabaseOptions(
             version: 1,
-            onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
+            onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
           ),
         );
   });
   tearDown(() async {
-    await DebrifyTvDatabase.debugDatabaseOverride?.close();
-    DebrifyTvDatabase.debugDatabaseOverride = null;
+    await MegaWatchTvDatabase.debugDatabaseOverride?.close();
+    MegaWatchTvDatabase.debugDatabaseOverride = null;
     PlaybackRecoveryIntent.debugReset();
     ProfilePreferenceBudget.debugReset();
     IptvMediaStore.debugResetMigration();
@@ -132,7 +132,7 @@ void main() {
   test(
     'retry should finish a checkpoint after its first store was written',
     () async {
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       await db.execute(
         "CREATE TRIGGER fail_resume BEFORE INSERT ON video_resume BEGIN SELECT RAISE(ABORT, 'temporary write failure'); END",
       );
@@ -434,7 +434,7 @@ void main() {
     final checkpoint = TvPlaybackCheckpoint.tryParse(
       jsonEncode(record(type: 'single')),
     )!;
-    final db = DebrifyTvDatabase.debugDatabaseOverride!;
+    final db = MegaWatchTvDatabase.debugDatabaseOverride!;
     await db.execute(
       "CREATE TRIGGER fail_resume BEFORE INSERT ON video_resume BEGIN SELECT RAISE(ABORT, 'temporary write failure'); END",
     );
@@ -483,7 +483,7 @@ void main() {
         'durationMs': 100000,
         'updatedAt': checkpoint.updatedAtMs - 1000,
       });
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       await db.execute(
         "CREATE TRIGGER fail_delete BEFORE DELETE ON video_resume BEGIN SELECT RAISE(ABORT, 'temporary delete failure'); END",
       );
@@ -510,7 +510,7 @@ void main() {
       final checkpoint = TvPlaybackCheckpoint.tryParse(
         jsonEncode(record(type: 'single')),
       )!;
-      final db = DebrifyTvDatabase.debugDatabaseOverride!;
+      final db = MegaWatchTvDatabase.debugDatabaseOverride!;
       await db.execute(
         "CREATE TRIGGER fail_resume BEFORE INSERT ON video_resume BEGIN SELECT RAISE(ABORT, 'temporary write failure'); END",
       );

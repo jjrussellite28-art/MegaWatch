@@ -17,11 +17,11 @@ scope to channels or a passing unit suite. No push/install has been performed.
   result remains readable during profile handoff; new admissions still resolve
   current authorized sessions. Default port 5557, test override uses port 0.
 - Transfer Everything uses LocalBackupExporter/Restorer file-backed archives on
-  protocol 6, without dropping Debrify TV data to fit the old graph size limit.
+  protocol 6, without dropping MegaWatch TV data to fit the old graph size limit.
 - Individual channels use gzip JSON-lines with a channel header and every saved
   torrent row, queried by indexed infohash in batches of 500. Receiver imports
   channel and pool in one transaction; count/order/truncation failures roll back.
-- DebrifyTvRepository.upsertChannel and DebrifyTvCacheService.saveEntry accept
+- MegaWatchTvRepository.upsertChannel and MegaWatchTvCacheService.saveEntry accept
   optional caller-owned transaction. saveEntry also accepts a streamed pool and
   commits batches of 500, preserving existing WebDAV mutation bookkeeping.
 - Legacy channel YAML export uses portable cache reader, preserves orphan hashes,
@@ -44,8 +44,8 @@ scope to channels or a passing unit suite. No push/install has been performed.
   than memory receipt capacity. Last isolated run: 8 passed.
 - Real SQLite streamed channel test exports 1,501 hashes (including old keyword
   associations), proves truncated import rolls back, then imports complete pool.
-- Latest broader suite running/log at /tmp/debrify-remote-suite.log. Inspect its
-  process handle/output before re-running. Earlier logs: /tmp/debrify-remote-*.log.
+- Latest broader suite running/log at /tmp/megawatch-remote-suite.log. Inspect its
+  process handle/output before re-running. Earlier logs: /tmp/megawatch-remote-*.log.
 - Focused analysis last had only style issues (auto-fixed subsequently) and an
   existing deprecated scale call in remote_role_picker_screen.dart.
 - Android manifest permits networking/HTTP; macOS release entitlements have
@@ -103,7 +103,7 @@ relevant tests. No production release/push requested in the current objective.
   The real graph router test verifies transferred login and paused state.
   All 14 router/backup tests passed; focused analysis clean. Artifacts need
   rebuilding before these changes are installed. Proposed simpler UI is an
-  interactive mock at /tmp/debrify-transfer-ux-mock/remote-transfer.html;
+  interactive mock at /tmp/megawatch-transfer-ux-mock/remote-transfer.html;
   production navigation redesign is not implemented.
 
 - Subsequent review fixes: persistent HTTP startup now clears the initiating
@@ -114,23 +114,23 @@ relevant tests. No production release/push requested in the current objective.
 - Authenticated upload blocks revalidate and refresh receiver session activity.
   Absolute maximum age and revocation remain enforced. Tests simulate a
   24-minute upload, maximum-age expiry, and revocation after the first block.
-  All 68 targeted tests passed (`/tmp/debrify-review-zone-idle-final-tests.log`);
-  focused analysis is clean (`/tmp/debrify-review-zone-idle-analysis.log`).
+  All 68 targeted tests passed (`/tmp/megawatch-review-zone-idle-final-tests.log`);
+  focused analysis is clean (`/tmp/megawatch-review-zone-idle-analysis.log`).
   Existing release artifacts predate these two fixes and require rebuilding
   before installation. No push or installation performed for these fixes.
 
 - Current-code regression run: **198 tests passed** in
-  `/tmp/debrify-remote-final-regression.log`. Includes actual sockets/controller
+  `/tmp/megawatch-remote-final-regression.log`. Includes actual sockets/controller
   imports, interrupted uploads, receiver backpressure, receipt retirement and
   expiry, credentials/addons in file-backed graph import, saved avatar images,
   profile authorization, legacy transport, channel export/atomic import,
   backup packages and progress cleanup on failure/overlap.
 - Static analysis: no errors/warnings in Remote changes; one existing
   deprecated `scale` info in remote_role_picker_screen.dart. `git diff --check`
-  clean. Log `/tmp/debrify-remote-final-analysis.log`.
+  clean. Log `/tmp/megawatch-remote-final-analysis.log`.
 - Final real app Android release build succeeded (93.8 MB, local validation),
-  log `/tmp/debrify-remote-final-android-build.log`. Final real app macOS release
-  succeeded (151.7 MB), log `/tmp/debrify-remote-final-macos-build.log`.
+  log `/tmp/megawatch-remote-final-android-build.log`. Final real app macOS release
+  succeeded (151.7 MB), log `/tmp/megawatch-remote-final-macos-build.log`.
 - Installed final Android app ONLY on disposable emulator-5554. PID 4480 was
   alive; MainActivity was resumed/focused; checked error logs had no crash.
   Emulator screenshot capture produced empty files, so visual UI validation
@@ -152,26 +152,26 @@ relevant tests. No production release/push requested in the current objective.
   progress events within 400 ms while first import was held. Added authenticated
   capacity probe before uploads; busy responses return sender to polling.
   The test now proves zero queued body upload, then exactly two total imports.
-  All 12 transport tests passed (`/tmp/debrify-remote-busy-fixed-tests.log`).
+  All 12 transport tests passed (`/tmp/megawatch-remote-busy-fixed-tests.log`).
 - Transport storage now uses AppStorage cache/remote-transfers, enabling expiry
   cleanup after process restart instead of abandoning unique temporary roots.
   Startup failure preserves existing receipts. All 35 cache/handshake/router/
-  chunk/pairing tests passed (`/tmp/debrify-remote-cache-tests.log`).
+  chunk/pairing tests passed (`/tmp/megawatch-remote-cache-tests.log`).
 - Full graph router test now includes a Torbox credential and addon resource,
   checks all four source/imported resource records and decrypts each to verify
   exact synthetic secret contents after confirmed durable import. All five
-  controller tests passed (`/tmp/debrify-remote-graph-resources-tests.log`).
+  controller tests passed (`/tmp/megawatch-remote-graph-resources-tests.log`).
 - macOS main release build succeeded (151.7 MB). Both platform build artifacts
   predate latest readiness/cache changes and need rebuilding after final review.
 
 - Real Android release rebuild finished successfully (60.6 s, 93.8 MB).
   `build/app/outputs/flutter-apk/app-release.apk` is now the real application,
   not the probe. All 16 controller/transport tests pass after liveness changes
-  (`/tmp/debrify-remote-liveness-tests.log`). macOS main release build started;
-  inspect `/tmp/debrify-remote-main-macos-build.log` and its live process handle.
+  (`/tmp/megawatch-remote-liveness-tests.log`). macOS main release build started;
+  inspect `/tmp/megawatch-remote-main-macos-build.log` and its live process handle.
 
 - Broad review suite: all 194 tests passed in
-  `/tmp/debrify-remote-broad-review.log`, covering Remote handshake/transport,
+  `/tmp/megawatch-remote-broad-review.log`, covering Remote handshake/transport,
   profile leases/outbound policies/onboarding/avatar/batch behavior, local
   backup ZIP/archive/portable packages, and channel database/import/export.
 - Removed legacy UDP pacing delays from acknowledged v6 addon/config/channel
@@ -181,7 +181,7 @@ relevant tests. No production release/push requested in the current objective.
 - Focused analysis for touched services/widgets is clean. Full Remote analysis
   has one preexisting deprecated `scale` info in remote_role_picker_screen.dart.
 - Real Android app rebuild (`-t lib/main.dart`, release, local validation) is
-  running as session 83132; log `/tmp/debrify-remote-main-release-build.log`.
+  running as session 83132; log `/tmp/megawatch-remote-main-release-build.log`.
   Revalidate before restarting. Only emulator-5554 is attached; no physical
   phone/TV currently available. Next review should exercise simultaneous large
   sends/receiver-busy behavior (possible early-response/body-write retries),
@@ -197,7 +197,7 @@ relevant tests. No production release/push requested in the current objective.
   advertised port, actual occupied-port fallback in RemoteControlState, and
   compressed credential/addon commands reaching a correlated receiver batch
   without loss on repeated admission. All 34 tests passed in
-  `/tmp/debrify-remote-config-ports-tests.log`.
+  `/tmp/megawatch-remote-config-ports-tests.log`.
 
 - Added startup/periodic expiry of transport-owned partial files and receipts.
   Sweeps wait for request admission to be idle, incoming requests wait for the
@@ -207,7 +207,7 @@ relevant tests. No production release/push requested in the current objective.
 - Added a real-socket profile-handoff test: completed result is readable after
   pairing retirement, while a new transfer with the retired pairing is denied.
   All 14 transport/controller tests passed in
-  `/tmp/debrify-remote-handoff-tests.log` before the final prune-order cleanup.
+  `/tmp/megawatch-remote-handoff-tests.log` before the final prune-order cleanup.
   Remaining: cleanup of per-process scratch directories, negotiated port/startup
   failures, ordinary config/addon/avatar controller coverage and full final
   builds/review. The goal remains incomplete.
@@ -216,14 +216,14 @@ relevant tests. No production release/push requested in the current objective.
   20,000 channel hashes prepared in 398 ms and transferred/imported in 1,046 ms;
   peak RSS 167,686,144 bytes. These are local loopback emulator measurements,
   not physical TV or Wi-Fi throughput evidence. Probe APK copied to
-  `/tmp/debrify-remote-device-probe.apk`; default build artifact still requires
+  `/tmp/megawatch-remote-device-probe.apk`; default build artifact still requires
   a production `lib/main.dart` rebuild before delivery.
 - Fixed profile staging cleanup on failed archive extraction, and guaranteed
   clearing the graph admission flag even if cleanup throws. Restored Unicode
   case-insensitive channel matching (SQLite LOWER only handles ASCII).
   Extended atomic channel import test with mixed-case accented names.
   All 28 transport/router/library tests passed in
-  `/tmp/debrify-remote-cleanup-review-tests.log`.
+  `/tmp/megawatch-remote-cleanup-review-tests.log`.
 
 - 133 targeted Remote/profile/library tests passed before subsequent review fixes.
 - Android and macOS release builds both compiled successfully (intermediate
@@ -240,7 +240,7 @@ relevant tests. No production release/push requested in the current objective.
   headless with 1024 MiB RAM and 2 CPU cores. This does not touch the user's AVD.
 - Added `tool/remote_transfer_device_probe.dart`: synthetic 64 MiB binary and
   20,000-hash channel tests for native Android release runtime/memory measurements.
-  Probe build is in progress at /tmp/debrify-device-probe-build.log.
+  Probe build is in progress at /tmp/megawatch-device-probe-build.log.
   IMPORTANT: building this target REPLACES build/.../app-release.apk with the
   probe. NEVER install that artifact on the user's phone. Copy to a distinct
   /tmp/probe APK for the disposable emulator and rebuild `-t lib/main.dart`

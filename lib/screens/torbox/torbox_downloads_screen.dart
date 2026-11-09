@@ -16,7 +16,7 @@ import '../../services/torbox_torrent_control_service.dart';
 import '../../services/storage_service.dart';
 import '../../services/main_page_bridge.dart';
 import '../../services/download_service.dart';
-import '../../services/debrify_tv_channel_add_service.dart';
+import '../../services/megawatch_tv_channel_add_service.dart';
 import '../../theme/app_theme_scope.dart';
 import '../../utils/formatters.dart';
 import '../../utils/file_utils.dart';
@@ -443,22 +443,22 @@ class _TorboxDownloadsScreenState extends State<TorboxDownloadsScreen> {
     );
   }
 
-  Future<void> _handleAddToDebrifyTv(TorboxTorrent torrent) async {
+  Future<void> _handleAddToMegaWatchTv(TorboxTorrent torrent) async {
     try {
-      final result = await DebrifyTvChannelAddService.addTorrentsToChannel(
+      final result = await MegaWatchTvChannelAddService.addTorrentsToChannel(
         context,
-        torrents: [DebrifyTvChannelAddService.fromTorboxTorrent(torrent)],
+        torrents: [MegaWatchTvChannelAddService.fromTorboxTorrent(torrent)],
         searchKeyword: _torrentSearchQuery,
       );
 
       if (result == null || !mounted) return;
       _showSnackBar(result.successMessage, isError: false);
-    } on DebrifyTvChannelAddException catch (e) {
+    } on MegaWatchTvChannelAddException catch (e) {
       if (!mounted) return;
       _showSnackBar(e.message);
     } catch (e) {
       if (!mounted) return;
-      _showSnackBar('Failed to add torrent to Debrify TV: $e');
+      _showSnackBar('Failed to add torrent to MegaWatch TV: $e');
     }
   }
 
@@ -543,8 +543,8 @@ class _TorboxDownloadsScreenState extends State<TorboxDownloadsScreen> {
       ),
       _TorboxMoreOption(
         icon: Icons.live_tv_rounded,
-        label: 'Add to Debrify TV',
-        onTap: () => _handleAddToDebrifyTv(torrent),
+        label: 'Add to MegaWatch TV',
+        onTap: () => _handleAddToMegaWatchTv(torrent),
       ),
       _TorboxMoreOption(
         icon: Icons.copy,
@@ -6526,8 +6526,8 @@ class _TorboxDownloadsScreenState extends State<TorboxDownloadsScreen> {
         ),
       CloudRowAction(
         icon: Icons.live_tv_rounded,
-        label: 'Add to Debrify TV',
-        onSelected: () => _handleAddToDebrifyTv(torrent),
+        label: 'Add to MegaWatch TV',
+        onSelected: () => _handleAddToMegaWatchTv(torrent),
       ),
       CloudRowAction(
         icon: Icons.delete_outline,

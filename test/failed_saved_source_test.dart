@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/services/failed_saved_source.dart';
-import 'package:debrify/services/series_source_service.dart';
-import 'package:debrify/services/resolved_playback_link_cache.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/secret_vault.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/services/failed_saved_source.dart';
+import 'package:megawatch/services/series_source_service.dart';
+import 'package:megawatch/services/resolved_playback_link_cache.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/secret_vault.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

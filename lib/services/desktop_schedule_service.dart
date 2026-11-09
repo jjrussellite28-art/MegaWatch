@@ -144,10 +144,10 @@ class DesktopSchedule {
     String ownerProfileId,
     int profileAuthorizationRevision,
   ) =>
-      'debrify-desktop-schedule-v1|id=$id|owner=$ownerProfileId|revision=$profileAuthorizationRevision';
+      'megawatch-desktop-schedule-v1|id=$id|owner=$ownerProfileId|revision=$profileAuthorizationRevision';
 }
 
-/// Tier-1 desktop scheduling: recordings fire WHILE DEBRIFY IS RUNNING (and
+/// Tier-1 desktop scheduling: recordings fire WHILE MEGAWATCH IS RUNNING (and
 /// the machine is awake) — desktop has no AlarmManager, so a closed app
 /// records nothing, and that is stated in the UI rather than papered over.
 ///
@@ -598,7 +598,7 @@ class DesktopScheduleService {
     });
   }
 
-  /// `Downloads/Debrify/Recordings/<name>_<stamp>.ts` with the same
+  /// `Downloads/MegaWatch/Recordings/<name>_<stamp>.ts` with the same
   /// collision-avoidance as the player's recorder. Public: the IPTV page's
   /// stage Record button builds desktop capture paths through this too.
   static Future<String> buildRecordingPath(String name) =>

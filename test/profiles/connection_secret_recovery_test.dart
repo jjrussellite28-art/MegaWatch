@@ -1,25 +1,25 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/native_profile_projection.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_collection_resource_facade.dart';
-import 'package:debrify/services/profiles/profile_credential_facade.dart';
-import 'package:debrify/services/profiles/profile_package_service.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_restore_coordinator.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/profiles/profile_session_unavailable.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/native_profile_projection.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_collection_resource_facade.dart';
+import 'package:megawatch/services/profiles/profile_credential_facade.dart';
+import 'package:megawatch/services/profiles/profile_package_service.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_restore_coordinator.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/profiles/profile_session_unavailable.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
@@ -49,7 +49,7 @@ class _FailingReadCipher implements DeviceSecretCipher {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const channel = MethodChannel('debrify/device_secret');
+  const channel = MethodChannel('megawatch/device_secret');
   late Directory directory;
   late ProfileRegistry registry;
   late MemoryDeviceSecretCipher cipher;

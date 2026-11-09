@@ -259,7 +259,7 @@ abstract final class DockPalettes {
   static const Color _scrim = Color(0xF0040610);
 
   /// Hot magenta falling into deep violet. The default, and the only palette
-  /// that still reads as Debrify rather than as somebody else.
+  /// that still reads as MegaWatch rather than as somebody else.
   static const DockPalette ultraviolet = DockPalette(
     hot: Color(0xFFFF3DA6),
     deep: Color(0xFF6D2BFF),

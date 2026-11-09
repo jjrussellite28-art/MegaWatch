@@ -7,5 +7,5 @@ test/series_parser_test.dart::SeriesParser Tests should NOT treat release code w
 test/series_parser_test.dart::cleanCollectionTitle Tests PHASE 2: should handle alternative season range - through
 test/series_parser_test.dart::cleanCollectionTitle Tests PHASE 2: should handle alternative season range - thru
 test/series_parser_test.dart::cleanCollectionTitle Tests should preserve numbers in show title like Beverly Hills 90210
-test/widget_test.dart::Debrify app smoke test
+test/widget_test.dart::MegaWatch app smoke test
 test/xmltv_legacy_guide_retention_test.dart::a guide with nothing to import is still dropped

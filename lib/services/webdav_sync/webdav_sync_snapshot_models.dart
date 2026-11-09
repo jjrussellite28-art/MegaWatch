@@ -25,7 +25,7 @@ final class WebDavSyncSnapshotDescriptor {
   final Map<String, String> resourceMap;
 
   Map<String, Object?> toJson() => {
-    'format': 'debrify-sync-snapshot',
+    'format': 'megawatch-sync-snapshot',
     'version': schemaVersion,
     'contentHash': contentHash,
     'size': size,
@@ -37,7 +37,7 @@ final class WebDavSyncSnapshotDescriptor {
 
   factory WebDavSyncSnapshotDescriptor.fromJson(Object? value) {
     if (value is! Map ||
-        value['format'] != 'debrify-sync-snapshot' ||
+        value['format'] != 'megawatch-sync-snapshot' ||
         value['version'] != schemaVersion ||
         value.length != 8) {
       throw const FormatException('Invalid WebDAV sync snapshot descriptor');

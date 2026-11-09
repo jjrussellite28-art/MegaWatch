@@ -1,6 +1,6 @@
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/widgets/collections/collection_browser_hero.dart';
-import 'package:debrify/widgets/collections/collection_list_gallery.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/widgets/collections/collection_browser_hero.dart';
+import 'package:megawatch/widgets/collections/collection_list_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

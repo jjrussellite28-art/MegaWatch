@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:debrify/theme/app_surfaces.dart';
+import 'package:megawatch/theme/app_surfaces.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Files inside a still-frozen surface that have been converted to the token
@@ -23,7 +23,7 @@ const Set<String> kThemingPrepared = {};
 /// The surfaces that are still shadowed by a `LegacyThemeBoundary` at their
 /// root, as PATHS — what the push guard below needs.
 ///
-/// Phase two flipped Playlist, Downloads, Debrify TV, Stremio TV, IPTV and
+/// Phase two flipped Playlist, Downloads, MegaWatch TV, Stremio TV, IPTV and
 /// YouTube. What remains frozen is PLAYBACK, permanently: it has its own
 /// stable theme, its Kotlin TV layer is out of reach of any Dart palette, and
 /// a fixed dark surface is the right answer over arbitrary video.
@@ -80,11 +80,11 @@ void main() {
   });
 
   test('frozen tab roots are constructed only by main.dart', () {
-    // DebrifyTVScreen / StremioTvScreen / BrowseScreen / PlaylistScreen /
+    // MegaWatchTVScreen / StremioTvScreen / BrowseScreen / PlaylistScreen /
     // DownloadsScreen are tab bodies; main.dart wraps them via the
     // tab-boundary factory. A construction anywhere else bypasses it.
     const roots = {
-      'DebrifyTVScreen': 'lib/screens/magic_tv_screen.dart',
+      'MegaWatchTVScreen': 'lib/screens/magic_tv_screen.dart',
       'StremioTvScreen': 'lib/screens/stremio_tv/stremio_tv_screen.dart',
       'BrowseScreen': 'lib/screens/browse_screen.dart',
       'PlaylistScreen': 'lib/screens/playlist_screen.dart',
@@ -144,7 +144,7 @@ void main() {
       'lib/screens/stremio_tv/',
       'lib/screens/browse_screen.dart',
       'lib/screens/magic_tv_screen.dart',
-      'lib/screens/debrify_tv/',
+      'lib/screens/megawatch_tv/',
       'lib/screens/playlist_screen.dart',
       'lib/screens/playlist_content_view_screen.dart',
       'lib/services/playlist_player_service.dart',

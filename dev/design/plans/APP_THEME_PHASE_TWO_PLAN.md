@@ -15,7 +15,7 @@ has looked at it under.
 
 Four scheduled surfaces already read `Theme.of(context)` *while pinned to
 legacy*, so lifting the boundary changes their colours before a single literal
-moves: Debrify TV (32 reads), IPTV (30), Downloads (9), Stremio TV (9).
+moves: MegaWatch TV (32 reads), IPTV (30), Downloads (9), Stremio TV (9).
 
 That does **not** mean one commit per surface — see *Commit shape*. It means the
 classification flip is the last step, never the first.
@@ -57,7 +57,7 @@ what that surface must answer for. `UNION` is the de-duplicated total.
 | YouTube | 9 | 6,452 | 86 | 35 | 1 | 5 |
 | Playlist | 9 | 11,530 | 328 | 116 | 4 | 2 |
 | Stremio TV | 11 | 14,998 | 458 | 164 | 9 | 3 |
-| Debrify TV | 15 | 16,288 | 460 | 161 | 32 | 2 |
+| MegaWatch TV | 15 | 16,288 | 460 | 161 | 32 | 2 |
 | IPTV | 24 | 20,208 | 545 | 170 | 30 | 5 |
 | **UNION** | **58** | **65,055** | **1,809** | **599** | **85** | |
 
@@ -70,7 +70,7 @@ must be built by reading the files, not by treating 1,809 as exhaustive.
 
 `AppTheme` has subprofiles for **Home, SeeAll, Settings, Cloud, Calendar** and
 the shell (`app_theme.dart:26`). There is nothing for Playlist, Downloads, IPTV,
-Stremio TV or Debrify TV.
+Stremio TV or MegaWatch TV.
 
 So "replace the literals" is not mechanical, and phase one's own machinery says
 why: `legacy_pins_test.dart` pins every legacy value so the compatibility
@@ -85,7 +85,7 @@ Stage 0 is not "decide later". It delivers, before any surface is touched:
    `panel` for Playlist's card — is precisely how legacy pixels shift without a
    test noticing.
 2. **The subprofiles themselves**: `PlaylistTokens`, `DownloadsTokens`,
-   `IptvTokens`, `StremioTvTokens`, `DebrifyTvTokens` (or a justified decision
+   `IptvTokens`, `StremioTvTokens`, `MegaWatchTvTokens` (or a justified decision
    to reuse an existing one), derived for all 20 themes in
    `AppTheme.fromDetail`.
 3. **Legacy values + pins** — entries in `AppThemes.legacy` and matching
@@ -266,7 +266,7 @@ All three stay out, and the reasons are not what an earlier draft claimed.
 | 2 | **YouTube** | 86 sites. Smallest remaining; shares `BrowseScreen` with IPTV (below). |
 | 3 | **Playlist** | 328 sites, one child route, no competing pref. |
 | 4 | **Stremio TV** | 458 sites, self-contained. |
-| 5 | **Debrify TV** | 460 sites, 32 theme reads, and `magic_tv_screen.dart` is 11,162 lines on its own. Most coupled surface in the app. |
+| 5 | **MegaWatch TV** | 460 sites, 32 theme reads, and `magic_tv_screen.dart` is 11,162 lines on its own. Most coupled surface in the app. |
 | 6 | **IPTV** | 545 sites and blocked on the open decision in hazard 1 — product, not code. |
 | — | ~~Player~~ / ~~Classic details~~ / ~~Onboarding~~ / ~~Idents~~ | See hazards 2 and 3. |
 
@@ -290,7 +290,7 @@ Phase one advised against mixed ~500-site diffs
 This needs one relaxation first: `source_guard_test.dart:75` forbids app-theme
 reads across whole frozen *directories*, which also blocks leaf-by-leaf
 preparation. It must move to root-level, or gain a per-file allow-list, in stage
-0. Note its current coverage is partial — it omits the Debrify leaf directories,
+0. Note its current coverage is partial — it omits the MegaWatch leaf directories,
 Playlist's content screen and the IPTV screen files — so "relax the guard" also
 means "make it cover what it claims to".
 
@@ -317,7 +317,7 @@ A surface is not done until all of these move:
 - **Visual acceptance — decide per surface, up front.** `goldens_test.dart`
   covers four theme IDs, and `surface_gallery.dart:17` states that
   service/database/platform-dependent screens are out of reach — which is
-  Downloads, IPTV, Stremio TV and Debrify TV. "Add it to the gallery" is not
+  Downloads, IPTV, Stremio TV and MegaWatch TV. "Add it to the gallery" is not
   executable for those. For each surface choose one and write it down: a leaf
   golden over a representative widget, or a documented no-golden with a manual
   device pass.

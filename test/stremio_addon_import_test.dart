@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:debrify/services/stremio_service.dart';
+import 'package:megawatch/services/stremio_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,7 +11,7 @@ void main() {
       StremioService.instance.invalidateCache();
     });
 
-    test('imports Debrify Stremio importer export payloads', () async {
+    test('imports MegaWatch Stremio importer export payloads', () async {
       final payload = jsonEncode({
         'source': 'stremio',
         'exportedAt': '2026-04-26T16:05:37.444Z',

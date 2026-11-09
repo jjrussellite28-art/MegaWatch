@@ -853,16 +853,16 @@ class _RemoteTransferAllState extends State<RemoteTransferAll> {
             await LocalBackupScratch.delete(staging);
           }
         }
-        Future<bool> confirmDebrifyTvOmission(
+        Future<bool> confirmMegaWatchTvOmission(
           PortableProfilePackage candidate,
         ) async {
-          final omission = DebrifyTvBackupOmission.fromOmissions(
+          final omission = MegaWatchTvBackupOmission.fromOmissions(
             candidate.omissions,
           );
           if (omission == null || omission.isEmpty) {
             return true;
           }
-          phase = 'confirm_debrify_tv_omission';
+          phase = 'confirm_megawatch_tv_omission';
           RemoteTransferDiagnostics.record(
             'sender_compaction_confirmation_shown',
             fields: <String, Object?>{
@@ -872,7 +872,7 @@ class _RemoteTransferAllState extends State<RemoteTransferAll> {
               'profiles': omission.profilesAffected,
             },
           );
-          final accepted = await _confirmProfileGraphDebrifyTvOmission(
+          final accepted = await _confirmProfileGraphMegaWatchTvOmission(
             omission,
           );
           if (!accepted) {
@@ -943,7 +943,7 @@ class _RemoteTransferAllState extends State<RemoteTransferAll> {
               wireBytes: encoded.wireBytes,
               expandedBytes: encoded.expandedBytes,
             )) {
-          // Keep durable IPTV/history rows, but omit Debrify TV as a complete
+          // Keep durable IPTV/history rows, but omit MegaWatch TV as a complete
           // feature. A channel definition without its saved hashes is not a
           // usable restore, so the user must explicitly accept this package.
           phase = 'export_compacted';
@@ -996,7 +996,7 @@ class _RemoteTransferAllState extends State<RemoteTransferAll> {
           );
           throw const ProfilePackageTooLargeException();
         }
-        if (!await confirmDebrifyTvOmission(package)) return false;
+        if (!await confirmMegaWatchTvOmission(package)) return false;
         phase = 'wire_send';
         RemoteTransferDiagnostics.record(
           'sender_wire_start',
@@ -1114,23 +1114,23 @@ class _RemoteTransferAllState extends State<RemoteTransferAll> {
     }
   }
 
-  Future<bool> _confirmProfileGraphDebrifyTvOmission(
-    DebrifyTvBackupOmission omission,
+  Future<bool> _confirmProfileGraphMegaWatchTvOmission(
+    MegaWatchTvBackupOmission omission,
   ) async {
     if (!mounted) return false;
     return await showDialog<bool>(
           context: context,
           barrierDismissible: false,
           builder: (dialogContext) => AlertDialog(
-            title: const Text('Continue without Debrify TV?'),
+            title: const Text('Continue without MegaWatch TV?'),
             content: Text(
               'This profile transfer had to be compacted to fit on the TV. '
-              'Debrify TV will not be included: ${omission.contentsLabel} '
+              'MegaWatch TV will not be included: ${omission.contentsLabel} '
               'will be left out. No empty channels will be created.\n\n'
-              'You can cancel and open Debrify TV → Export first to save a '
+              'You can cancel and open MegaWatch TV → Export first to save a '
               'ZIP containing the channels and their playable pools. After '
               'the profile transfer, import that ZIP from storage or use '
-              'Remote → Debrify TV Channels.'
+              'Remote → MegaWatch TV Channels.'
               '${omission.profilesAffected > 1 ? ' Repeat the channel transfer for each affected profile.' : ''}',
             ),
             actions: <Widget>[
@@ -1140,7 +1140,7 @@ class _RemoteTransferAllState extends State<RemoteTransferAll> {
               ),
               FilledButton(
                 onPressed: () => Navigator.of(dialogContext).pop(true),
-                child: const Text('Continue without Debrify TV'),
+                child: const Text('Continue without MegaWatch TV'),
               ),
             ],
           ),

@@ -1,4 +1,4 @@
-import 'package:debrify/screens/video_player/utils/language_mapping.dart';
+import 'package:megawatch/screens/video_player/utils/language_mapping.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

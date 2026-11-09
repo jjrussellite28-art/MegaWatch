@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-MODE="${DEBRIFY_BUILD_MODE:-release}"
+MODE="${MEGAWATCH_BUILD_MODE:-release}"
 UPLOAD=true
 CLEAN=false
 RCLONE_REMOTE="${RCLONE_REMOTE:-gdrive:}"
@@ -59,7 +59,7 @@ if [[ "${UPLOAD}" == "true" ]]; then
   sha="$(git rev-parse --short HEAD 2>/dev/null || echo nogit)"
   ts="$(date +%Y%m%d-%H%M)"
   safe_branch="${branch//\//-}"
-  upload_name="debrify-${MODE}-${safe_branch}-${ts}-${sha}.apk"
+  upload_name="megawatch-${MODE}-${safe_branch}-${ts}-${sha}.apk"
   upload_dest="${RCLONE_REMOTE}${RCLONE_DEST_DIR}"
 
   printf '[..] Uploading %s to %s ...\n' "${upload_name}" "${upload_dest}"

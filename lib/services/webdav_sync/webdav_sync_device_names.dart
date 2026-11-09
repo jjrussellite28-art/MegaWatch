@@ -61,7 +61,7 @@ abstract final class WebDavSyncDeviceNames {
         ? 'Android device'
         : Platform.isIOS
         ? 'iPhone or iPad'
-        : 'Debrify device';
+        : 'MegaWatch device';
   }
 
   static Future<void> saveLocal(String name) async {

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:debrify/utils/canonical_json.dart';
+import 'package:megawatch/utils/canonical_json.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

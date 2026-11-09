@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/calendar_display_preferences.dart';
+import 'package:megawatch/widgets/calendar_display_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

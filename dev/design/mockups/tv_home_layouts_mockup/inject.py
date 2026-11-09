@@ -3,7 +3,7 @@
 import base64, json, pathlib, sys
 
 HERE = pathlib.Path(__file__).parent
-SRC = pathlib.Path("/Users/varunbsalian/Documents/Projects/debrify/tv_home_layouts_mockup/index.html")
+SRC = pathlib.Path("/Users/varunbsalian/Documents/Projects/megawatch/tv_home_layouts_mockup/index.html")
 OUT = HERE / "tv_home_layouts.html"
 
 mime = {".jpg": "image/jpeg", ".png": "image/png"}

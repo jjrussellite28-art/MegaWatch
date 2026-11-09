@@ -1,4 +1,4 @@
-import 'package:debrify/utils/iptv_player_paging.dart';
+import 'package:megawatch/utils/iptv_player_paging.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

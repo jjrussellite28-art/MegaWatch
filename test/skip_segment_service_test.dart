@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:debrify/services/skip_segment_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/screens/video_player/widgets/skip_segment_button.dart';
+import 'package:megawatch/services/skip_segment_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/screens/video_player/widgets/skip_segment_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;

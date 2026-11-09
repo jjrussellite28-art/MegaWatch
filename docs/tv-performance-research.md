@@ -10,7 +10,7 @@ A native Android UI is a viable architectural option, not a guaranteed cure. It 
 
 ## Scope and evidence
 
-This assessment covers Android TV, especially the previously tested MIBOX4: Android 9, approximately 2 GB RAM, a 32-bit ARM build, and an older GLES 2-class GPU. It does not recommend changing Apple TV behavior. Repository findings refer to Debrify commit `53a6a1e386d2ff73ce61d0a6a53be6b0f69d62e9`, inspected on September 9, 2026.
+This assessment covers Android TV, especially the previously tested MIBOX4: Android 9, approximately 2 GB RAM, a 32-bit ARM build, and an older GLES 2-class GPU. It does not recommend changing Apple TV behavior. Repository findings refer to MegaWatch commit `53a6a1e386d2ff73ce61d0a6a53be6b0f69d62e9`, inspected on September 9, 2026.
 
 No new TV interaction or device benchmark was performed for this assessment. Existing device captures, current source, three local Showcase regression tests, official platform guidance, and the public Nuvio TV implementation provide the evidence. Local tests establish behavior, not Mi Box frame rates.
 
@@ -69,7 +69,7 @@ This is a medium-sized loading-state change rather than a one-line timeout adjus
 
 ## 3. A useful app-wide performance policy
 
-The useful global lever is a coordinated work budget. It should govern when optional work starts, how much remains active, and what is retained—not merely switch off animations. Debrify already has local cache limits, background-worker improvements, and some request prioritization; the remaining recommendation is to coordinate competing work across screens.
+The useful global lever is a coordinated work budget. It should govern when optional work starts, how much remains active, and what is retained—not merely switch off animations. MegaWatch already has local cache limits, background-worker improvements, and some request prioritization; the remaining recommendation is to coordinate competing work across screens.
 
 Classify work by urgency: the selected title and visible content first; the next navigation neighborhood second; distant enrichment and refresh last. When a route is covered or disposed, stop scheduling its optional work, cancel owned operations where cancellation is supported, and reject late results otherwise. A timeout that stops awaiting a future does not itself cancel its underlying work.
 
@@ -79,7 +79,7 @@ Separate memory classification from GPU capability. Android's low-RAM device sig
 
 ### Cache and image sizing
 
-Debrify already caps Flutter's TV image cache at 140 entries and 56 MiB, with a separate smaller tvOS low-memory setting. Its shared disk image cache is also already present. “Add caching” is therefore not a diagnosis.
+MegaWatch already caps Flutter's TV image cache at 140 entries and 56 MiB, with a separate smaller tvOS low-memory setting. Its shared disk image cache is also already present. “Add caching” is therefore not a diagnosis.
 
 The 56 MiB setting must not be treated as a ceiling on all image or graphics memory. Flutter separately tracks live and pending images; rendered textures, surfaces, player buffers, and other allocations require separate accounting. Flutter's [ImageCache API](https://api.flutter.dev/flutter/painting/ImageCache-class.html) exposes these distinctions.[^5]
 
@@ -101,21 +101,21 @@ Google's 1 GB TV guidance gives a 280 MB total budget across specified categorie
 | Android Baseline Profiles / forced package compilation | Optimize ART-managed code; Flutter release Dart is already machine code | Consider for demonstrated native startup/plugin costs, not as a cure for Dart loading gates or Flutter raster work |
 | Bigger heap/cache or removal of all motion | Hardware acceleration, large heap, release shrinking, and TV cache limits already exist | No blanket change; memory pressure and cold reloads can worsen, while visual identity is lost |
 
-The render-scaling implementation changes surface dimensions and device pixel ratio together, preserving logical layout. Moving from 1080p to 720p geometrically reduces pixel count by approximately 56%; that does not predict an equal speedup. The code also documents pointer/accessibility-coordinate limitations in this mode, so it is not a free universal default. Existing native implementation: [`MainActivity.kt`](../android/app/src/main/kotlin/com/debrify/app/MainActivity.kt), especially lines 670–798 and 1008–1042.
+The render-scaling implementation changes surface dimensions and device pixel ratio together, preserving logical layout. Moving from 1080p to 720p geometrically reduces pixel count by approximately 56%; that does not predict an equal speedup. The code also documents pointer/accessibility-coordinate limitations in this mode, so it is not a free universal default. Existing native implementation: [`MainActivity.kt`](../android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt), especially lines 670–798 and 1008–1042.
 
 Flutter's current [Impeller documentation](https://docs.flutter.dev/perf/impeller) describes Android API 29+ availability and legacy fallback for older or unsupported devices. The local Flutter tool reports 3.44.8, whereas the current documentation is presented for a newer release; any engine experiment must be verified against the actual engine and GPU, not copied from newer-platform defaults.[^6]
 
 For Skia, the official [ShaderWarmUp documentation](https://api.flutter.dev/flutter/painting/ShaderWarmUp-class.html) recommends identifying compilation in traces, including `GrGLProgramBuilder::finalize`. A cold/warm improvement alone is insufficient: image I/O, decoding, uploads, caches, and scheduling also differ.[^7]
 
-Flutter release applications compile to machine code and use Flutter's own rendering engine. Android's Baseline Profiles target ART code paths and startup DEX layout. The inference is that those profiles can help relevant Java/Kotlin portions of Debrify but cannot optimize away its Dart-level readiness checks or C++ raster work. See [Flutter architecture](https://docs.flutter.dev/resources/architectural-overview) and [Baseline Profiles](https://developer.android.com/topic/performance/baselineprofiles/overview).[^8][^9]
+Flutter release applications compile to machine code and use Flutter's own rendering engine. Android's Baseline Profiles target ART code paths and startup DEX layout. The inference is that those profiles can help relevant Java/Kotlin portions of MegaWatch but cannot optimize away its Dart-level readiness checks or C++ raster work. See [Flutter architecture](https://docs.flutter.dev/resources/architectural-overview) and [Baseline Profiles](https://developer.android.com/topic/performance/baselineprofiles/overview).[^8][^9]
 
 ## 5. Native Android TV and Nuvio
 
 Nuvio TV's public repository identifies its stack as Kotlin, Jetpack Compose, TV Material 3, and Media3. At inspected commit `7f18cec84acbbb282b4e425362aae26a869f38d5`, its Home code has an eager/deferred catalog split, bounded catalog concurrency, preservation of existing content on reload, placeholder rows, early-result publication, and an 800 ms safety flush for available catalog content. The default eager count is four, but its Grid layout is an explicit exception that loads all catalogs eagerly. These are implementation observations, not a same-device performance comparison. See its [README](https://github.com/NuvioMedia/NuvioTV/blob/7f18cec84acbbb282b4e425362aae26a869f38d5/README.md) and [Home catalog pipeline](https://github.com/NuvioMedia/NuvioTV/blob/7f18cec84acbbb282b4e425362aae26a869f38d5/app/src/main/java/com/nuvio/tv/ui/screens/home/HomeViewModelCatalogPipeline.kt).[^10]
 
-Nuvio also has a [Baseline Profile generator](https://github.com/NuvioMedia/NuvioTV/blob/7f18cec84acbbb282b4e425362aae26a869f38d5/baselineprofile/src/main/java/com/nuvio/tv/baselineprofile/BaselineProfileGenerator.kt) covering horizontal and vertical navigation, detail entry, and return. This demonstrates attention to representative journeys, not evidence that its frame times or memory are lower than Debrify's.[^10]
+Nuvio also has a [Baseline Profile generator](https://github.com/NuvioMedia/NuvioTV/blob/7f18cec84acbbb282b4e425362aae26a869f38d5/baselineprofile/src/main/java/com/nuvio/tv/baselineprofile/BaselineProfileGenerator.kt) covering horizontal and vertical navigation, detail entry, and return. This demonstrates attention to representative journeys, not evidence that its frame times or memory are lower than MegaWatch's.[^10]
 
-Google presents [Compose for TV](https://developer.android.com/training/tv/playback/compose) as its modern Android TV UI approach, with TV-specific components and remote-friendly focus behavior. It supports custom styling, so choosing it would not require discarding Debrify's visual design. Google also provides a [JetStream TV sample](https://github.com/android/tv-samples/tree/main/JetStreamCompose) as an architectural reference.[^11]
+Google presents [Compose for TV](https://developer.android.com/training/tv/playback/compose) as its modern Android TV UI approach, with TV-specific components and remote-friendly focus behavior. It supports custom styling, so choosing it would not require discarding MegaWatch's visual design. Google also provides a [JetStream TV sample](https://github.com/android/tv-samples/tree/main/JetStreamCompose) as an architectural reference.[^11]
 
 ### A bounded native prototype
 
@@ -174,9 +174,9 @@ The expected first improvement is less unnecessary waiting with the same visual 
 
 Public sources were accessed September 9, 2026. Mutable documentation describes its current version; repository observations are pinned where material. Local evidence contains no credentials or exported account settings.
 
-[^1]: Debrify, [TV responsiveness work](tv-performance-work.md), September 2026, particularly “Follow-up: mixed-direction browsing” and “Follow-up release browsing gate.” Historical device measurements and limitations.
-[^2]: Debrify commit `53a6a1e386d2ff73ce61d0a6a53be6b0f69d62e9`, [Showcase layout](../lib/widgets/detail/detail_layout_showcase.dart), [merged series details](../lib/screens/merged_series_detail_screen.dart), and [Showcase tests](../test/detail_showcase_test.dart). Local source and three matching tests verified September 9, 2026.
-[^3]: Debrify, same commit, [Home/Search screen](../lib/screens/search_screen.dart), [Home list rows](../lib/services/home_list_rows.dart), [image-cache setup](../lib/main.dart), [disk image cache](../lib/services/debrify_image_cache.dart), [Android Activity](../android/app/src/main/kotlin/com/debrify/app/MainActivity.kt), and [Android manifest](../android/app/src/main/AndroidManifest.xml). Local source access.
+[^1]: MegaWatch, [TV responsiveness work](tv-performance-work.md), September 2026, particularly “Follow-up: mixed-direction browsing” and “Follow-up release browsing gate.” Historical device measurements and limitations.
+[^2]: MegaWatch commit `53a6a1e386d2ff73ce61d0a6a53be6b0f69d62e9`, [Showcase layout](../lib/widgets/detail/detail_layout_showcase.dart), [merged series details](../lib/screens/merged_series_detail_screen.dart), and [Showcase tests](../test/detail_showcase_test.dart). Local source and three matching tests verified September 9, 2026.
+[^3]: MegaWatch, same commit, [Home/Search screen](../lib/screens/search_screen.dart), [Home list rows](../lib/services/home_list_rows.dart), [image-cache setup](../lib/main.dart), [disk image cache](../lib/services/megawatch_image_cache.dart), [Android Activity](../android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt), and [Android manifest](../android/app/src/main/AndroidManifest.xml). Local source access.
 [^4]: Google / Android Developers, [Optimize memory usage on Android TV](https://developer.android.com/training/tv/playback/memory). Device classification, memory categories, 1 GB guidance, and incomplete graphics reporting.
 [^5]: Flutter, [ImageCache class](https://api.flutter.dev/flutter/painting/ImageCache-class.html). Cache entries, live references, and pending image counts.
 [^6]: Flutter, [Impeller rendering engine](https://docs.flutter.dev/perf/impeller). Backend availability and platform/version qualifications.

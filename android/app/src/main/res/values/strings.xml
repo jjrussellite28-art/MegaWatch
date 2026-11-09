@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Debrify</string>
+    <string name="app_name">MegaWatch</string>
     <string name="tv_audio_tracks">Audio Tracks</string>
     <string name="tv_subtitle_tracks">Subtitle Tracks</string>
-    <string name="debrify_tv_control_rewind">Rewind 10 seconds</string>
-    <string name="debrify_tv_control_play_pause">Play or pause</string>
-    <string name="debrify_tv_control_play_button">Play</string>
-    <string name="debrify_tv_control_pause_button">Pause</string>
-    <string name="debrify_tv_control_next">Next</string>
-    <string name="debrify_tv_control_fast_forward">Fast forward 10 seconds</string>
-    <string name="debrify_tv_control_audio">Audio</string>
-    <string name="debrify_tv_control_subtitle">Subtitles</string>
-    <string name="debrify_tv_control_aspect">Aspect</string>
-    <string name="debrify_tv_next_loading">Fetching next stream</string>
-    <string name="debrify_tv_next_hint">Sit tight, loading…</string>
+    <string name="megawatch_tv_control_rewind">Rewind 10 seconds</string>
+    <string name="megawatch_tv_control_play_pause">Play or pause</string>
+    <string name="megawatch_tv_control_play_button">Play</string>
+    <string name="megawatch_tv_control_pause_button">Pause</string>
+    <string name="megawatch_tv_control_next">Next</string>
+    <string name="megawatch_tv_control_fast_forward">Fast forward 10 seconds</string>
+    <string name="megawatch_tv_control_audio">Audio</string>
+    <string name="megawatch_tv_control_subtitle">Subtitles</string>
+    <string name="megawatch_tv_control_aspect">Aspect</string>
+    <string name="megawatch_tv_next_loading">Fetching next stream</string>
+    <string name="megawatch_tv_next_hint">Sit tight, loading…</string>
 </resources>

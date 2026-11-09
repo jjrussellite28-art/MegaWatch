@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../utils/platform_util.dart';
 
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../services/imdb_enrichment_service.dart';
 import '../episodes_panel.dart';
 import '../parents_guide_section.dart';
@@ -641,7 +641,7 @@ class _CastLine extends StatelessWidget {
                 ? CachedNetworkImage(
                     imageUrl: url,
                     fit: BoxFit.cover,
-                    cacheManager: DebrifyImageCache.manager,
+                    cacheManager: MegaWatchImageCache.manager,
                     memCacheWidth: 140,
                     placeholder: (_, __) => ColoredBox(color: t.placeholder),
                     errorWidget: (_, __, ___) =>
@@ -711,7 +711,7 @@ class _StagePosterState extends State<_StagePoster> {
               ? CachedNetworkImage(
                   imageUrl: p,
                   fit: BoxFit.cover,
-                  cacheManager: DebrifyImageCache.manager,
+                  cacheManager: MegaWatchImageCache.manager,
                   memCacheWidth: 300,
                   placeholder: (_, __) => ColoredBox(color: t.placeholder),
                   errorWidget: (_, __, ___) => ColoredBox(color: t.placeholder),

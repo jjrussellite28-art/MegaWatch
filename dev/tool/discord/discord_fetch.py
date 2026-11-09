@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Read recent free-text posts from the Debrify community channels via the bot token,
+Read recent free-text posts from the MegaWatch community channels via the bot token,
 so nothing posted as plain chat (instead of via /bug or /feature) gets missed.
 
 Read-only. Never posts anything.
@@ -40,7 +40,7 @@ TOKEN = load_token()
 def api(path):
     req = urllib.request.Request(
         "https://discord.com/api/v10" + path,
-        headers={"Authorization": f"Bot {TOKEN}", "User-Agent": "debrify-fetch"},
+        headers={"Authorization": f"Bot {TOKEN}", "User-Agent": "megawatch-fetch"},
     )
     with urllib.request.urlopen(req) as r:
         return json.load(r)

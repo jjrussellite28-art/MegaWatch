@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/iptv_playlist.dart';
-import '../../../services/debrify_image_cache.dart';
+import '../../../services/megawatch_image_cache.dart';
 import '../../../services/iptv_epg_service.dart';
 import '../styles/iptv_style.dart';
 import 'spotlight_hero_chrome.dart';
@@ -228,7 +228,7 @@ class _HeroMark extends StatelessWidget {
           ? fallback
           : CachedNetworkImage(
               imageUrl: logo,
-              cacheManager: DebrifyImageCache.iptvLogos,
+              cacheManager: MegaWatchImageCache.iptvLogos,
               fit: BoxFit.contain,
               memCacheHeight: 96,
               placeholder: (_, _) => fallback,

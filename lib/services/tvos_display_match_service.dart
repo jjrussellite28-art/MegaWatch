@@ -8,7 +8,7 @@ import '../models/content_display_match_mode.dart';
 /// has Match Content disabled, and tvOS may keep its configured resolution.
 abstract final class TvosDisplayMatchService {
   static const MethodChannel _channel = MethodChannel(
-    'debrify/tvos_display_match',
+    'megawatch/tvos_display_match',
   );
 
   static Future<Map<Object?, Object?>> apply({

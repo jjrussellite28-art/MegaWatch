@@ -23,23 +23,23 @@ behavior that is intentionally not reproduced by a Docker service in CI.
   `https://HOST/remote.php/dav/files/USERNAME/`
 - Use a dedicated test account and app password.
 
-Record the exact Nextcloud patch version, Debrify commit, client platform, and
+Record the exact Nextcloud patch version, MegaWatch commit, client platform, and
 result in the release checklist. Re-run on iOS and tvOS, plus one non-Apple
 client.
 
 ## Required checks
 
-1. Configure the HTTPS endpoint in Debrify and confirm **Save and Test** works.
-2. Configure an explicit HTTP test endpoint and confirm Debrify labels it
+1. Configure the HTTPS endpoint in MegaWatch and confirm **Save and Test** works.
+2. Configure an explicit HTTP test endpoint and confirm MegaWatch labels it
    **Insecure HTTP** in both WebDAV settings and the migration picker. Do not
    use production credentials for this check.
 3. In **Settings → Sync and Migrate**, choose a nested folder, create an
    encrypted profile backup, and confirm the remote filename contains a UTC
    timestamp and random suffix.
 4. Confirm the request uses `If-None-Match: *`; pre-create the first candidate
-   name in a controlled proxy/fake suffix build and verify Debrify retries with
+   name in a controlled proxy/fake suffix build and verify MegaWatch retries with
    a different name rather than overwriting it.
-5. Confirm the uploaded file is read back and SHA-256 verified before Debrify
+5. Confirm the uploaded file is read back and SHA-256 verified before MegaWatch
    reports success.
 6. Restore that backup from the DPAD picker. Cancel once at the file picker,
    once at the passphrase prompt, then complete a restore. Confirm temporary

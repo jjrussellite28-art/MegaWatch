@@ -238,7 +238,7 @@ class ProfileBackupFlows {
               stagedFile: archive.file,
               stagedSha256Hex: archive.transfer.sha256Hex,
               scratchDirectory: staging,
-              fileNamePrefix: 'debrify-profiles',
+              fileNamePrefix: 'megawatch-profiles',
               beforeSend: ProfileAsyncAuthorization.currentOutboundBarrier,
             ),
           ),
@@ -264,7 +264,7 @@ class ProfileBackupFlows {
     });
   }
 
-  /// Manual local backups use the streamed `.debrify` archive: databases and
+  /// Manual local backups use the streamed `.megawatch` archive: databases and
   /// imported playlists travel as files, never as base64 inside JSON, so a
   /// large library does not need to fit in memory. Unencrypted by design;
   /// the dialog says so and names what the file contains.
@@ -289,10 +289,10 @@ class ProfileBackupFlows {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Creates a Debrify backup file (.debrify). It is not '
+              'Creates a MegaWatch backup file (.megawatch). It is not '
               'encrypted and contains your account credentials and '
               'connection passwords, so keep it private.\n\n'
-              'Included: all profiles and shared connections, settings, Debrify TV channels with '
+              'Included: all profiles and shared connections, settings, MegaWatch TV channels with '
               'their saved hashes, IPTV playlists, favorites, lists, '
               'history, and ordering. Provider channel lists and TV guides '
               'are rebuilt after restore, which may need network access. '
@@ -300,7 +300,7 @@ class ProfileBackupFlows {
               'pairings are not included.\n\n'
               'Includes the WebDAV sync login and its on/off state. '
               'Enabled sync resumes automatically after restore.\n\n'
-              'Older Debrify versions cannot read this file.',
+              'Older MegaWatch versions cannot read this file.',
             ),
             const SizedBox(height: 12),
           ],
@@ -445,7 +445,7 @@ class ProfileBackupFlows {
   Future<Directory> _createPrivateStagingDirectory(String purpose) async {
     final root = await getTemporaryDirectory();
     await root.create(recursive: true);
-    return root.createTemp('debrify-migrate-$purpose-');
+    return root.createTemp('megawatch-migrate-$purpose-');
   }
 
   Future<void> _deletePrivateStagingDirectory(Directory directory) async {
@@ -483,7 +483,7 @@ class ProfileBackupFlows {
       builder: (dialogContext) => AlertDialog(
         title: Text('$titleLabel saved'),
         content: Text(
-          'The $artifactLabel was saved by Debrify’s download service:\n\n'
+          'The $artifactLabel was saved by MegaWatch’s download service:\n\n'
           '${saved.displayLocation}\n\nYou can move or copy it with a file '
           'manager, USB, or over the network.',
         ),
@@ -598,7 +598,7 @@ class ProfileBackupFlows {
 
     if (source == _ProfileBackupSource.localFile) {
       final pick = await FilePicker.platform.pickFiles(
-        dialogTitle: 'Choose a Debrify backup',
+        dialogTitle: 'Choose a MegaWatch backup',
         type: FileType.any,
         withData: false,
       );
@@ -609,7 +609,7 @@ class ProfileBackupFlows {
         throw const FormatException('Selected backup is not locally readable');
       }
       try {
-        // Route by header, not extension: a `.debrify` archive starts with
+        // Route by header, not extension: a `.megawatch` archive starts with
         // the ZIP magic, legacy backups are JSON objects.
         if (await StreamingEncryptedFile.looksLike(File(path))) {
           return await _restoreEncryptedArchive(path);
@@ -656,7 +656,7 @@ class ProfileBackupFlows {
     final stagingDirectory = await _createPrivateStagingDirectory('restore');
     try {
       final stagedFile = File(
-        p.join(stagingDirectory.path, 'profile-backup.debrify.enc'),
+        p.join(stagingDirectory.path, 'profile-backup.megawatch.enc'),
       );
       await _profileBackupProgress(
         'Downloading backup…',
@@ -686,7 +686,7 @@ class ProfileBackupFlows {
     ProfileAsyncAuthorization? migrateAuthorization,
   }) async {
     final staging = await LocalBackupScratch.create('webdav-unlock');
-    final archive = File(p.join(staging.path, 'backup.debrify'));
+    final archive = File(p.join(staging.path, 'backup.megawatch'));
     String? errorText;
     try {
       while (context.mounted) {
@@ -936,18 +936,18 @@ class ProfileBackupFlows {
     final legacyDatabasesMissing =
         omissions['libraryDatabasesOmitted'] == true ||
         omissions['libraryDatabasesTooLarge'] != null;
-    final debrifyTvOmission = DebrifyTvBackupOmission.fromOmissions(omissions);
+    final megawatchTvOmission = MegaWatchTvBackupOmission.fromOmissions(omissions);
     final databaseNotices = <String>[
       if (syncNotice != null) syncNotice,
       if (legacyDatabasesMissing)
         'Warning: this older backup omitted one or more library databases; '
             'those playlists/history rows cannot be recovered from it.',
-      if (debrifyTvOmission?.isEmpty == false)
-        'Debrify TV was excluded when this backup was compacted '
-            '(${debrifyTvOmission!.contentsLabel}). No empty Debrify TV '
+      if (megawatchTvOmission?.isEmpty == false)
+        'MegaWatch TV was excluded when this backup was compacted '
+            '(${megawatchTvOmission!.contentsLabel}). No empty MegaWatch TV '
             'channels will be created. Import a previously exported channel '
-            'ZIP from Debrify TV → Import → From storage, or transfer them '
-            'from the source using Remote → Debrify TV Channels.',
+            'ZIP from MegaWatch TV → Import → From storage, or transfer them '
+            'from the source using Remote → MegaWatch TV Channels.',
       if (omissions.containsKey('rebuildableDatabaseCachesOmitted'))
         'Rebuildable IPTV catalog and EPG caches were compacted; playlists, '
             'favorites, history, numbering, and settings are included.',
@@ -962,7 +962,7 @@ class ProfileBackupFlows {
     }
     final graphAuthorityNotice =
         completingOnboarding && actor.id == ProfileBootstrap.freshAdminId
-        ? 'Debrify then switches to a usable imported Admin and removes the '
+        ? 'MegaWatch then switches to a usable imported Admin and removes the '
               'temporary setup Admin if it is untouched. If no imported '
               'Admin can take over, the setup Admin remains for recovery.'
         : 'Your current Admin remains the recovery profile.';

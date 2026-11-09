@@ -1,9 +1,9 @@
-import 'package:debrify/theme/app_focus.dart';
-import 'package:debrify/theme/app_looks.dart';
-import 'package:debrify/theme/app_motion.dart';
-import 'package:debrify/theme/app_theme_controller.dart';
-import 'package:debrify/theme/premium_looks.dart';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/theme/app_focus.dart';
+import 'package:megawatch/theme/app_looks.dart';
+import 'package:megawatch/theme/app_motion.dart';
+import 'package:megawatch/theme/app_theme_controller.dart';
+import 'package:megawatch/theme/premium_looks.dart';
+import 'package:megawatch/services/storage_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -2,23 +2,23 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/profiles/profile_preference_portability.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/tv_playback_recovery.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_binding_store.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_clock.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine_state.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_tombstones.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_transport.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/profiles/profile_preference_portability.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/tv_playback_recovery.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_binding_store.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_clock.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine_state.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_tombstones.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_transport.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,7 +40,7 @@ void main() {
           Uint8List.fromList(List<int>.generate(length, (index) => index)),
     );
     stateDirectory = await Directory.systemTemp.createTemp(
-      'debrify-webdav-sync-state-',
+      'megawatch-webdav-sync-state-',
     );
     engineStore = WebDavSyncEngineStateStore(
       bindingStore: bindingStore,

@@ -11,7 +11,7 @@ on-device verification, not only local benchmarks.
   Home collection signatures off the UI isolate.
 - Device: MIBOX4, Android 9, 32-bit ARM app, approximately 2 GB RAM, 1080p60
   display. Profile APKs are release-signed updates; no uninstall or data reset.
-- Today's manually created `.debrify` archive remains on-device; an additional
+- Today's manually created `.megawatch` archive remains on-device; an additional
   copy is in a private temporary directory on the development Mac.
 - TMDB configuration is supplied privately at build time. No keys or user
   preference payloads are checked in.
@@ -86,7 +86,7 @@ on-device verification, not only local benchmarks.
   release, with the original 38,798,238-byte backup archive intact.
 - Six release-mode navigation cycles (353 seconds total), each traversing ten
   rows down/up and opening/returning from details, retained PID 25795. No new
-  Debrify ANR, crash, or process-death events appeared in the event capture.
+  MegaWatch ANR, crash, or process-death events appeared in the event capture.
   Cycle-end PSS in KiB: 224661, 238983, 233002, 234842, 231284, 232262.
   Warmed-up readings did not show sustained growth. This short soak is not
   proof against every long-session leak or crash.
@@ -138,7 +138,7 @@ It reproduced intermittent stalls and TMDB lists requiring Retry.
 - The Mi Box resolved the main TMDB hostname to `49.44.79.236`. A credential-free
   Android Java HTTPS probe timed out three times, while `api.tmdb.org` returned
   the expected unauthenticated 401 three times (753–1180 ms). Public-DNS routes
-  to the original hostname also suffered HTTP connection resets in Debrify;
+  to the original hostname also suffered HTTP connection resets in MegaWatch;
   rotating IPs alone did not fix this. This establishes a route/hostname-specific
   problem on this network, not the precise upstream cause or owner of the reset.
 - Idempotent TMDB v3 reads now opt into a short-lived alternate-host fallback
@@ -183,7 +183,7 @@ and review rounds above describe earlier work, not this follow-up patch.
 - After the second cache clear, the release retained PID 8948 through more
   than six minutes of mixed-direction Home browsing, Hulu gallery, its New
   Series grid, Soy Luna details, horizontal episode/cast navigation, return to
-  Home, A&E and Adventure galleries. No Debrify crash, ANR or process-death event
+  Home, A&E and Adventure galleries. No MegaWatch crash, ANR or process-death event
   appeared in the captured event log. No playback or setting changes were made.
 - Hulu's visible TMDB/Trakt cards, all three A&E lists, and Adventure's visible
   TMDB lists (including all eight after scrolling) loaded without manual Retry.

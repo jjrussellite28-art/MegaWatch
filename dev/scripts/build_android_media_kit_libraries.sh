@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build MediaKit's exact Android v1.1.11 native bundle with Debrify's subtitle
+# Build MediaKit's exact Android v1.1.11 native bundle with MegaWatch's subtitle
 # decoders and passive auto-sync analysis filters. This intentionally keeps
 # mpv, FFmpeg, helper code and every unrelated option at the pinned versions.
 
@@ -32,7 +32,7 @@ readonly UPSTREAM_COMMIT="1ecf5100ec0f75e1d0630f48851b85769c92eed2"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PATCH="$ROOT/dev/scripts/patches/libmpv-android-subtitle-decoders.patch"
-WORK="$(mktemp -d "${TMPDIR:-/tmp}/debrify-libmpv-android.XXXXXX")"
+WORK="$(mktemp -d "${TMPDIR:-/tmp}/megawatch-libmpv-android.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
 
 git clone --quiet --filter=blob:none "$UPSTREAM_REPO" "$WORK/source"
@@ -74,9 +74,9 @@ case "$OUTPUT" in
 esac
 mkdir -p "$OUTPUT"
 find "$OUTPUT" -maxdepth 1 -type f -name 'default-*.jar' -delete
-find "$OUTPUT" -maxdepth 1 -type f -name '.debrify-subtitle-build' -delete
+find "$OUTPUT" -maxdepth 1 -type f -name '.megawatch-subtitle-build' -delete
 cp "$STAGE"/default-*.jar "$OUTPUT"/
 "$ROOT/dev/scripts/verify_android_subtitle_decoders.sh" "$OUTPUT"
-printf '%s\n' "$UPSTREAM_COMMIT" > "$OUTPUT/.debrify-subtitle-build"
+printf '%s\n' "$UPSTREAM_COMMIT" > "$OUTPUT/.megawatch-subtitle-build"
 
 echo "==> Installed subtitle/auto-sync MediaKit Android libraries at $OUTPUT"

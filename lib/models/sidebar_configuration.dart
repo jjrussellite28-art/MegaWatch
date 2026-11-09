@@ -86,9 +86,9 @@ const List<SidebarDestination> sidebarDestinations = <SidebarDestination>[
     icon: Icons.cloud_rounded,
   ),
   SidebarDestination(
-    id: 'debrify_tv',
-    tabIndex: MainTab.debrifyTv,
-    defaultLabel: 'Debrify TV',
+    id: 'megawatch_tv',
+    tabIndex: MainTab.megawatchTv,
+    defaultLabel: 'MegaWatch TV',
     section: 'TV',
     icon: Icons.tv_rounded,
   ),

@@ -1,23 +1,23 @@
-import 'package:debrify/services/webdav_sync/webdav_sync_logout.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_device_removal.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_logout.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_device_removal.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/portable_profile_package.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_binding_store.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_clock.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_discovery.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine_state.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_graph.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_setup_service.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_transport.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/portable_profile_package.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_binding_store.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_clock.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_discovery.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine_state.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_graph.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_setup_service.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_transport.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -545,7 +545,7 @@ final class _FakeDiscoveryTransport
 
   WebDavResponseMetadata get _metadata => WebDavResponseMetadata(
     statusCode: 200,
-    uri: Uri.parse('https://example.test/dav/Family/debrify-sync'),
+    uri: Uri.parse('https://example.test/dav/Family/megawatch-sync'),
     headers: const <String, String>{},
     serverDate: serverDate,
   );

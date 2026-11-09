@@ -1,9 +1,9 @@
-import 'package:debrify/screens/settings/tv_collection_list_style_page.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/widgets/home/spotlight_card_trailer.dart';
-import 'package:debrify/widgets/collections/tv_collection_titles.dart';
+import 'package:megawatch/screens/settings/tv_collection_list_style_page.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/widgets/home/spotlight_card_trailer.dart';
+import 'package:megawatch/widgets/collections/tv_collection_titles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';

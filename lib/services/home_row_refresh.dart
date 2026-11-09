@@ -22,7 +22,7 @@ abstract final class HomeRowRefreshSignal {
 
   static void dispatch(Set<String> keys) {
     final rows = <HomeRowRefresh>{
-      if (keys.contains('debrify_tv_favorite_channels_v1') ||
+      if (keys.contains('megawatch_tv_favorite_channels_v1') ||
           keys.contains('tv/ch'))
         HomeRowRefresh.tvFavorites,
       if (keys.contains('stremio_tv_favorite_channels_v1') ||

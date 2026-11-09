@@ -9,7 +9,7 @@ import 'webdav_sync_hot_models.dart';
 /// Why a durable library row is being changed.
 ///
 /// Only [user] mutations create local stamps. Ambient-library writers also
-/// schedule recurring sync; Debrify TV writers instead set their per-profile
+/// schedule recurring sync; MegaWatch TV writers instead set their per-profile
 /// manual-sync marker. Sync materialization has its own exact-stamp writer;
 /// the remaining origins deliberately leave the sidecar untouched.
 enum WebDavSyncMutationOrigin {
@@ -167,21 +167,21 @@ final class WebDavSyncTvPoolSnapshot {
 
 final class WebDavSyncDatabaseRevisions {
   const WebDavSyncDatabaseRevisions({
-    required this.debrifyTv,
+    required this.megawatchTv,
     required this.iptvCatalog,
   });
 
-  final int debrifyTv;
+  final int megawatchTv;
   final int iptvCatalog;
 
   Map<String, Object?> toJson() => <String, Object?>{
-    'debrifyTv': debrifyTv,
+    'megawatchTv': megawatchTv,
     'iptvCatalog': iptvCatalog,
   };
 
   factory WebDavSyncDatabaseRevisions.fromJson(Object? source) {
     final json = _object(source, 'database revisions');
-    final tv = json['debrifyTv'];
+    final tv = json['megawatchTv'];
     final catalog = json['iptvCatalog'];
     if (json.length != 2 ||
         tv is! int ||
@@ -190,7 +190,7 @@ final class WebDavSyncDatabaseRevisions {
         catalog < 0) {
       throw const FormatException('Invalid WebDAV sync database revisions');
     }
-    return WebDavSyncDatabaseRevisions(debrifyTv: tv, iptvCatalog: catalog);
+    return WebDavSyncDatabaseRevisions(megawatchTv: tv, iptvCatalog: catalog);
   }
 }
 

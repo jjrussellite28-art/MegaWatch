@@ -5,11 +5,11 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/collection_catalog_pager.dart';
-import 'package:debrify/services/collection_folder_loader.dart';
-import 'package:debrify/services/collection_native_source_service.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/collection_catalog_pager.dart';
+import 'package:megawatch/services/collection_folder_loader.dart';
+import 'package:megawatch/services/collection_native_source_service.dart';
 
 CollectionCatalogSource source(
   String kind, {

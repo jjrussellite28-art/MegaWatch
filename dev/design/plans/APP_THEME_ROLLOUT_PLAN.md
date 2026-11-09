@@ -34,7 +34,7 @@ Why this way round, having tried the opposite:
    placed by the caller, not the screen.
 
 So the exclusion list becomes an **explicit, enumerable allow-list** —
-the player, IPTV/Browse, Stremio TV, Debrify TV, onboarding, launch idents,
+the player, IPTV/Browse, Stremio TV, MegaWatch TV, onboarding, launch idents,
 Classic details — each wrapped once at its entry point, enforced by a test that
 fails if a new excluded entry point appears unwrapped. That is a bounded set of
 wrap sites, versus wrapping all 100 in-scope files.
@@ -58,7 +58,7 @@ means a screen silently changes colour. Taken from the real registry in
 | 0 | inert slot (deprecated old Home) | n/a |
 | 1 | Playlist | **frozen (phase one)** ‡ |
 | 2 | Downloads | **frozen (phase one)** ‡ |
-| 3 | Debrify TV | **frozen** |
+| 3 | MegaWatch TV | **frozen** |
 | 4 | Real-Debrid | **themed** (Cloud) |
 | 5 | TorBox | **themed** (Cloud) |
 | 6 | PikPak | **themed** (Cloud) |
@@ -190,7 +190,7 @@ converted to the shared helper, and a defined resolution of
 `(app_theme, detail_theme, detail style)`. That is a step, not a sentence.
 
 **Out, deliberately, for a later phase:** video player, IPTV/Browse, Stremio
-TV, Debrify TV, onboarding, launch idents, native splash — and **Classic**
+TV, MegaWatch TV, onboarding, launch idents, native splash — and **Classic**
 details (see below).
 
 ## What already exists

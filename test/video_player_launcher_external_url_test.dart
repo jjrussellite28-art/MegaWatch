@@ -1,7 +1,7 @@
-import 'package:debrify/services/video_player_launcher.dart';
-import 'package:debrify/services/local_playback_resume_resolver.dart';
-import 'package:debrify/services/torrent_playback_service.dart';
-import 'package:debrify/models/torrent.dart';
+import 'package:megawatch/services/video_player_launcher.dart';
+import 'package:megawatch/services/local_playback_resume_resolver.dart';
+import 'package:megawatch/services/torrent_playback_service.dart';
+import 'package:megawatch/models/torrent.dart';
 import 'package:android_intent_plus/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -268,11 +268,11 @@ void main() {
       },
     );
 
-    test('is not shown when Debrify player is the default', () {
+    test('is not shown when MegaWatch player is the default', () {
       expect(
         VideoPlayerLauncher.shouldExplainExternalPlayerFallback(
           authenticatedWebDav,
-          'debrify',
+          'megawatch',
         ),
         isFalse,
       );
@@ -293,7 +293,7 @@ void main() {
       );
     });
 
-    testWidgets('continues only when Use Debrify player is chosen', (
+    testWidgets('continues only when Use MegaWatch player is chosen', (
       tester,
     ) async {
       late BuildContext context;
@@ -314,7 +314,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('External player unavailable'), findsOneWidget);
 
-      await tester.tap(find.text('Use Debrify player'));
+      await tester.tap(find.text('Use MegaWatch player'));
       await tester.pumpAndSettle();
       expect(await result, isTrue);
     });

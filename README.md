@@ -15,7 +15,7 @@
   <a href="https://github.com/jjrussellite28-art/debrifyy/issues">Report a problem</a>
 </p>
 
-> **MegaWatch** is an independent fork of [Debrify](https://github.com/varunsalian/debrify) by Varun Salian and contributors, used under the AGPL-3.0 licence. It is not made, endorsed or supported by the Debrify project. Full credits, licences and the take-down policy are in [CREDITS.md](CREDITS.md). If you are credited and want something changed or removed, please open an issue and it will be handled promptly.
+> **MegaWatch** is an independent fork of [MegaWatch](https://github.com/varunsalian/debrify) by Varun Salian and contributors, used under the AGPL-3.0 licence. It is not made, endorsed or supported by the MegaWatch project. Full credits, licences and the take-down policy are in [CREDITS.md](CREDITS.md). If you are credited and want something changed or removed, please open an issue and it will be handled promptly.
 
 ## What it is
 
@@ -42,11 +42,11 @@ MegaWatch has no built-in torrent client, so it never connects to other people's
 
 ## Credits
 
-- [Debrify](https://github.com/varunsalian/debrify), the project this is based on.
+- [MegaWatch](https://github.com/varunsalian/debrify), the project this is based on.
 - u/demon-myth's public Watch Order Stremio add-on (used through its public API; no code or data bundled).
-- Ideas from RobbdeezeNutz's Debrify fork. No code copied.
+- Ideas from RobbdeezeNutz's MegaWatch fork. No code copied.
 - TMDB ("This product uses the TMDB API but is not endorsed or certified by TMDB"), Stremio Cinemeta, Trakt, Simkl and MDBList.
 
 ## Licence
 
-AGPL-3.0. See [LICENSE](LICENSE). The Debrify name and logo are not used here (see [TRADEMARKS.md](TRADEMARKS.md)).
+AGPL-3.0. See [LICENSE](LICENSE). The MegaWatch name and logo are not used here (see [TRADEMARKS.md](TRADEMARKS.md)).

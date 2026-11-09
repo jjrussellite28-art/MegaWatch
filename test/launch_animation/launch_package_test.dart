@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/launch_animation/launch_package.dart';
+import 'package:megawatch/services/launch_animation/launch_package.dart';
 
 Map<String, Object?> animation({int frames = 60}) => {
   'v': '5.7.4',

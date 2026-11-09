@@ -4,7 +4,7 @@
 
 **Review goal:** Establish, with reproducible evidence, that the multi-profile implementation preserves every existing user's data, prevents unintended cross-profile access, survives interruption and storage failures, and behaves consistently on every supported platform before profile migration can be enabled.
 
-**Supported platforms:** Android, Android TV, iOS, tvOS, macOS, Windows, and Linux. Web is explicitly out of scope because Debrify does not support it.
+**Supported platforms:** Android, Android TV, iOS, tvOS, macOS, Windows, and Linux. Web is explicitly out of scope because MegaWatch does not support it.
 
 **Primary references:**
 
@@ -94,9 +94,9 @@ Reports must distinguish `passed`, `failed`, `not run`, and `not applicable`. �
 - [ ] Record `git rev-parse HEAD`, branch, Flutter/Dart versions, Xcode version, Android toolchain, host OS, and dependency lockfile hash.
 - [ ] Capture `git status --short`, `git diff --stat`, `git diff --name-status`, and `git ls-files --others --exclude-standard` so untracked profile files are not omitted.
 - [ ] Confirm the intended diff contains no build products, credentials, developer certificates, local paths, or unrelated formatting churn.
-- [ ] Explicitly exclude the pre-existing `design/mockups/debrify_tv_spotlight_mockup/` and `design/plans/DEBRIFY_TV_STYLE_PLAN.md` changes from the profile review.
+- [ ] Explicitly exclude the pre-existing `design/mockups/megawatch_tv_spotlight_mockup/` and `design/plans/MEGAWATCH_TV_STYLE_PLAN.md` changes from the profile review.
 - [ ] Review `pubspec.yaml` and `pubspec.lock` dependency additions for platform support, maintenance status, license, and transitive security implications.
-- [ ] Confirm both `DEBRIFY_PROFILES` and `DEBRIFY_PROFILES_MIGRATION_READY` default to `false` in production builds.
+- [ ] Confirm both `MEGAWATCH_PROFILES` and `MEGAWATCH_PROFILES_MIGRATION_READY` default to `false` in production builds.
 - [ ] Confirm no web implementation, web migration path, or accidental web-only dependency was introduced.
 
 ### 0.2 Establish the pre-change baseline independently
@@ -138,7 +138,7 @@ Build a persistence ledger that includes at least:
 
 - `StorageService` and direct/shared preference access.
 - `SecretVault` and every provider/tracker credential.
-- Debrify TV, IPTV catalog/media, TVMaze, Discover, series-source, Stremio, engine, player, subtitle, theme, and layout state.
+- MegaWatch TV, IPTV catalog/media, TVMaze, Discover, series-source, Stremio, engine, player, subtitle, theme, and layout state.
 - Downloads, completed-download history, recordings, schedules, alarms, notifications, retries, and native/plugin task stores.
 - Deep links, OAuth callbacks, pending external actions, remote pairing, remote leases, Top Shelf, and external-player handoffs.
 - Backup manifests, portable files, restore journals, profile generations, registry snapshots, and tvOS recovery shards.
@@ -187,7 +187,7 @@ Create synthetic, privacy-safe fixtures from the last non-profile release. Each 
 - [ ] Minimal existing installation with onboarding complete.
 - [ ] Fully populated installation using every supported settings family.
 - [ ] Every credential/resource type individually and all types together.
-- [ ] Debrify TV, IPTV, Stremio, search/discovery, playback, subtitle, history, playlist/favorite/watchlist, and cache state.
+- [ ] MegaWatch TV, IPTV, Stremio, search/discovery, playback, subtitle, history, playlist/favorite/watchlist, and cache state.
 - [ ] Downloads and completed history; Android recordings, schedules, alarms, and callbacks; desktop schedules/recordings where supported.
 - [ ] Custom engine/config files, subtitle fonts, external-player settings, destinations, SAF/security-scoped grants, and unusual valid paths.
 - [ ] Large databases, Unicode names/metadata, empty values, old optional fields, duplicated logical resources, and records at schema boundaries.
@@ -304,7 +304,7 @@ PIN is an application access gate, not a cryptographic OS-user boundary. Review 
 For A, B, and C, verify all applicable surfaces expose only authorized data:
 
 - [ ] Home, history, resume, favorites, playlists, watchlists, search, Discover, catalogs, guides, recommendations, and settings.
-- [ ] Provider libraries, account information, Stremio catalogs, IPTV/EPG, Debrify TV, TVMaze, artwork, thumbnails, and derived caches.
+- [ ] Provider libraries, account information, Stremio catalogs, IPTV/EPG, MegaWatch TV, TVMaze, artwork, thumbnails, and derived caches.
 - [ ] Downloads, recordings, schedules, notifications, job history, destination names, and errors.
 - [ ] Picker, manage-profile UI, backup preview, restore preview, reset UI, diagnostics, and support exports.
 - [ ] Android intents/notifications/PiP/native players, Apple URL handlers, Top Shelf, desktop forwarding, and external players.
@@ -644,4 +644,4 @@ Reviewers should be given the architecture documents, exact base HEAD, complete 
 - [ ] Diff integrity, backup exclusions, feature-flag defaults, and secret scans pass.
 - [ ] No P0/P1 findings remain open.
 
-**Final rule:** profile migration may be enabled only after all four sign-offs—migration, isolation, durability, and platform integration—are complete. Until then, keep `DEBRIFY_PROFILES` and `DEBRIFY_PROFILES_MIGRATION_READY` disabled by default.
+**Final rule:** profile migration may be enabled only after all four sign-offs—migration, isolation, durability, and platform integration—are complete. Until then, keep `MEGAWATCH_PROFILES` and `MEGAWATCH_PROFILES_MIGRATION_READY` disabled by default.

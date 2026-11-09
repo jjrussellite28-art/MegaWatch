@@ -1,9 +1,9 @@
-import 'package:debrify/screens/settings/external_player_settings_page.dart';
-import 'package:debrify/screens/settings/playback_settings_page.dart';
-import 'package:debrify/screens/settings/playback_settings_section.dart';
-import 'package:debrify/screens/settings/widgets/settings_widgets.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/screens/settings/external_player_settings_page.dart';
+import 'package:megawatch/screens/settings/playback_settings_page.dart';
+import 'package:megawatch/screens/settings/playback_settings_section.dart';
+import 'package:megawatch/screens/settings/widgets/settings_widgets.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -146,7 +146,7 @@ void main() {
       await settleSettings(tester);
       expect(find.text('Player Controls'), findsNothing);
       expect(find.text('Style, colour and size'), findsNothing);
-      expect(find.text('Debrify TV Player'), findsNothing);
+      expect(find.text('MegaWatch TV Player'), findsNothing);
       expect(find.text('Player Guide'), findsOneWidget);
       expect(find.text('Play Loader'), findsOneWidget);
     },
@@ -208,12 +208,12 @@ void main() {
       expect(find.text('Default Audio'), findsNothing);
       await tester.tap(find.text('Choose player'));
       await settleSettings(tester);
-      await tester.tap(find.text('Debrify Player'));
+      await tester.tap(find.text('MegaWatch Player'));
       await tester.pumpAndSettle();
       await tester.pageBack();
       await settleSettings(tester);
       expect(find.text('Default Audio'), findsOneWidget);
-      expect(await StorageService.getDefaultPlayerMode(), 'debrify');
+      expect(await StorageService.getDefaultPlayerMode(), 'megawatch');
     },
   );
 

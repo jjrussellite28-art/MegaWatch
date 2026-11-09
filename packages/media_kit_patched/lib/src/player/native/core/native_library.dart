@@ -30,7 +30,7 @@ abstract class NativeLibrary {
   /// This method discovers & loads the libmpv shared library. It is generally present with the name `libmpv-2.dll` on Windows & `libmpv.so` on GNU/Linux.
   /// The [libmpv] parameter can be used to manually specify the path to the libmpv shared library.
   static void ensureInitialized({String? libmpv}) {
-    // PATCH (Debrify, Apple TV): make "ensure" actually mean ensure.
+    // PATCH (MegaWatch, Apple TV): make "ensure" actually mean ensure.
     //
     // Upstream re-runs resolution on EVERY call, and the name map below has
     // no `tvos` entry. So the first call succeeds — it passes an explicit

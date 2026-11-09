@@ -18,7 +18,7 @@ class HomeCollectionSection extends CatalogSection {
   final String rowId;
 
   static final StremioAddon placeholderAddon = StremioAddon(
-    id: 'debrify.home.collection',
+    id: 'megawatch.home.collection',
     name: 'Collection',
     manifestUrl: '',
     baseUrl: '',

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/models/home_collection.dart';
+import 'package:megawatch/models/home_collection.dart';
 
-import 'package:debrify/screens/settings/home_sections_filter_page.dart';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/screens/settings/home_sections_filter_page.dart';
+import 'package:megawatch/services/storage_service.dart';
 
 Future<void> _pumpPage(
   WidgetTester tester, {

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:debrify/utils/stream_badge_svg.dart';
+import 'package:megawatch/utils/stream_badge_svg.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xml/xml.dart';

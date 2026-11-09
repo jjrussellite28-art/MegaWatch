@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/screens/video_player/services/subtitle_settings_service.dart';
+import 'package:megawatch/screens/video_player/services/subtitle_settings_service.dart';
 
 void main() {
   test('outline is a full 8-point ring on one circle', () {

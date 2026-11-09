@@ -97,7 +97,7 @@ class _AddonHubScreenState extends State<AddonHubScreen> {
   _AddonSource? _marketLoadedFor; // which source _market currently holds
 
   /// Whether any debrid/cloud provider is configured — drives the "Needs debrid"
-  /// honesty badge on stream addons (debrify can't play torrents P2P).
+  /// honesty badge on stream addons (megawatch can't play torrents P2P).
   bool _hasDebrid = true;
 
   // Torrent engines (the "Torrent Engines" kind).
@@ -817,7 +817,7 @@ class _AddonHubScreenState extends State<AddonHubScreen> {
                     'shared with other profiles. Deleting all addons will '
                     'also remove those addons from every shared profile.'
               : 'This removes all $count installed Stremio '
-                    'addon${count == 1 ? '' : 's'} from Debrify.',
+                    'addon${count == 1 ? '' : 's'} from MegaWatch.',
           style: TextStyle(color: app.fade(app.core.tx, 0.75)),
         ),
         actions: [
@@ -1756,7 +1756,7 @@ class _AddonHubScreenState extends State<AddonHubScreen> {
   Widget _buildMarketList() {
     // Compatibility note pinned above BOTH marketplaces (Official/Community):
     // the catalogs list every Stremio addon, but only these four capability
-    // families do anything in Debrify.
+    // families do anything in MegaWatch.
     return Column(
       children: [
         Padding(
@@ -1811,7 +1811,7 @@ class _AddonHubScreenState extends State<AddonHubScreen> {
     );
   }
 
-  /// Slim accent-tinted banner: which addon capabilities Debrify supports.
+  /// Slim accent-tinted banner: which addon capabilities MegaWatch supports.
   Widget _marketCompatNote() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
@@ -1834,7 +1834,7 @@ class _AddonHubScreenState extends State<AddonHubScreen> {
               TextSpan(
                 children: [
                   TextSpan(
-                    text: 'Works with Debrify: ',
+                    text: 'Works with MegaWatch: ',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: Colors.white.withValues(alpha: 0.9),
@@ -2269,7 +2269,7 @@ class _AddonInfo extends StatelessWidget {
   final String? description;
 
   /// Show a "Needs debrid" hint — this addon provides streams but no debrid
-  /// provider is configured, so its torrents can't play (debrify has no P2P).
+  /// provider is configured, so its torrents can't play (megawatch has no P2P).
   final bool warnDebrid;
 
   const _AddonInfo({
@@ -3305,7 +3305,7 @@ class _RowNav {
 }
 
 /// Map a manifest's `resources` to user-facing capability labels, in importance
-/// order. The `bool` is "highlight" — Streams is what Debrify is built around,
+/// order. The `bool` is "highlight" — Streams is what MegaWatch is built around,
 /// so it's the accented chip. Unknown/irrelevant resources are dropped.
 List<(String, bool)> _capabilities(List<String> resources) {
   const order = <String, (String, bool)>{

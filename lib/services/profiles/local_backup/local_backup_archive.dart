@@ -62,11 +62,11 @@ class LocalBackupManifest {
     this.archiveVersion = 1,
   });
 
-  static const String format = 'debrify-local-backup';
+  static const String format = 'megawatch-local-backup';
   static const int version = 2;
   static const String manifestEntry = 'manifest.json';
   static const String digestEntry = 'manifest.sha256';
-  static const String fileExtension = '.debrify';
+  static const String fileExtension = '.megawatch';
   static const String mimeType = 'application/octet-stream';
 
   /// The manifest carries preferences and resource records, so it is bounded
@@ -99,7 +99,7 @@ class LocalBackupManifest {
 
   static LocalBackupManifest fromJson(Map<String, dynamic> json) {
     if (json['format'] != format) {
-      throw const LocalBackupFormatException('Not a Debrify backup archive');
+      throw const LocalBackupFormatException('Not a MegaWatch backup archive');
     }
     final version = json['version'];
     if (version is! int || version < 1) {
@@ -107,7 +107,7 @@ class LocalBackupManifest {
     }
     if (version > LocalBackupManifest.version) {
       throw const LocalBackupFormatException(
-        'This backup was created by a newer Debrify. Update the app to '
+        'This backup was created by a newer MegaWatch. Update the app to '
         'restore it.',
       );
     }
@@ -307,7 +307,7 @@ class LocalBackupExportResult {
       package.omissions.containsKey('rebuildableDatabaseCachesOmitted');
 }
 
-/// Builds a `.debrify` archive from a profile export without holding any
+/// Builds a `.megawatch` archive from a profile export without holding any
 /// database in memory. Local, WebDAV, and sync bootstrap archives share this
 /// writer. Large metadata/playlist restoration is handled separately.
 class LocalBackupExporter {
@@ -522,8 +522,8 @@ class LocalBackupExporter {
                 fileSinks: sinks,
               ),
       );
-      if (DebrifyTvBackupOmission.fromOmissions(package.omissions) != null) {
-        throw StateError('Local archives must never omit Debrify TV');
+      if (MegaWatchTvBackupOmission.fromOmissions(package.omissions) != null) {
+        throw StateError('Local archives must never omit MegaWatch TV');
       }
       cancellation?.throwIfCancelled();
 
@@ -571,7 +571,7 @@ class LocalBackupExporter {
 
       final stamp = createdAt.toIso8601String().substring(0, 10);
       final fileName =
-          '${allProfiles ? 'debrify-profiles' : 'debrify-profile'}-$stamp'
+          '${allProfiles ? 'megawatch-profiles' : 'megawatch-profile'}-$stamp'
           '${LocalBackupManifest.fileExtension}';
       final archive = File(p.join(staging.path, fileName));
       stage('Packing backup…', <String, Object?>{
@@ -839,7 +839,7 @@ class LocalBackupRestoreStage {
   Future<void> dispose() => LocalBackupScratch.delete(staging);
 }
 
-/// Extracts a `.debrify` archive into private staging with every size,
+/// Extracts a `.megawatch` archive into private staging with every size,
 /// digest, and name check applied before the package is decoded.
 class LocalBackupRestorer {
   LocalBackupRestorer._();

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/screens/settings/app_theme_page.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
+import 'package:megawatch/screens/settings/app_theme_page.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
 
 void main() {
   Future<void> pump(WidgetTester t) async {

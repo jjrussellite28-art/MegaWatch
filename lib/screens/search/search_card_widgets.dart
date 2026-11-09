@@ -565,14 +565,14 @@ class _SeeAllLinkState extends State<_SeeAllLink> {
 }
 
 /// The kinds of leading saved-content rows. Render order (Watchlist Movies,
-/// Watchlist Series, Playlist, Debrify TV, Stremio TV, IPTV) is defined by
+/// Watchlist Series, Playlist, MegaWatch TV, Stremio TV, IPTV) is defined by
 /// [_SearchScreenState._favRowKinds], the single source of truth for rendering
 /// and the index-based DPAD focus wiring.
 enum _FavKind {
   watchlistMovies,
   watchlistSeries,
   iptv,
-  debrify,
+  megawatch,
   stremio,
   playlist,
 }
@@ -611,7 +611,7 @@ class _IptvListRow {
 }
 
 /// Generic DPAD arrow-handling wrapper for a favourites-row card — the arrow
-/// counterpart to [_BoardCell] for the IPTV / Debrify TV / Stremio TV rows.
+/// counterpart to [_BoardCell] for the IPTV / MegaWatch TV / Stremio TV rows.
 /// Holds no focus itself — the inner [_ArtPoster] does; this only routes
 /// left/right within the row and up/down out of it, matching the catalog
 /// cards' navigation exactly.

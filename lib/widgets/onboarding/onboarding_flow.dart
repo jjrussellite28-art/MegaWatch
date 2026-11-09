@@ -593,7 +593,7 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
       builder: (context) => AlertDialog(
         title: const Text('Restrict PikPak to one folder?'),
         content: const Text(
-          'For extra privacy, Debrify can access one chosen folder instead of your whole PikPak drive. You can skip this now.',
+          'For extra privacy, MegaWatch can access one chosen folder instead of your whole PikPak drive. You can skip this now.',
         ),
         actions: [
           TextButton(
@@ -840,7 +840,7 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
     try {
       var name = await StorageService.getRemoteTvDeviceName();
       name ??= await PlatformUtil.getDeviceName();
-      name ??= _isTelevision ? 'Debrify TV' : 'This device';
+      name ??= _isTelevision ? 'MegaWatch TV' : 'This device';
       if (!mounted ||
           attempt != _importAttempt ||
           _step != OnboardStep.importing) {
@@ -913,7 +913,7 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
     }
     if (label == null) return;
     setState(() {
-      if (command == ConfigCommand.debrifyChannelStart) {
+      if (command == ConfigCommand.megawatchChannelStart) {
         _chunkInFlightLabel = label;
         _receivedItemCount++;
       } else if (_chunkInFlightLabel == label) {
@@ -944,8 +944,8 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
       ConfigCommand.iptvFavorites => 'IPTV favorites',
       ConfigCommand.iptvLists => 'IPTV lists',
       ConfigCommand.streamBadges => 'Stream badges',
-      ConfigCommand.debrifyChannel => 'TV channel',
-      ConfigCommand.debrifyChannelStart => _chunkLabel(data),
+      ConfigCommand.megawatchChannel => 'TV channel',
+      ConfigCommand.megawatchChannelStart => _chunkLabel(data),
       ConfigCommand.profileGraph => 'All profiles',
       _ => null,
     };
@@ -956,7 +956,7 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
     try {
       final decoded = jsonDecode(data);
       final kind = decoded is Map ? decoded['kind'] as String? : null;
-      return _configLabel(kind ?? ConfigCommand.debrifyChannel, null) ??
+      return _configLabel(kind ?? ConfigCommand.megawatchChannel, null) ??
           'TV channel';
     } catch (_) {
       return 'TV channel';
@@ -1027,7 +1027,7 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
     switch (_step) {
       case OnboardStep.mode:
         eyebrow = 'Welcome';
-        title = "Let's set\nDebrify up.";
+        title = "Let's set\nMegaWatch up.";
         subtitle =
             'About two minutes. Every step can be skipped, and everything lives in Settings afterwards.';
         content = _connectingWebDav
@@ -1056,7 +1056,7 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
         eyebrow = 'Step 1 of 4';
         title = 'Which services\ndo you have?';
         subtitle =
-            'Pick any you already pay for. Debrify uses them to turn a link into a stream.';
+            'Pick any you already pay for. MegaWatch uses them to turn a link into a stream.';
         final step = ServicesStep(
           layout: layout,
           focusController: _focus,
@@ -1108,7 +1108,7 @@ class _InitialSetupFlowState extends State<InitialSetupFlow> {
         eyebrow = 'Step 2 of 4';
         title = 'Where should\nwe search?';
         subtitle =
-            'These are the sources Debrify searches. They all start on; turn off any you do not want.';
+            'These are the sources MegaWatch searches. They all start on; turn off any you do not want.';
         final step = EnginesStep(
           layout: layout,
           focusController: _focus,

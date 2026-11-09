@@ -32,11 +32,11 @@ class AndroidStartResult {
 
 class AndroidNativeDownloader {
   static const MethodChannel _channel = MethodChannel(
-    'com.debrify.app/downloader',
+    'com.megawatch.app/downloader',
   );
   static const String updateTaskPrefix = 'update-';
   static const EventChannel _events = EventChannel(
-    'com.debrify.app/downloader_events',
+    'com.megawatch.app/downloader_events',
   );
 
   static Stream<Map<String, dynamic>>? _eventStream;
@@ -56,7 +56,7 @@ class AndroidNativeDownloader {
     required String url,
     String? taskId,
     String fileName = 'download',
-    String subDir = 'Debrify',
+    String subDir = 'MegaWatch',
     String mimeType = 'application/octet-stream',
     Map<String, String>? headers,
     String? treeUri,
@@ -145,7 +145,7 @@ class AndroidNativeDownloader {
   static Future<void> registerPendingRecording({
     required String path,
     required String fileName,
-    String subDir = 'Debrify/Recordings',
+    String subDir = 'MegaWatch/Recordings',
     String mimeType = 'video/mp2t',
   }) async {
     if (!Platform.isAndroid) return;
@@ -170,7 +170,7 @@ class AndroidNativeDownloader {
   static Future<String?> saveLocalFile({
     required String path,
     required String fileName,
-    String subDir = 'Debrify/Recordings',
+    String subDir = 'MegaWatch/Recordings',
     String mimeType = 'video/mp2t',
     String? treeUri,
   }) async {
@@ -189,7 +189,7 @@ class AndroidNativeDownloader {
   static Future<AndroidSavedLocalFile?> saveLocalFileDetails({
     required String path,
     required String fileName,
-    String subDir = 'Debrify/Recordings',
+    String subDir = 'MegaWatch/Recordings',
     String mimeType = 'video/mp2t',
     String? treeUri,
   }) async {
@@ -301,8 +301,8 @@ class AndroidNativeDownloader {
 
   static Future<String?> startUpdate({
     required String url,
-    String fileName = 'Debrify-update.apk',
-    String subDir = 'Debrify/Updates',
+    String fileName = 'MegaWatch-update.apk',
+    String subDir = 'MegaWatch/Updates',
     String mimeType = 'application/vnd.android.package-archive',
     Map<String, String>? headers,
   }) async {

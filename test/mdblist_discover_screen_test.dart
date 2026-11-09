@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:debrify/screens/see_all/mdblist_see_all_screen.dart';
-import 'package:debrify/services/mdblist/mdblist_continue_watching_service.dart';
-import 'package:debrify/services/mdblist/mdblist_discover_models.dart';
-import 'package:debrify/services/mdblist/mdblist_discover_source.dart';
-import 'package:debrify/services/mdblist/mdblist_models.dart';
-import 'package:debrify/services/mdblist/mdblist_service.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/widgets/see_all/stremio_dropdown.dart';
+import 'package:megawatch/screens/see_all/mdblist_see_all_screen.dart';
+import 'package:megawatch/services/mdblist/mdblist_continue_watching_service.dart';
+import 'package:megawatch/services/mdblist/mdblist_discover_models.dart';
+import 'package:megawatch/services/mdblist/mdblist_discover_source.dart';
+import 'package:megawatch/services/mdblist/mdblist_models.dart';
+import 'package:megawatch/services/mdblist/mdblist_service.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/widgets/see_all/stremio_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;

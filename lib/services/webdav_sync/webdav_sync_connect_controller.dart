@@ -92,7 +92,7 @@ final class WebDavSyncConnectController {
     required this.activation,
   });
 
-  static const String folderPath = 'Debrify';
+  static const String folderPath = 'MegaWatch';
 
   final WebDavSyncSetupService setupService;
   final WebDavSyncSetupAuthorization authorization;

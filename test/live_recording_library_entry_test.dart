@@ -1,4 +1,4 @@
-import 'package:debrify/services/live_recording_service.dart';
+import 'package:megawatch/services/live_recording_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

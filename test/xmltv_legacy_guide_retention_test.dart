@@ -5,8 +5,8 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/xmltv_epg_source.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/xmltv_epg_source.dart';
 
 /// The JSON `epg_cache` shipped in v0.6.3-alpha.1, so real installs upgrade
 /// through the one-time import into the catalog database. These cases cover

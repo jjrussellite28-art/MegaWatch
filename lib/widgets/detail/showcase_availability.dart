@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/metadata_preferences.dart';
 import '../../models/detail_page_section_visibility.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../services/metadata_details_service.dart';
 import '../../services/metadata_explore_service.dart';
 import '../../services/tmdb_metadata_repository.dart';
@@ -283,7 +283,7 @@ class _AvailabilityTileState extends State<_AvailabilityTile> {
             ? fallback()
             : CachedNetworkImage(
                 imageUrl: entry.logo!,
-                cacheManager: DebrifyImageCache.manager,
+                cacheManager: MegaWatchImageCache.manager,
                 memCacheWidth: 185,
                 fit: BoxFit.contain,
                 placeholder: (_, _) => fallback(),

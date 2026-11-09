@@ -85,13 +85,13 @@ class RedditListingResult {
 
 /// Service for interacting with Reddit to browse and play videos
 class RedditService {
-  static const String _userAgent = 'Debrify/1.0 (Flutter; Video Player)';
+  static const String _userAgent = 'MegaWatch/1.0 (Flutter; Video Player)';
   static const String _baseUrl = 'https://www.reddit.com';
   static const String _oauthBaseUrl = 'https://oauth.reddit.com';
 
   // OAuth configuration
   static const String _clientId = 'YOUR_CLIENT_ID'; // TODO: Replace with actual client ID
-  static const String _redirectUri = 'debrify://reddit/callback';
+  static const String _redirectUri = 'megawatch://reddit/callback';
   static const String _scope = 'read';
 
   static const int _minVideosPerFetch = 30;

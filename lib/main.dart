@@ -1,6 +1,6 @@
 import 'services/webdav_sync/webdav_log_upload.dart';
 import 'services/cache_scratch_cleanup.dart';
-import 'services/debrify_image_cache.dart';
+import 'services/megawatch_image_cache.dart';
 import 'widgets/webdav_sync/webdav_save_status.dart';
 import 'services/local_validation_diagnostics.dart';
 import 'dart:async';
@@ -149,7 +149,7 @@ Future<void> _capImageCache() async {
     return; // leave non-TV devices on the framework defaults
   }
   if (isTv) {
-    // Warm the Debrify-keyboard opt-out alongside the TV flag — TvTextField
+    // Warm the MegaWatch-keyboard opt-out alongside the TV flag — TvTextField
     // reads StorageService.tvKeyboardEnabledCached synchronously in build.
     try {
       await StorageService.getTvKeyboardEnabled();
@@ -263,7 +263,7 @@ Future<void> _mainUnchecked(List<String> launchArguments) async {
   // Debug/profile only: in release this would funnel every debugPrint in the
   // app — tokens and URLs among them — into the device log.
   if (PlatformUtil.isTvOS && !kReleaseMode) {
-    const channel = MethodChannel('debrify/tvlog');
+    const channel = MethodChannel('megawatch/tvlog');
     final original = debugPrint;
     debugPrint = (String? message, {int? wrapWidth}) {
       original(message, wrapWidth: wrapWidth);
@@ -453,7 +453,7 @@ class _StartupFailureApp extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  'Debrify could not start safely. Close the app and try again. '
+                  'MegaWatch could not start safely. Close the app and try again. '
                   'If this continues, restart the device before changing any data.',
                   textAlign: TextAlign.center,
                 ),
@@ -536,7 +536,7 @@ class _MigrationUpdateScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'Debrify is upgrading your library for this new version. '
+                    'MegaWatch is upgrading your library for this new version. '
                     'This launch can take up to 5 minutes on large setups — '
                     'please don’t close the app or turn off the device. '
                     'This only happens once.',
@@ -571,7 +571,7 @@ Future<void> _terminateAfterDeviceReset() async {
 /// migration that simply retries on the next launch. Until this existed a
 /// single throw from any of them reached [main]'s catch and replaced the
 /// entire app with [_StartupFailureApp] — so one odd legacy row could lock a
-/// user out of Debrify completely (issue #35, a 0.7.0-era install that could
+/// user out of MegaWatch completely (issue #35, a 0.7.0-era install that could
 /// not open 0.8.3 at all). Failing these is recoverable; refusing to start is
 /// not.
 ///
@@ -652,12 +652,12 @@ Future<void> _continueApplicationStartup() async {
     await StorageService.getTvSidebarStyle();
     await StorageService.getDesktopSidebarStyle();
     await StorageService.getSidebarConfiguration();
-    // Debrify TV reads its mirror synchronously on first build; warmed here,
+    // MegaWatch TV reads its mirror synchronously on first build; warmed here,
     // AFTER the migration, so frame one draws what generation 3 just wrote.
-    await StorageService.getDebrifyTvStyle();
+    await StorageService.getMegaWatchTvStyle();
   });
   // Warms the Appearance → Text Brightness preset: the root theme is built
-  // synchronously in DebrifyApp.build, so the stored choice must be readable
+  // synchronously in MegaWatchApp.build, so the stored choice must be readable
   // before the first frame or text would flash bright and then dim.
   await _bestEffortStartupStep(
     'text-brightness-warm',
@@ -775,8 +775,8 @@ Future<void> _continueApplicationStartup() async {
   unawaited(_cleanupPlaybackState());
   // NB: no manual app_open — Pug's autoTrack fires app_open/app_close from the
   // app lifecycle automatically (see AnalyticsService.init / PugOptions).
-  runApp(const DebrifyApp());
-  unawaited(DebrifyImageCache.maintainDiskCaches());
+  runApp(const MegaWatchApp());
+  unawaited(MegaWatchImageCache.maintainDiskCaches());
   applicationReady.complete();
   // Desktop scheduled recordings (Tier 1: fire while the app is running).
   // Arms stored timers + late-joins anything already in its window; no-op on
@@ -1003,14 +1003,14 @@ void _wireDesktopRecordings() {
 // Global navigator key for app navigation (used for remote config restart)
 final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
-class DebrifyApp extends StatefulWidget {
-  const DebrifyApp({super.key});
+class MegaWatchApp extends StatefulWidget {
+  const MegaWatchApp({super.key});
 
   @override
-  State<DebrifyApp> createState() => _DebrifyAppState();
+  State<MegaWatchApp> createState() => _MegaWatchAppState();
 }
 
-class _DebrifyAppState extends State<DebrifyApp> {
+class _MegaWatchAppState extends State<MegaWatchApp> {
   @override
   void initState() {
     super.initState();
@@ -1097,7 +1097,7 @@ class _DebrifyAppState extends State<DebrifyApp> {
       navigatorKey: _navigatorKey,
       scaffoldMessengerKey: _scaffoldMessengerKey,
       navigatorObservers: [appRouteObserver, AppSurfaceRouteObserver()],
-      title: 'Debrify',
+      title: 'MegaWatch',
       debugShowCheckedModeBanner: false,
       // Performance optimizations for TV with TV-aware text scaling
       builder: (context, child) {
@@ -1401,7 +1401,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   static const int _kSearchTabIndex = 17;
 
   /// Backfill order when picks are missing/invalid: Discover, IPTV, Cloud,
-  /// Downloads, YouTube, Debrify TV, Stremio TV, Calendar, Addons, Settings.
+  /// Downloads, YouTube, MegaWatch TV, Stremio TV, Calendar, Addons, Settings.
   /// Deliberately without [_kSearchTabIndex]: the classic bar's three slots
   /// are all spoken for, and the phone reaches search from the Home board.
   static const List<int> _phoneNavDefaultOrder = [
@@ -1513,7 +1513,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     // and never selected. The new Stremio board at index 15 is now "Home".)
     const PlaylistScreen(), // 1: Playlist
     const DownloadsScreen(), // 2: Downloads
-    const DebrifyTVScreen(), // 3: Debrify TV
+    const MegaWatchTVScreen(), // 3: MegaWatch TV
     const DebridDownloadsScreen(), // 4: Real Debrid
     const TorboxDownloadsScreen(), // 5: Torbox
     const PikPakFilesScreen(), // 6: PikPak
@@ -1533,7 +1533,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     'Home (deprecated)', // 0: old board, hidden from nav (index kept as a slot)
     'Playlist',
     'Downloads',
-    'Debrify TV',
+    'MegaWatch TV',
     'Real Debrid',
     'Torbox',
     'PikPak',
@@ -1927,7 +1927,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         .where((index) {
           final feature = switch (index) {
             MainTab.downloads => ProfileFeature.downloads,
-            MainTab.debrifyTv => ProfileFeature.debrifyTv,
+            MainTab.megawatchTv => ProfileFeature.megawatchTv,
             // File-browsing tabs follow the SURFACE feature; provider
             // operations stay on ProfileFeature.cloud (see the enum docs).
             MainTab.realDebrid ||
@@ -2039,7 +2039,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       // Priority: 1. User-set custom name, 2. Actual device name, 3. Fallback
       var deviceName = await StorageService.getRemoteTvDeviceName();
       deviceName ??= await PlatformUtil.getDeviceName();
-      deviceName ??= 'Debrify TV';
+      deviceName ??= 'MegaWatch TV';
       await RemoteControlState().startTvListener(deviceName);
     } else {
       // Non-TV: Start scanning for TVs
@@ -2597,8 +2597,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         url: asset.downloadUrl.toString(),
         fileName: asset.name.isNotEmpty
             ? asset.name
-            : 'Debrify-${release.versionLabel}.apk',
-        subDir: 'Debrify/Updates',
+            : 'MegaWatch-${release.versionLabel}.apk',
+        subDir: 'MegaWatch/Updates',
         mimeType: mime,
       );
     } catch (_) {
@@ -2668,7 +2668,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     if (result.isGranted) return true;
     if (result.isPermanentlyDenied || result.isRestricted) {
       _showAutoUpdateSnack(
-        'Allow Debrify to install apps from system settings.',
+        'Allow MegaWatch to install apps from system settings.',
       );
       unawaited(openAppSettings());
     } else {
@@ -3101,10 +3101,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         MainTab.downloads,
         MainTab.iptv,
         MainTab.youtube,
-        MainTab.debrifyTv,
+        MainTab.megawatchTv,
         MainTab.stremioTv,
       ]; // Search, Home, Discover, Downloads, IPTV, YouTube,
-      // Debrify TV, Stremio TV. The dedicated Search tab (17) is no longer
+      // MegaWatch TV, Stremio TV. The dedicated Search tab (17) is no longer
       // TV-only — every non-TV layout WIDE enough for a sidebar carries it
       // too (see the phone gate where nonTvIndices is built). The Home board
       // (15) keeps its own persistent search bar regardless; the tab is an
@@ -3160,7 +3160,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       MainTab.downloads,
       MainTab.iptv,
       MainTab.youtube,
-      MainTab.debrifyTv,
+      MainTab.megawatchTv,
       MainTab.stremioTv,
     ];
     // Consolidated Cloud tab (see TV branch above): one entry when any provider
@@ -3193,7 +3193,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       case 13: // IPTV
       case 14: // YouTube
         return 'Browse';
-      case 3: // Debrify TV
+      case 3: // MegaWatch TV
       case 9: // Stremio TV
         return 'TV';
       case 16: // Cloud (consolidated provider hub)
@@ -3528,7 +3528,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       }
       unawaited(
         const MethodChannel(
-          'debrify/tvsystem',
+          'megawatch/tvsystem',
         ).invokeMethod<void>('suspend').catchError((_) {}),
       );
       return;

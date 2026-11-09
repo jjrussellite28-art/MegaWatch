@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:debrify/services/local_playback_resume_resolver.dart';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/services/local_playback_resume_resolver.dart';
+import 'package:megawatch/services/storage_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

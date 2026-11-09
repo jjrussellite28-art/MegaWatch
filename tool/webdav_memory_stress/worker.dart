@@ -6,14 +6,14 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:cryptography/cryptography.dart';
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/services/profiles/local_backup/local_backup_zip.dart';
-import 'package:debrify/services/transfer/streaming_encrypted_file.dart';
-import 'package:debrify/services/transfer/transfer_io.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_collection_sections.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/services/profiles/local_backup/local_backup_zip.dart';
+import 'package:megawatch/services/transfer/streaming_encrypted_file.dart';
+import 'package:megawatch/services/transfer/transfer_io.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_collection_sections.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
 
 const mib = 1024 * 1024;
 final key = SecretKey(List.generate(32, (i) => i));
@@ -489,7 +489,7 @@ Future<void> main(List<String> args) async {
     });
     throw StateError('The OOM control must be killed by the memory limit');
   }
-  final directory = await Directory.systemTemp.createTemp('debrify-memory-');
+  final directory = await Directory.systemTemp.createTemp('megawatch-memory-');
   try {
     if (scenario == 'collections') {
       await collections(size);

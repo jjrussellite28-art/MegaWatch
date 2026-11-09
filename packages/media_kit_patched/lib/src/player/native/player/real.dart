@@ -118,7 +118,7 @@ class NativePlayer extends PlatformPlayer {
 
       if (Platform.isIOS || Platform.isMacOS) {
         // tvOS reports itself as iOS through dart:io. Await the worker on
-        // Apple platforms so Player.dispose (and Debrify's VideoOutputLease)
+        // Apple platforms so Player.dispose (and MegaWatch's VideoOutputLease)
         // completes only after
         // the native output has actually gone away. The main isolate remains
         // free to service VideoOutput's shutdown callbacks meanwhile.

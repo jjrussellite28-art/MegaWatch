@@ -10,7 +10,7 @@ import '../utils/platform_util.dart';
 
 /// How a section arrives on screen.
 ///
-/// The theme's [EntranceStyle] decides, with one exception: **under Debrify
+/// The theme's [EntranceStyle] decides, with one exception: **under MegaWatch
 /// Classic the MOUNT reveal is exactly the 350 ms fade-and-rise it has always
 /// been.** Legacy's token value is `none`, which would mean "no entrance at
 /// all" — and honouring it there would delete a shipped animation rather than

@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../../models/metadata_preferences.dart';
 import '../../models/stremio_addon.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../theme/app_theme_scope.dart';
 import '../../utils/tv_keys.dart';
 import '../metadata_presentation_mixin.dart';
@@ -418,7 +418,7 @@ class _CollectionPreviewArtState extends State<CollectionPreviewArt>
         : item.poster;
     Widget image(String value, {bool retry = true}) => CachedNetworkImage(
       imageUrl: value,
-      cacheManager: DebrifyImageCache.manager,
+      cacheManager: MegaWatchImageCache.manager,
       memCacheWidth: widget.wide ? 1280 : 342,
       fit: BoxFit.cover,
       fadeInDuration: const Duration(milliseconds: 120),

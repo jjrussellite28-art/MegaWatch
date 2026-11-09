@@ -614,7 +614,7 @@ class VideoPlayerLauncher {
   }
 
   /// The external app needs its own temporary grant for this exact document.
-  /// Debrify's persisted folder/file permission is not shared across apps.
+  /// MegaWatch's persisted folder/file permission is not shared across apps.
   static AndroidIntent androidExternalVideoIntent(String url) => AndroidIntent(
     action: 'action_view',
     data: url,
@@ -731,7 +731,7 @@ class VideoPlayerLauncher {
   /// Resolves the one MDBList ownership decision used by every playback
   /// surface. A launch originating from an MDBList row is still only a
   /// *request* to use MDBList: disabling playback/library sync or disconnecting
-  /// the account must hand completion and Continue Watching back to Debrify.
+  /// the account must hand completion and Continue Watching back to MegaWatch.
   @visibleForTesting
   static bool shouldEnableMdblistTracking({
     required bool requested,
@@ -764,7 +764,7 @@ class VideoPlayerLauncher {
 
   /// Whether a launch needs to explain why the user's external-player default
   /// cannot be honored. Authenticated server playback carries headers which
-  /// can be consumed by Debrify's player but are not part
+  /// can be consumed by MegaWatch's player but are not part
   /// of the URL handed to another app.
   static bool shouldExplainExternalPlayerFallback(
     VideoPlayerLaunchArgs args,
@@ -793,9 +793,9 @@ class VideoPlayerLauncher {
           builder: (dialogContext) => AlertDialog(
             title: const Text('External player unavailable'),
             content: const Text(
-              'This server requires authentication. Debrify cannot pass '
+              'This server requires authentication. MegaWatch cannot pass '
               'the required authorization headers to another app, so this video '
-              'will open in the Debrify player.',
+              'will open in the MegaWatch player.',
             ),
             actions: [
               TextButton(
@@ -805,7 +805,7 @@ class VideoPlayerLauncher {
               FilledButton(
                 autofocus: true,
                 onPressed: () => Navigator.of(dialogContext).pop(true),
-                child: const Text('Use Debrify player'),
+                child: const Text('Use MegaWatch player'),
               ),
             ],
           ),
@@ -886,10 +886,10 @@ class VideoPlayerLauncher {
     final defaultPlayerMode = await StorageService.getDefaultPlayerMode();
     if (!context.mounted) return;
     if (shouldExplainExternalPlayerFallback(args, defaultPlayerMode)) {
-      final useDebrifyPlayer = await showAuthenticatedWebDavPlayerNotice(
+      final useMegaWatchPlayer = await showAuthenticatedWebDavPlayerNotice(
         context,
       );
-      if (!context.mounted || !useDebrifyPlayer) return;
+      if (!context.mounted || !useMegaWatchPlayer) return;
     }
     if (!args.traktScrobble &&
         !args.suppressTraktAutoSync &&
@@ -1315,7 +1315,7 @@ class VideoPlayerLauncher {
     }
   }
 
-  /// External players have no decoder callback into Debrify, so a successful
+  /// External players have no decoder callback into MegaWatch, so a successful
   /// OS/app handoff is their commit boundary. Keep this separate from Android
   /// TV, whose native player reports its validated source after first frame.
   static Future<void> _commitExternalLaunchSource(
@@ -1463,14 +1463,14 @@ class VideoPlayerLauncher {
   /// player, if — and only if — they set one as their default.
   ///
   /// This is the entry point for flows that build their own player route
-  /// instead of going through [push] (Debrify TV, which drives channel
+  /// instead of going through [push] (MegaWatch TV, which drives channel
   /// rotation from its own screen state). Returns false when the default is
   /// the in-app player, when the platform launch fails, or when the caller
   /// passes an empty URL — the caller then continues to its own player exactly
   /// as before, so this is always safe to call first.
   ///
   /// Only the URL and title travel to the other app: playlists, resume state
-  /// and "play next" callbacks are meaningless once playback leaves Debrify.
+  /// and "play next" callbacks are meaningless once playback leaves MegaWatch.
   static Future<bool> launchExternalIfConfigured(
     BuildContext context, {
     required String videoUrl,
@@ -1954,7 +1954,7 @@ class VideoPlayerLauncher {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(false),
-                child: const Text('Use Debrify player'),
+                child: const Text('Use MegaWatch player'),
               ),
               FilledButton(
                 onPressed: () => Navigator.of(dialogContext).pop(true),
@@ -2133,7 +2133,7 @@ class VideoPlayerLauncher {
 
   static void _notifyOnReturnFromExternalActivity() {
     // Already armed — a launch issued while the player activity still owns the
-    // screen (Debrify TV moving to the next channel, a playlist advancing)
+    // screen (MegaWatch TV moving to the next channel, a playlist advancing)
     // must not stack a second observer: they'd both fire on the one resume and
     // every listener would refresh twice.
     if (_armedReturnObserver != null) return;

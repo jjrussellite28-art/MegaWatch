@@ -26,7 +26,7 @@ class TvosDevice {
     if (!PlatformUtil.isTvOS) return;
     try {
       final bytes = await const MethodChannel(
-        'debrify/tvdevice',
+        'megawatch/tvdevice',
       ).invokeMethod<int>('physicalMemory');
       _lowMemory = isLowMemoryBytes(bytes);
     } catch (_) {

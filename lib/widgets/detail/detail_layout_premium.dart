@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../models/stremio_addon.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../services/imdb_parents_guide_service.dart';
 import '../../services/storage_service.dart';
 import '../../services/trakt/trakt_episode_model.dart';
@@ -1676,7 +1676,7 @@ class _Poster extends StatelessWidget {
     return CachedNetworkImage(
       imageUrl: url!,
       fit: BoxFit.cover,
-      cacheManager: DebrifyImageCache.manager,
+      cacheManager: MegaWatchImageCache.manager,
       memCacheWidth: cacheWidth,
       placeholder: (_, __) => ColoredBox(color: t.placeholder),
       errorWidget: (_, __, ___) => ColoredBox(color: t.placeholder),

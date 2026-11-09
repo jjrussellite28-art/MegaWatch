@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Install Debrify's reproducible libmpv build into a Flutter Linux bundle.
+# Install MegaWatch's reproducible libmpv build into a Flutter Linux bundle.
 #
 # libmedia_kit_video_plugin.so has a hard DT_NEEDED edge to libmpv, while
 # package:media_kit also dlopen()s the same library from Dart.  Keep that

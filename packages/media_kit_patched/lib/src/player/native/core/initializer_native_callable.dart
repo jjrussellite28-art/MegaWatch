@@ -58,7 +58,7 @@ class InitializerNativeCallable {
 
   /// Disposes [Pointer<mpv_handle>].
   ///
-  /// PATCHED (Debrify): detach the [NativeCallable], but hand ownership back to
+  /// PATCHED (MegaWatch): detach the [NativeCallable], but hand ownership back to
   /// the caller instead of closing it here. Clearing mpv's callback prevents
   /// new invocations, but an invocation already posted to Dart may still be in
   /// flight. The caller closes this only after `mpv_terminate_destroy` returns.

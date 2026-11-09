@@ -1,7 +1,7 @@
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine_state.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine_state.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -272,7 +272,7 @@ void main() {
       localProfileId: 'local-profile',
       target: target,
       observedRevisions: const WebDavSyncDatabaseRevisions(
-        debrifyTv: 4,
+        megawatchTv: 4,
         iptvCatalog: 9,
       ),
     );
@@ -280,7 +280,7 @@ void main() {
     final json = pending.toJson();
     final decoded = WebDavSyncPendingLibraryApply.fromJson(json);
     expect(json['targetDigest'], target.semanticDigest);
-    expect(decoded.observedRevisions.debrifyTv, 4);
+    expect(decoded.observedRevisions.megawatchTv, 4);
     expect(decoded.observedRevisions.iptvCatalog, 9);
     expect(decoded.target.toJson(), target.toJson());
 

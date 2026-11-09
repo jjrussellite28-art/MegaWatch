@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 import '../../models/profiles/profile_policy.dart';
 import '../diagnostic_log.dart' as app_diagnostics;
-import '../debrify_tv_database.dart';
+import '../megawatch_tv_database.dart';
 import '../main_page_bridge.dart';
 import '../storage_service.dart';
 import '../profiles/connection_resource_service.dart';
@@ -269,7 +269,7 @@ WebDavSyncTvManualReport _tvManualUnavailableReport(
 abstract interface class WebDavSyncTvManualController {
   Future<WebDavSyncTvManualAvailability> tvManualAvailability();
 
-  Future<WebDavSyncTvManualReport> syncDebrifyTv({
+  Future<WebDavSyncTvManualReport> syncMegaWatchTv({
     required WebDavSyncTvCancellationToken cancellationToken,
     WebDavSyncTvStageCallback? onStage,
   });
@@ -760,7 +760,7 @@ final class WebDavSyncRuntime
   }
 
   @override
-  Future<WebDavSyncTvManualReport> syncDebrifyTv({
+  Future<WebDavSyncTvManualReport> syncMegaWatchTv({
     required WebDavSyncTvCancellationToken cancellationToken,
     WebDavSyncTvStageCallback? onStage,
   }) async {
@@ -846,11 +846,11 @@ final class WebDavSyncRuntime
         pendingRevision: 0,
       );
       try {
-        tvMetadata = await DebrifyTvDatabase.instance
+        tvMetadata = await MegaWatchTvDatabase.instance
             .readWebDavTvSyncMetadata();
       } catch (error) {
         recordWebDavSyncDiagnostic(
-          'Could not read Debrify TV manual sync status',
+          'Could not read MegaWatch TV manual sync status',
           error,
         );
       }

@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:debrify/widgets/home/moonlit_ocean_background.dart';
+import 'package:megawatch/widgets/home/moonlit_ocean_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/iptv_epg_service.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/iptv_epg_service.dart';
 
 void main() {
   group('xtream panel quirks (real fetch against an in-test server)', () {

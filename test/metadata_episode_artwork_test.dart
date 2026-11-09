@@ -1,7 +1,7 @@
-import 'package:debrify/models/metadata_preferences.dart';
-import 'package:debrify/services/episode_artwork_service.dart';
-import 'package:debrify/services/metadata_episode_service.dart';
-import 'package:debrify/services/tmdb_metadata_repository.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
+import 'package:megawatch/services/episode_artwork_service.dart';
+import 'package:megawatch/services/metadata_episode_service.dart';
+import 'package:megawatch/services/tmdb_metadata_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

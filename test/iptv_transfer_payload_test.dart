@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/iptv_catalog_key.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/iptv_transfer_payload.dart';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/iptv_catalog_key.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/iptv_transfer_payload.dart';
+import 'package:megawatch/services/storage_service.dart';
 
 /// Moving a user's IPTV setup between devices — the shared payload behind both
 /// the backup file and the phone→TV transfer.
@@ -31,13 +31,13 @@ void main() {
     IptvCatalogDb.debugDirectoryOverride = catalogDir.path;
     await IptvCatalogDb.open();
     IptvMediaStore.debugResetMigration();
-    DebrifyTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
+    MegaWatchTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
         .openDatabase(
           inMemoryDatabasePath,
           options: OpenDatabaseOptions(
             version: 1,
             onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
-            onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
+            onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
           ),
         );
   });
@@ -46,8 +46,8 @@ void main() {
     IptvCatalogDb.debugClose();
     IptvCatalogDb.debugDirectoryOverride = null;
     await catalogDir.delete(recursive: true);
-    await DebrifyTvDatabase.debugDatabaseOverride?.close();
-    DebrifyTvDatabase.debugDatabaseOverride = null;
+    await MegaWatchTvDatabase.debugDatabaseOverride?.close();
+    MegaWatchTvDatabase.debugDatabaseOverride = null;
     IptvMediaStore.debugResetMigration();
   });
 

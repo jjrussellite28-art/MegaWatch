@@ -2,12 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/screens/settings/detail_theme_page.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/profiles/profile_appearance_preferences.dart';
-import 'package:debrify/theme/app_looks.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_controller.dart';
+import 'package:megawatch/screens/settings/detail_theme_page.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/profiles/profile_appearance_preferences.dart';
+import 'package:megawatch/theme/app_looks.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_controller.dart';
 
 /// A Look is a bundle of preferences, so its dangerous properties are all
 /// about what it can reach and what happens when two writers meet.
@@ -65,7 +65,7 @@ void main() {
       }
     });
 
-    test('Debrify Classic really is the shipped app', () {
+    test('MegaWatch Classic really is the shipped app', () {
       final classic = AppLooks.all.firstWhere((l) => l.id == 'classic');
       expect(classic.values['app_theme'], AppThemes.legacyId);
       expect(classic.values['text_brightness'], 'bright');
@@ -183,24 +183,24 @@ void main() {
     });
 
     test(
-      'Spotlight and Classic both carry Debrify TV, and Classic pins grid',
+      'Spotlight and Classic both carry MegaWatch TV, and Classic pins grid',
       () async {
         // The assertion that would have caught the Custom-flip: isActive only
         // checks keys a bundle names, so BOTH flagship bundles must name
-        // `debrify_tv_style` — Spotlight to carry the rail, Classic to pin the
+        // `megawatch_tv_style` — Spotlight to carry the rail, Classic to pin the
         // grid — or the picker and the screen contradict each other.
         final spotlight = AppLooks.all.firstWhere((l) => l.id == 'spotlight');
         final classic = AppLooks.all.firstWhere((l) => l.id == 'classic');
-        expect(spotlight.values['debrify_tv_style'], 'spotlight');
-        expect(classic.values['debrify_tv_style'], 'grid');
+        expect(spotlight.values['megawatch_tv_style'], 'spotlight');
+        expect(classic.values['megawatch_tv_style'], 'grid');
 
         await LookApplier.apply(spotlight);
         expect(AppLooks.active()?.id, 'spotlight');
-        expect(StorageService.debrifyTvStyleCached, 'spotlight');
+        expect(StorageService.megawatchTvStyleCached, 'spotlight');
 
         await LookApplier.apply(classic);
         expect(AppLooks.active()?.id, 'classic');
-        expect(StorageService.debrifyTvStyleCached, 'grid');
+        expect(StorageService.megawatchTvStyleCached, 'grid');
       },
     );
   });

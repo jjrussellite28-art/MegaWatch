@@ -45,7 +45,7 @@ class GlassSurface extends StatelessWidget {
   /// Two jobs, and both matter. Under a glass look it overrides the theme's
   /// own `glassSigma` for sites that have a reason (the Torbox dialogs use
   /// two different strengths). Under a look with **no surface opinion** — that
-  /// is Debrify Classic and all twenty pre-`ThemeSpec` themes — it is the
+  /// is MegaWatch Classic and all twenty pre-`ThemeSpec` themes — it is the
   /// blur that gets painted, because those looks never chose to stop blurring
   /// and adoption must not silently decide for them. A look that explicitly
   /// says `fill`, `rule` or `space` HAS chosen, and gets no blur.
@@ -62,7 +62,7 @@ class GlassSurface extends StatelessWidget {
   /// Every converted site shipped this as a ternary — opaque on TV where the
   /// blur was skipped, translucent elsewhere where the blur does the work —
   /// and collapsing the two would have made the phone sheets opaque under
-  /// Debrify Classic. Null means "the same either way", which is the common
+  /// MegaWatch Classic. Null means "the same either way", which is the common
   /// case.
   final Color? blurTint;
 
@@ -71,7 +71,7 @@ class GlassSurface extends StatelessWidget {
 
   /// Hairline width. Sites that shipped a 0.5px edge must say so, or adopting
   /// this widget doubles their hairline — which is a visible change under
-  /// Debrify Classic and therefore a legacy break, not a restyle.
+  /// MegaWatch Classic and therefore a legacy break, not a restyle.
   final double borderWidth;
 
   final EdgeInsetsGeometry? padding;
@@ -131,7 +131,7 @@ class GlassSurface extends StatelessWidget {
     }
     // The legacy-identity case: a look that stated no surface opinion keeps
     // whatever the site shipped. Without this, adopting this widget would
-    // remove a real blur from ten phone sheets under Debrify Classic — which
+    // remove a real blur from ten phone sheets under MegaWatch Classic — which
     // is precisely the break the byte-identity rule exists to prevent.
     return app.surface.isNeutral ? (sigma ?? 0) : 0;
   }

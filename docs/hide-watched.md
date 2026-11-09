@@ -30,7 +30,7 @@ Never hidden, because they are your own lists rather than catalogs:
 ## What "watched" means
 
 The same answer that draws the ✓ on posters (`WatchedStatusService`): a union
-of what you finished in Debrify, your Trakt watched history, and Simkl and
+of what you finished in MegaWatch, your Trakt watched history, and Simkl and
 MDBList "completed", **masked by the Watched-ticks selection** on the same
 settings page. So the ✓ and the hiding always agree. For shows it means the
 whole show is finished (every aired episode locally, or fully watched on the

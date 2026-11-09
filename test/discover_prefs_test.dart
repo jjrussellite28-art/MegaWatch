@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/services/discover_prefs.dart';
+import 'package:megawatch/services/discover_prefs.dart';
 
 /// Mirrors a panel's private sort enum: what matters is that the stored id is
 /// the enum's [Enum.name], so a rename would be caught by these tests.

@@ -1,4 +1,4 @@
-import 'package:debrify/services/player_display_controls.dart';
+import 'package:megawatch/services/player_display_controls.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

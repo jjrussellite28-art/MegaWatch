@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/widgets/iptv/iptv_command_rail.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/widgets/iptv/iptv_command_rail.dart';
 
 IptvPlaylist _m3u(String id, String name) => IptvPlaylist(
   id: id,

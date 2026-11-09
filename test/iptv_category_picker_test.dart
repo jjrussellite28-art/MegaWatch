@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/screens/video_player/widgets/iptv_channel_sheet.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/screens/video_player/widgets/iptv_channel_sheet.dart';
 
 /// The guide's category control. It used to be a horizontally scrolling chip
 /// row, which a mouse cannot scroll — on desktop every chip past the fold was

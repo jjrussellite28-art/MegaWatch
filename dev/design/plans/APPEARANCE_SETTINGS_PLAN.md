@@ -46,7 +46,7 @@ three-way sync contract):
    screen size, IPTV appearance, player guide) — exactly fits
    `_kMaxCategoryRows = 6` (comment updated at the constant). **Case 2
    (Home & Display) compacts its nodes**: Home Screen → `_paneNodes[0]`,
-   Debrify Keyboard → `_paneNodes[1]` — the DPAD walker only advances to
+   MegaWatch Keyboard → `_paneNodes[1]` — the DPAD walker only advances to
    the immediately adjacent live node, so a gap would strand DOWN.
 3. **Search** (`_buildSearchIndex`): results group by category
    FIRST-APPEARANCE order, so the seven Appearance registrations (screen
@@ -66,7 +66,7 @@ three-way sync contract):
 - The three TV rows (sidebar / discover / screen size) MOVE out of
   "Home & Display" on both phone layout and the TV pane — a pref reachable
   from two sibling top-level sections would be confusing. "Home & Display"
-  keeps: Home Screen page row, Debrify Keyboard toggle. Its TV rail
+  keeps: Home Screen page row, MegaWatch Keyboard toggle. Its TV rail
   subtitle updates ("Home, Discover, sidebar & screen size" → "Home screen
   rows & keyboard" or similar).
 - Feature-LOCAL copies stay (that's contextual, not sibling duplication):

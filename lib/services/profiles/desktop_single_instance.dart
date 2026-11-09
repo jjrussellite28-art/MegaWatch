@@ -41,9 +41,9 @@ class DesktopSingleInstance {
     }
     final support = await AppStorage.support();
     await support.create(recursive: true);
-    final lockFile = File(p.join(support.path, '.debrify-primary.lock'));
+    final lockFile = File(p.join(support.path, '.megawatch-primary.lock'));
     final endpointFile = File(
-      p.join(support.path, '.debrify-primary-endpoint-v1.json'),
+      p.join(support.path, '.megawatch-primary-endpoint-v1.json'),
     );
     final handle = await lockFile.open(mode: FileMode.append);
     try {

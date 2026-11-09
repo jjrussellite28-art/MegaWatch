@@ -13,15 +13,15 @@ import 'package:collection/collection.dart';
 import '../models/torrent.dart';
 import '../models/torrent_filter_state.dart';
 import '../widgets/torrent_result_row.dart' show qualityTierForName;
-import '../models/debrify_tv_cache.dart';
+import '../models/megawatch_tv_cache.dart';
 import '../models/torbox_file.dart';
 import '../models/torbox_torrent.dart';
-import '../models/debrify_tv_channel_record.dart';
-import '../models/debrify_tv/channel.dart';
-import '../models/debrify_tv/channel_stats.dart';
-import '../models/debrify_tv/prepared_torrents.dart';
-import '../models/debrify_tv/cache_results.dart';
-import '../models/debrify_tv/import_results.dart';
+import '../models/megawatch_tv_channel_record.dart';
+import '../models/megawatch_tv/channel.dart';
+import '../models/megawatch_tv/channel_stats.dart';
+import '../models/megawatch_tv/prepared_torrents.dart';
+import '../models/megawatch_tv/cache_results.dart';
+import '../models/megawatch_tv/import_results.dart';
 import '../services/analytics_service.dart';
 import '../services/android_native_downloader.dart';
 import '../services/android_tv_player_bridge.dart';
@@ -30,9 +30,9 @@ import '../services/pikpak_api_service.dart';
 import '../services/pikpak_tv_service.dart';
 import '../services/storage_service.dart';
 import '../services/video_player_launcher.dart';
-import '../services/debrify_tv_channel_archive_service.dart';
-import '../services/debrify_tv_cache_service.dart';
-import '../services/debrify_tv_repository.dart';
+import '../services/megawatch_tv_channel_archive_service.dart';
+import '../services/megawatch_tv_cache_service.dart';
+import '../services/megawatch_tv_repository.dart';
 import '../models/premiumize_file.dart';
 import '../services/premiumize_service.dart';
 import '../services/alldebrid_service.dart';
@@ -41,7 +41,7 @@ import '../services/torrent_service.dart';
 import '../services/engine/engine_registry.dart';
 import '../services/engine/dynamic_engine.dart';
 import '../services/engine/settings_manager.dart';
-import '../services/debrify_tv_zip_importer.dart';
+import '../services/megawatch_tv_zip_importer.dart';
 import '../services/community/magnet_yaml_service.dart';
 import '../services/community/community_channel_model.dart';
 import '../services/community/community_channels_service.dart';
@@ -57,24 +57,24 @@ import '../utils/file_utils.dart';
 import '../utils/nsfw_filter.dart';
 import '../utils/platform_util.dart';
 import '../utils/rd_blocked_filter.dart';
-import '../utils/debrify_tv_filters.dart';
+import '../utils/megawatch_tv_filters.dart';
 import '../utils/series_parser.dart';
 import '../utils/tv_keys.dart';
 import '../widgets/tv_text_field.dart';
 import 'video_player_screen.dart';
-import 'debrify_tv/layouts/debrify_tv_view.dart';
-import 'debrify_tv/layouts/spotlight_layout.dart';
-import 'debrify_tv/widgets/random_start_slider.dart';
-import 'debrify_tv/widgets/switch_row.dart';
-import 'debrify_tv/widgets/tv_focusable_button.dart';
-import 'debrify_tv/widgets/tv_focusable_card.dart';
-import 'debrify_tv/dialogs/cached_loading_dialog.dart';
-import 'debrify_tv/dialogs/channel_creation_dialog.dart';
-import 'debrify_tv/dialogs/community_channels_dialog.dart';
-import 'debrify_tv/dialogs/external_player_notice_dialog.dart';
-import 'debrify_tv/dialogs/export_channels_dialog.dart';
-import 'debrify_tv/dialogs/import_channels_dialog.dart';
-import 'debrify_tv/dialogs/spotlight_dialog.dart';
+import 'megawatch_tv/layouts/megawatch_tv_view.dart';
+import 'megawatch_tv/layouts/spotlight_layout.dart';
+import 'megawatch_tv/widgets/random_start_slider.dart';
+import 'megawatch_tv/widgets/switch_row.dart';
+import 'megawatch_tv/widgets/tv_focusable_button.dart';
+import 'megawatch_tv/widgets/tv_focusable_card.dart';
+import 'megawatch_tv/dialogs/cached_loading_dialog.dart';
+import 'megawatch_tv/dialogs/channel_creation_dialog.dart';
+import 'megawatch_tv/dialogs/community_channels_dialog.dart';
+import 'megawatch_tv/dialogs/external_player_notice_dialog.dart';
+import 'megawatch_tv/dialogs/export_channels_dialog.dart';
+import 'megawatch_tv/dialogs/import_channels_dialog.dart';
+import 'megawatch_tv/dialogs/spotlight_dialog.dart';
 import 'settings/profile_backup_flows.dart';
 
 const int _randomStartPercentDefault = 20;
@@ -110,11 +110,11 @@ int _parseRandomStartPercent(dynamic value) {
 
 enum _SettingsScope { quickPlay, channels }
 
-enum _DebrifyTvTopMenuAction { import, export, add, deleteAll, settings }
+enum _MegaWatchTvTopMenuAction { import, export, add, deleteAll, settings }
 
 enum _ChannelImportOrigin { device, url }
 
-enum _ChannelImportType { zip, yaml, text, debrify }
+enum _ChannelImportType { zip, yaml, text, megawatch }
 
 class _SpotlightMetaPill extends StatelessWidget {
   final String label;
@@ -125,7 +125,7 @@ class _SpotlightMetaPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = AppThemeScope.of(context);
-    final tv = app.debrifyTv;
+    final tv = app.megawatchTv;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
       decoration: BoxDecoration(
@@ -187,7 +187,7 @@ class _SpotlightChoiceChipState extends State<_SpotlightChoiceChip> {
   @override
   Widget build(BuildContext context) {
     final app = AppThemeScope.of(context);
-    final tv = app.debrifyTv;
+    final tv = app.megawatchTv;
     final focused = _focused && widget.enabled;
     final fill = focused
         ? app.core.tx
@@ -292,15 +292,15 @@ String _formatBytes(int bytes) {
   return '$formatted ${units[exponent]}';
 }
 
-Future<DebrifyTvZipImportResult> _parseZipInBackground(Uint8List bytes) {
+Future<MegaWatchTvZipImportResult> _parseZipInBackground(Uint8List bytes) {
   return compute(_parseZipCompute, bytes);
 }
 
-DebrifyTvZipImportResult _parseZipCompute(Uint8List bytes) {
-  return DebrifyTvZipImporter.parseZip(bytes);
+MegaWatchTvZipImportResult _parseZipCompute(Uint8List bytes) {
+  return MegaWatchTvZipImporter.parseZip(bytes);
 }
 
-Future<DebrifyTvZipImportedChannel> _parseYamlInBackground(
+Future<MegaWatchTvZipImportedChannel> _parseYamlInBackground(
   String sourceName,
   String content,
 ) {
@@ -310,10 +310,10 @@ Future<DebrifyTvZipImportedChannel> _parseYamlInBackground(
   });
 }
 
-DebrifyTvZipImportedChannel _parseYamlCompute(Map<String, String> payload) {
+MegaWatchTvZipImportedChannel _parseYamlCompute(Map<String, String> payload) {
   final sourceName = payload['sourceName'] ?? 'channel.yaml';
   final content = payload['content'] ?? '';
-  return DebrifyTvZipImporter.parseYaml(
+  return MegaWatchTvZipImporter.parseYaml(
     sourceName: sourceName,
     content: content,
   );
@@ -333,14 +333,14 @@ class _TvEngineWarmResult {
   });
 }
 
-class DebrifyTVScreen extends StatefulWidget {
-  const DebrifyTVScreen({super.key});
+class MegaWatchTVScreen extends StatefulWidget {
+  const MegaWatchTVScreen({super.key});
 
   @override
-  State<DebrifyTVScreen> createState() => _DebrifyTVScreenState();
+  State<MegaWatchTVScreen> createState() => _MegaWatchTVScreenState();
 }
 
-class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
+class _MegaWatchTVScreenState extends State<MegaWatchTVScreen> {
   static const String _providerRealDebrid = 'real_debrid';
   static const String _providerTorbox = 'torbox';
   static const String _providerPikPak = 'pikpak';
@@ -356,19 +356,19 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   final List<dynamic> _queue = [];
   bool _isBusy = false;
   String _status = '';
-  List<DebrifyTvChannel> _channels = <DebrifyTvChannel>[];
+  List<MegaWatchTvChannel> _channels = <MegaWatchTvChannel>[];
 
-  /// `debrify_tv_style`, read once per mount from the mirror warmed in
+  /// `megawatch_tv_style`, read once per mount from the mirror warmed in
   /// `main()`: tabs are keyed by index and rebuilt on switch, so a picker
   /// change is picked up on the next entry — no bridge, like `iptv_style`.
-  final String _debrifyTvStyle = StorageService.debrifyTvStyleCached;
+  final String _megawatchTvStyle = StorageService.megawatchTvStyleCached;
 
   // ── Spotlight stage data (rail cheap, stage lazy — plan §7) ─────────
-  Map<String, DebrifyTvRailHealth> _spotlightRailHealth = const {};
-  final Map<String, DebrifyTvChannelStats> _spotlightStats = {};
+  Map<String, MegaWatchTvRailHealth> _spotlightRailHealth = const {};
+  final Map<String, MegaWatchTvChannelStats> _spotlightStats = {};
   Timer? _spotlightStatsDebounce;
   String? _spotlightFocusedId;
-  final Map<String, DebrifyTvChannelCacheEntry> _channelCache = {};
+  final Map<String, MegaWatchTvChannelCacheEntry> _channelCache = {};
   List<Torrent>? _pikpakCandidatePool;
   final Map<String, bool> _tvEngineStates = <String, bool>{};
   final Map<String, int> _tvSmallChannelMaxByEngine = <String, int>{};
@@ -420,11 +420,11 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   bool _rdSkipBlockedTorrents = true;
   String _quickProvider = _providerRealDebrid;
 
-  // Debrify TV playback filters. Shared by channels and quick play (one
-  // Debrify TV feed preference, unlike provider/NSFW which are per-scope).
+  // MegaWatch TV playback filters. Shared by channels and quick play (one
+  // MegaWatch TV feed preference, unlike provider/NSFW which are per-scope).
   // Quality narrows torrents by release name; size narrows FILES once a
-  // provider has returned them. See DebrifyTvFilters for why they split.
-  DebrifyTvFilters _tvFilters = const DebrifyTvFilters.empty();
+  // provider has returned them. See MegaWatchTvFilters for why they split.
+  MegaWatchTvFilters _tvFilters = const MegaWatchTvFilters.empty();
   // Rate-limits the "filter relaxed" snackbar to once per playback session.
   bool _qualityFallbackNotified = false;
   // Real-Debrid only: consecutive links rejected purely on size, and the
@@ -463,16 +463,16 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   Set<String> _favoriteChannelIds = {};
   late final FocusNode _channelSearchFocusNode;
   final FocusNode _quickPlayFocusNode = FocusNode(
-    debugLabel: 'DebrifyTVQuickPlay',
+    debugLabel: 'MegaWatchTVQuickPlay',
   );
   final FocusNode _channelSearchButtonFocusNode = FocusNode(
-    debugLabel: 'DebrifyTVChannelSearchButton',
+    debugLabel: 'MegaWatchTVChannelSearchButton',
   );
   final FocusNode _channelSearchClearFocusNode = FocusNode(
-    debugLabel: 'DebrifyTVChannelSearchClear',
+    debugLabel: 'MegaWatchTVChannelSearchClear',
   );
   final FocusNode _channelMenuFocusNode = FocusNode(
-    debugLabel: 'DebrifyTVChannelMenu',
+    debugLabel: 'MegaWatchTVChannelMenu',
   );
   final MenuController _channelMenuController = MenuController();
 
@@ -493,18 +493,18 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   void initState() {
     super.initState();
     AnalyticsService.screenView('magic_tv');
-    _channelSearchFocusNode = FocusNode(debugLabel: 'DebrifyTVChannelSearch');
+    _channelSearchFocusNode = FocusNode(debugLabel: 'MegaWatchTVChannelSearch');
     _loadSettings();
     _loadChannels(); // also warms the Spotlight rail health, once per reload
     _loadFavoriteChannels();
 
     // Register watch channel handler for external calls (e.g., from home screen)
-    MainPageBridge.watchDebrifyTvChannel = _watchChannelById;
-    MainPageBridge.registerDebrifyTvLibraryListener(
-      _handleSyncedDebrifyTvLibraryChanged,
+    MainPageBridge.watchMegaWatchTvChannel = _watchChannelById;
+    MainPageBridge.registerMegaWatchTvLibraryListener(
+      _handleSyncedMegaWatchTvLibraryChanged,
     );
 
-    // Register TV sidebar focus handler (tab index 3 = Debrify TV)
+    // Register TV sidebar focus handler (tab index 3 = MegaWatch TV)
     _tvContentFocusHandler = () {
       _quickPlayFocusNode.requestFocus();
     };
@@ -520,9 +520,9 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   void dispose() {
     _spotlightStatsDebounce?.cancel();
     // Clear watch channel handler
-    MainPageBridge.watchDebrifyTvChannel = null;
-    MainPageBridge.unregisterDebrifyTvLibraryListener(
-      _handleSyncedDebrifyTvLibraryChanged,
+    MainPageBridge.watchMegaWatchTvChannel = null;
+    MainPageBridge.unregisterMegaWatchTvLibraryListener(
+      _handleSyncedMegaWatchTvLibraryChanged,
     );
     if (_tvContentFocusHandler != null) {
       MainPageBridge.unregisterTvContentFocusHandler(
@@ -748,19 +748,19 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   Future<void> _loadSettings() async {
-    final startRandom = await StorageService.getDebrifyTvStartRandom();
+    final startRandom = await StorageService.getMegaWatchTvStartRandom();
     final randomStartPercent =
-        await StorageService.getDebrifyTvRandomStartPercent();
+        await StorageService.getMegaWatchTvRandomStartPercent();
     // Hardcoded to false - no longer loading from storage
     const hideOptions = false;
-    final showChannelName = await StorageService.getDebrifyTvShowChannelName();
-    final showVideoTitle = await StorageService.getDebrifyTvShowVideoTitle();
+    final showChannelName = await StorageService.getMegaWatchTvShowChannelName();
+    final showVideoTitle = await StorageService.getMegaWatchTvShowVideoTitle();
     // hideBackButton is hardcoded to false - no longer loading from storage
     final avoidNsfw = await _settingsManager.getGlobalAvoidNsfw(true);
     final rdSkipBlocked = await StorageService.getRdSkipBlockedTorrents();
-    final tvFilters = await DebrifyTvFilters.load();
-    final storedProvider = await StorageService.getDebrifyTvProvider();
-    final hasStoredProvider = await StorageService.hasDebrifyTvProvider();
+    final tvFilters = await MegaWatchTvFilters.load();
+    final storedProvider = await StorageService.getMegaWatchTvProvider();
+    final hasStoredProvider = await StorageService.hasMegaWatchTvProvider();
     final rdIntegrationEnabled =
         await StorageService.getRealDebridIntegrationEnabled();
     final rdKey = await StorageService.getApiKey();
@@ -893,12 +893,12 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       _refreshSpotlightStatsIfFocused(_spotlightFocusedId);
     }
 
-    if (await StorageService.getDebrifyTvHideSeekbar() != hideOptions) {
-      unawaited(StorageService.saveDebrifyTvHideSeekbar(hideOptions));
+    if (await StorageService.getMegaWatchTvHideSeekbar() != hideOptions) {
+      unawaited(StorageService.saveMegaWatchTvHideSeekbar(hideOptions));
     }
 
     if (defaultProvider != storedProvider) {
-      await StorageService.saveDebrifyTvProvider(defaultProvider);
+      await StorageService.saveMegaWatchTvProvider(defaultProvider);
     }
   }
 
@@ -1038,44 +1038,44 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   Future<void> _loadChannels() async {
-    final records = await DebrifyTvRepository.instance.fetchAllChannels();
+    final records = await MegaWatchTvRepository.instance.fetchAllChannels();
     if (!mounted) return;
     setState(() {
       _channels = records
-          .map(DebrifyTvChannel.fromRecord)
+          .map(MegaWatchTvChannel.fromRecord)
           .toList(growable: false);
     });
     // Every path that reloads channels (create, edit, delete-all, ZIP/YAML/
     // community imports) has fresh pools too, so the rail's pips ride along
     // here rather than each call site remembering to refresh them.
-    if (_debrifyTvStyle == 'spotlight') {
+    if (_megawatchTvStyle == 'spotlight') {
       await _loadSpotlightRailHealth();
     }
   }
 
-  void _handleSyncedDebrifyTvLibraryChanged() {
+  void _handleSyncedMegaWatchTvLibraryChanged() {
     if (!mounted) return;
     setState(() {
       _channelCache.clear();
       _spotlightStats.clear();
-      _spotlightRailHealth = const <String, DebrifyTvRailHealth>{};
+      _spotlightRailHealth = const <String, MegaWatchTvRailHealth>{};
     });
     unawaited(_loadChannels());
   }
 
   Future<void> _loadFavoriteChannels() async {
-    final favoriteIds = await StorageService.getDebrifyTvFavoriteChannelIds();
+    final favoriteIds = await StorageService.getMegaWatchTvFavoriteChannelIds();
     if (!mounted) return;
     setState(() {
       _favoriteChannelIds = favoriteIds;
     });
   }
 
-  Future<void> _toggleChannelFavorite(DebrifyTvChannel channel) async {
+  Future<void> _toggleChannelFavorite(MegaWatchTvChannel channel) async {
     final isFavorited = _favoriteChannelIds.contains(channel.id);
     final newState = !isFavorited;
 
-    await StorageService.setDebrifyTvChannelFavorited(channel.id, newState);
+    await StorageService.setMegaWatchTvChannelFavorited(channel.id, newState);
 
     if (!mounted) return;
     setState(() {
@@ -1095,13 +1095,13 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     if (channel != null) {
       _watchChannel(channel);
     } else {
-      debugPrint('DebrifyTVScreen: Channel with ID $channelId not found');
+      debugPrint('MegaWatchTVScreen: Channel with ID $channelId not found');
     }
   }
 
   /// Check for pending auto-play channel from home screen
   Future<void> _checkPendingAutoPlay() async {
-    final channelId = MainPageBridge.getAndClearDebrifyTvChannelToAutoPlay();
+    final channelId = MainPageBridge.getAndClearMegaWatchTvChannelToAutoPlay();
     if (channelId == null) return;
 
     // Wait for channels to load
@@ -1114,17 +1114,17 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
 
     if (_channels.isEmpty) {
-      debugPrint('DebrifyTVScreen: Channels not loaded for auto-play');
+      debugPrint('MegaWatchTVScreen: Channels not loaded for auto-play');
       return;
     }
 
     _watchChannelById(channelId);
   }
 
-  Future<DebrifyTvChannelCacheEntry> _computeChannelCacheEntry(
-    DebrifyTvChannel channel,
+  Future<MegaWatchTvChannelCacheEntry> _computeChannelCacheEntry(
+    MegaWatchTvChannel channel,
     List<String> normalizedKeywords, {
-    DebrifyTvChannelCacheEntry? baseline,
+    MegaWatchTvChannelCacheEntry? baseline,
     Set<String>? keywordsToSearch,
   }) async {
     // The channel's own NSFW setting, FLOORED by the viewer: filtering is
@@ -1155,7 +1155,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         _filterKeywordStats(baseline.keywordStats, normalizedKeywords),
       );
       debugPrint(
-        'DebrifyTV: Starting incremental warm for "${channel.name}" – seeded cache with ${accumulator.length} torrent(s).',
+        'MegaWatchTV: Starting incremental warm for "${channel.name}" – seeded cache with ${accumulator.length} torrent(s).',
       );
     }
 
@@ -1164,11 +1164,11 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         : normalizedKeywords.toSet();
 
     if (keywordsToWarm.isEmpty) {
-      debugPrint('DebrifyTV: No keywords to warm for "${channel.name}".');
+      debugPrint('MegaWatchTV: No keywords to warm for "${channel.name}".');
     }
     if (enabledTvEngines.isEmpty && keywordsToWarm.isNotEmpty) {
       debugPrint(
-        'DebrifyTV: No enabled TV search engines for "${channel.name}".',
+        'MegaWatchTV: No enabled TV search engines for "${channel.name}".',
       );
     }
 
@@ -1201,7 +1201,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         }
         final keyword = result.keyword;
         debugPrint(
-          'DebrifyTV: Warmed keyword "$keyword" – added ${result.addedHashes.length} new torrent(s).',
+          'MegaWatchTV: Warmed keyword "$keyword" – added ${result.addedHashes.length} new torrent(s).',
         );
         anySuccess = anySuccess || result.addedHashes.isNotEmpty;
         stats[keyword] = result.stat;
@@ -1214,12 +1214,12 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
 
     if (anySuccess) {
-      return DebrifyTvChannelCacheEntry(
+      return MegaWatchTvChannelCacheEntry(
         version: 1,
         channelId: channel.id,
         normalizedKeywords: normalizedKeywords,
         fetchedAt: DateTime.now().millisecondsSinceEpoch,
-        status: DebrifyTvCacheStatus.ready,
+        status: MegaWatchTvCacheStatus.ready,
         errorMessage: null,
         torrents: _sortedCachedTorrents(accumulator),
         keywordStats: Map<String, KeywordStat>.from(stats),
@@ -1227,12 +1227,12 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
 
     failureMessage ??= 'No torrents found for these keywords yet.';
-    return DebrifyTvChannelCacheEntry(
+    return MegaWatchTvChannelCacheEntry(
       version: 1,
       channelId: channel.id,
       normalizedKeywords: normalizedKeywords,
       fetchedAt: DateTime.now().millisecondsSinceEpoch,
-      status: DebrifyTvCacheStatus.failed,
+      status: MegaWatchTvCacheStatus.failed,
       errorMessage: failureMessage,
       torrents: const <CachedTorrent>[],
       keywordStats: Map<String, KeywordStat>.from(stats),
@@ -1264,7 +1264,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           );
         } catch (e) {
           debugPrint(
-            'DebrifyTV: Cache warm ${engine.displayName} failed for "$keyword": $e',
+            'MegaWatchTV: Cache warm ${engine.displayName} failed for "$keyword": $e',
           );
           return _TvEngineWarmResult(
             engine: engine,
@@ -1309,7 +1309,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
     if (avoidNsfw && totalBefore != totalAfter) {
       debugPrint(
-        'DebrifyTV: Cache NSFW filter for "$keyword": $totalBefore → $totalAfter torrents',
+        'MegaWatchTV: Cache NSFW filter for "$keyword": $totalBefore → $totalAfter torrents',
       );
     }
 
@@ -1320,7 +1320,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     );
     if (totalTorrents < minTorrentsPerKeyword) {
       debugPrint(
-        'DebrifyTV: Skipping keyword "$keyword" – only $totalTorrents torrent(s), minimum is $minTorrentsPerKeyword',
+        'MegaWatchTV: Skipping keyword "$keyword" – only $totalTorrents torrent(s), minimum is $minTorrentsPerKeyword',
       );
       final stat = (stats[keyword] ?? KeywordStat.initial())
           .copyWith(
@@ -1387,7 +1387,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     setState(() {
       _channels = _channels.where((c) => c.id != id).toList();
     });
-    await DebrifyTvRepository.instance.deleteChannel(id);
+    await MegaWatchTvRepository.instance.deleteChannel(id);
     setState(() {
       _channelCache.remove(id);
       _spotlightStats.remove(id);
@@ -1456,7 +1456,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     });
 
     if (providerChanged) {
-      await StorageService.saveDebrifyTvProvider(nextChannelProvider);
+      await StorageService.saveMegaWatchTvProvider(nextChannelProvider);
     }
   }
 
@@ -1482,14 +1482,14 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     return normalized;
   }
 
-  Future<DebrifyTvChannelCacheEntry?> _ensureCacheEntry(
+  Future<MegaWatchTvChannelCacheEntry?> _ensureCacheEntry(
     String channelId,
   ) async {
     final cached = _channelCache[channelId];
     if (cached != null) {
       return cached;
     }
-    final fetched = await DebrifyTvCacheService.getEntry(channelId);
+    final fetched = await MegaWatchTvCacheService.getEntry(channelId);
     if (fetched != null) {
       _channelCache[channelId] = fetched;
     }
@@ -1505,7 +1505,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     if (existing.keywords.isNotEmpty) {
       return existing.keywords;
     }
-    final fetched = await DebrifyTvRepository.instance.fetchChannelKeywords(
+    final fetched = await MegaWatchTvRepository.instance.fetchChannelKeywords(
       channelId,
     );
     if (!mounted) {
@@ -1513,7 +1513,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
     final updated = existing.copyWith(keywords: fetched);
     setState(() {
-      final next = List<DebrifyTvChannel>.from(_channels);
+      final next = List<MegaWatchTvChannel>.from(_channels);
       next[index] = updated;
       _channels = next;
     });
@@ -1611,7 +1611,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   List<CachedTorrent> _filterCachedTorrentsForKeywords(
-    DebrifyTvChannelCacheEntry entry,
+    MegaWatchTvChannelCacheEntry entry,
     List<String> normalizedKeywords,
   ) {
     if (entry.torrents.isEmpty) {
@@ -1660,7 +1660,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         .toList();
     if (matched.isEmpty) {
       debugPrint(
-        'DebrifyTV: Quality filter matched 0/${all.length} cached torrents — '
+        'MegaWatchTV: Quality filter matched 0/${all.length} cached torrents — '
         'falling back to unfiltered.',
       );
       _notifyQualityFallback();
@@ -1668,7 +1668,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
     if (matched.length != all.length) {
       debugPrint(
-        'DebrifyTV: Quality filter on cached: ${all.length} → ${matched.length} torrents',
+        'MegaWatchTV: Quality filter on cached: ${all.length} → ${matched.length} torrents',
       );
     }
     return matched;
@@ -1746,7 +1746,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   List<CachedTorrent> _selectTorrentsForPlayback(
-    DebrifyTvChannelCacheEntry entry,
+    MegaWatchTvChannelCacheEntry entry,
     List<String> normalizedKeywords,
   ) {
     // Filter BEFORE the per-keyword/threshold narrowing below, so the
@@ -1812,11 +1812,11 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     return 'Real Debrid';
   }
 
-  /// Quality + size pickers for Debrify TV playback. One shared setting for
+  /// Quality + size pickers for MegaWatch TV playback. One shared setting for
   /// both channels and quick play, so the same feed rules apply wherever you
   /// start watching. Nothing selected in a row = that facet is off.
   Widget _tvFilterChips({StateSetter? dialogSetState}) {
-    void applyFilters(DebrifyTvFilters next) {
+    void applyFilters(MegaWatchTvFilters next) {
       setState(() => _tvFilters = next);
       // "At your quality" is computed WITH the filter; stale memos would
       // keep the old filter's count while playback uses the new one.
@@ -1827,9 +1827,9 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     void toggleQuality(QualityTier quality) {
       final next = Set<QualityTier>.from(_tvFilters.qualities);
       if (!next.remove(quality)) next.add(quality);
-      applyFilters(DebrifyTvFilters(qualities: next, sizes: _tvFilters.sizes));
+      applyFilters(MegaWatchTvFilters(qualities: next, sizes: _tvFilters.sizes));
       unawaited(
-        StorageService.setDebrifyTvFilterQualities(
+        StorageService.setMegaWatchTvFilterQualities(
           next.map((e) => e.name).toList(),
         ),
       );
@@ -1839,17 +1839,17 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       final next = Set<SizeBucket>.from(_tvFilters.sizes);
       if (!next.remove(bucket)) next.add(bucket);
       applyFilters(
-        DebrifyTvFilters(qualities: _tvFilters.qualities, sizes: next),
+        MegaWatchTvFilters(qualities: _tvFilters.qualities, sizes: next),
       );
       unawaited(
-        StorageService.setDebrifyTvFilterSizes(
+        StorageService.setMegaWatchTvFilterSizes(
           next.map((e) => e.name).toList(),
         ),
       );
     }
 
     final labelStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-      color: AppThemeScope.of(context).debrifyTv.textMeta,
+      color: AppThemeScope.of(context).megawatchTv.textMeta,
     );
 
     return Column(
@@ -1863,7 +1863,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         ),
         const SizedBox(height: 2),
         Text(
-          'Applies to channels and quick play. If nothing matches, Debrify TV '
+          'Applies to channels and quick play. If nothing matches, MegaWatch TV '
           'plays what it can rather than showing an empty channel.',
           style: labelStyle,
         ),
@@ -1876,7 +1876,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           children: [
             for (final quality in QualityTier.values)
               _SpotlightChoiceChip(
-                label: DebrifyTvFilters.qualityLabel(quality),
+                label: MegaWatchTvFilters.qualityLabel(quality),
                 selected: _tvFilters.qualities.contains(quality),
                 enabled: !_isBusy,
                 onPressed: () => toggleQuality(quality),
@@ -1892,7 +1892,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           children: [
             for (final bucket in SizeBucket.values)
               _SpotlightChoiceChip(
-                label: DebrifyTvFilters.sizeLabel(bucket),
+                label: MegaWatchTvFilters.sizeLabel(bucket),
                 selected: _tvFilters.sizes.contains(bucket),
                 enabled: !_isBusy,
                 onPressed: () => toggleSize(bucket),
@@ -1932,7 +1932,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         _provider = value;
       });
       dialogSetState?.call(() {});
-      unawaited(StorageService.saveDebrifyTvProvider(value));
+      unawaited(StorageService.saveMegaWatchTvProvider(value));
     }
 
     Widget providerChip({
@@ -1942,7 +1942,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       required String unavailableMessage,
     }) {
       return Tooltip(
-        message: available ? 'Use $label for Debrify TV' : unavailableMessage,
+        message: available ? 'Use $label for MegaWatch TV' : unavailableMessage,
         child: _SpotlightChoiceChip(
           label: label,
           selected: currentProvider == value,
@@ -2019,16 +2019,16 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     return limitReached || keywordList.length >= _maxChannelKeywords;
   }
 
-  Future<DebrifyTvChannel?> _openChannelDialog({
-    DebrifyTvChannel? existing,
+  Future<MegaWatchTvChannel?> _openChannelDialog({
+    MegaWatchTvChannel? existing,
   }) async {
     final nameController = TextEditingController(text: existing?.name ?? '');
     final keywordInputController = TextEditingController();
     FocusNode? channelNameFocus;
     FocusNode? channelKeywordFocus;
     if (_isAndroidTv) {
-      channelNameFocus = FocusNode(debugLabel: 'DebrifyTVChannelName');
-      channelKeywordFocus = FocusNode(debugLabel: 'DebrifyTVChannelKeyword');
+      channelNameFocus = FocusNode(debugLabel: 'MegaWatchTVChannelName');
+      channelKeywordFocus = FocusNode(debugLabel: 'MegaWatchTVChannelKeyword');
     }
     final List<String> keywordList = [];
     final seenKeywords = <String>{};
@@ -2048,16 +2048,16 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     bool avoidNsfw = existing?.avoidNsfw ?? true;
     String? error;
 
-    DebrifyTvChannel? result;
+    MegaWatchTvChannel? result;
     try {
-      result = await showDialog<DebrifyTvChannel>(
+      result = await showDialog<MegaWatchTvChannel>(
         context: context,
         barrierDismissible: false,
         builder: (dialogContext) {
           return StatefulBuilder(
             builder: (context, setModalState) {
               final app = AppThemeScope.of(context);
-              final tv = app.debrifyTv;
+              final tv = app.megawatchTv;
               Future<void> submit() async {
                 final pendingRaw = keywordInputController.text.trim();
                 if (pendingRaw.isNotEmpty) {
@@ -2117,7 +2117,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                   return;
                 }
                 final now = DateTime.now();
-                final channel = DebrifyTvChannel(
+                final channel = MegaWatchTvChannel(
                   id:
                       existing?.id ??
                       DateTime.now().microsecondsSinceEpoch.toString(),
@@ -2131,13 +2131,13 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 Navigator.of(dialogContext).pop(channel);
               }
 
-              return DebrifyTvSpotlightDialog(
+              return MegaWatchTvSpotlightDialog(
                 eyebrow: existing == null
                     ? 'Channel editor · new'
                     : 'Channel editor · ${existing.channelNumber.toString().padLeft(2, '0')}',
                 title: existing == null ? 'Create a channel' : 'Edit channel',
                 subtitle:
-                    'Keywords are search terms. Add one or several and Debrify will pool the results.',
+                    'Keywords are search terms. Add one or several and MegaWatch will pool the results.',
                 icon: Icons.tv_rounded,
                 maxWidth: 720,
                 child: Column(
@@ -2150,7 +2150,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                       autofocus: _isAndroidTv,
                       textCapitalization: TextCapitalization.words,
                       // The shared TV shell/keyboard chrome follows
-                      // settings.accent. NOT debrifyTv.accent: legacy
+                      // settings.accent. NOT megawatchTv.accent: legacy
                       // paints that the channel grid's Netflix red, while
                       // the keyboard's highlight has always been violet.
                       accent: app.settings.accent,
@@ -2280,7 +2280,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                       ],
                     ),
                     const SizedBox(height: 18),
-                    DebrifyTvDialogSection(
+                    MegaWatchTvDialogSection(
                       label: 'Channel settings',
                       child: SwitchRow(
                         title: 'Avoid NSFW content',
@@ -2304,14 +2304,14 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                   ],
                 ),
                 actions: [
-                  DebrifyTvDialogButton(
+                  MegaWatchTvDialogButton(
                     label: 'Cancel',
                     onPressed: () => Navigator.of(dialogContext).pop(),
                   ),
-                  DebrifyTvDialogButton(
+                  MegaWatchTvDialogButton(
                     label: 'Save channel',
                     icon: Icons.check_rounded,
-                    tone: DebrifyTvDialogButtonTone.primary,
+                    tone: MegaWatchTvDialogButtonTone.primary,
                     onPressed: submit,
                   ),
                 ],
@@ -2428,17 +2428,17 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         onPopInvokedWithResult: (didPop, _) {
           if (!didPop) Navigator.of(dialogContext).pop();
         },
-        child: DebrifyTvSpotlightDialog(
+        child: MegaWatchTvSpotlightDialog(
           eyebrow: 'Channel export · Apple TV',
           title: 'Export from another device',
           subtitle:
-              'Apple TV does not expose a location where Debrify can save a '
-              'portable ZIP. Export the channels from Debrify on a phone or '
+              'Apple TV does not expose a location where MegaWatch can save a '
+              'portable ZIP. Export the channels from MegaWatch on a phone or '
               'computer, or send them through Remote.',
           icon: Icons.tv_rounded,
           maxWidth: 580,
           actions: <Widget>[
-            DebrifyTvDialogButton(
+            MegaWatchTvDialogButton(
               autofocus: true,
               label: 'Close',
               onPressed: () => Navigator.of(dialogContext).pop(),
@@ -2464,15 +2464,15 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
     try {
       final capability = await ProfileAsyncAuthorization.capture(
-        ProfileFeature.debrifyTv,
+        ProfileFeature.megawatchTv,
       );
       Future<T> runCaptured<T>(Future<T> Function() body) =>
           capability == null ? body() : capability.runIfCurrent(body);
 
       final channels = await runCaptured(
-        DebrifyTvRepository.instance.fetchAllChannels,
+        MegaWatchTvRepository.instance.fetchAllChannels,
       );
-      final health = await runCaptured(DebrifyTvCacheService.loadRailHealth);
+      final health = await runCaptured(MegaWatchTvCacheService.loadRailHealth);
       if (!mounted) return;
       if (channels.isEmpty) {
         _showSnack('There are no channels to export.', color: Colors.orange);
@@ -2493,7 +2493,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       if (!mounted || selectedIds == null || selectedIds.isEmpty) return;
 
       setState(() => _status = 'Preparing channel archive…');
-      late List<DebrifyTvChannelArchiveSource> sources;
+      late List<MegaWatchTvChannelArchiveSource> sources;
       final bytes = await _runChannelExportProgress<Uint8List>((
         setStage,
       ) async {
@@ -2501,11 +2501,11 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           // Re-read after the selection dialog: a channel can be edited or
           // removed while an overlay is open, and the archive must reflect
           // the rows that actually exist at export time.
-          final current = await DebrifyTvRepository.instance.fetchAllChannels();
+          final current = await MegaWatchTvRepository.instance.fetchAllChannels();
           final selected = current
               .where((channel) => selectedIds.contains(channel.channelId))
               .toList(growable: false);
-          final result = <DebrifyTvChannelArchiveSource>[];
+          final result = <MegaWatchTvChannelArchiveSource>[];
           for (var index = 0; index < selected.length; index++) {
             final channel = selected[index];
             setStage(
@@ -2513,10 +2513,10 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               '${channel.name}',
             );
             result.add(
-              DebrifyTvChannelArchiveSource(
+              MegaWatchTvChannelArchiveSource(
                 channel: channel,
                 cacheEntry:
-                    await DebrifyTvCacheService.getEntryForPortableExport(
+                    await MegaWatchTvCacheService.getEntryForPortableExport(
                       channel.channelId,
                     ),
               ),
@@ -2528,10 +2528,10 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           throw StateError('The selected channels are no longer available');
         }
         setStage('Compressing ${sources.length} channels into one ZIP…');
-        return DebrifyTvChannelArchiveService.buildZip(sources);
+        return MegaWatchTvChannelArchiveService.buildZip(sources);
       });
       if (!mounted) return;
-      if (bytes.length > DebrifyTvZipImporter.maxPortableFileBytes) {
+      if (bytes.length > MegaWatchTvZipImporter.maxPortableFileBytes) {
         _showSnack(
           'The ZIP is over 100 MB. Export fewer channels at a time.',
           color: Colors.orange,
@@ -2552,7 +2552,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         now.minute,
       ].map((part) => part.toString().padLeft(2, '0')).join();
       final savedPath = await ProfileBackupFlows(context).saveBackupFile(
-        fileName: 'debrify-tv-channels-$stamp.zip',
+        fileName: 'megawatch-tv-channels-$stamp.zip',
         bytes: bytes,
         mimeType: 'application/zip',
         artifactLabel: 'channel archive',
@@ -2569,7 +2569,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       );
     } catch (error) {
       debugPrint(
-        'DebrifyTV: channel archive export failed (${error.runtimeType})',
+        'MegaWatchTV: channel archive export failed (${error.runtimeType})',
       );
       if (mounted) {
         _showSnack('Failed to export channels.', color: Colors.red);
@@ -2594,7 +2594,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
   Future<void> _handleImportChannelsFromDevice() async {
     // FileType.any instead of custom: Android has no MimeTypeMap entry for
-    // `yaml`/`yml`/`debrify`, so a custom filter silently greys those files out
+    // `yaml`/`yml`/`megawatch`, so a custom filter silently greys those files out
     // in the system picker (and throws "Unsupported filter" outright when every
     // extension is unmapped). The importer validates the bytes/format below.
     final selection = await FilePicker.platform.pickFiles(
@@ -2610,7 +2610,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     final pickedFile = selection.files.first;
 
     // Reject an implausibly large pick before reading it into memory.
-    if (pickedFile.size > DebrifyTvZipImporter.maxPortableFileBytes) {
+    if (pickedFile.size > MegaWatchTvZipImporter.maxPortableFileBytes) {
       _showSnack('Selected file is too large to import.', color: Colors.orange);
       return;
     }
@@ -2674,9 +2674,9 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
     final trimmedInput = input.trim();
 
-    // Check if it's a debrify link (pasted directly)
+    // Check if it's a megawatch link (pasted directly)
     if (MagnetYamlService.isMagnetLink(trimmedInput)) {
-      await _importDebrifyLinkDirectly(trimmedInput);
+      await _importMegaWatchLinkDirectly(trimmedInput);
       return;
     }
 
@@ -2690,7 +2690,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       }
     } catch (_) {
       _showSnack(
-        'Enter a valid debrify:// link or http(s) URL.',
+        'Enter a valid megawatch:// link or http(s) URL.',
         color: Colors.red,
       );
       if (mounted) {
@@ -2820,7 +2820,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         }
 
         // Import using existing method (don't show dialog/summary for each channel)
-        final success = await _importDebrifyBytes(
+        final success = await _importMegaWatchBytes(
           channel.name,
           bytes,
           showDialog: false,
@@ -2908,7 +2908,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     final type = _determineImportType(sourceName, bytes);
     if (type == null) {
       _showSnack(
-        'Unsupported file type. Select a .zip, .yaml, .txt, or .debrify file.',
+        'Unsupported file type. Select a .zip, .yaml, .txt, or .megawatch file.',
         color: Colors.orange,
       );
       return false;
@@ -2921,8 +2921,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         return await _importYamlBytes(sourceName, bytes, origin);
       case _ChannelImportType.text:
         return await _importTextBytes(sourceName, bytes);
-      case _ChannelImportType.debrify:
-        return await _importDebrifyBytes(sourceName, bytes);
+      case _ChannelImportType.megawatch:
+        return await _importMegaWatchBytes(sourceName, bytes);
     }
   }
 
@@ -2956,8 +2956,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     if (lower.endsWith('.zip')) {
       return _ChannelImportType.zip;
     }
-    if (lower.endsWith('.debrify')) {
-      return _ChannelImportType.debrify;
+    if (lower.endsWith('.megawatch')) {
+      return _ChannelImportType.megawatch;
     }
     if (lower.endsWith('.yaml') || lower.endsWith('.yml')) {
       return _ChannelImportType.yaml;
@@ -2975,8 +2975,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     // Smart content detection for unknown extensions
     try {
       final content = utf8.decode(bytes).trim();
-      if (content.startsWith('debrify://')) {
-        return _ChannelImportType.debrify;
+      if (content.startsWith('megawatch://')) {
+        return _ChannelImportType.megawatch;
       }
     } catch (_) {
       // If UTF-8 decode fails, not a text file
@@ -3028,7 +3028,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
     final channel = await _parseYamlInBackground(sourceName, content);
 
-    final parsed = DebrifyTvZipImportResult(
+    final parsed = MegaWatchTvZipImportResult(
       channels: [channel],
       failures: const [],
     );
@@ -3083,7 +3083,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     final lowerExisting = _channels.map((c) => c.name.toLowerCase()).toSet();
     final channelName = _resolveUniqueChannelName(baseName, lowerExisting);
     final now = DateTime.now();
-    final channel = DebrifyTvChannel(
+    final channel = MegaWatchTvChannel(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       name: channelName,
       keywords: keywords,
@@ -3098,7 +3098,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     return true;
   }
 
-  Future<bool> _importDebrifyBytes(
+  Future<bool> _importMegaWatchBytes(
     String sourceName,
     Uint8List bytes, {
     bool showDialog = true,
@@ -3106,17 +3106,17 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }) async {
     final content = utf8.decode(bytes).trim();
 
-    // Validate debrify link format
+    // Validate megawatch link format
     if (!MagnetYamlService.isMagnetLink(content)) {
-      throw const FormatException('Not a valid Debrify link.');
+      throw const FormatException('Not a valid MegaWatch link.');
     }
 
     if (showDialog) {
       _showChannelCreationDialog('Importing channel…');
     }
-    _updateProgress(['Decoding debrify link…']);
+    _updateProgress(['Decoding megawatch link…']);
 
-    // Decode debrify link
+    // Decode megawatch link
     final result = MagnetYamlService.decode(content);
 
     _updateProgress(['Parsing channel data…']);
@@ -3127,7 +3127,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       result.yamlContent,
     );
 
-    final parsed = DebrifyTvZipImportResult(
+    final parsed = MegaWatchTvZipImportResult(
       channels: [channel],
       failures: const [],
     );
@@ -3146,20 +3146,20 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     return persistence.successes.isNotEmpty;
   }
 
-  Future<void> _importDebrifyLinkDirectly(String debrifyLink) async {
+  Future<void> _importMegaWatchLinkDirectly(String megawatchLink) async {
     if (!mounted) {
       return;
     }
 
     setState(() {
       _isBusy = true;
-      _status = 'Decoding debrify link…';
+      _status = 'Decoding megawatch link…';
     });
 
     try {
-      final bytes = utf8.encode(debrifyLink);
+      final bytes = utf8.encode(megawatchLink);
       await _safeImportChannelBytes(
-        sourceName: 'debrify_link',
+        sourceName: 'megawatch_link',
         bytes: Uint8List.fromList(bytes),
         origin: _ChannelImportOrigin.url,
       );
@@ -3235,11 +3235,11 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             final app = AppThemeScope.of(context);
-            return DebrifyTvSpotlightDialog(
+            return MegaWatchTvSpotlightDialog(
               eyebrow: 'Import · from a link',
               title: 'Paste a channel link',
               subtitle:
-                  'Use a debrify:// share link or an http(s) URL to a supported channel file.',
+                  'Use a megawatch:// share link or an http(s) URL to a supported channel file.',
               icon: Icons.link_rounded,
               maxWidth: 650,
               child: Column(
@@ -3253,8 +3253,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                     keyboardInk: app.core.tx,
                     keyboardInkOnAccent: app.inkOn(app.settings.accent),
                     decoration: InputDecoration(
-                      labelText: 'Debrify link or file URL',
-                      hintText: 'debrify://channel?... or https://...',
+                      labelText: 'MegaWatch link or file URL',
+                      hintText: 'megawatch://channel?... or https://...',
                       errorText: errorText,
                     ),
                     autofocus: true,
@@ -3263,24 +3263,24 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'Supported: .zip · .yaml · .txt · .debrify',
+                    'Supported: .zip · .yaml · .txt · .megawatch',
                     style: TextStyle(
                       fontFamily: 'JetBrainsMono',
                       fontSize: 10,
-                      color: app.debrifyTv.textFaint,
+                      color: app.megawatchTv.textFaint,
                     ),
                   ),
                 ],
               ),
               actions: [
-                DebrifyTvDialogButton(
+                MegaWatchTvDialogButton(
                   label: 'Cancel',
                   onPressed: () => Navigator.of(dialogContext).pop(),
                 ),
-                DebrifyTvDialogButton(
+                MegaWatchTvDialogButton(
                   label: 'Import',
                   icon: Icons.download_rounded,
-                  tone: DebrifyTvDialogButtonTone.primary,
+                  tone: MegaWatchTvDialogButtonTone.primary,
                   onPressed: () {
                     final candidate = controller.text.trim();
                     if (candidate.isEmpty) {
@@ -3290,7 +3290,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                       return;
                     }
 
-                    // Check if it's a debrify link (valid and accepted)
+                    // Check if it's a megawatch link (valid and accepted)
                     if (MagnetYamlService.isMagnetLink(candidate)) {
                       Navigator.of(dialogContext).pop(candidate);
                       return;
@@ -3307,7 +3307,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                     } catch (_) {
                       setState(() {
                         errorText =
-                            'Enter a valid debrify:// link or http(s) URL.';
+                            'Enter a valid megawatch:// link or http(s) URL.';
                       });
                       return;
                     }
@@ -3328,7 +3328,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   Future<ZipImportPersistenceResult> _persistImportedZipChannels(
-    List<DebrifyTvZipImportedChannel> channels,
+    List<MegaWatchTvZipImportedChannel> channels,
   ) async {
     if (channels.isEmpty) {
       return const ZipImportPersistenceResult(successes: [], failures: []);
@@ -3337,8 +3337,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     final successes = <ZipImportSuccess>[];
     final failures = <ZipImportSaveFailure>[];
 
-    final List<DebrifyTvChannel> appendedChannels = [];
-    final Map<String, DebrifyTvChannelCacheEntry> appendedCache = {};
+    final List<MegaWatchTvChannel> appendedChannels = [];
+    final Map<String, MegaWatchTvChannelCacheEntry> appendedCache = {};
 
     final Set<String> usedNames = _channels
         .map((channel) => channel.name.toLowerCase())
@@ -3364,7 +3364,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       final channelId = DateTime.now().microsecondsSinceEpoch.toString();
       final now = DateTime.now();
 
-      final record = DebrifyTvChannelRecord(
+      final record = MegaWatchTvChannelRecord(
         channelId: channelId,
         name: uniqueName,
         keywords: channel.displayKeywords,
@@ -3374,23 +3374,23 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         updatedAt: now,
       );
 
-      final entry = DebrifyTvChannelCacheEntry(
+      final entry = MegaWatchTvChannelCacheEntry(
         version: 1,
         channelId: channelId,
         normalizedKeywords: channel.normalizedKeywords,
         fetchedAt: now.millisecondsSinceEpoch,
-        status: DebrifyTvCacheStatus.ready,
+        status: MegaWatchTvCacheStatus.ready,
         errorMessage: null,
         torrents: channel.torrents,
         keywordStats: channel.keywordStats,
       );
 
       try {
-        await DebrifyTvRepository.instance.upsertChannel(record);
-        await DebrifyTvCacheService.saveEntry(entry);
+        await MegaWatchTvRepository.instance.upsertChannel(record);
+        await MegaWatchTvCacheService.saveEntry(entry);
 
         appendedChannels.add(
-          DebrifyTvChannel(
+          MegaWatchTvChannel(
             id: channelId,
             name: uniqueName,
             keywords: const <String>[],
@@ -3435,7 +3435,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   Future<void> _showZipImportSummary(
-    DebrifyTvZipImportResult parsed,
+    MegaWatchTvZipImportResult parsed,
     ZipImportPersistenceResult persisted,
   ) async {
     if (!mounted) {
@@ -3475,8 +3475,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     await showDialog<void>(
       context: context,
       builder: (dialogContext) {
-        final tv = AppThemeScope.of(dialogContext).debrifyTv;
-        return DebrifyTvSpotlightDialog(
+        final tv = AppThemeScope.of(dialogContext).megawatchTv;
+        return MegaWatchTvSpotlightDialog(
           eyebrow: 'Import · summary',
           title: dialogTitle,
           subtitle: hasSuccess
@@ -3535,7 +3535,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             ],
           ),
           actions: [
-            DebrifyTvDialogButton(
+            MegaWatchTvDialogButton(
               autofocus: true,
               label: 'Close',
               onPressed: () => Navigator.of(dialogContext).pop(),
@@ -3577,7 +3577,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     return candidate;
   }
 
-  Future<void> _handleEditChannel(DebrifyTvChannel channel) async {
+  Future<void> _handleEditChannel(MegaWatchTvChannel channel) async {
     await _syncProviderAvailability();
 
     // Store current channel's NSFW setting before dialog
@@ -3594,7 +3594,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       if (nsfwChanged) {
         // NSFW setting changed for this channel - rebuild cache with new filter
         debugPrint(
-          'DebrifyTV: Channel NSFW filter changed. Forcing full cache rebuild...',
+          'MegaWatchTV: Channel NSFW filter changed. Forcing full cache rebuild...',
         );
 
         // Clear existing cache to force full rebuild
@@ -3614,7 +3614,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
   }
 
-  Future<bool> _showDebrifyTvConfirmation({
+  Future<bool> _showMegaWatchTvConfirmation({
     required String eyebrow,
     required String title,
     required String message,
@@ -3631,7 +3631,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         onPopInvokedWithResult: (didPop, result) {
           if (!didPop) Navigator.of(dialogContext).pop(false);
         },
-        child: DebrifyTvSpotlightDialog(
+        child: MegaWatchTvSpotlightDialog(
           eyebrow: eyebrow,
           title: title,
           subtitle: message,
@@ -3639,17 +3639,17 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           maxWidth: 580,
           child: const SizedBox.shrink(),
           actions: [
-            DebrifyTvDialogButton(
+            MegaWatchTvDialogButton(
               autofocus: true,
               label: 'Cancel',
               onPressed: () => Navigator.of(dialogContext).pop(false),
             ),
-            DebrifyTvDialogButton(
+            MegaWatchTvDialogButton(
               label: confirmLabel,
               icon: danger ? Icons.delete_outline_rounded : Icons.check_rounded,
               tone: danger
-                  ? DebrifyTvDialogButtonTone.danger
-                  : DebrifyTvDialogButtonTone.primary,
+                  ? MegaWatchTvDialogButtonTone.danger
+                  : MegaWatchTvDialogButtonTone.primary,
               onPressed: () => Navigator.of(dialogContext).pop(true),
             ),
           ],
@@ -3659,13 +3659,13 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     return result ?? false;
   }
 
-  Future<void> _handleDeleteChannel(DebrifyTvChannel channel) async {
+  Future<void> _handleDeleteChannel(MegaWatchTvChannel channel) async {
     // Set busy immediately to block any other interactions
     setState(() {
       _isBusy = true;
     });
 
-    final confirmed = await _showDebrifyTvConfirmation(
+    final confirmed = await _showMegaWatchTvConfirmation(
       eyebrow: 'Channel library · destructive action',
       title: 'Delete ${channel.name}?',
       message:
@@ -3695,7 +3695,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
   }
 
-  Future<void> _handleShareChannelAsMagnet(DebrifyTvChannel channel) async {
+  Future<void> _handleShareChannelAsMagnet(MegaWatchTvChannel channel) async {
     if (!mounted) {
       return;
     }
@@ -3732,13 +3732,13 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         context: context,
         builder: (dialogContext) {
           final app = AppThemeScope.of(dialogContext);
-          final tv = app.debrifyTv;
-          return DebrifyTvSpotlightDialog(
+          final tv = app.megawatchTv;
+          return MegaWatchTvSpotlightDialog(
             eyebrow:
                 'Share channel · ${channel.channelNumber.toString().padLeft(2, '0')}',
             title: channel.name,
             subtitle:
-                'Anyone on Debrify can paste this link to import the channel and its saved pool.',
+                'Anyone on MegaWatch can paste this link to import the channel and its saved pool.',
             icon: Icons.share_rounded,
             maxWidth: 720,
             child: Column(
@@ -3785,15 +3785,15 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               ],
             ),
             actions: [
-              DebrifyTvDialogButton(
+              MegaWatchTvDialogButton(
                 label: 'Close',
                 onPressed: () => Navigator.of(dialogContext).pop(),
               ),
-              DebrifyTvDialogButton(
+              MegaWatchTvDialogButton(
                 autofocus: true,
                 label: 'Copy link',
                 icon: Icons.copy_rounded,
-                tone: DebrifyTvDialogButtonTone.primary,
+                tone: MegaWatchTvDialogButtonTone.primary,
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: magnetLink));
                   _showSnack('Channel link copied!', color: Colors.green);
@@ -3819,7 +3819,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
   }
 
-  Future<String> _generateChannelYaml(DebrifyTvChannel channel) async {
+  Future<String> _generateChannelYaml(MegaWatchTvChannel channel) async {
     // Generate YAML with channel config and torrent data from cache
     final buffer = StringBuffer();
     buffer.writeln('channel_name: "${channel.name}"');
@@ -3828,7 +3828,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     buffer.writeln('keywords:');
 
     // Get cached torrents from database (not in-memory cache)
-    final cacheEntry = await DebrifyTvCacheService.getEntry(channel.id);
+    final cacheEntry = await MegaWatchTvCacheService.getEntry(channel.id);
     final cachedTorrents = cacheEntry?.torrents ?? <CachedTorrent>[];
     for (final keyword in channel.keywords) {
       buffer.writeln('  $keyword:');
@@ -3898,7 +3898,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       _isBusy = true;
     });
 
-    final confirmed = await _showDebrifyTvConfirmation(
+    final confirmed = await _showMegaWatchTvConfirmation(
       eyebrow: 'Channel library · ${_channels.length} channels',
       title: 'Delete every channel?',
       message:
@@ -3930,12 +3930,12 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     });
 
     try {
-      await DebrifyTvRepository.instance.clearAll();
-      await DebrifyTvCacheService.clearAll(
+      await MegaWatchTvRepository.instance.clearAll();
+      await MegaWatchTvCacheService.clearAll(
         origin: WebDavSyncMutationOrigin.maintenance,
       );
       setState(() {
-        _channels = const <DebrifyTvChannel>[];
+        _channels = const <MegaWatchTvChannel>[];
         _channelCache.clear();
       });
       _showSnack('All channels deleted.', color: Colors.orange);
@@ -3954,7 +3954,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   Future<void> _createOrUpdateChannel(
-    DebrifyTvChannel channel, {
+    MegaWatchTvChannel channel, {
     required bool isEdit,
   }) async {
     final normalizedKeywords = _normalizedKeywords(channel.keywords);
@@ -3967,7 +3967,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
 
     debugPrint(
-      'DebrifyTV: ${isEdit ? 'Updating' : 'Creating'} channel "${channel.name}" with ${normalizedKeywords.length} keyword(s): ${normalizedKeywords.join(', ')}',
+      'MegaWatchTV: ${isEdit ? 'Updating' : 'Creating'} channel "${channel.name}" with ${normalizedKeywords.length} keyword(s): ${normalizedKeywords.join(', ')}',
     );
 
     final int estimatedSeconds = _estimatedWarmDurationSeconds(
@@ -3993,12 +3993,12 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           color: Colors.orange,
         );
         debugPrint(
-          'DebrifyTV: Aborting save for "${channel.name}" – keyword cap exceeded.',
+          'MegaWatchTV: Aborting save for "${channel.name}" – keyword cap exceeded.',
         );
         return;
       }
 
-      DebrifyTvChannelCacheEntry? workingEntry = baseline;
+      MegaWatchTvChannelCacheEntry? workingEntry = baseline;
       final currentKeywordSet = normalizedKeywords.toSet();
       Set<String> addedKeywords = const <String>{};
       Set<String> removedKeywords = const <String>{};
@@ -4009,7 +4009,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         addedKeywords = currentKeywordSet.difference(previousKeywords);
 
         debugPrint(
-          'DebrifyTV: Detected keyword changes for "${channel.name}" – added: ${addedKeywords.join(', ')}, removed: ${removedKeywords.join(', ')}',
+          'MegaWatchTV: Detected keyword changes for "${channel.name}" – added: ${addedKeywords.join(', ')}, removed: ${removedKeywords.join(', ')}',
         );
 
         if (removedKeywords.isNotEmpty) {
@@ -4024,8 +4024,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           )..removeWhere((key, _) => removedKeywords.contains(key));
 
           final newStatus = filteredTorrents.isNotEmpty
-              ? DebrifyTvCacheStatus.ready
-              : DebrifyTvCacheStatus.failed;
+              ? MegaWatchTvCacheStatus.ready
+              : MegaWatchTvCacheStatus.failed;
 
           workingEntry = baseline.copyWith(
             normalizedKeywords: normalizedKeywords,
@@ -4036,7 +4036,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           );
 
           debugPrint(
-            'DebrifyTV: Pruned ${baseline.torrents.length - filteredTorrents.length} torrent(s) after removing keywords. Remaining: ${filteredTorrents.length}.',
+            'MegaWatchTV: Pruned ${baseline.torrents.length - filteredTorrents.length} torrent(s) after removing keywords. Remaining: ${filteredTorrents.length}.',
           );
         } else if (baseline.normalizedKeywords.length !=
             normalizedKeywords.length) {
@@ -4053,7 +4053,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             ),
           );
           debugPrint(
-            'DebrifyTV: Warming new keywords for "${channel.name}": ${addedKeywords.join(', ')}',
+            'MegaWatchTV: Warming new keywords for "${channel.name}": ${addedKeywords.join(', ')}',
           );
           workingEntry = await _computeChannelCacheEntry(
             channel,
@@ -4062,13 +4062,13 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             keywordsToSearch: addedKeywords,
           );
           debugPrint(
-            'DebrifyTV: After warming new keywords, cache has ${workingEntry.torrents.length} torrent(s).',
+            'MegaWatchTV: After warming new keywords, cache has ${workingEntry.torrents.length} torrent(s).',
           );
         }
 
         if (addedKeywords.isEmpty && removedKeywords.isEmpty) {
           debugPrint(
-            'DebrifyTV: No keyword changes for "${channel.name}" – reusing existing cache.',
+            'MegaWatchTV: No keyword changes for "${channel.name}" – reusing existing cache.',
           );
           workingEntry = baseline.copyWith(
             normalizedKeywords: normalizedKeywords,
@@ -4076,13 +4076,13 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         }
       } else {
         ensureProgressDialog();
-        debugPrint('DebrifyTV: Running full warm-up for "${channel.name}"');
+        debugPrint('MegaWatchTV: Running full warm-up for "${channel.name}"');
         workingEntry = await _computeChannelCacheEntry(
           channel,
           normalizedKeywords,
         );
         debugPrint(
-          'DebrifyTV: Initial warm-up complete for "${channel.name}" with ${workingEntry.torrents.length} torrent(s).',
+          'MegaWatchTV: Initial warm-up complete for "${channel.name}" with ${workingEntry.torrents.length} torrent(s).',
         );
       }
 
@@ -4107,7 +4107,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                   'Unable to find torrents for these keywords. Try again later.');
 
         debugPrint(
-          'DebrifyTV: Cache validation failed for "${channel.name}" – ready=${entry.isReady}, torrents=${entry.torrents.length}.',
+          'MegaWatchTV: Cache validation failed for "${channel.name}" – ready=${entry.isReady}, torrents=${entry.torrents.length}.',
         );
 
         if (isEdit && baseline != null) {
@@ -4116,7 +4116,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             _spotlightStats.remove(channel.id);
           });
           _refreshSpotlightStatsIfFocused(channel.id);
-          await DebrifyTvCacheService.saveEntry(
+          await MegaWatchTvCacheService.saveEntry(
             baseline,
             origin: WebDavSyncMutationOrigin.rollback,
           );
@@ -4125,7 +4125,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             _channelCache.remove(channel.id);
             _spotlightStats.remove(channel.id);
           });
-          await DebrifyTvCacheService.removeEntry(
+          await MegaWatchTvCacheService.removeEntry(
             channel.id,
             origin: WebDavSyncMutationOrigin.rollback,
           );
@@ -4144,9 +4144,9 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       setState(() {
         final index = _channels.indexWhere((c) => c.id == displayChannel.id);
         if (index == -1) {
-          _channels = <DebrifyTvChannel>[..._channels, displayChannel];
+          _channels = <MegaWatchTvChannel>[..._channels, displayChannel];
         } else {
-          final next = List<DebrifyTvChannel>.from(_channels);
+          final next = List<MegaWatchTvChannel>.from(_channels);
           next[index] = displayChannel;
           _channels = next;
         }
@@ -4154,10 +4154,10 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         _spotlightStats.remove(displayChannel.id);
       });
 
-      await DebrifyTvRepository.instance.upsertChannel(
+      await MegaWatchTvRepository.instance.upsertChannel(
         updatedChannel.toRecord(),
       );
-      await DebrifyTvCacheService.saveEntry(entry);
+      await MegaWatchTvCacheService.saveEntry(entry);
       await _loadChannels();
       // Memo removal alone would leave the stage on its placeholder: only a
       // focus MOVE computes, and editing from the stage doesn't move focus.
@@ -4168,10 +4168,10 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           : 'Channel "${updatedChannel.name}" saved';
       _showSnack(successMsg, color: Colors.green);
       debugPrint(
-        'DebrifyTV: $successMsg (torrents cached: ${entry.torrents.length})',
+        'MegaWatchTV: $successMsg (torrents cached: ${entry.torrents.length})',
       );
     } catch (e) {
-      debugPrint('DebrifyTV: Channel creation failed for ${channel.name}: $e');
+      debugPrint('MegaWatchTV: Channel creation failed for ${channel.name}: $e');
       _showSnack(
         'Failed to build channel cache. Please try again.',
         color: Colors.red,
@@ -4189,7 +4189,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   /// a one-item queue has nothing to fall back to, which would make a
   /// deliberate choice fail exactly where Tune in would have succeeded.
   Future<void> _watchChannel(
-    DebrifyTvChannel channel, {
+    MegaWatchTvChannel channel, {
     CachedTorrent? leadWith,
   }) async {
     debugPrint('🎬 [WATCH] Starting for channel: ${channel.name}');
@@ -4362,7 +4362,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     void _log(String m) {
       final copy = List<String>.from(_progress.value)..add(m);
       _progress.value = copy;
-      debugPrint('DebrifyTV: ' + m);
+      debugPrint('MegaWatchTV: ' + m);
     }
 
     await _syncProviderAvailability();
@@ -4374,35 +4374,35 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       if (mounted) {
         setState(() {
           _status =
-              'Connect Real Debrid, Torbox, Premiumize, AllDebrid, or PikPak in Settings to use Debrify TV.';
+              'Connect Real Debrid, Torbox, Premiumize, AllDebrid, or PikPak in Settings to use MegaWatch TV.';
         });
       }
       _showSnack(
-        'Connect Real Debrid, Torbox, Premiumize, AllDebrid, or PikPak in Settings to use Debrify TV.',
+        'Connect Real Debrid, Torbox, Premiumize, AllDebrid, or PikPak in Settings to use MegaWatch TV.',
         color: Colors.orange,
       );
       return;
     }
     final text = _keywordsController.text.trim();
-    debugPrint('DebrifyTV: Watch started. Raw input="$text"');
+    debugPrint('MegaWatchTV: Watch started. Raw input="$text"');
     if (text.isEmpty) {
       setState(() {
         _status = 'Enter one or more keywords, separated by commas';
       });
-      debugPrint('DebrifyTV: Aborting. No keywords provided.');
+      debugPrint('MegaWatchTV: Aborting. No keywords provided.');
       return;
     }
 
     final keywords = _parseKeywords(text);
     debugPrint(
-      'DebrifyTV: Parsed ${keywords.length} keyword(s): ${keywords.join(' | ')}',
+      'MegaWatchTV: Parsed ${keywords.length} keyword(s): ${keywords.join(' | ')}',
     );
     if (keywords.isEmpty) {
       setState(() {
         _status = 'Enter valid keywords';
       });
       debugPrint(
-        'DebrifyTV: Aborting. Parsed keywords became empty after trimming.',
+        'MegaWatchTV: Aborting. Parsed keywords became empty after trimming.',
       );
       return;
     }
@@ -4416,7 +4416,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         color: Colors.orange,
       );
       debugPrint(
-        'DebrifyTV: Aborting. Too many keywords for Quick Play (${keywords.length}).',
+        'MegaWatchTV: Aborting. Too many keywords for Quick Play (${keywords.length}).',
       );
       return;
     }
@@ -4449,7 +4449,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           eyebrow: 'Quick play · $providerLabel',
           title: 'Searching for something to play',
           subtitle:
-              'Debrify is searching your keywords, applying filters, and checking $providerLabel.',
+              'MegaWatch is searching your keywords, applying filters, and checking $providerLabel.',
           onCancel: () => _cancelActiveWatch(dialogContext: ctx),
         );
       },
@@ -4493,7 +4493,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             ),
           ),
         );
-        debugPrint('DebrifyTV: Missing Real Debrid API key.');
+        debugPrint('MegaWatchTV: Missing Real Debrid API key.');
         return;
       }
       final String apiKeyEarly = apiKeyEarlyRaw;
@@ -4507,14 +4507,14 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         return Uri.decodeComponent(last);
       }
 
-      String firstTitle = 'Debrify TV';
+      String firstTitle = 'MegaWatch TV';
 
       Future<Map<String, String>?> requestMagicNext() async {
         if (_watchCancelled) {
           return null;
         }
         debugPrint(
-          'DebrifyTV: requestMagicNext() called. queueSize=${_queue.length}',
+          'MegaWatchTV: requestMagicNext() called. queueSize=${_queue.length}',
         );
         while (_queue.isNotEmpty && !_watchCancelled) {
           final item = _queue.removeAt(0);
@@ -4526,7 +4526,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             final String link = item['restrictedLink'] as String? ?? '';
             final String rdTid = item['torrentId'] as String? ?? '';
             debugPrint(
-              'DebrifyTV: Trying RD link from queue: torrentId=$rdTid',
+              'MegaWatchTV: Trying RD link from queue: torrentId=$rdTid',
             );
             if (link.isEmpty) continue;
             try {
@@ -4543,13 +4543,13 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final videoUrl = unrestrict['download'] as String?;
               if (videoUrl != null && videoUrl.isNotEmpty) {
                 debugPrint(
-                  'DebrifyTV: Success (RD link). Unrestricted in ${elapsed}s',
+                  'MegaWatchTV: Success (RD link). Unrestricted in ${elapsed}s',
                 );
                 final inferred = _inferTitleFromUrl(videoUrl).trim();
                 final display = (item['displayName'] as String?)?.trim();
                 final chosenTitle = inferred.isNotEmpty
                     ? inferred
-                    : (display ?? 'Debrify TV');
+                    : (display ?? 'MegaWatch TV');
                 firstTitle = chosenTitle;
                 if (_watchCancelled) {
                   return null;
@@ -4557,7 +4557,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 return {'url': videoUrl, 'title': chosenTitle};
               }
             } catch (e) {
-              debugPrint('DebrifyTV: RD link failed to unrestrict: $e');
+              debugPrint('MegaWatchTV: RD link failed to unrestrict: $e');
               continue;
             }
           }
@@ -4565,7 +4565,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           // Case 2: Torrent entry
           if (item is Torrent) {
             debugPrint(
-              'DebrifyTV: Trying torrent: name="${item.name}", hash=${item.infohash}, size=${item.sizeBytes}, seeders=${item.seeders}',
+              'MegaWatchTV: Trying torrent: name="${item.name}", hash=${item.infohash}, size=${item.sizeBytes}, seeders=${item.seeders}',
             );
             final magnetLink = 'magnet:?xt=urn:btih:${item.infohash}';
             try {
@@ -4617,12 +4617,12 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 if (videoUrl == null || videoUrl.isEmpty) continue;
 
                 debugPrint(
-                  'DebrifyTV: Success. Got unrestricted URL in ${elapsed}s',
+                  'MegaWatchTV: Success. Got unrestricted URL in ${elapsed}s',
                 );
                 final inferred = _inferTitleFromUrl(videoUrl).trim();
                 final chosenTitle = inferred.isNotEmpty
                     ? inferred
-                    : (item.name.trim().isNotEmpty ? item.name : 'Debrify TV');
+                    : (item.name.trim().isNotEmpty ? item.name : 'MegaWatch TV');
                 firstTitle = chosenTitle;
 
                 if (!_watchCancelled && newLinks.isNotEmpty) {
@@ -4636,12 +4636,12 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               }
             } catch (e) {
               debugPrint(
-                'DebrifyTV: Debrid add failed for ${item.infohash}: $e',
+                'MegaWatchTV: Debrid add failed for ${item.infohash}: $e',
               );
             }
           }
         }
-        debugPrint('DebrifyTV: requestMagicNext() queue exhausted.');
+        debugPrint('MegaWatchTV: requestMagicNext() queue exhausted.');
         return null;
       }
 
@@ -4656,7 +4656,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         pendingKeywords = pendingKeywords.skip(batch.length).toList();
 
         final futures = batch.map((kw) {
-          debugPrint('DebrifyTV: Searching engines for "$kw"...');
+          debugPrint('MegaWatchTV: Searching engines for "$kw"...');
           return TorrentService.searchAllEngines(
             kw,
             engineStates: engineStates,
@@ -4681,11 +4681,11 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           }
           if (engineErrors.isNotEmpty) {
             engineErrors.forEach((engine, message) {
-              debugPrint('DebrifyTV: Search engine "$engine" failed: $message');
+              debugPrint('MegaWatchTV: Search engine "$engine" failed: $message');
             });
           }
           debugPrint(
-            'DebrifyTV: Partial results received: total=${torrents.length}, engineCounts=$engineCounts',
+            'MegaWatchTV: Partial results received: total=${torrents.length}, engineCounts=$engineCounts',
           );
 
           // Apply NSFW filter if enabled
@@ -4694,14 +4694,14 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             final beforeCount = torrents.length;
             torrentsToProcess = torrents.where((torrent) {
               if (NsfwFilter.shouldFilter(torrent.category, torrent.name)) {
-                debugPrint('DebrifyTV: Filtered NSFW torrent: ${torrent.name}');
+                debugPrint('MegaWatchTV: Filtered NSFW torrent: ${torrent.name}');
                 return false;
               }
               return true;
             }).toList();
             if (beforeCount != torrentsToProcess.length) {
               debugPrint(
-                'DebrifyTV: NSFW filter: $beforeCount → ${torrentsToProcess.length} torrents',
+                'MegaWatchTV: NSFW filter: $beforeCount → ${torrentsToProcess.length} torrents',
               );
             }
           }
@@ -4764,7 +4764,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                   Navigator.of(_progressSheetContext!).pop();
                 }
                 debugPrint(
-                  'DebrifyTV: Launching player early. Remaining queue=${_queue.length}',
+                  'MegaWatchTV: Launching player early. Remaining queue=${_queue.length}',
                 );
 
                 // Start background prefetch only while player is active
@@ -4821,7 +4821,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                   if (launchedOnTv) {
                     // Successfully launched on Android TV
                     debugPrint(
-                      'DebrifyTV: Early launch - Real-Debrid playback started on Android TV',
+                      'MegaWatchTV: Early launch - Real-Debrid playback started on Android TV',
                     );
                     // Prefetch will continue in background while TV player is active
                     break; // Exit the search loop
@@ -4888,7 +4888,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             ..clear()
             ..addAll(fallback);
         }
-        debugPrint('DebrifyTV: Queue prepared. size=${_queue.length}');
+        debugPrint('MegaWatchTV: Queue prepared. size=${_queue.length}');
         _lastQueueSize = _queue.length;
         _lastSearchAt = DateTime.now();
       }
@@ -4897,7 +4897,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       setState(() {
         _status = 'Search failed: $e';
       });
-      debugPrint('DebrifyTV: Search failed: $e');
+      debugPrint('MegaWatchTV: Search failed: $e');
       if (e is NativePlayerSettingsUnavailable) {
         _showNativeSettingsFailure(e);
         return;
@@ -4911,7 +4911,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
 
     if (_watchCancelled) {
-      debugPrint('DebrifyTV: Watch was cancelled before completion.');
+      debugPrint('MegaWatchTV: Watch was cancelled before completion.');
       return;
     }
 
@@ -4921,7 +4921,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       setState(() {
         _status = 'No results found';
       });
-      debugPrint('DebrifyTV: No results found after combining.');
+      debugPrint('MegaWatchTV: No results found after combining.');
       _log('❌ No results found - trying different search strategies');
 
       // Close popup and show user-friendly message
@@ -4982,7 +4982,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       return;
     }
 
-    String firstTitle = 'Debrify TV';
+    String firstTitle = 'MegaWatch TV';
 
     Future<Map<String, String>?> requestMagicNext() async {
       debugPrint(
@@ -5011,7 +5011,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final display = (item['displayName'] as String?)?.trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (display ?? 'Debrify TV');
+                  : (display ?? 'MegaWatch TV');
               firstTitle = chosenTitle;
               return {'url': videoUrl, 'title': chosenTitle};
             }
@@ -5072,7 +5072,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final inferred = _inferTitleFromUrl(videoUrl).trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (item.name.trim().isNotEmpty ? item.name : 'Debrify TV');
+                  : (item.name.trim().isNotEmpty ? item.name : 'MegaWatch TV');
               firstTitle = chosenTitle;
               return {'url': videoUrl, 'title': chosenTitle};
             }
@@ -5546,7 +5546,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -5575,7 +5575,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           videoPlayerRoute(
             builder: (_) => VideoPlayerScreen(
               videoUrl: first['url'] ?? '',
-              title: first['title'] ?? 'Debrify TV',
+              title: first['title'] ?? 'MegaWatch TV',
               startFromRandom: _startRandom,
               randomStartMaxPercent: _randomStartPercent,
               hideSeekbar: _hideSeekbar,
@@ -5759,7 +5759,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           log('Trying torrent: ${item.name}');
           final prepared = await _preparePikPakTorrent(
             candidate: item,
-            log: (msg) => debugPrint('DebrifyTV/PikPak: $msg'),
+            log: (msg) => debugPrint('MegaWatchTV/PikPak: $msg'),
           );
 
           if (_watchCancelled) {
@@ -5827,7 +5827,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -5857,7 +5857,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           videoPlayerRoute(
             builder: (_) => VideoPlayerScreen(
               videoUrl: first['url'] ?? '',
-              title: first['title'] ?? 'Debrify TV',
+              title: first['title'] ?? 'MegaWatch TV',
               startFromRandom: _quickStartRandom,
               randomStartMaxPercent: _quickRandomStartPercent,
               hideSeekbar: _quickHideSeekbar,
@@ -5947,7 +5947,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       torrentsToUse = cachedTorrents.where((torrent) {
         if (NsfwFilter.shouldFilter(torrent.category, torrent.name)) {
           debugPrint(
-            'DebrifyTV: Filtered cached NSFW torrent: ${torrent.name}',
+            'MegaWatchTV: Filtered cached NSFW torrent: ${torrent.name}',
           );
           return false;
         }
@@ -5955,7 +5955,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       }).toList();
       if (beforeCount != torrentsToUse.length) {
         debugPrint(
-          'DebrifyTV: NSFW filter on cached: $beforeCount → ${torrentsToUse.length} torrents',
+          'MegaWatchTV: NSFW filter on cached: $beforeCount → ${torrentsToUse.length} torrents',
         );
       }
     }
@@ -5968,7 +5968,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           .toList();
       if (beforeCount != torrentsToUse.length) {
         debugPrint(
-          'DebrifyTV: RD-blocked filter on cached: $beforeCount → ${torrentsToUse.length} torrents',
+          'MegaWatchTV: RD-blocked filter on cached: $beforeCount → ${torrentsToUse.length} torrents',
         );
       }
     }
@@ -5987,18 +5987,18 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       return Uri.decodeComponent(last);
     }
 
-    String firstTitle = 'Debrify TV';
+    String firstTitle = 'MegaWatch TV';
 
     Future<Map<String, String>?> requestMagicNext() async {
       debugPrint(
-        'DebrifyTV: Cached requestMagicNext() queueSize=${_queue.length}',
+        'MegaWatchTV: Cached requestMagicNext() queueSize=${_queue.length}',
       );
       while (_queue.isNotEmpty) {
         final item = _queue.removeAt(0);
         if (item is Map && item['type'] == 'rd_restricted') {
           final String link = item['restrictedLink'] as String? ?? '';
           final String rdTid = item['torrentId'] as String? ?? '';
-          debugPrint('DebrifyTV: Cached path trying RD link: torrentId=$rdTid');
+          debugPrint('MegaWatchTV: Cached path trying RD link: torrentId=$rdTid');
           if (link.isEmpty) continue;
           try {
             final started = DateTime.now();
@@ -6007,24 +6007,24 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             final elapsed = DateTime.now().difference(started).inSeconds;
             final videoUrl = unrestrict['download'] as String?;
             if (videoUrl != null && videoUrl.isNotEmpty) {
-              debugPrint('DebrifyTV: Cached success (RD link) in ${elapsed}s');
+              debugPrint('MegaWatchTV: Cached success (RD link) in ${elapsed}s');
               final inferred = _inferTitleFromUrl(videoUrl).trim();
               final display = (item['displayName'] as String?)?.trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (display ?? 'Debrify TV');
+                  : (display ?? 'MegaWatch TV');
               firstTitle = chosenTitle;
               return {'url': videoUrl, 'title': chosenTitle};
             }
           } catch (e) {
-            debugPrint('DebrifyTV: Cached RD link failed: $e');
+            debugPrint('MegaWatchTV: Cached RD link failed: $e');
             continue;
           }
         }
 
         if (item is Torrent) {
           debugPrint(
-            'DebrifyTV: Cached trying torrent name="${item.name}" hash=${item.infohash}',
+            'MegaWatchTV: Cached trying torrent name="${item.name}" hash=${item.infohash}',
           );
           final magnetLink = 'magnet:?xt=urn:btih:${item.infohash}';
           try {
@@ -6071,12 +6071,12 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               if (videoUrl == null || videoUrl.isEmpty) continue;
 
               debugPrint(
-                'DebrifyTV: Cached success: unrestricted in ${elapsed}s',
+                'MegaWatchTV: Cached success: unrestricted in ${elapsed}s',
               );
               final inferred = _inferTitleFromUrl(videoUrl).trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (item.name.trim().isNotEmpty ? item.name : 'Debrify TV');
+                  : (item.name.trim().isNotEmpty ? item.name : 'MegaWatch TV');
               firstTitle = chosenTitle;
 
               if (newLinks.isNotEmpty) {
@@ -6086,11 +6086,11 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               return {'url': videoUrl, 'title': chosenTitle};
             }
           } catch (e) {
-            debugPrint('DebrifyTV: Cached Debrid add failed: $e');
+            debugPrint('MegaWatchTV: Cached Debrid add failed: $e');
           }
         }
       }
-      debugPrint('DebrifyTV: Cached queue exhausted.');
+      debugPrint('MegaWatchTV: Cached queue exhausted.');
       return null;
     }
 
@@ -6145,7 +6145,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       if (launchedOnTv) {
         // Successfully launched on Android TV
         debugPrint(
-          'DebrifyTV: Cached flow - Real-Debrid playback started on Android TV',
+          'MegaWatchTV: Cached flow - Real-Debrid playback started on Android TV',
         );
         // Prefetch will continue in background while TV player is active
         return;
@@ -6194,7 +6194,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         _isBusy = false;
         _status = '';
       });
-      debugPrint('DebrifyTV: Cached watch flow finished.');
+      debugPrint('MegaWatchTV: Cached watch flow finished.');
     }
   }
 
@@ -6251,7 +6251,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       torrentsToUse = cachedTorrents.where((torrent) {
         if (NsfwFilter.shouldFilter(torrent.category, torrent.name)) {
           debugPrint(
-            'DebrifyTV: Filtered cached NSFW torrent: ${torrent.name}',
+            'MegaWatchTV: Filtered cached NSFW torrent: ${torrent.name}',
           );
           return false;
         }
@@ -6259,7 +6259,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       }).toList();
       if (beforeCount != torrentsToUse.length) {
         debugPrint(
-          'DebrifyTV: NSFW filter on cached: $beforeCount → ${torrentsToUse.length} torrents',
+          'MegaWatchTV: NSFW filter on cached: $beforeCount → ${torrentsToUse.length} torrents',
         );
       }
     }
@@ -6278,10 +6278,10 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       return Uri.decodeComponent(last);
     }
 
-    String firstTitle = 'Debrify TV';
+    String firstTitle = 'MegaWatch TV';
 
     Future<Map<String, String>?> requestMagicNext() async {
-      debugPrint('DebrifyTV/AD: requestMagicNext() queueSize=${_queue.length}');
+      debugPrint('MegaWatchTV/AD: requestMagicNext() queueSize=${_queue.length}');
       while (_queue.isNotEmpty) {
         final item = _queue.removeAt(0);
         if (item is Map && item['type'] == 'ad_locked') {
@@ -6294,19 +6294,19 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final display = (item['displayName'] as String?)?.trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (display ?? 'Debrify TV');
+                  : (display ?? 'MegaWatch TV');
               firstTitle = chosenTitle;
               return {'url': videoUrl, 'title': chosenTitle};
             }
           } catch (e) {
-            debugPrint('DebrifyTV/AD: Cached unlock failed: $e');
+            debugPrint('MegaWatchTV/AD: Cached unlock failed: $e');
             continue;
           }
         }
 
         if (item is Torrent) {
           debugPrint(
-            'DebrifyTV/AD: Cached trying torrent name="${item.name}" hash=${item.infohash}',
+            'MegaWatchTV/AD: Cached trying torrent name="${item.name}" hash=${item.infohash}',
           );
           final prepared = await _resolveAllDebridLinks(item, apiKey);
           if (prepared == null || prepared.lockedLinks.isEmpty) {
@@ -6333,17 +6333,17 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               final inferred = _inferTitleFromUrl(videoUrl).trim();
               final chosenTitle = inferred.isNotEmpty
                   ? inferred
-                  : (item.name.trim().isNotEmpty ? item.name : 'Debrify TV');
+                  : (item.name.trim().isNotEmpty ? item.name : 'MegaWatch TV');
               firstTitle = chosenTitle;
               return {'url': videoUrl, 'title': chosenTitle};
             }
           } catch (e) {
-            debugPrint('DebrifyTV/AD: Cached add/unlock failed: $e');
+            debugPrint('MegaWatchTV/AD: Cached add/unlock failed: $e');
             continue;
           }
         }
       }
-      debugPrint('DebrifyTV/AD: Cached queue exhausted.');
+      debugPrint('MegaWatchTV/AD: Cached queue exhausted.');
       return null;
     }
 
@@ -6398,7 +6398,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (launchedOnTv) {
         debugPrint(
-          'DebrifyTV: Cached flow - AllDebrid playback started on Android TV',
+          'MegaWatchTV: Cached flow - AllDebrid playback started on Android TV',
         );
         return;
       }
@@ -6447,7 +6447,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         _isBusy = false;
         _status = '';
       });
-      debugPrint('DebrifyTV: AllDebrid cached watch flow finished.');
+      debugPrint('MegaWatchTV: AllDebrid cached watch flow finished.');
     }
   }
 
@@ -6485,7 +6485,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       final launched = await AndroidTvPlayerBridge.launchTorboxPlayback(
         initialUrl: initialUrl,
-        title: title.isEmpty ? 'Debrify TV' : title,
+        title: title.isEmpty ? 'MegaWatch TV' : title,
         magnets: magnets,
         requestNext: requestNext,
         requestChannelSwitch: _channels.length > 1 ? _requestNextChannel : null,
@@ -6521,7 +6521,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         return true;
       }
     } catch (e) {
-      debugPrint('DebrifyTV: Android TV bridge failed: $e');
+      debugPrint('MegaWatchTV: Android TV bridge failed: $e');
       if (e is NativePlayerSettingsUnavailable) rethrow;
     }
 
@@ -6531,10 +6531,10 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
   /// Handle channel switching on Android TV - cycles to next channel with looping
   Future<Map<String, dynamic>?> _requestNextChannel() async {
-    debugPrint('DebrifyTV: _requestNextChannel() called');
+    debugPrint('MegaWatchTV: _requestNextChannel() called');
 
     if (_channels.isEmpty) {
-      debugPrint('DebrifyTV: No channels available');
+      debugPrint('MegaWatchTV: No channels available');
       return null;
     }
 
@@ -6546,10 +6546,10 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
 
     final int nextIndex = (currentIndex + 1) % _channels.length;
-    final DebrifyTvChannel targetChannel = _channels[nextIndex];
+    final MegaWatchTvChannel targetChannel = _channels[nextIndex];
 
     debugPrint(
-      'DebrifyTV: Switching from channel ${currentIndex + 1} to ${nextIndex + 1} (${targetChannel.name})',
+      'MegaWatchTV: Switching from channel ${currentIndex + 1} to ${nextIndex + 1} (${targetChannel.name})',
     );
 
     return _switchToChannel(
@@ -6560,14 +6560,14 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   Future<Map<String, dynamic>?> _requestChannelById(String channelId) async {
-    debugPrint('DebrifyTV: _requestChannelById($channelId) called');
+    debugPrint('MegaWatchTV: _requestChannelById($channelId) called');
 
     if (_channels.isEmpty) {
-      debugPrint('DebrifyTV: No channels available for direct selection');
+      debugPrint('MegaWatchTV: No channels available for direct selection');
       return null;
     }
 
-    DebrifyTvChannel? targetChannel;
+    MegaWatchTvChannel? targetChannel;
     int discoveredIndex = -1;
     for (var i = 0; i < _channels.length; i++) {
       final channel = _channels[i];
@@ -6579,17 +6579,17 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
 
     if (targetChannel == null) {
-      debugPrint('DebrifyTV: Channel id $channelId not found');
+      debugPrint('MegaWatchTV: Channel id $channelId not found');
       return null;
     }
 
     if (_currentWatchingChannelId == targetChannel.id) {
       debugPrint(
-        'DebrifyTV: Selected channel is already active; refreshing playback',
+        'MegaWatchTV: Selected channel is already active; refreshing playback',
       );
     } else {
       debugPrint(
-        'DebrifyTV: Switching directly to channel ${targetChannel.name}',
+        'MegaWatchTV: Switching directly to channel ${targetChannel.name}',
       );
     }
 
@@ -6601,12 +6601,12 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   Future<Map<String, dynamic>?> _switchToChannel(
-    DebrifyTvChannel targetChannel, {
+    MegaWatchTvChannel targetChannel, {
     int? fallbackIndex,
     String reason = 'direct',
   }) async {
     debugPrint(
-      'DebrifyTV: _switchToChannel(${targetChannel.name}) reason=$reason',
+      'MegaWatchTV: _switchToChannel(${targetChannel.name}) reason=$reason',
     );
 
     final int computedIndex =
@@ -6619,32 +6619,32 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     final cacheEntry = await _ensureCacheEntry(targetChannel.id);
     if (cacheEntry == null) {
       debugPrint(
-        'DebrifyTV: Channel "${targetChannel.name}" has no cache entry',
+        'MegaWatchTV: Channel "${targetChannel.name}" has no cache entry',
       );
       return null;
     }
     if (!cacheEntry.isReady) {
       debugPrint(
-        'DebrifyTV: Channel "${targetChannel.name}" cache not ready. Error: ${cacheEntry.errorMessage}',
+        'MegaWatchTV: Channel "${targetChannel.name}" cache not ready. Error: ${cacheEntry.errorMessage}',
       );
       return null;
     }
     if (cacheEntry.torrents.isEmpty) {
-      debugPrint('DebrifyTV: Channel "${targetChannel.name}" has no torrents');
+      debugPrint('MegaWatchTV: Channel "${targetChannel.name}" has no torrents');
       return null;
     }
 
-    debugPrint('DebrifyTV: Stopping old channel prefetcher...');
+    debugPrint('MegaWatchTV: Stopping old channel prefetcher...');
     await _stopPrefetch();
-    debugPrint('DebrifyTV: Prefetcher stopped. Waiting for RD cooldown...');
+    debugPrint('MegaWatchTV: Prefetcher stopped. Waiting for RD cooldown...');
     await Future.delayed(const Duration(seconds: 5));
-    debugPrint('DebrifyTV: Cooldown complete. Proceeding with channel switch.');
+    debugPrint('MegaWatchTV: Cooldown complete. Proceeding with channel switch.');
 
     final previousChannelId = _currentWatchingChannelId;
     if (previousChannelId != null) {
       _channelCache.remove(previousChannelId);
       debugPrint(
-        'DebrifyTV: Evicted cache entry for previous channel $previousChannelId',
+        'MegaWatchTV: Evicted cache entry for previous channel $previousChannelId',
       );
     }
 
@@ -6655,11 +6655,11 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     _qualityFallbackNotified = false;
     _rdSizeRejections = 0;
     _sizeFilterRelaxed = false;
-    debugPrint('DebrifyTV: Cleared prefetch state');
+    debugPrint('MegaWatchTV: Cleared prefetch state');
 
     final keywords = await _getChannelKeywords(targetChannel.id);
     if (keywords.isEmpty) {
-      debugPrint('DebrifyTV: Channel "${targetChannel.name}" has no keywords');
+      debugPrint('MegaWatchTV: Channel "${targetChannel.name}" has no keywords');
       if (_provider == _providerRealDebrid || _provider == _providerAllDebrid) {
         unawaited(_startPrefetch());
       }
@@ -6673,7 +6673,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     );
 
     if (playbackSelection.isEmpty) {
-      debugPrint('DebrifyTV: No torrents matched in selected channel');
+      debugPrint('MegaWatchTV: No torrents matched in selected channel');
       if (_provider == _providerRealDebrid || _provider == _providerAllDebrid) {
         unawaited(_startPrefetch());
       }
@@ -6684,7 +6684,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         .map((cached) => cached.toTorrent())
         .toList();
     if (allTorrents.isEmpty) {
-      debugPrint('DebrifyTV: No playable torrents resolved for channel');
+      debugPrint('MegaWatchTV: No playable torrents resolved for channel');
       if (_provider == _providerRealDebrid || _provider == _providerAllDebrid) {
         unawaited(_startPrefetch());
       }
@@ -6695,7 +6695,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     if (_provider == _providerTorbox) {
       final apiKey = await StorageService.getTorboxApiKey();
       if (apiKey == null || apiKey.isEmpty) {
-        debugPrint('DebrifyTV: ❌ No Torbox API key configured');
+        debugPrint('MegaWatchTV: ❌ No Torbox API key configured');
         return null;
       }
 
@@ -6725,14 +6725,14 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         }
       } catch (e) {
         debugPrint(
-          'DebrifyTV: Torbox cache check failed during channel switch: $e',
+          'MegaWatchTV: Torbox cache check failed during channel switch: $e',
         );
         return null;
       }
 
       if (cachedCandidates.isEmpty) {
         debugPrint(
-          'DebrifyTV: Torbox channel has no cached torrents available',
+          'MegaWatchTV: Torbox channel has no cached torrents available',
         );
         return null;
       }
@@ -6742,10 +6742,10 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
     try {
       if (_provider == _providerRealDebrid) {
-        debugPrint('DebrifyTV: Selected channel uses Real-Debrid provider');
+        debugPrint('MegaWatchTV: Selected channel uses Real-Debrid provider');
         final apiKey = await StorageService.getApiKey();
         if (apiKey == null || apiKey.isEmpty) {
-          debugPrint('DebrifyTV: ❌ No Real-Debrid API key configured');
+          debugPrint('MegaWatchTV: ❌ No Real-Debrid API key configured');
           return null;
         }
 
@@ -6767,7 +6767,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             );
           } catch (error) {
             debugPrint(
-              'DebrifyTV: Real-Debrid rejected candidate ${candidate.infohash}: $error',
+              'MegaWatchTV: Real-Debrid rejected candidate ${candidate.infohash}: $error',
             );
             continue;
           }
@@ -6779,7 +6779,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
           if (rdLinks.isEmpty) {
             debugPrint(
-              'DebrifyTV: Real-Debrid returned no usable links for candidate ${candidate.infohash}',
+              'MegaWatchTV: Real-Debrid returned no usable links for candidate ${candidate.infohash}',
             );
             continue;
           }
@@ -6811,7 +6811,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               );
             } catch (error) {
               debugPrint(
-                'DebrifyTV: Real-Debrid unrestrict failed for candidate ${candidate.infohash}: $error',
+                'MegaWatchTV: Real-Debrid unrestrict failed for candidate ${candidate.infohash}: $error',
               );
               continue;
             }
@@ -6821,7 +6821,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             final String? resolved = unrestrict['download'] as String?;
             if (resolved == null || resolved.isEmpty) {
               debugPrint(
-                'DebrifyTV: Real-Debrid unrestrict returned empty URL for candidate ${candidate.infohash}',
+                'MegaWatchTV: Real-Debrid unrestrict returned empty URL for candidate ${candidate.infohash}',
               );
               continue;
             }
@@ -6855,9 +6855,9 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           _activeProvider = _providerRealDebrid;
           unawaited(_startPrefetch());
           debugPrint(
-            'DebrifyTV: Started Real-Debrid prefetcher for new channel',
+            'MegaWatchTV: Started Real-Debrid prefetcher for new channel',
           );
-          debugPrint('DebrifyTV: Successfully got stream from channel: $title');
+          debugPrint('MegaWatchTV: Successfully got stream from channel: $title');
 
           return {
             'channelId': targetChannel.id,
@@ -6868,15 +6868,15 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           };
         }
 
-        debugPrint('DebrifyTV: All Real-Debrid candidates failed for channel');
+        debugPrint('MegaWatchTV: All Real-Debrid candidates failed for channel');
         return null;
       }
 
       if (_provider == _providerAllDebrid) {
-        debugPrint('DebrifyTV: Selected channel uses AllDebrid provider');
+        debugPrint('MegaWatchTV: Selected channel uses AllDebrid provider');
         final apiKey = await StorageService.getAllDebridApiKey();
         if (apiKey == null || apiKey.isEmpty) {
-          debugPrint('DebrifyTV: ❌ No AllDebrid API key configured');
+          debugPrint('MegaWatchTV: ❌ No AllDebrid API key configured');
           return null;
         }
 
@@ -6897,7 +6897,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             videoUrl = await AllDebridService.unlockLink(apiKey, headLink);
           } catch (error) {
             debugPrint(
-              'DebrifyTV: AllDebrid unlock failed for candidate ${candidate.infohash}: $error',
+              'MegaWatchTV: AllDebrid unlock failed for candidate ${candidate.infohash}: $error',
             );
             continue;
           }
@@ -6940,8 +6940,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           _activeApiKey = apiKey;
           _activeProvider = _providerAllDebrid;
           unawaited(_startPrefetch());
-          debugPrint('DebrifyTV: Started AllDebrid prefetcher for new channel');
-          debugPrint('DebrifyTV: Successfully got stream from channel: $title');
+          debugPrint('MegaWatchTV: Started AllDebrid prefetcher for new channel');
+          debugPrint('MegaWatchTV: Successfully got stream from channel: $title');
 
           return {
             'channelId': targetChannel.id,
@@ -6952,14 +6952,14 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           };
         }
 
-        debugPrint('DebrifyTV: All AllDebrid candidates failed for channel');
+        debugPrint('MegaWatchTV: All AllDebrid candidates failed for channel');
         return null;
       }
 
       if (_provider == _providerTorbox) {
         final apiKey = await StorageService.getTorboxApiKey();
         if (apiKey == null || apiKey.isEmpty) {
-          debugPrint('DebrifyTV: ❌ No Torbox API key configured');
+          debugPrint('MegaWatchTV: ❌ No Torbox API key configured');
           return null;
         }
 
@@ -6974,7 +6974,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
           if (prepared == null || prepared.streamUrl.isEmpty) {
             debugPrint(
-              'DebrifyTV: Torbox preparation failed for candidate ${candidate.infohash}',
+              'MegaWatchTV: Torbox preparation failed for candidate ${candidate.infohash}',
             );
             continue;
           }
@@ -6994,7 +6994,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           }
 
           debugPrint(
-            'DebrifyTV: Torbox channel switch ready with stream ${prepared.title}',
+            'MegaWatchTV: Torbox channel switch ready with stream ${prepared.title}',
           );
           return {
             'channelId': targetChannel.id,
@@ -7005,14 +7005,14 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           };
         }
 
-        debugPrint('DebrifyTV: All Torbox candidates failed for channel');
+        debugPrint('MegaWatchTV: All Torbox candidates failed for channel');
         return null;
       }
 
       if (_provider == _providerPikPak) {
         final pikpakAvailable = await PikPakTvService.instance.isAvailable();
         if (!pikpakAvailable) {
-          debugPrint('DebrifyTV: PikPak not authenticated');
+          debugPrint('MegaWatchTV: PikPak not authenticated');
           return null;
         }
 
@@ -7021,12 +7021,12 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
           final prepared = await _preparePikPakTorrent(
             candidate: candidate,
-            log: (message) => debugPrint('DebrifyTV/PikPak: $message'),
+            log: (message) => debugPrint('MegaWatchTV/PikPak: $message'),
           );
 
           if (prepared == null) {
             debugPrint(
-              'DebrifyTV: PikPak preparation failed for candidate ${candidate.infohash}',
+              'MegaWatchTV: PikPak preparation failed for candidate ${candidate.infohash}',
             );
             continue;
           }
@@ -7047,7 +7047,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           }
 
           debugPrint(
-            'DebrifyTV: PikPak channel switch ready with stream ${prepared.title}',
+            'MegaWatchTV: PikPak channel switch ready with stream ${prepared.title}',
           );
           return {
             'channelId': targetChannel.id,
@@ -7058,27 +7058,27 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           };
         }
 
-        debugPrint('DebrifyTV: All PikPak candidates failed for channel');
+        debugPrint('MegaWatchTV: All PikPak candidates failed for channel');
         return null;
       }
 
       debugPrint(
-        'DebrifyTV: Unsupported provider for channel switching: $_provider',
+        'MegaWatchTV: Unsupported provider for channel switching: $_provider',
       );
       return null;
     } catch (e) {
-      debugPrint('DebrifyTV: Error getting stream from channel: $e');
+      debugPrint('MegaWatchTV: Error getting stream from channel: $e');
     }
 
-    debugPrint('DebrifyTV: Channel switch failed');
+    debugPrint('MegaWatchTV: Channel switch failed');
     if (_provider == _providerRealDebrid || _provider == _providerAllDebrid) {
       unawaited(_startPrefetch());
-      debugPrint('DebrifyTV: Restarted prefetcher for current channel');
+      debugPrint('MegaWatchTV: Restarted prefetcher for current channel');
     }
     return null;
   }
 
-  int _resolveChannelNumber(DebrifyTvChannel channel) {
+  int _resolveChannelNumber(MegaWatchTvChannel channel) {
     if (channel.channelNumber > 0) {
       return channel.channelNumber;
     }
@@ -7123,28 +7123,28 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     int? channelNumber,
     List<Map<String, dynamic>>? channelDirectory,
   }) async {
-    debugPrint('DebrifyTV: _launchRealDebridOnAndroidTv() called');
-    debugPrint('DebrifyTV: _isAndroidTv=$_isAndroidTv');
+    debugPrint('MegaWatchTV: _launchRealDebridOnAndroidTv() called');
+    debugPrint('MegaWatchTV: _isAndroidTv=$_isAndroidTv');
 
     if (!_isAndroidTv) {
-      debugPrint('DebrifyTV: Not Android TV, skipping native launch');
+      debugPrint('MegaWatchTV: Not Android TV, skipping native launch');
       return false;
     }
 
     final initialUrl = firstStream['url'] ?? '';
     debugPrint(
-      'DebrifyTV: initialUrl=${initialUrl.substring(0, initialUrl.length > 50 ? 50 : initialUrl.length)}...',
+      'MegaWatchTV: initialUrl=${initialUrl.substring(0, initialUrl.length > 50 ? 50 : initialUrl.length)}...',
     );
 
     if (initialUrl.isEmpty) {
-      debugPrint('DebrifyTV: Initial URL is empty, cannot launch');
+      debugPrint('MegaWatchTV: Initial URL is empty, cannot launch');
       return false;
     }
 
     final title = (firstStream['title'] ?? '').trim();
-    debugPrint('DebrifyTV: title="$title"');
+    debugPrint('MegaWatchTV: title="$title"');
     debugPrint(
-      'DebrifyTV: Calling AndroidTvPlayerBridge.launchRealDebridPlayback()...',
+      'MegaWatchTV: Calling AndroidTvPlayerBridge.launchRealDebridPlayback()...',
     );
 
     try {
@@ -7158,17 +7158,17 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       final launched = await AndroidTvPlayerBridge.launchRealDebridPlayback(
         initialUrl: initialUrl,
-        title: title.isEmpty ? 'Debrify TV' : title,
+        title: title.isEmpty ? 'MegaWatch TV' : title,
         channelName: channelName,
         requestNext: requestNext,
         requestChannelSwitch: canSwitchChannels ? _requestNextChannel : null,
         requestChannelById: canSwitchChannels ? _requestChannelById : null,
         onFinished: () async {
-          debugPrint('DebrifyTV: Android TV playback finished callback');
+          debugPrint('MegaWatchTV: Android TV playback finished callback');
 
           // Stop prefetcher when exiting player
           await _stopPrefetch();
-          debugPrint('DebrifyTV: Stopped prefetcher on player exit');
+          debugPrint('MegaWatchTV: Stopped prefetcher on player exit');
 
           AndroidTvPlayerBridge.clearStreamProvider();
           _currentWatchingChannelId = null; // Clear channel tracking
@@ -7191,7 +7191,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       );
 
       debugPrint(
-        'DebrifyTV: AndroidTvPlayerBridge.launchRealDebridPlayback() returned: $launched',
+        'MegaWatchTV: AndroidTvPlayerBridge.launchRealDebridPlayback() returned: $launched',
       );
 
       if (launched) {
@@ -7201,22 +7201,22 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           });
         }
         debugPrint(
-          'DebrifyTV: ✅ Successfully launched Real-Debrid on Android TV',
+          'MegaWatchTV: ✅ Successfully launched Real-Debrid on Android TV',
         );
         return true;
       } else {
         debugPrint(
-          'DebrifyTV: ❌ AndroidTvPlayerBridge returned false - launch failed',
+          'MegaWatchTV: ❌ AndroidTvPlayerBridge returned false - launch failed',
         );
       }
     } catch (e, stackTrace) {
-      debugPrint('DebrifyTV: ❌ Exception during Android TV launch: $e');
-      debugPrint('DebrifyTV: Stack trace: $stackTrace');
+      debugPrint('MegaWatchTV: ❌ Exception during Android TV launch: $e');
+      debugPrint('MegaWatchTV: Stack trace: $stackTrace');
       if (e is NativePlayerSettingsUnavailable) rethrow;
     }
 
     AndroidTvPlayerBridge.clearStreamProvider();
-    debugPrint('DebrifyTV: Falling back to Flutter player');
+    debugPrint('MegaWatchTV: Falling back to Flutter player');
     return false;
   }
 
@@ -7242,7 +7242,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         : null;
 
     void log(String message) {
-      debugPrint('DebrifyTV: $message');
+      debugPrint('MegaWatchTV: $message');
     }
 
     final integrationEnabled =
@@ -7429,7 +7429,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -7453,7 +7453,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         videoPlayerRoute(
           builder: (_) => VideoPlayerScreen(
             videoUrl: first['url'] ?? '',
-            title: first['title'] ?? 'Debrify TV',
+            title: first['title'] ?? 'MegaWatch TV',
             startFromRandom: _startRandom,
             randomStartMaxPercent: _randomStartPercent,
             hideSeekbar: _hideSeekbar,
@@ -7518,7 +7518,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         : null;
 
     void log(String message) {
-      debugPrint('DebrifyTV/PikPak: $message');
+      debugPrint('MegaWatchTV/PikPak: $message');
     }
 
     final pikpakAvailable = await PikPakTvService.instance.isAvailable();
@@ -7599,7 +7599,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -7624,7 +7624,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         videoPlayerRoute(
           builder: (_) => VideoPlayerScreen(
             videoUrl: first['url'] ?? '',
-            title: first['title'] ?? 'Debrify TV',
+            title: first['title'] ?? 'MegaWatch TV',
             startFromRandom: _startRandom,
             randomStartMaxPercent: _randomStartPercent,
             hideSeekbar: _hideSeekbar,
@@ -7692,7 +7692,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       // Reuse Torbox bridge method - it works for any stream URL
       final launched = await AndroidTvPlayerBridge.launchTorboxPlayback(
         initialUrl: initialUrl,
-        title: title.isEmpty ? 'Debrify TV' : title,
+        title: title.isEmpty ? 'MegaWatch TV' : title,
         magnets: const [],
         requestNext: requestNext,
         requestChannelSwitch: _channels.length > 1 ? _requestNextChannel : null,
@@ -7728,7 +7728,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         return true;
       }
     } catch (e) {
-      debugPrint('DebrifyTV: Android TV bridge failed for PikPak: $e');
+      debugPrint('MegaWatchTV: Android TV bridge failed for PikPak: $e');
       if (e is NativePlayerSettingsUnavailable) rethrow;
     }
 
@@ -7939,7 +7939,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    if (_debrifyTvStyle == 'spotlight') {
+    if (_megawatchTvStyle == 'spotlight') {
       return SpotlightLayout(
         view: _buildSpotlightView(),
         bottomInset: bottomInset,
@@ -7953,8 +7953,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
   /// The Spotlight layout's window onto this state. Paint only: every
   /// callback is an existing method, every playback path is shared verbatim.
-  DebrifyTvView _buildSpotlightView() {
-    return DebrifyTvView(
+  MegaWatchTvView _buildSpotlightView() {
+    return MegaWatchTvView(
       channels: _channels,
       favoriteIds: _favoriteChannelIds,
       railHealth: _spotlightRailHealth,
@@ -7980,7 +7980,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   Future<void> _loadSpotlightRailHealth() async {
-    final health = await DebrifyTvCacheService.loadRailHealth();
+    final health = await MegaWatchTvCacheService.loadRailHealth();
     if (!mounted) return;
     setState(() => _spotlightRailHealth = health);
   }
@@ -7989,7 +7989,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   /// classify over the pool, so: debounced (a DPAD glide crosses many rows),
   /// computed only for the channel that focus RESTS on, and memoised — a
   /// pool does not change while you are looking at it.
-  void _onSpotlightChannelFocused(DebrifyTvChannel channel) {
+  void _onSpotlightChannelFocused(MegaWatchTvChannel channel) {
     // Cancel FIRST, unconditionally: a memo hit must still kill a pending
     // timer for the previous channel, or gliding B→A (A memoised) classifies
     // B off-focus.
@@ -8010,7 +8010,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   /// For when the numbers' INPUTS change — the quality filter — rather than
   /// one channel's pool.
   void _invalidateSpotlightStats() {
-    if (_debrifyTvStyle != 'spotlight') return;
+    if (_megawatchTvStyle != 'spotlight') return;
     _spotlightStats.clear();
     _refreshSpotlightStatsIfFocused(_spotlightFocusedId);
   }
@@ -8019,13 +8019,13 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   /// stage is showing, schedule fresh numbers — memo removal alone leaves
   /// the stage on its placeholder forever, since only a focus MOVE computes.
   void _refreshSpotlightStatsIfFocused(String? channelId) {
-    if (_debrifyTvStyle != 'spotlight' || channelId == null) return;
+    if (_megawatchTvStyle != 'spotlight' || channelId == null) return;
     if (_spotlightFocusedId != channelId) return;
     final channel = _channels.firstWhereOrNull((c) => c.id == channelId);
     if (channel != null) _onSpotlightChannelFocused(channel);
   }
 
-  Future<void> _computeSpotlightStats(DebrifyTvChannel channel) async {
+  Future<void> _computeSpotlightStats(MegaWatchTvChannel channel) async {
     if (!mounted || _spotlightStats.containsKey(channel.id)) return;
     final entry = await _ensureCacheEntry(channel.id);
     // Focus may have moved during the read; bail rather than classify an
@@ -8065,7 +8065,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
     final sample = [...torrents]..shuffle(Random());
 
-    final stats = DebrifyTvChannelStats(
+    final stats = MegaWatchTvChannelStats(
       channelId: channel.id,
       pooled: torrents.length,
       atYourQuality: atQuality,
@@ -8075,7 +8075,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       fetchedAt: (entry?.fetchedAt ?? 0) > 0
           ? DateTime.fromMillisecondsSinceEpoch(entry!.fetchedAt)
           : null,
-      status: entry?.status ?? DebrifyTvCacheStatus.warming,
+      status: entry?.status ?? MegaWatchTvCacheStatus.warming,
       sample: sample.take(4).toList(),
     );
     setState(() {
@@ -8114,21 +8114,21 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     }
   }
 
-  void _handleTopMenuAction(_DebrifyTvTopMenuAction action) {
+  void _handleTopMenuAction(_MegaWatchTvTopMenuAction action) {
     switch (action) {
-      case _DebrifyTvTopMenuAction.import:
+      case _MegaWatchTvTopMenuAction.import:
         _handleImportChannels();
         break;
-      case _DebrifyTvTopMenuAction.export:
+      case _MegaWatchTvTopMenuAction.export:
         _handleExportChannels();
         break;
-      case _DebrifyTvTopMenuAction.add:
+      case _MegaWatchTvTopMenuAction.add:
         _handleAddChannel();
         break;
-      case _DebrifyTvTopMenuAction.deleteAll:
+      case _MegaWatchTvTopMenuAction.deleteAll:
         _handleDeleteAllChannels();
         break;
-      case _DebrifyTvTopMenuAction.settings:
+      case _MegaWatchTvTopMenuAction.settings:
         _showGlobalSettingsDialog();
         break;
     }
@@ -8185,7 +8185,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         listenable: focusNode,
         builder: (context, _) {
           final app = AppThemeScope.of(context);
-          final tv = app.debrifyTv;
+          final tv = app.megawatchTv;
           final disabled = onPressed == null;
           final focused = focusNode.hasFocus;
           final highlighted = !disabled && (focused || isActive);
@@ -8234,7 +8234,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
   Widget _buildTopMenuButton() {
     final app = AppThemeScope.of(context);
-    final tv = app.debrifyTv;
+    final tv = app.megawatchTv;
     final itemStyle = ButtonStyle(
       foregroundColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.disabled)
@@ -8314,7 +8314,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               leadingIcon: const Icon(Icons.cloud_download_rounded),
               onPressed: _isBusy
                   ? null
-                  : () => _handleTopMenuAction(_DebrifyTvTopMenuAction.import),
+                  : () => _handleTopMenuAction(_MegaWatchTvTopMenuAction.import),
               child: const Text('Import'),
             ),
             MenuItemButton(
@@ -8322,7 +8322,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               leadingIcon: const Icon(Icons.folder_zip_rounded),
               onPressed: _isBusy || _channels.isEmpty
                   ? null
-                  : () => _handleTopMenuAction(_DebrifyTvTopMenuAction.export),
+                  : () => _handleTopMenuAction(_MegaWatchTvTopMenuAction.export),
               child: const Text('Export Channels'),
             ),
             MenuItemButton(
@@ -8330,7 +8330,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               leadingIcon: const Icon(Icons.add_rounded),
               onPressed: _isBusy
                   ? null
-                  : () => _handleTopMenuAction(_DebrifyTvTopMenuAction.add),
+                  : () => _handleTopMenuAction(_MegaWatchTvTopMenuAction.add),
               child: const Text('Add Channel'),
             ),
             MenuItemButton(
@@ -8339,14 +8339,14 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
               onPressed: _isBusy || _channels.isEmpty
                   ? null
                   : () =>
-                        _handleTopMenuAction(_DebrifyTvTopMenuAction.deleteAll),
+                        _handleTopMenuAction(_MegaWatchTvTopMenuAction.deleteAll),
               child: const Text('Delete All'),
             ),
             MenuItemButton(
               style: itemStyle,
               leadingIcon: const Icon(Icons.settings_rounded),
               onPressed: () =>
-                  _handleTopMenuAction(_DebrifyTvTopMenuAction.settings),
+                  _handleTopMenuAction(_MegaWatchTvTopMenuAction.settings),
               child: const Text('Settings'),
             ),
           ],
@@ -8395,7 +8395,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
   Widget _buildTopActions() {
     final app = AppThemeScope.of(context);
-    final tv = app.debrifyTv;
+    final tv = app.megawatchTv;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -8429,7 +8429,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   // Grid Layout for all devices (responsive)
   Widget _buildTvGridLayout(double bottomInset) {
     final app = AppThemeScope.of(context);
-    final tv = app.debrifyTv;
+    final tv = app.megawatchTv;
     final searchTerm = _channelSearchTerm.trim().toLowerCase();
     final filteredChannels = searchTerm.isEmpty
         ? _channels
@@ -8671,7 +8671,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   // TV Empty State
   Widget _buildTvEmptyState() {
     final app = AppThemeScope.of(context);
-    final tv = app.debrifyTv;
+    final tv = app.megawatchTv;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -8707,7 +8707,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   // Favorite Channels Section (horizontal row)
   Widget _buildFavoriteChannelsSection() {
     final app = AppThemeScope.of(context);
-    final tv = app.debrifyTv;
+    final tv = app.megawatchTv;
     // Get favorite channels from the channels list
     final favoriteChannels = _channels
         .where((channel) => _favoriteChannelIds.contains(channel.id))
@@ -8763,9 +8763,9 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   // Favorite Channel Card (compact horizontal card)
-  Widget _buildFavoriteChannelCard(DebrifyTvChannel channel) {
+  Widget _buildFavoriteChannelCard(MegaWatchTvChannel channel) {
     final app = AppThemeScope.of(context);
-    final tv = app.debrifyTv;
+    final tv = app.megawatchTv;
     return SizedBox(
       width: 160,
       height: 100,
@@ -8841,9 +8841,9 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   // TV Channel Card (Grid item)
-  Widget _buildTvChannelCard(DebrifyTvChannel channel) {
+  Widget _buildTvChannelCard(MegaWatchTvChannel channel) {
     final app = AppThemeScope.of(context);
-    final tv = app.debrifyTv;
+    final tv = app.megawatchTv;
     final isFavorited = _favoriteChannelIds.contains(channel.id);
 
     return TvFocusableCard(
@@ -9018,13 +9018,13 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 
   // TV Channel Options Menu (Edit/Delete)
-  Future<void> _showTvChannelOptionsMenu(DebrifyTvChannel channel) async {
+  Future<void> _showTvChannelOptionsMenu(MegaWatchTvChannel channel) async {
     final isFavorited = _favoriteChannelIds.contains(channel.id);
 
     await showDialog<void>(
       context: context,
       builder: (dialogContext) {
-        return DebrifyTvSpotlightDialog(
+        return MegaWatchTvSpotlightDialog(
           eyebrow:
               'Channel actions · ${channel.channelNumber.toString().padLeft(2, '0')}',
           title: channel.name,
@@ -9035,7 +9035,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              DebrifyTvDialogOptionCard(
+              MegaWatchTvDialogOptionCard(
                 autofocus: true,
                 icon: isFavorited
                     ? Icons.star_rounded
@@ -9051,7 +9051,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 },
               ),
               const SizedBox(height: 10),
-              DebrifyTvDialogOptionCard(
+              MegaWatchTvDialogOptionCard(
                 icon: Icons.edit_rounded,
                 title: 'Edit channel',
                 subtitle: 'Change its name, keywords, or content filter.',
@@ -9062,10 +9062,10 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 },
               ),
               const SizedBox(height: 10),
-              DebrifyTvDialogOptionCard(
+              MegaWatchTvDialogOptionCard(
                 icon: Icons.share_rounded,
                 title: 'Share channel',
-                subtitle: 'Create a portable Debrify link for this pool.',
+                subtitle: 'Create a portable MegaWatch link for this pool.',
                 tag: 'Link',
                 onPressed: () {
                   Navigator.of(dialogContext).pop();
@@ -9073,7 +9073,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 },
               ),
               const SizedBox(height: 10),
-              DebrifyTvDialogOptionCard(
+              MegaWatchTvDialogOptionCard(
                 icon: Icons.delete_outline_rounded,
                 title: 'Delete channel',
                 subtitle: 'Remove this channel and its cached title pool.',
@@ -9087,7 +9087,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             ],
           ),
           actions: [
-            DebrifyTvDialogButton(
+            MegaWatchTvDialogButton(
               label: 'Close',
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
@@ -9099,7 +9099,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
   // TV "Add Channel" Card
   Widget _buildTvAddChannelCard() {
-    final tv = AppThemeScope.of(context).debrifyTv;
+    final tv = AppThemeScope.of(context).megawatchTv;
     return TvFocusableCard(
       onPressed: _handleAddChannel,
       child: SizedBox(
@@ -9139,7 +9139,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     StateSetter? dialogSetState,
   }) {
     final app = AppThemeScope.of(context);
-    final tv = app.debrifyTv;
+    final tv = app.megawatchTv;
     final bool isQuickScope = scope == _SettingsScope.quickPlay;
 
     final bool startRandom = isQuickScope ? _quickStartRandom : _startRandom;
@@ -9153,7 +9153,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       });
       dialogSetState?.call(() {});
       if (!isQuickScope) {
-        unawaited(StorageService.saveDebrifyTvStartRandom(value));
+        unawaited(StorageService.saveMegaWatchTvStartRandom(value));
       }
     }
 
@@ -9170,7 +9170,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       });
       dialogSetState?.call(() {});
       if (!isQuickScope) {
-        unawaited(StorageService.saveDebrifyTvRandomStartPercent(value));
+        unawaited(StorageService.saveMegaWatchTvRandomStartPercent(value));
       }
     }
 
@@ -9187,7 +9187,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       });
       dialogSetState?.call(() {});
       if (!isQuickScope) {
-        unawaited(StorageService.saveDebrifyTvShowChannelName(value));
+        unawaited(StorageService.saveMegaWatchTvShowChannelName(value));
       }
     }
 
@@ -9204,7 +9204,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       });
       dialogSetState?.call(() {});
       if (!isQuickScope) {
-        unawaited(StorageService.saveDebrifyTvShowVideoTitle(value));
+        unawaited(StorageService.saveMegaWatchTvShowVideoTitle(value));
       }
     }
 
@@ -9260,7 +9260,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             const SizedBox(height: 16),
             SwitchRow(
               title: 'Start from random timestamp',
-              subtitle: 'Each Debrify TV video starts at a random point',
+              subtitle: 'Each MegaWatch TV video starts at a random point',
               value: startRandom,
               onChanged: (v) => setStartRandom(v),
             ),
@@ -9273,7 +9273,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 onChangeEnd: isQuickScope
                     ? null
                     : (next) =>
-                          StorageService.saveDebrifyTvRandomStartPercent(next),
+                          StorageService.saveMegaWatchTvRandomStartPercent(next),
               ),
             ],
             // Removed Hide all options and Hide back button settings
@@ -9302,7 +9302,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
             // that many extra D-pad presses away on TV.
             _tvFilterChips(dialogSetState: dialogSetState),
             const SizedBox(height: 16),
-            DebrifyTvDialogButton(
+            MegaWatchTvDialogButton(
               expand: true,
               icon: Icons.restore_rounded,
               label: 'Reset to defaults',
@@ -9339,21 +9339,21 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                   }
                   // Playback filters are shared by both scopes, so reset
                   // them from either one.
-                  _tvFilters = const DebrifyTvFilters.empty();
+                  _tvFilters = const MegaWatchTvFilters.empty();
                 });
                 _invalidateSpotlightStats();
                 dialogSetState?.call(() {});
 
-                await StorageService.setDebrifyTvFilterQualities(const []);
-                await StorageService.setDebrifyTvFilterSizes(const []);
+                await StorageService.setMegaWatchTvFilterQualities(const []);
+                await StorageService.setMegaWatchTvFilterSizes(const []);
 
                 if (!isQuickScope) {
-                  await StorageService.saveDebrifyTvStartRandom(true);
-                  await StorageService.saveDebrifyTvHideSeekbar(true);
-                  await StorageService.saveDebrifyTvShowChannelName(true);
-                  await StorageService.saveDebrifyTvShowVideoTitle(true);
+                  await StorageService.saveMegaWatchTvStartRandom(true);
+                  await StorageService.saveMegaWatchTvHideSeekbar(true);
+                  await StorageService.saveMegaWatchTvShowChannelName(true);
+                  await StorageService.saveMegaWatchTvShowVideoTitle(true);
                   // No longer saving hideOptions and hideBackButton - they're hardcoded to false
-                  await StorageService.saveDebrifyTvProvider(defaultProvider);
+                  await StorageService.saveMegaWatchTvProvider(defaultProvider);
                 }
 
                 if (!mounted) {
@@ -9395,7 +9395,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             final app = AppThemeScope.of(context);
-            return DebrifyTvSpotlightDialog(
+            return MegaWatchTvSpotlightDialog(
               eyebrow: 'Quick play · no channel needed',
               title: 'Play anything',
               subtitle:
@@ -9462,14 +9462,14 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 ],
               ),
               actions: [
-                DebrifyTvDialogButton(
+                MegaWatchTvDialogButton(
                   label: 'Cancel',
                   onPressed: () => Navigator.of(dialogContext).pop(),
                 ),
-                DebrifyTvDialogButton(
+                MegaWatchTvDialogButton(
                   label: 'Play now',
                   icon: Icons.play_arrow_rounded,
-                  tone: DebrifyTvDialogButtonTone.primary,
+                  tone: MegaWatchTvDialogButtonTone.primary,
                   onPressed: () async {
                     final keywords = controller.text.trim();
                     if (keywords.isEmpty) {
@@ -9523,8 +9523,8 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            return DebrifyTvSpotlightDialog(
-              eyebrow: 'Debrify TV · applies to every channel',
+            return MegaWatchTvSpotlightDialog(
+              eyebrow: 'MegaWatch TV · applies to every channel',
               title: 'Channel playback',
               subtitle:
                   'Choose the provider, filters, and starting behavior used when a channel tunes.',
@@ -9538,11 +9538,11 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 dialogSetState: setDialogState,
               ),
               actions: [
-                DebrifyTvDialogButton(
+                MegaWatchTvDialogButton(
                   autofocus: true,
                   label: 'Done',
                   icon: Icons.check_rounded,
-                  tone: DebrifyTvDialogButtonTone.primary,
+                  tone: MegaWatchTvDialogButtonTone.primary,
                   onPressed: () => Navigator.of(dialogContext).pop(),
                 ),
               ],
@@ -9953,7 +9953,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     entries.shuffle(Random());
     if (entries.isEmpty && applySizeFilter && _tvFilters.hasSize) {
       debugPrint(
-        'DebrifyTV/Premiumize: no file matched the size filter in '
+        'MegaWatchTV/Premiumize: no file matched the size filter in '
         '"$fallbackTitle" — using it unfiltered.',
       );
       return _buildPremiumizePlayableEntries(
@@ -9992,7 +9992,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           )
         : null;
 
-    void log(String message) => debugPrint('DebrifyTV/PM: $message');
+    void log(String message) => debugPrint('MegaWatchTV/PM: $message');
 
     final integrationEnabled =
         await StorageService.getPremiumizeIntegrationEnabled();
@@ -10137,7 +10137,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -10158,7 +10158,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         videoPlayerRoute(
           builder: (_) => VideoPlayerScreen(
             videoUrl: first['url'] ?? '',
-            title: first['title'] ?? 'Debrify TV',
+            title: first['title'] ?? 'MegaWatch TV',
             startFromRandom: _startRandom,
             randomStartMaxPercent: _randomStartPercent,
             hideSeekbar: _hideSeekbar,
@@ -10430,7 +10430,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
 
       if (await _handOffToExternalPlayer(
         first['url'] ?? '',
-        first['title'] ?? 'Debrify TV',
+        first['title'] ?? 'MegaWatch TV',
       )) {
         return;
       }
@@ -10453,7 +10453,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
           videoPlayerRoute(
             builder: (_) => VideoPlayerScreen(
               videoUrl: first['url'] ?? '',
-              title: first['title'] ?? 'Debrify TV',
+              title: first['title'] ?? 'MegaWatch TV',
               startFromRandom: _startRandom,
               randomStartMaxPercent: _randomStartPercent,
               hideSeekbar: _hideSeekbar,
@@ -10609,7 +10609,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
         return Uri.decodeComponent(last);
       }
 
-      String firstTitle = 'Debrify TV';
+      String firstTitle = 'MegaWatch TV';
 
       Future<Map<String, String>?> requestMagicNext() async {
         if (_watchCancelled) return null;
@@ -10627,7 +10627,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 final display = (item['displayName'] as String?)?.trim();
                 final chosenTitle = inferred.isNotEmpty
                     ? inferred
-                    : (display ?? 'Debrify TV');
+                    : (display ?? 'MegaWatch TV');
                 firstTitle = chosenTitle;
                 return {'url': videoUrl, 'title': chosenTitle};
               }
@@ -10663,7 +10663,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
                 final inferred = _inferTitleFromUrl(videoUrl).trim();
                 final chosenTitle = inferred.isNotEmpty
                     ? inferred
-                    : (item.name.trim().isNotEmpty ? item.name : 'Debrify TV');
+                    : (item.name.trim().isNotEmpty ? item.name : 'MegaWatch TV');
                 firstTitle = chosenTitle;
                 return {'url': videoUrl, 'title': chosenTitle};
               }
@@ -10817,7 +10817,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     // plays instead of walking the whole queue and playing nothing.
     if (entries.isEmpty && applySizeFilter && _tvFilters.hasSize) {
       debugPrint(
-        'DebrifyTV/Torbox: no file matched the size filter in '
+        'MegaWatchTV/Torbox: no file matched the size filter in '
         '"$fallbackTitle" — using it unfiltered.',
       );
       return _buildTorboxPlayableEntries(
@@ -10910,7 +10910,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   /// default, or the external launch failed and the built-in player is the
   /// fallback (same policy as [VideoPlayerLauncher.push]).
   ///
-  /// Channel rotation dies with the hand-off — nothing outside Debrify can
+  /// Channel rotation dies with the hand-off — nothing outside MegaWatch can
   /// call back into `requestMagicNext` — so on any outcome that ends the flow
   /// this also stops the prefetcher that exists purely to feed it. A failed
   /// launch leaves the prefetcher running, because the in-app player that
@@ -10943,7 +10943,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
     final launched = await VideoPlayerLauncher.launchExternalIfConfigured(
       context,
       videoUrl: url,
-      title: title.trim().isEmpty ? 'Debrify TV' : title.trim(),
+      title: title.trim().isEmpty ? 'MegaWatch TV' : title.trim(),
     );
     if (launched) {
       _launchedPlayer = true;
@@ -11178,7 +11178,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
       // Nothing matched in this torrent — take it unfiltered rather than
       // discarding the torrent (see the Torbox builder).
       debugPrint(
-        'DebrifyTV/AD: no file matched the size filter in "${result.name}" — '
+        'MegaWatchTV/AD: no file matched the size filter in "${result.name}" — '
         'using it unfiltered.',
       );
       freshLinks = collectLinks(applySizeFilter: false);
@@ -11250,7 +11250,7 @@ class _DebrifyTVScreenState extends State<DebrifyTVScreen> {
   }
 }
 
-/// Result of adding an AllDebrid magnet for Debrify TV: the resolved (still
+/// Result of adding an AllDebrid magnet for MegaWatch TV: the resolved (still
 /// locked) video-file links plus identifiers for the created magnet.
 class _AllDebridPrepared {
   final String magnetId;

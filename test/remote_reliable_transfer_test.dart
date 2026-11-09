@@ -6,9 +6,9 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:debrify/services/remote_control/remote_reliable_transfer.dart';
-import 'package:debrify/services/remote_control/remote_session.dart';
-import 'package:debrify/services/remote_control/remote_constants.dart';
+import 'package:megawatch/services/remote_control/remote_reliable_transfer.dart';
+import 'package:megawatch/services/remote_control/remote_session.dart';
+import 'package:megawatch/services/remote_control/remote_constants.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -410,9 +410,9 @@ void main() {
           final request = await client.putUrl(
             Uri.parse('http://127.0.0.1:${receiver.port}/remote/v1/$id'),
           );
-          request.headers.set('x-debrify-meta', header);
+          request.headers.set('x-megawatch-meta', header);
           request.headers.set(
-            'x-debrify-auth',
+            'x-megawatch-auth',
             digest.Hmac(
               digest.sha256,
               key,
@@ -475,9 +475,9 @@ void main() {
         socket.destroy();
       } else {
         request.response.statusCode = response.statusCode;
-        final stamp = response.headers.value('x-debrify-receipt');
+        final stamp = response.headers.value('x-megawatch-receipt');
         if (stamp != null) {
-          request.response.headers.set('x-debrify-receipt', stamp);
+          request.response.headers.set('x-megawatch-receipt', stamp);
         }
         await request.response.addStream(response);
         await request.response.close();
@@ -568,15 +568,15 @@ void main() {
         }
       } else {
         if (request.method == 'PUT' &&
-            int.parse(request.headers.value('x-debrify-offset') ?? '0') > 0) {
+            int.parse(request.headers.value('x-megawatch-offset') ?? '0') > 0) {
           resumed = true;
         }
         await upstream.addStream(request);
         final response = await upstream.close();
         request.response.statusCode = response.statusCode;
-        final stamp = response.headers.value('x-debrify-receipt');
+        final stamp = response.headers.value('x-megawatch-receipt');
         if (stamp != null) {
-          request.response.headers.set('x-debrify-receipt', stamp);
+          request.response.headers.set('x-megawatch-receipt', stamp);
         }
         await request.response.addStream(response);
         await request.response.close();

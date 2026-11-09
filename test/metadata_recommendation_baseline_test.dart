@@ -1,13 +1,13 @@
-import 'package:debrify/models/metadata_preferences.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/screens/catalog_item_detail_screen.dart';
-import 'package:debrify/screens/merged_series_detail_screen.dart';
-import 'package:debrify/services/metadata_preferences_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/screens/catalog_item_detail_screen.dart';
+import 'package:megawatch/screens/merged_series_detail_screen.dart';
+import 'package:megawatch/services/metadata_preferences_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
 import 'package:flutter/material.dart';
-import 'package:debrify/widgets/movie_watched_badge.dart';
+import 'package:megawatch/widgets/movie_watched_badge.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

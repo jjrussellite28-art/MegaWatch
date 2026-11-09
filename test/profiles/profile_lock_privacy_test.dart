@@ -1,12 +1,12 @@
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/services/profiles/profile_lock_controller.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/services/profiles/profile_lock_controller.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const channel = MethodChannel('com.debrify.app/profile_privacy');
+  const channel = MethodChannel('com.megawatch.app/profile_privacy');
   final calls = <MethodCall>[];
 
   setUp(() {

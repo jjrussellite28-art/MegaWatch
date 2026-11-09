@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/widgets/hero_trailer_backdrop.dart';
-import 'package:debrify/widgets/trailer_engine.dart';
+import 'package:megawatch/widgets/hero_trailer_backdrop.dart';
+import 'package:megawatch/widgets/trailer_engine.dart';
 
 void main() {
   testWidgets('finite trailer plays once until a new focus session', (tester) async {

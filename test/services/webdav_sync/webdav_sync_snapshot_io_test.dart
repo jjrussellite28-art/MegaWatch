@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:debrify/services/transfer/transfer_io.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_snapshot_io.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_snapshot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_transport.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/services/transfer/transfer_io.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_snapshot_io.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_snapshot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_transport.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

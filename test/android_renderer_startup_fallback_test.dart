@@ -1,5 +1,5 @@
-import 'package:debrify/models/android_video_renderer_mode.dart';
-import 'package:debrify/screens/video_player/services/android_renderer_startup_fallback.dart';
+import 'package:megawatch/models/android_video_renderer_mode.dart';
+import 'package:megawatch/screens/video_player/services/android_renderer_startup_fallback.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

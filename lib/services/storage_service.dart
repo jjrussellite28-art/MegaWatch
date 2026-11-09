@@ -132,7 +132,7 @@ class StorageService {
   // one of them. Both now default on for every device, and this generation
   // carries that to installs already in the field.
   //
-  // Generation 3 (2026-08): Debrify TV joins the flagship bundle. Installs
+  // Generation 3 (2026-08): MegaWatch TV joins the flagship bundle. Installs
   // wearing the Spotlight THEME (via the Look or a custom mix) adopt the
   // rail+stage layout; every other install keeps the grid it has always had.
   //
@@ -196,7 +196,7 @@ class StorageService {
       }
     }
     if (gen < 4) {
-      // Debrify TV joins the flagship bundle. Raw prefs only — this runs
+      // MegaWatch TV joins the flagship bundle. Raw prefs only — this runs
       // before any mirror is warmed, so `app_theme` is read directly rather
       // than through `appThemeCached`. The appearance block above has already
       // written `app_theme` for anyone who never chose, including a fresh
@@ -209,10 +209,10 @@ class StorageService {
       // Presets picker to Custom (Classic pins this key). The proxy is the
       // THEME, not Look activity — a Custom mix that kept the Spotlight
       // theme adopts the layout the theme implies; everyone else keeps grid.
-      if (!prefs.containsKey(_debrifyTvStyleKey)) {
+      if (!prefs.containsKey(_megawatchTvStyleKey)) {
         final theme = prefs.getString(_appThemeKey);
         await prefs.setString(
-          _debrifyTvStyleKey,
+          _megawatchTvStyleKey,
           theme == 'spotlight' ? 'spotlight' : 'grid',
         );
       }
@@ -272,33 +272,33 @@ class StorageService {
   static const String localSeriesCalendarAttemptedAtKey =
       'local_series_completion_calendar_attempted_at_v1';
   static const String _finishedMoviesKey = 'finished_movies_v1';
-  static const String _debrifyTvStartRandomKey = 'debrify_tv_start_random';
-  static const String _debrifyTvHideSeekbarKey = 'debrify_tv_hide_seekbar';
-  static const String _debrifyTvShowChannelNameKey =
-      'debrify_tv_show_watermark';
-  static const String _debrifyTvShowVideoTitleKey =
-      'debrify_tv_show_video_title';
-  static const String _debrifyTvHideOptionsKey = 'debrify_tv_hide_options';
-  static const String _debrifyTvHideBackButtonKey =
-      'debrify_tv_hide_back_button';
-  static const String _debrifyTvAvoidNsfwKey = 'debrify_tv_avoid_nsfw';
-  static const String _debrifyTvProviderKey = 'debrify_tv_provider';
-  static const String _debrifyTvRandomStartPercentKey =
-      'debrify_tv_random_start_percent';
-  static const String _debrifyTvChannelsKey = 'debrify_tv_channels';
-  // Debrify TV playback filters. Quality is matched on the torrent NAME
+  static const String _megawatchTvStartRandomKey = 'megawatch_tv_start_random';
+  static const String _megawatchTvHideSeekbarKey = 'megawatch_tv_hide_seekbar';
+  static const String _megawatchTvShowChannelNameKey =
+      'megawatch_tv_show_watermark';
+  static const String _megawatchTvShowVideoTitleKey =
+      'megawatch_tv_show_video_title';
+  static const String _megawatchTvHideOptionsKey = 'megawatch_tv_hide_options';
+  static const String _megawatchTvHideBackButtonKey =
+      'megawatch_tv_hide_back_button';
+  static const String _megawatchTvAvoidNsfwKey = 'megawatch_tv_avoid_nsfw';
+  static const String _megawatchTvProviderKey = 'megawatch_tv_provider';
+  static const String _megawatchTvRandomStartPercentKey =
+      'megawatch_tv_random_start_percent';
+  static const String _megawatchTvChannelsKey = 'megawatch_tv_channels';
+  // MegaWatch TV playback filters. Quality is matched on the torrent NAME
   // (applied when a channel's cache is read); size is matched on the real
   // per-FILE byte count after the debrid provider returns its file list —
   // per-file sizes are per-episode, so packs need no series/movie detection.
-  static const String _debrifyTvFilterQualitiesKey =
-      'debrify_tv_filter_qualities';
-  static const String _debrifyTvFilterSizesKey = 'debrify_tv_filter_sizes';
+  static const String _megawatchTvFilterQualitiesKey =
+      'megawatch_tv_filter_qualities';
+  static const String _megawatchTvFilterSizesKey = 'megawatch_tv_filter_sizes';
 
-  // "You're using an external player" notice shown before Debrify TV hands a
+  // "You're using an external player" notice shown before MegaWatch TV hands a
   // stream to another app. Dismissible forever, because the trade-off it
   // explains (one title, no channel rotation) never changes.
-  static const String _debrifyTvExternalNoticeDismissedKey =
-      'debrify_tv_external_notice_dismissed';
+  static const String _megawatchTvExternalNoticeDismissedKey =
+      'megawatch_tv_external_notice_dismissed';
 
   // Home page default keys
   static const String _homeDefaultSourceTypeKey = 'home_default_source_type';
@@ -363,7 +363,7 @@ class StorageService {
   static const String _lemmyDefaultCommunityKey = 'lemmy_default_community';
   // YouTube settings
   static const String _youtubeMaxHeightKey = 'youtube_max_height';
-  // Network tuning (Debrify player). 'standard' = leave the player's own
+  // Network tuning (MegaWatch player). 'standard' = leave the player's own
   // defaults completely untouched — see NetworkTuning.
   static const String _networkConnectPatienceKey = 'network_connect_patience';
   static const String _iptvDecoderModeKey = 'iptv_decoder_mode';
@@ -376,7 +376,7 @@ class StorageService {
   static const String _updateIgnoredVersionKey = 'update_ignored_version';
 
   // External Player settings
-  // Default player mode: 'debrify' (app player), 'external' (external player), 'deovr' (DeoVR on Android)
+  // Default player mode: 'megawatch' (app player), 'external' (external player), 'deovr' (DeoVR on Android)
   static const String _defaultPlayerModeKey = 'default_player_mode';
   static const String _externalPlayerPreferredKey = 'external_player_preferred';
   static const String _externalPlayerCustomPathKey =
@@ -399,7 +399,7 @@ class StorageService {
       'windows_external_player_preferred';
   static const String _windowsCustomCommandKey = 'windows_custom_command';
 
-  // Debrify Player default settings
+  // MegaWatch Player default settings
   static const String _playerDefaultAspectIndexKey =
       'player_default_aspect_index';
   static const String _playerDefaultAspectIndexTvKey =
@@ -509,8 +509,8 @@ class StorageService {
   static const String _playlistPosterOverridesKey =
       'playlist_poster_overrides_v1';
 
-  static const String _debrifyTvFavoriteChannelsKey =
-      'debrify_tv_favorite_channels_v1';
+  static const String _megawatchTvFavoriteChannelsKey =
+      'megawatch_tv_favorite_channels_v1';
 
   // Stremio TV settings
   static const String _stremioTvRotationMinutesKey =
@@ -628,9 +628,9 @@ class StorageService {
   static const String _remoteTvDeviceNameKey = 'remote_tv_device_name';
   static const String _remoteLastDeviceKey = 'remote_last_device';
 
-  static const int _debrifyTvRandomStartPercentDefault = 20;
-  static const int _debrifyTvRandomStartPercentMin = 10;
-  static const int _debrifyTvRandomStartPercentMax = 90;
+  static const int _megawatchTvRandomStartPercentDefault = 20;
+  static const int _megawatchTvRandomStartPercentMin = 10;
+  static const int _megawatchTvRandomStartPercentMax = 90;
 
   static Future<String?> getApiKey({bool forRemoteTransfer = false}) async {
     if (forRemoteTransfer) {
@@ -733,13 +733,13 @@ class StorageService {
   /// devices (flutter/flutter#177360 — Chromecast/Google TV, some
   /// Philips/Samsung panels). On by default on Android TV. Apple TV defaults
   /// to its system keyboard; the Settings toggle still lets users opt into the
-  /// Debrify keyboard.
+  /// MegaWatch keyboard.
   ///
   /// [tvKeyboardEnabledCached] mirrors the stored value for synchronous widget
   /// builds — warmed at startup (main.dart) and kept in sync by the setter.
   static bool tvKeyboardEnabledCached = !PlatformUtil.isTvOS;
 
-  // Apple TV keyboard default, generation 1 (2026-08): disable the Debrify
+  // Apple TV keyboard default, generation 1 (2026-08): disable the MegaWatch
   // keyboard once for every profile, including profiles whose user explicitly
   // enabled it in an older build. The generation is committed only after the
   // new value, so a failed/interrupted write retries safely next launch. Once
@@ -1136,37 +1136,37 @@ class StorageService {
     await prefs.setString(_tvHomeStyleKey, normalized);
   }
 
-  static const String _debrifyTvStyleKey = 'debrify_tv_style';
+  static const String _megawatchTvStyleKey = 'megawatch_tv_style';
 
-  /// Every shipping Debrify TV layout. 'grid' is the historical default — the
+  /// Every shipping MegaWatch TV layout. 'grid' is the historical default — the
   /// channel wall `build()` has always drawn; 'spotlight' is the standing
   /// rail + stage (list + sheet on phone). One key covers every device class:
   /// the style resolves its own layout per device, like `detail_page_style`.
   ///
   /// Coercion is TOTAL and both ways: a value written by a newer build and
   /// read by an older one lands on 'grid' rather than rendering nothing.
-  static const Set<String> kDebrifyTvStyles = {'grid', 'spotlight'};
+  static const Set<String> kMegaWatchTvStyles = {'grid', 'spotlight'};
 
-  /// Synchronous mirror of `debrify_tv_style`, kept so a Look can read the
+  /// Synchronous mirror of `megawatch_tv_style`, kept so a Look can read the
   /// current value without an await. Every existing caller still goes through
   /// the async getter, which also refreshes this.
-  static String debrifyTvStyleCached = 'grid';
+  static String megawatchTvStyleCached = 'grid';
 
-  static Future<String> getDebrifyTvStyle() async {
+  static Future<String> getMegaWatchTvStyle() async {
     final prefs = await ProfilePreferences.instance();
-    final raw = prefs.getString(_debrifyTvStyleKey);
-    return debrifyTvStyleCached = kDebrifyTvStyles.contains(raw)
+    final raw = prefs.getString(_megawatchTvStyleKey);
+    return megawatchTvStyleCached = kMegaWatchTvStyles.contains(raw)
         ? raw!
         : 'grid';
   }
 
-  static Future<void> setDebrifyTvStyle(String style) async {
-    final normalized = kDebrifyTvStyles.contains(style) ? style : 'grid';
+  static Future<void> setMegaWatchTvStyle(String style) async {
+    final normalized = kMegaWatchTvStyles.contains(style) ? style : 'grid';
     // Mirror BEFORE the await, so anything reading synchronously on the next
     // frame sees the choice. Existing async readers are unaffected.
-    debrifyTvStyleCached = normalized;
+    megawatchTvStyleCached = normalized;
     final prefs = await ProfilePreferences.instance();
-    await prefs.setString(_debrifyTvStyleKey, normalized);
+    await prefs.setString(_megawatchTvStyleKey, normalized);
   }
 
   static const String _detailPageStyleKey = 'detail_page_style';
@@ -1703,8 +1703,8 @@ class StorageService {
     );
   }
 
-  static const String _debrifyTvPlayerStyleKey = 'debrify_tv_player_style';
-  static const Set<String> _debrifyTvPlayerStyles = {
+  static const String _megawatchTvPlayerStyleKey = 'megawatch_tv_player_style';
+  static const Set<String> _megawatchTvPlayerStyles = {
     'classic',
     'network',
     'cinema',
@@ -1713,29 +1713,29 @@ class StorageService {
     'prestige',
   };
 
-  /// Playback-screen style for the NATIVE Debrify TV player
+  /// Playback-screen style for the NATIVE MegaWatch TV player
   /// (TorboxTvPlayerActivity): 'cinema' (poster + gilded spec line — the
   /// default), 'network' (broadcast lower-third), 'guide' (opaque
   /// broadcast band), 'spotlight' (frosted glass panel), 'prestige'
   /// (quiet serif identity), or 'classic' (the legacy ESPN-style bar +
   /// top marquee). Android TV only. Read once per player launch — the
   /// native side via
-  /// `ProfilePreferenceProjection.getString("debrify_tv_player_style")`
-  /// (falling back to `flutter.debrify_tv_player_style` in
+  /// `ProfilePreferenceProjection.getString("megawatch_tv_player_style")`
+  /// (falling back to `flutter.megawatch_tv_player_style` in
   /// FlutterSharedPreferences). Unknown or unset coerces to 'cinema' on
   /// BOTH read and write so the two readers can never disagree about the
   /// default.
-  static Future<String> getDebrifyTvPlayerStyle() async {
+  static Future<String> getMegaWatchTvPlayerStyle() async {
     final prefs = await ProfilePreferences.instance();
-    final raw = prefs.getString(_debrifyTvPlayerStyleKey);
-    return _debrifyTvPlayerStyles.contains(raw) ? raw! : 'cinema';
+    final raw = prefs.getString(_megawatchTvPlayerStyleKey);
+    return _megawatchTvPlayerStyles.contains(raw) ? raw! : 'cinema';
   }
 
-  static Future<void> setDebrifyTvPlayerStyle(String style) async {
+  static Future<void> setMegaWatchTvPlayerStyle(String style) async {
     final prefs = await ProfilePreferences.instance();
     await prefs.setString(
-      _debrifyTvPlayerStyleKey,
-      _debrifyTvPlayerStyles.contains(style) ? style : 'cinema',
+      _megawatchTvPlayerStyleKey,
+      _megawatchTvPlayerStyles.contains(style) ? style : 'cinema',
     );
   }
 
@@ -2605,7 +2605,7 @@ class StorageService {
   static const String _downloadTreeNameKey = 'download_tree_display_name_v1';
 
   /// The persisted SAF tree URI for the user-chosen download folder, or null
-  /// when downloads go to the default location (Downloads/Debrify).
+  /// when downloads go to the default location (Downloads/MegaWatch).
   static Future<String?> getDownloadTreeUri() async {
     final prefs = await ProfilePreferences.instance();
     final v = prefs.getString(_downloadTreeUriKey);
@@ -2796,7 +2796,7 @@ class StorageService {
     await prefs.setString(_continueWatchingKey, jsonEncode(items));
   }
 
-  /// Movies finished locally by the Debrify player. This intentionally stays
+  /// Movies finished locally by the MegaWatch player. This intentionally stays
   /// separate from Trakt and Simkl: tracker-backed sessions use the tracker as
   /// their source of truth, while offline/local sessions still need a durable
   /// completed state for the detail screen.
@@ -4493,7 +4493,7 @@ class StorageService {
     }
   }
 
-  // Video resume — one row per item in debrify_tv.db (see IptvMediaStore).
+  // Video resume — one row per item in megawatch_tv.db (see IptvMediaStore).
   static Future<Map<String, dynamic>?> getVideoResume(String key) {
     return IptvMediaStore.videoResume(key);
   }
@@ -4619,122 +4619,122 @@ class StorageService {
     return trackPreferences as Map<String, dynamic>;
   }
 
-  // Debrify TV settings methods
-  static Future<String> getDebrifyTvProvider() async {
+  // MegaWatch TV settings methods
+  static Future<String> getMegaWatchTvProvider() async {
     final prefs = await ProfilePreferences.instance();
-    return prefs.getString(_debrifyTvProviderKey) ?? 'real_debrid';
+    return prefs.getString(_megawatchTvProviderKey) ?? 'real_debrid';
   }
 
-  static Future<void> saveDebrifyTvProvider(String value) async {
+  static Future<void> saveMegaWatchTvProvider(String value) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setString(_debrifyTvProviderKey, value);
+    await prefs.setString(_megawatchTvProviderKey, value);
   }
 
-  static Future<bool> hasDebrifyTvProvider() async {
+  static Future<bool> hasMegaWatchTvProvider() async {
     final prefs = await ProfilePreferences.instance();
-    return prefs.containsKey(_debrifyTvProviderKey);
+    return prefs.containsKey(_megawatchTvProviderKey);
   }
 
-  static Future<bool> getDebrifyTvStartRandom() async {
+  static Future<bool> getMegaWatchTvStartRandom() async {
     final prefs = await ProfilePreferences.instance();
-    return prefs.getBool(_debrifyTvStartRandomKey) ?? true;
+    return prefs.getBool(_megawatchTvStartRandomKey) ?? true;
   }
 
-  static Future<void> saveDebrifyTvStartRandom(bool value) async {
+  static Future<void> saveMegaWatchTvStartRandom(bool value) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setBool(_debrifyTvStartRandomKey, value);
+    await prefs.setBool(_megawatchTvStartRandomKey, value);
   }
 
-  static int _normalizeDebrifyTvRandomStartPercent(int? value) {
-    final candidate = value ?? _debrifyTvRandomStartPercentDefault;
-    if (candidate < _debrifyTvRandomStartPercentMin) {
-      return _debrifyTvRandomStartPercentMin;
+  static int _normalizeMegaWatchTvRandomStartPercent(int? value) {
+    final candidate = value ?? _megawatchTvRandomStartPercentDefault;
+    if (candidate < _megawatchTvRandomStartPercentMin) {
+      return _megawatchTvRandomStartPercentMin;
     }
-    if (candidate > _debrifyTvRandomStartPercentMax) {
-      return _debrifyTvRandomStartPercentMax;
+    if (candidate > _megawatchTvRandomStartPercentMax) {
+      return _megawatchTvRandomStartPercentMax;
     }
     return candidate;
   }
 
-  static Future<int> getDebrifyTvRandomStartPercent() async {
+  static Future<int> getMegaWatchTvRandomStartPercent() async {
     final prefs = await ProfilePreferences.instance();
-    final stored = prefs.getInt(_debrifyTvRandomStartPercentKey);
-    return _normalizeDebrifyTvRandomStartPercent(stored);
+    final stored = prefs.getInt(_megawatchTvRandomStartPercentKey);
+    return _normalizeMegaWatchTvRandomStartPercent(stored);
   }
 
-  static Future<void> saveDebrifyTvRandomStartPercent(int value) async {
+  static Future<void> saveMegaWatchTvRandomStartPercent(int value) async {
     final prefs = await ProfilePreferences.instance();
-    final normalized = _normalizeDebrifyTvRandomStartPercent(value);
-    await prefs.setInt(_debrifyTvRandomStartPercentKey, normalized);
+    final normalized = _normalizeMegaWatchTvRandomStartPercent(value);
+    await prefs.setInt(_megawatchTvRandomStartPercentKey, normalized);
   }
 
-  static Future<bool> getDebrifyTvHideSeekbar() async {
+  static Future<bool> getMegaWatchTvHideSeekbar() async {
     final prefs = await ProfilePreferences.instance();
-    return prefs.getBool(_debrifyTvHideSeekbarKey) ?? true;
+    return prefs.getBool(_megawatchTvHideSeekbarKey) ?? true;
   }
 
-  static Future<void> saveDebrifyTvHideSeekbar(bool value) async {
+  static Future<void> saveMegaWatchTvHideSeekbar(bool value) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setBool(_debrifyTvHideSeekbarKey, value);
+    await prefs.setBool(_megawatchTvHideSeekbarKey, value);
   }
 
-  static Future<bool> getDebrifyTvShowChannelName() async {
+  static Future<bool> getMegaWatchTvShowChannelName() async {
     final prefs = await ProfilePreferences.instance();
-    return prefs.getBool(_debrifyTvShowChannelNameKey) ?? true;
+    return prefs.getBool(_megawatchTvShowChannelNameKey) ?? true;
   }
 
-  static Future<void> saveDebrifyTvShowChannelName(bool value) async {
+  static Future<void> saveMegaWatchTvShowChannelName(bool value) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setBool(_debrifyTvShowChannelNameKey, value);
+    await prefs.setBool(_megawatchTvShowChannelNameKey, value);
   }
 
-  static Future<bool> getDebrifyTvShowVideoTitle() async {
+  static Future<bool> getMegaWatchTvShowVideoTitle() async {
     final prefs = await ProfilePreferences.instance();
-    return prefs.getBool(_debrifyTvShowVideoTitleKey) ?? true;
+    return prefs.getBool(_megawatchTvShowVideoTitleKey) ?? true;
   }
 
-  static Future<void> saveDebrifyTvShowVideoTitle(bool value) async {
+  static Future<void> saveMegaWatchTvShowVideoTitle(bool value) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setBool(_debrifyTvShowVideoTitleKey, value);
+    await prefs.setBool(_megawatchTvShowVideoTitleKey, value);
   }
 
-  static Future<bool> getDebrifyTvHideOptions() async {
+  static Future<bool> getMegaWatchTvHideOptions() async {
     final prefs = await ProfilePreferences.instance();
-    return prefs.getBool(_debrifyTvHideOptionsKey) ?? true;
+    return prefs.getBool(_megawatchTvHideOptionsKey) ?? true;
   }
 
-  static Future<void> saveDebrifyTvHideOptions(bool value) async {
+  static Future<void> saveMegaWatchTvHideOptions(bool value) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setBool(_debrifyTvHideOptionsKey, value);
+    await prefs.setBool(_megawatchTvHideOptionsKey, value);
   }
 
-  static Future<bool> getDebrifyTvHideBackButton() async {
+  static Future<bool> getMegaWatchTvHideBackButton() async {
     final prefs = await ProfilePreferences.instance();
-    return prefs.getBool(_debrifyTvHideBackButtonKey) ?? true;
+    return prefs.getBool(_megawatchTvHideBackButtonKey) ?? true;
   }
 
-  static Future<void> saveDebrifyTvHideBackButton(bool value) async {
+  static Future<void> saveMegaWatchTvHideBackButton(bool value) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setBool(_debrifyTvHideBackButtonKey, value);
+    await prefs.setBool(_megawatchTvHideBackButtonKey, value);
   }
 
-  static Future<bool> getDebrifyTvAvoidNsfw() async {
+  static Future<bool> getMegaWatchTvAvoidNsfw() async {
     if (!await profileAllowsAdultContent()) return true;
     final prefs = await ProfilePreferences.instance();
-    return prefs.getBool(_debrifyTvAvoidNsfwKey) ?? true; // Default enabled
+    return prefs.getBool(_megawatchTvAvoidNsfwKey) ?? true; // Default enabled
   }
 
-  static Future<void> saveDebrifyTvAvoidNsfw(bool value) async {
+  static Future<void> saveMegaWatchTvAvoidNsfw(bool value) async {
     final prefs = await ProfilePreferences.instance();
     await prefs.setBool(
-      _debrifyTvAvoidNsfwKey,
+      _megawatchTvAvoidNsfwKey,
       await profileAllowsAdultContent() ? value : true,
     );
   }
 
-  static Future<List<Map<String, dynamic>>> getDebrifyTvChannels() async {
+  static Future<List<Map<String, dynamic>>> getMegaWatchTvChannels() async {
     final prefs = await ProfilePreferences.instance();
-    final raw = prefs.getString(_debrifyTvChannelsKey);
+    final raw = prefs.getString(_megawatchTvChannelsKey);
     if (raw == null || raw.isEmpty) return <Map<String, dynamic>>[];
     try {
       final List<dynamic> list = await decodeJsonAsync(raw) as List<dynamic>;
@@ -4747,11 +4747,11 @@ class StorageService {
     }
   }
 
-  static Future<void> saveDebrifyTvChannels(
+  static Future<void> saveMegaWatchTvChannels(
     List<Map<String, dynamic>> channels,
   ) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setString(_debrifyTvChannelsKey, jsonEncode(channels));
+    await prefs.setString(_megawatchTvChannelsKey, jsonEncode(channels));
   }
 
   // Playlist storage (local-only MVP)
@@ -4988,11 +4988,11 @@ class StorageService {
     await prefs.remove(_webDavHiddenFromNavKey);
   }
 
-  /// Clear Debrify TV provider and legacy channels key
-  static Future<void> clearDebrifyTvProviderAndLegacy() async {
+  /// Clear MegaWatch TV provider and legacy channels key
+  static Future<void> clearMegaWatchTvProviderAndLegacy() async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.remove(_debrifyTvProviderKey);
-    await prefs.remove(_debrifyTvChannelsKey);
+    await prefs.remove(_megawatchTvProviderKey);
+    await prefs.remove(_megawatchTvChannelsKey);
   }
 
   /// Clear filter settings (qualities, rip sources, languages)
@@ -5030,33 +5030,33 @@ class StorageService {
     await prefs.remove(_allDebridPostTorrentActionKey);
   }
 
-  /// Clear all Debrify TV display and engine settings
-  static Future<void> clearAllDebrifyTvSettings() async {
+  /// Clear all MegaWatch TV display and engine settings
+  static Future<void> clearAllMegaWatchTvSettings() async {
     final prefs = await ProfilePreferences.instance();
     // Display settings
-    await prefs.remove(_debrifyTvStartRandomKey);
-    await prefs.remove(_debrifyTvHideSeekbarKey);
-    await prefs.remove(_debrifyTvShowChannelNameKey);
-    await prefs.remove(_debrifyTvShowVideoTitleKey);
-    await prefs.remove(_debrifyTvHideOptionsKey);
-    await prefs.remove(_debrifyTvHideBackButtonKey);
-    await prefs.remove(_debrifyTvAvoidNsfwKey);
-    await prefs.remove(_debrifyTvRandomStartPercentKey);
+    await prefs.remove(_megawatchTvStartRandomKey);
+    await prefs.remove(_megawatchTvHideSeekbarKey);
+    await prefs.remove(_megawatchTvShowChannelNameKey);
+    await prefs.remove(_megawatchTvShowVideoTitleKey);
+    await prefs.remove(_megawatchTvHideOptionsKey);
+    await prefs.remove(_megawatchTvHideBackButtonKey);
+    await prefs.remove(_megawatchTvAvoidNsfwKey);
+    await prefs.remove(_megawatchTvRandomStartPercentKey);
     // Playback filters
-    await prefs.remove(_debrifyTvFilterQualitiesKey);
-    await prefs.remove(_debrifyTvFilterSizesKey);
+    await prefs.remove(_megawatchTvFilterQualitiesKey);
+    await prefs.remove(_megawatchTvFilterSizesKey);
     for (final key
         in prefs
             .getKeys()
             .where(
               (key) =>
                   key.startsWith('engine_tv_') ||
-                  key.startsWith('debrify_tv_use_') ||
-                  key.startsWith('debrify_tv_channel_small_') ||
-                  key.startsWith('debrify_tv_channel_large_') ||
-                  key.startsWith('debrify_tv_quick_play_') ||
-                  key == 'debrify_tv_keyword_threshold' ||
-                  key == 'debrify_tv_min_torrents_per_keyword',
+                  key.startsWith('megawatch_tv_use_') ||
+                  key.startsWith('megawatch_tv_channel_small_') ||
+                  key.startsWith('megawatch_tv_channel_large_') ||
+                  key.startsWith('megawatch_tv_quick_play_') ||
+                  key == 'megawatch_tv_keyword_threshold' ||
+                  key == 'megawatch_tv_min_torrents_per_keyword',
             )
             .toList()) {
       await prefs.remove(key);
@@ -5425,7 +5425,7 @@ class StorageService {
   // My Watchlist (movies + series)
   // ========================================================================
 
-  /// Stable identity for Debrify's local movie/series watchlist. Prefer IMDb
+  /// Stable identity for MegaWatch's local movie/series watchlist. Prefer IMDb
   /// so the same title coming from two addons is one entry; fall back to the
   /// source addon + its content id for titles that do not expose IMDb metadata.
   /// Addon ids are part of that fallback because content ids are addon-local.
@@ -5662,13 +5662,13 @@ class StorageService {
   }
 
   // ==========================================================================
-  // Debrify TV Channel Favorites
+  // MegaWatch TV Channel Favorites
   // ==========================================================================
 
-  /// Check if a Debrify TV channel is favorited
-  static Future<bool> isDebrifyTvChannelFavorited(String channelId) async {
+  /// Check if a MegaWatch TV channel is favorited
+  static Future<bool> isMegaWatchTvChannelFavorited(String channelId) async {
     final prefs = await ProfilePreferences.instance();
-    final favoritesJson = prefs.getString(_debrifyTvFavoriteChannelsKey);
+    final favoritesJson = prefs.getString(_megawatchTvFavoriteChannelsKey);
 
     if (favoritesJson == null) return false;
 
@@ -5676,18 +5676,18 @@ class StorageService {
       final favorites = jsonDecode(favoritesJson) as Map<String, dynamic>;
       return favorites.containsKey(channelId);
     } catch (e) {
-      debugPrint('Error reading Debrify TV channel favorites: $e');
+      debugPrint('Error reading MegaWatch TV channel favorites: $e');
       return false;
     }
   }
 
-  /// Set favorite status for a Debrify TV channel
-  static Future<void> setDebrifyTvChannelFavorited(
+  /// Set favorite status for a MegaWatch TV channel
+  static Future<void> setMegaWatchTvChannelFavorited(
     String channelId,
     bool isFavorited,
   ) async {
     final prefs = await ProfilePreferences.instance();
-    final favoritesJson = prefs.getString(_debrifyTvFavoriteChannelsKey);
+    final favoritesJson = prefs.getString(_megawatchTvFavoriteChannelsKey);
 
     Map<String, dynamic> favorites = {};
     if (favoritesJson != null) {
@@ -5702,13 +5702,13 @@ class StorageService {
       favorites.remove(channelId);
     }
 
-    await prefs.setString(_debrifyTvFavoriteChannelsKey, jsonEncode(favorites));
+    await prefs.setString(_megawatchTvFavoriteChannelsKey, jsonEncode(favorites));
   }
 
-  /// Get all favorite Debrify TV channel IDs
-  static Future<Set<String>> getDebrifyTvFavoriteChannelIds() async {
+  /// Get all favorite MegaWatch TV channel IDs
+  static Future<Set<String>> getMegaWatchTvFavoriteChannelIds() async {
     final prefs = await ProfilePreferences.instance();
-    final favoritesJson = prefs.getString(_debrifyTvFavoriteChannelsKey);
+    final favoritesJson = prefs.getString(_megawatchTvFavoriteChannelsKey);
 
     if (favoritesJson == null) return {};
 
@@ -5716,7 +5716,7 @@ class StorageService {
       final favorites = jsonDecode(favoritesJson) as Map<String, dynamic>;
       return favorites.keys.toSet();
     } catch (e) {
-      debugPrint('Error reading Debrify TV channel favorites: $e');
+      debugPrint('Error reading MegaWatch TV channel favorites: $e');
       return {};
     }
   }
@@ -7209,7 +7209,7 @@ class StorageService {
     );
   }
 
-  // Network tuning (Debrify player)
+  // Network tuning (MegaWatch player)
   /// 'standard' | 'extended' | 'patient'. Standard = player defaults untouched.
   static Future<String> getNetworkConnectPatience() async {
     final prefs = await ProfilePreferences.instance();
@@ -7736,7 +7736,7 @@ class StorageService {
     await clearPikPakSubfolderCaches();
   }
 
-  // PikPak Subfolder ID caching (for debrify-torrents and debrify-tv folders)
+  // PikPak Subfolder ID caching (for megawatch-torrents and megawatch-tv folders)
   static Future<String?> getPikPakTorrentsFolderId() async {
     final prefs = await ProfilePreferences.instance();
     return prefs.getString(_pikpakTorrentsFolderIdKey);
@@ -8579,44 +8579,44 @@ class StorageService {
     await prefs.setString(_defaultFilterDynamicRangesKey, jsonEncode(ranges));
   }
 
-  // Debrify TV Filter Settings — scoped to Debrify TV only, deliberately
+  // MegaWatch TV Filter Settings — scoped to MegaWatch TV only, deliberately
   // separate from the Search tab's default filters above so tuning a channel
   // feed never changes search behaviour (and vice versa).
-  static Future<List<String>> getDebrifyTvFilterQualities() async {
+  static Future<List<String>> getMegaWatchTvFilterQualities() async {
     final prefs = await ProfilePreferences.instance();
-    final json = prefs.getString(_debrifyTvFilterQualitiesKey);
+    final json = prefs.getString(_megawatchTvFilterQualitiesKey);
     if (json == null) return [];
     return List<String>.from(jsonDecode(json));
   }
 
-  static Future<void> setDebrifyTvFilterQualities(
+  static Future<void> setMegaWatchTvFilterQualities(
     List<String> qualities,
   ) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setString(_debrifyTvFilterQualitiesKey, jsonEncode(qualities));
+    await prefs.setString(_megawatchTvFilterQualitiesKey, jsonEncode(qualities));
   }
 
-  static Future<List<String>> getDebrifyTvFilterSizes() async {
+  static Future<List<String>> getMegaWatchTvFilterSizes() async {
     final prefs = await ProfilePreferences.instance();
-    final json = prefs.getString(_debrifyTvFilterSizesKey);
+    final json = prefs.getString(_megawatchTvFilterSizesKey);
     if (json == null) return [];
     return List<String>.from(jsonDecode(json));
   }
 
-  static Future<void> setDebrifyTvFilterSizes(List<String> sizes) async {
+  static Future<void> setMegaWatchTvFilterSizes(List<String> sizes) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setString(_debrifyTvFilterSizesKey, jsonEncode(sizes));
+    await prefs.setString(_megawatchTvFilterSizesKey, jsonEncode(sizes));
   }
 
-  /// Whether the user dismissed the Debrify TV external-player notice forever.
-  static Future<bool> getDebrifyTvExternalNoticeDismissed() async {
+  /// Whether the user dismissed the MegaWatch TV external-player notice forever.
+  static Future<bool> getMegaWatchTvExternalNoticeDismissed() async {
     final prefs = await ProfilePreferences.instance();
-    return prefs.getBool(_debrifyTvExternalNoticeDismissedKey) ?? false;
+    return prefs.getBool(_megawatchTvExternalNoticeDismissedKey) ?? false;
   }
 
-  static Future<void> setDebrifyTvExternalNoticeDismissed(bool value) async {
+  static Future<void> setMegaWatchTvExternalNoticeDismissed(bool value) async {
     final prefs = await ProfilePreferences.instance();
-    await prefs.setBool(_debrifyTvExternalNoticeDismissedKey, value);
+    await prefs.setBool(_megawatchTvExternalNoticeDismissedKey, value);
   }
 
   // Default Torrent Provider methods
@@ -8830,7 +8830,7 @@ class StorageService {
   /// Loads the per-content Quick Play profile. When no v2 profile exists,
   /// legacy filter/retry/series-pack preferences are folded into one without
   /// changing what the next play will do. Non-default legacy values are
-  /// labelled Custom; an untouched install is Debrify default.
+  /// labelled Custom; an untouched install is MegaWatch default.
   static Future<QuickPlayRules> getQuickPlayRules({
     required bool isMovie,
   }) async {
@@ -8861,9 +8861,9 @@ class StorageService {
       }
     }
 
-    final defaults = QuickPlayRules.debrifyDefault(isMovie: isMovie);
+    final defaults = QuickPlayRules.megawatchDefault(isMovie: isMovie);
     final migrated = defaults.copyWith(
-      preset: QuickPlayPreset.debrifyDefault,
+      preset: QuickPlayPreset.megawatchDefault,
       useFilters: prefs.getBool(_quickPlayHonorsFiltersKey) ?? true,
       tryNextOnFailure: prefs.getBool(_quickPlayTryMultipleTorrentsKey) ?? true,
       maxAttempts: prefs.getInt(_quickPlayMaxRetriesKey) ?? 5,
@@ -8919,11 +8919,11 @@ class StorageService {
 
   static Future<void> restoreQuickPlayDefaults() async {
     await setQuickPlayRules(
-      QuickPlayRules.debrifyDefault(isMovie: true),
+      QuickPlayRules.megawatchDefault(isMovie: true),
       isMovie: true,
     );
     await setQuickPlayRules(
-      QuickPlayRules.debrifyDefault(isMovie: false),
+      QuickPlayRules.megawatchDefault(isMovie: false),
       isMovie: false,
     );
     final prefs = await ProfilePreferences.instance();
@@ -9012,15 +9012,15 @@ class StorageService {
   // External Player Settings methods
 
   /// Get default player mode
-  /// Returns 'debrify' (built-in player) by default
-  /// Valid values: 'debrify', 'external', 'deovr'
+  /// Returns 'megawatch' (built-in player) by default
+  /// Valid values: 'megawatch', 'external', 'deovr'
   static Future<String> getDefaultPlayerMode() async {
     final prefs = await ProfilePreferences.instance();
-    return prefs.getString(_defaultPlayerModeKey) ?? 'debrify';
+    return prefs.getString(_defaultPlayerModeKey) ?? 'megawatch';
   }
 
   /// Set default player mode
-  /// Valid values: 'debrify', 'external', 'deovr'
+  /// Valid values: 'megawatch', 'external', 'deovr'
   static Future<void> setDefaultPlayerMode(String mode) async {
     final prefs = await ProfilePreferences.instance();
     await prefs.setString(_defaultPlayerModeKey, mode);
@@ -9201,7 +9201,7 @@ class StorageService {
     await prefs.remove(_externalPlayerCustomCommandKey);
   }
 
-  // Debrify Player Default Settings
+  // MegaWatch Player Default Settings
 
   /// Get default aspect ratio index for Flutter/mobile player
   /// 0=Contain, 1=Cover, 2=FitWidth, 3=FitHeight, 4=16:9, 5=4:3, 6=21:9, 7=1:1, 8=3:2, 9=5:4, 10=CinemaZoom
@@ -9365,7 +9365,7 @@ class StorageService {
     await prefs.setBool(_androidVideoRendererGpuMigrationKey, true);
   }
 
-  /// Whether the Debrify Player should request community timestamps and show
+  /// Whether the MegaWatch Player should request community timestamps and show
   /// manual skip buttons. Manual buttons are enabled by default; this setting
   /// never authorizes automatic seeking.
   static Future<bool> getSkipSegmentsEnabled() async {
@@ -9378,7 +9378,7 @@ class StorageService {
     await prefs.setBool(_skipSegmentsEnabledKey, enabled);
   }
 
-  /// Timestamp source used by the Debrify Player. Unknown stored values fall
+  /// Timestamp source used by the MegaWatch Player. Unknown stored values fall
   /// back safely so removing a provider cannot strand the feature.
   static Future<String> getSkipSegmentProvider() async {
     final prefs = await ProfilePreferences.instance();
@@ -10675,7 +10675,7 @@ class StorageService {
   static void resetProfileCaches() {
     tvKeyboardEnabledCached = !PlatformUtil.isTvOS;
     tvHomeStyleCached = 'canvas';
-    debrifyTvStyleCached = 'grid';
+    megawatchTvStyleCached = 'grid';
     detailPageStyleCached = kDetailPageStyleDefault;
     detailPageSectionVisibilityCached = DetailPageSectionVisibility.defaults;
     detailThemeCached = 'signal';

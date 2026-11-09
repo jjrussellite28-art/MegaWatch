@@ -1,19 +1,19 @@
 import 'dart:typed_data';
 
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/services/remote_control/remote_webdav_sync_account.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_feature.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_activation.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_binding_store.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_connect_controller.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_runtime.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_setup_authorization.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_setup_service.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/services/remote_control/remote_webdav_sync_account.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_feature.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_activation.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_binding_store.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_connect_controller.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_runtime.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_setup_authorization.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_setup_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -176,7 +176,7 @@ void main() {
       final earlier = await store.stageBinding(
         location: WebDavSyncFolderLocation(
           endpoint: 'https://other.test/dav',
-          folderPath: 'Debrify',
+          folderPath: 'MegaWatch',
           serverName: 'Other',
         ),
         config: const WebDavConfig(
@@ -206,7 +206,7 @@ void main() {
     final earlier = await store.stageBinding(
       location: WebDavSyncFolderLocation(
         endpoint: 'https://other.test/dav',
-        folderPath: 'Debrify',
+        folderPath: 'MegaWatch',
         serverName: 'Other',
       ),
       config: const WebDavConfig(
@@ -241,10 +241,10 @@ void main() {
       );
 
       final finishing = outcome as WebDavSyncConnectAdoptedFinishing;
-      expect(finishing.binding.location.folderPath, 'Debrify');
+      expect(finishing.binding.location.folderPath, 'MegaWatch');
       expect(transport.paths, <String>[
-        'Debrify/debrify-sync/circle.json.enc',
-        'Debrify/debrify-sync/circle.key',
+        'MegaWatch/megawatch-sync/circle.json.enc',
+        'MegaWatch/megawatch-sync/circle.key',
       ]);
       expect(
         (await store.readSecrets(finishing.binding)).syncPassphrase,
@@ -361,8 +361,8 @@ void main() {
     );
     expect(transport.endpoint, installed.binding.location.endpoint);
     expect(transport.paths.sublist(transport.paths.length - 2), <String>[
-      'Debrify/debrify-sync/circle.json.enc',
-      'Debrify/debrify-sync/circle.key',
+      'MegaWatch/megawatch-sync/circle.json.enc',
+      'MegaWatch/megawatch-sync/circle.key',
     ]);
   });
 

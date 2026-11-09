@@ -1,6 +1,6 @@
-import 'package:debrify/screens/video_player/models/gesture_state.dart';
-import 'package:debrify/screens/video_player/utils/aspect_mode_utils.dart';
-import 'package:debrify/services/profiles/sanitized_profile_preferences.dart';
+import 'package:megawatch/screens/video_player/models/gesture_state.dart';
+import 'package:megawatch/screens/video_player/utils/aspect_mode_utils.dart';
+import 'package:megawatch/services/profiles/sanitized_profile_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

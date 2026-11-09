@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
 
 /// Does a theme's real typeface, at its real scale, still FIT?
 ///

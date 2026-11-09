@@ -41,7 +41,7 @@ class NativeProfileProjection {
   @visibleForTesting
   static Future<void> Function()? debugBeforeAddonRead;
   static const MethodChannel _privacyChannel = MethodChannel(
-    'com.debrify.app/profile_privacy',
+    'com.megawatch.app/profile_privacy',
   );
 
   static const Set<String> logicalKeys =

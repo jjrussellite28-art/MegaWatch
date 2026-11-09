@@ -347,7 +347,7 @@ String remoteChannelTransferBody({
         requestId.isEmpty ||
         requestId.length > 128 ||
         uri is! String ||
-        !uri.startsWith('debrify://')) {
+        !uri.startsWith('megawatch://')) {
       return null;
     }
     return (requestId: requestId, uri: uri);
@@ -499,7 +499,7 @@ class ChunkResendCache {
         if (index < 0 || index >= cached.chunks.length) continue;
         await Future.delayed(kChunkPace);
         await state.sendConfigCommandToDevice(
-          ConfigCommand.debrifyChannelChunk,
+          ConfigCommand.megawatchChannelChunk,
           cached.targetIp,
           configData: chunkPieceBody(
             transferId: transferId,
@@ -546,7 +546,7 @@ class _CachedTransfer {
 /// reassembled string through the normal handler for that command.
 ///
 /// Loss is repaired, not prevented: the receiver watches for stalls and asks
-/// for exactly the missing indices ([ConfigCommand.debrifyChannelNeed]),
+/// for exactly the missing indices ([ConfigCommand.megawatchChannelNeed]),
 /// which the sender replays from [ChunkResendCache] — that is what makes the
 /// aggressive [kChunkPace] safe. A `false` return still means the transfer
 /// never got off the ground and callers must say so.
@@ -671,7 +671,7 @@ Future<bool> sendConfigPayloadToDevice(
       resultRequestId: resultRequestId,
     );
     final startOk = await state.sendConfigCommandToDevice(
-      ConfigCommand.debrifyChannelStart,
+      ConfigCommand.megawatchChannelStart,
       targetIp,
       configData: startBody,
       plaintextTransport: true,
@@ -689,7 +689,7 @@ Future<bool> sendConfigPayloadToDevice(
     // is a no-op before any chunk has landed and destructive after.
     await Future.delayed(chunkPace);
     final duplicateStartOk = await state.sendConfigCommandToDevice(
-      ConfigCommand.debrifyChannelStart,
+      ConfigCommand.megawatchChannelStart,
       targetIp,
       configData: startBody,
       plaintextTransport: true,
@@ -707,7 +707,7 @@ Future<bool> sendConfigPayloadToDevice(
       // socket buffer, and a chunk dropped there costs the whole transfer.
       await Future.delayed(chunkPace);
       final ok = await state.sendConfigCommandToDevice(
-        ConfigCommand.debrifyChannelChunk,
+        ConfigCommand.megawatchChannelChunk,
         targetIp,
         configData: chunkPieceBody(
           transferId: transferId,

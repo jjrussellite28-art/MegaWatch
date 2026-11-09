@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/screens/video_player/services/subtitle_cue_parser.dart';
+import 'package:megawatch/screens/video_player/services/subtitle_cue_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

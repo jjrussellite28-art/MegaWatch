@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/home/home_row_focus.dart';
+import 'package:megawatch/widgets/home/home_row_focus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -47,7 +47,7 @@ void main() {
   late PathProviderPlatform previousPaths;
   setUp(() async {
     previousPaths = PathProviderPlatform.instance;
-    root = await Directory.systemTemp.createTemp('debrify-cache-audit-');
+    root = await Directory.systemTemp.createTemp('megawatch-cache-audit-');
     PathProviderPlatform.instance = AuditPaths(root.path);
     repo = CacheObjectProvider(path: '${root.path}/index.db');
     store = CacheStore(Config('artwork', repo: repo, maxNrOfCacheObjects: 1));

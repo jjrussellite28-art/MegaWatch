@@ -113,7 +113,7 @@ class SurfaceTokens {
 
   /// True when this look has no surface opinion at all.
   ///
-  /// Which is to say: Debrify Classic, and every theme that predates
+  /// Which is to say: MegaWatch Classic, and every theme that predates
   /// `ThemeSpec` — all twenty of them inherit `legacy` verbatim from
   /// `fromDetail`. `GlassSurface` uses it to answer a question the model alone
   /// cannot: *did the SITE ship a blur?* A look that stated `fill` chose not

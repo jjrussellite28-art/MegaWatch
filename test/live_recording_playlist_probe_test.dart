@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/services/live_recording_service.dart';
+import 'package:megawatch/services/live_recording_service.dart';
 
 /// The probe that stops the stage's Record button promising a recording of a
 /// stream the engine cannot capture. It must be affirmative-only: anything it

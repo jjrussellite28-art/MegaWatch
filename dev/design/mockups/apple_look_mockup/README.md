@@ -1,4 +1,4 @@
-# Spotlight & Showcase — Debrify TV in the Apple TV idiom
+# Spotlight & Showcase — MegaWatch TV in the Apple TV idiom
 
 Two new TV layouts, drawn at **true panel scale (1920×1080 = 2× the app's logical
 pixels)** with real artwork and real metadata.

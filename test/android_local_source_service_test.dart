@@ -1,11 +1,11 @@
-import 'package:debrify/services/android_local_source_service.dart';
-import 'package:debrify/services/series_source_service.dart';
+import 'package:megawatch/services/android_local_source_service.dart';
+import 'package:megawatch/services/series_source_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const channel = MethodChannel('debrify/local_sources');
+  const channel = MethodChannel('megawatch/local_sources');
   const tree = 'content://storage/tree/primary%3AShows';
   final calls = <MethodCall>[];
   var inaccessible = false;

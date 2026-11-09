@@ -1,6 +1,6 @@
 name: media_kit_libs_macos_video
-description: Debrify's PGS-capable macOS native libraries for media_kit.
-version: 1.1.4+debrify.1
+description: MegaWatch's PGS-capable macOS native libraries for media_kit.
+version: 1.1.4+megawatch.1
 publish_to: none
 
 environment:

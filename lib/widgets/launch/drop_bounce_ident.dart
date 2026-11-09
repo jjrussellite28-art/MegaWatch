@@ -6,7 +6,7 @@ import 'launch_ident.dart';
 
 /// The shipped reveal, unchanged: the play mark drops in with real weight (an
 /// ease-out bounce), squashing on each contact — and the landing shakes the
-/// DEBRIFY letters loose so they pop up one by one. Moved here verbatim from
+/// MEGAWATCH letters loose so they pop up one by one. Moved here verbatim from
 /// app_initializer.dart when the splash became selectable; the default must
 /// stay pixel-identical.
 ///

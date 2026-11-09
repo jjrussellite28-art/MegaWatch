@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/services/tracking_source_policy.dart';
-import 'package:debrify/services/video_player_launcher.dart';
+import 'package:megawatch/services/tracking_source_policy.dart';
+import 'package:megawatch/services/video_player_launcher.dart';
 
 void main() {
   group('TrackingSourcePolicy', () {

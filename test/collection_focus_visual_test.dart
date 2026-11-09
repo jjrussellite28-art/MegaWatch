@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/widgets/collections/collection_focus_glow.dart';
-import 'package:debrify/widgets/home/card_focus_rise.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/widgets/collections/collection_focus_glow.dart';
+import 'package:megawatch/widgets/home/card_focus_rise.dart';
 
 void main() {
   testWidgets('collection glow retains focus ring across tile shapes', (

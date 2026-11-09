@@ -39,7 +39,7 @@ android {
 }
 
 def nativeLibDir = file('libs')
-def patchedMarker = new File(nativeLibDir, '.debrify-subtitle-build')
+def patchedMarker = new File(nativeLibDir, '.megawatch-subtitle-build')
 def upstreamVersion = 'v1.1.5'
 def upstreamFiles = [
     ['default-arm64-v8a.jar',   '5f521b08692d7fef73c5df9bcc00ca4d'],

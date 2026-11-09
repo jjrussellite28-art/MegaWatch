@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/widgets/remote/remote_send_browser.dart';
-import 'package:debrify/widgets/remote/remote_control_screen.dart';
+import 'package:megawatch/widgets/remote/remote_send_browser.dart';
+import 'package:megawatch/widgets/remote/remote_control_screen.dart';
 
 const choices = [
   RemoteSendChoice(
@@ -141,7 +141,7 @@ void main() {
     expect(everything, 1);
     expect(photo, 1);
     expect(tester.takeException(), isNull);
-    await tester.tap(find.text('Debrify TV channels'));
+    await tester.tap(find.text('MegaWatch TV channels'));
     await tester.pump();
     expect(find.text('News'), findsOneWidget);
     expect(tester.takeException(), isNull);

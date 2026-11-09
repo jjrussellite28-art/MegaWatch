@@ -4,7 +4,7 @@
 **Reviewed baseline:** `591ec0a008115b8fd4ffa7c7ed3ffad70d582e86` (`0.8.2_alpha`) plus the uncommitted multi-profile implementation
 **Companion review plan:** [2026-08-13-profiles-review.md](../plans/2026-08-13-profiles-review.md)
 **Supported platforms:** Android, Android TV, iOS, tvOS, macOS, Windows, and Linux. Web is not supported and is out of scope.
-**Decision:** **NO-GO. Keep `DEBRIFY_PROFILES` and `DEBRIFY_PROFILES_MIGRATION_READY` disabled.**
+**Decision:** **NO-GO. Keep `MEGAWATCH_PROFILES` and `MEGAWATCH_PROFILES_MIGRATION_READY` disabled.**
 
 > **Remediation update:** This report is the immutable first-pass finding
 > record. The source corrections, regression evidence, and remaining physical
@@ -142,7 +142,7 @@ Download enqueue lacks resource identity/revision (`download_service.dart:1885-1
 
 IPTV startup resolution reads the last-active profile before `ProfileGate` (`main.dart:232-348,407-420`) and stores an unscoped process-static payload (`main_page_bridge.dart:408-445`). Selecting B does not clear/recompute it; B chooses/consumes the IPTV route (`main.dart:890-895`, `iptv_results_view.dart:3387-3418`).
 
-The same bridge has other unscoped pending content: catalog details, MDBList lists, Debrify/Stremio TV channels, Continue Watching, and advanced-search autoplay (`main_page_bridge.dart:131-178,367-391,453-495`). They are not comprehensively cleared by `profile_app_lifecycle_participant.dart:29-45`.
+The same bridge has other unscoped pending content: catalog details, MDBList lists, MegaWatch/Stremio TV channels, Continue Watching, and advanced-search autoplay (`main_page_bridge.dart:131-178,367-391,453-495`). They are not comprehensively cleared by `profile_app_lifecycle_participant.dart:29-45`.
 
 On tvOS, `TvosTopShelfService.initialize` runs before `ProfileGate`. During that window, `ProfileLockController.lockedProfileId` is still null, so an action for last-active A can be accepted into `pendingCatalogDetailOpen` by `tvos_top_shelf_service.dart:441-480`; the initial locked branch in `profile_gate.dart:105-128` does not clear that bridge payload.
 

@@ -4,7 +4,7 @@ argument-hint: <alpha|beta> <version>   e.g. /release beta 0.6.1
 allowed-tools: Bash, Read, Edit, Write
 ---
 
-You are running the Debrify release procedure.
+You are running the MegaWatch release procedure.
 
 Raw arguments: `$ARGUMENTS`
 
@@ -75,7 +75,7 @@ Let `BR` = current branch (`git branch --show-current`).
 6. **Watch it in the background:** run `gh run watch <RUN_ID> --exit-status` with `run_in_background: true`, so you're re-invoked when the build finishes (~20–30 min). Tell the user you're watching and they can leave the window open.
 7. **When the run finishes:**
    - If it **failed** (non-zero exit / `conclusion != success`): DO NOT post to Discord. Report which job failed with a link (`gh run view <RUN_ID>`), then skip straight to step 9.
-   - If it **succeeded**: verify the assets are attached — `gh release view "v$2-$1.N" --json assets -q '.assets[].name'` should include `debrify-v$2-$1.N.apk` and the other 5. Then post:
+   - If it **succeeded**: verify the assets are attached — `gh release view "v$2-$1.N" --json assets -q '.assets[].name'` should include `megawatch-v$2-$1.N.apk` and the other 5. Then post:
      `python3 .release/post_discord.py --repo varunsalian/debrify --channel "$1" --tag "v$2-$1.N" --notes-file <scratch>/discord-notes.md`
    - (Tip: run the same command with `--dry-run` first if you want to eyeball the exact payload.)
 8. **Report:** the release URL, the Discord message result, and the direct APK link.

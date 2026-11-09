@@ -1,5 +1,5 @@
 /**
- * Register the /bug and /feature slash commands to the Debrify guild (instant).
+ * Register the /bug and /feature slash commands to the MegaWatch guild (instant).
  * Run: node register.mjs   (or: npm run register)
  * Needs DISCORD_TOKEN from env or ./.dev.vars.
  */

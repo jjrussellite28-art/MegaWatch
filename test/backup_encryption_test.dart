@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/backup_restore_service.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/secret_vault.dart';
+import 'package:megawatch/services/backup_restore_service.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/secret_vault.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -216,7 +216,7 @@ void main() {
     });
 
     tearDownAll(() async {
-      await DebrifyTvDatabase.instance.closeScope();
+      await MegaWatchTvDatabase.instance.closeScope();
       IptvMediaStore.debugResetMigration();
       await storageRoot.delete(recursive: true);
     });

@@ -1,4 +1,4 @@
-import 'package:debrify/screens/video_player/models/playlist_entry.dart';
+import 'package:megawatch/screens/video_player/models/playlist_entry.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

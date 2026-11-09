@@ -1,8 +1,8 @@
-import 'package:debrify/screens/video_player/models/gesture_state.dart';
-import 'package:debrify/screens/video_player/services/playback_ui_clock.dart';
-import 'package:debrify/screens/video_player/widgets/dock_style.dart';
-import 'package:debrify/screens/video_player/widgets/dock_widgets.dart';
-import 'package:debrify/screens/video_player/widgets/styled_dock.dart';
+import 'package:megawatch/screens/video_player/models/gesture_state.dart';
+import 'package:megawatch/screens/video_player/services/playback_ui_clock.dart';
+import 'package:megawatch/screens/video_player/widgets/dock_style.dart';
+import 'package:megawatch/screens/video_player/widgets/dock_widgets.dart';
+import 'package:megawatch/screens/video_player/widgets/styled_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

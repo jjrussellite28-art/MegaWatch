@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/widgets/onboarding/controllers/tracker_auth_controller.dart';
+import 'package:megawatch/widgets/onboarding/controllers/tracker_auth_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

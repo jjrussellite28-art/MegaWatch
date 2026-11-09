@@ -1,9 +1,9 @@
 {
-  "name": "debrify-discord",
+  "name": "megawatch-discord",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Debrify community Discord bot — /bug and /feature forms that file GitHub issues.",
+  "description": "MegaWatch community Discord bot — /bug and /feature forms that file GitHub issues.",
   "scripts": {
     "register": "node register.mjs",
     "dev": "wrangler dev",

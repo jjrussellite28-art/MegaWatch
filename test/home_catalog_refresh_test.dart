@@ -1,6 +1,6 @@
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/home_catalog_refresh.dart';
-import 'package:debrify/widgets/home/home_row_focus.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/home_catalog_refresh.dart';
+import 'package:megawatch/widgets/home/home_row_focus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -425,7 +425,7 @@ listener cannot tell a good key from a bad one anyway.
 What ships instead: the key step's third chip is **"Send everything from my
 phone"**, and it navigates to the `importing` step. That is the honest
 description of what the wire does, it costs nothing, and it is a better answer
-for a user who has Debrify on a phone already.
+for a user who has MegaWatch on a phone already.
 
 **Deferred, with its price stated:** per-provider send needs (a) a
 session-scoped receive mode that suppresses the `complete` restart, and (b) a

@@ -52,7 +52,7 @@ class AppTheme {
   final YoutubeTokens youtube;
   final PlaylistTokens playlist;
   final StremioTvTokens stremioTv;
-  final DebrifyTvTokens debrifyTv;
+  final MegaWatchTvTokens megawatchTv;
   final IptvTokens iptv;
   final ShellTokens shell;
 
@@ -115,7 +115,7 @@ class AppTheme {
     required this.youtube,
     required this.playlist,
     required this.stremioTv,
-    required this.debrifyTv,
+    required this.megawatchTv,
     required this.iptv,
     required this.shell,
     required this.shape,
@@ -535,11 +535,11 @@ class AppTheme {
         // an instance method and the instance does not exist yet.
         inkOnFill: _inkOnWorstOf(core.accent, core.accent, tx, ground),
       ),
-      debrifyTv: DebrifyTvTokens(
+      megawatchTv: MegaWatchTvTokens(
         // The identity follows the theme; legacy's Netflix red is a legacy
         // value, not a property of the channel grid.
         accent: core.accent,
-        // Matches what the ThemeData adapter gives `dialogTheme`, so a Debrify
+        // Matches what the ThemeData adapter gives `dialogTheme`, so a MegaWatch
         // TV dialog and a Material one read as the same surface.
         dialogBg: core.pane.withValues(alpha: 1),
         dialogDeep: ground,
@@ -1491,8 +1491,8 @@ class StremioTvTokens {
   });
 }
 
-/// Debrify TV — the channel-surfing surface (`magic_tv_screen.dart` and the
-/// five dialogs under `screens/debrify_tv/`).
+/// MegaWatch TV — the channel-surfing surface (`magic_tv_screen.dart` and the
+/// five dialogs under `screens/megawatch_tv/`).
 ///
 /// A near-black card-and-cursor surface: every ground is a small step off an
 /// almost-invisible page, and the DPAD ring is the only bright thing on it.
@@ -1511,7 +1511,7 @@ class StremioTvTokens {
 /// dialog's eight category swatches, and the modal barrier — a scrim is black
 /// at alpha on every theme, for the same reason [AppTheme.onGlass] exists.
 @immutable
-class DebrifyTvTokens {
+class MegaWatchTvTokens {
   /// The surface's identity: CH badges, the Play / Save / Add fills, the
   /// switch thumb, the brand glyph and the header gradient's bright stop.
   ///
@@ -1618,7 +1618,7 @@ class DebrifyTvTokens {
   /// Deepened on light grounds the way the app's status trio is.
   final Color favorite;
 
-  const DebrifyTvTokens({
+  const MegaWatchTvTokens({
     required this.accent,
     required this.dialogBg,
     required this.noticeBg,
@@ -1866,7 +1866,7 @@ abstract final class AppThemes {
   /// worth the reading cost.
   static final AppTheme legacy = AppTheme._(
     id: legacyId,
-    label: 'Debrify Classic',
+    label: 'MegaWatch Classic',
     isLegacy: true,
     core: DetailThemes.signal,
     brightness: Brightness.dark,
@@ -2071,7 +2071,7 @@ abstract final class AppThemes {
       loaderInk: Colors.white, // loader ink on the dark backdrop
       inkOnFill: const Color(0xFF0A0712), // check glyph on the loader step dot
     ),
-    debrifyTv: DebrifyTvTokens(
+    megawatchTv: MegaWatchTvTokens(
       accent: const Color(0xFFE50914), // CH badge / Play / Save fills
       dialogBg: const Color(0xFF0F0F0F), // magic_tv's five dialogs
       dialogDeep: const Color(0xFF101014), // dialog gradient, deep stop

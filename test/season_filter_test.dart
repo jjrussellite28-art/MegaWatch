@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/torrent.dart';
+import 'package:megawatch/models/torrent.dart';
 
 void main() {
   group('Season Filtering Logic', () {

@@ -125,7 +125,7 @@ flutter run --profile -d macos -t dev/launch_animations/verify_desktop.dart
 ```
 
 The QA entry point uses embedded original fixtures and temporary storage. It does
-not initialize Debrify preferences or its database. It writes screenshots and
+not initialize MegaWatch preferences or its database. It writes screenshots and
 `results.json` to the platform's temporary directory, prints the location, and
 exits. It is not the production entry point or a production asset bundle.
 

@@ -3,11 +3,11 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/theme/app_motion.dart';
-import 'package:debrify/theme/app_shape.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/theme/app_motion.dart';
+import 'package:megawatch/theme/app_shape.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
 
 /// The non-colour tokens: legacy no-op pins, per-theme derivation, and the two
 /// rules that are easy to state and easy to get wrong (growth capping, and the

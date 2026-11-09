@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/services/remote_control/remote_transfer_activity.dart';
+import 'package:megawatch/services/remote_control/remote_transfer_activity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

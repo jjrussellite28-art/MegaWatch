@@ -1,7 +1,7 @@
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/services/profiles/profile_remote_lease.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/services/profiles/profile_remote_lease.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

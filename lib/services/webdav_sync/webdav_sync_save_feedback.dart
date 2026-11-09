@@ -10,7 +10,7 @@ class WebDavSyncSaveFeedback extends ChangeNotifier {
   static final instance = WebDavSyncSaveFeedback(persistent: true);
   WebDavSyncSaveFeedback({this.persistent = false});
   final bool persistent;
-  static const pendingKey = 'debrify_device_webdav_save_pending_v1';
+  static const pendingKey = 'megawatch_device_webdav_save_pending_v1';
   SharedPreferences? _preferences;
   Future<void> _persistence = Future<void>.value();
 

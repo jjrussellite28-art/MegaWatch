@@ -1,16 +1,16 @@
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_activation.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_graph.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_adoption.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_adoption_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_binding_store.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_discovery.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine_state.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_manifest_publisher.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_activation.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_graph.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_adoption.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_adoption_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_binding_store.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_discovery.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine_state.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_manifest_publisher.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final class ConnectorMemoryStateRepository

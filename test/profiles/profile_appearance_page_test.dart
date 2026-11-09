@@ -1,5 +1,5 @@
-import 'package:debrify/screens/profiles/profile_wall_screen.dart';
-import 'package:debrify/screens/settings/profile_appearance_page.dart';
+import 'package:megawatch/screens/profiles/profile_wall_screen.dart';
+import 'package:megawatch/screens/settings/profile_appearance_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

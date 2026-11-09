@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:debrify/services/engine/local_engine_storage.dart';
+import 'package:megawatch/services/engine/local_engine_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';

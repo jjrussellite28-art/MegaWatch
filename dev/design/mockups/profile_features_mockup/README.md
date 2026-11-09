@@ -23,7 +23,7 @@ Manage / Reveal secret / Share onward) confused even the author. Decision:
 1. **Role** (= preset): Admin / Member / Kid
 2. **Search power**: by title in their catalogs (always on for everyone)
    ⟷ plus raw keyword search → drives ONLY Keyword search
-3. **Sources pages** (multi-select tiles): Debrify TV / Stremio TV /
+3. **Sources pages** (multi-select tiles): MegaWatch TV / Stremio TV /
    Live TV (IPTV) / YouTube
 4. **Abilities** (toggle-cards): Downloads & recording, Remote,
    Manage own sources (whether the profile edits its OWN addon/engine
@@ -58,7 +58,7 @@ in a collapsed **Fine-tune** drawer. Editing later lands on Review with
 "Re-run questions" available.
 
 Presets: Admin & Member = all 8 on (their difference is the role-bound admin
-features: manage services / manage profiles). Kid = Home shelves + Debrify
+features: manage services / manage profiles). Kid = Home shelves + MegaWatch
 TV only.
 
 ## Rules
@@ -75,18 +75,18 @@ TV only.
 ## Audit (2026-08-16) — gaps & loopholes found before build
 
 Role-locked safety rails (hard-bound to role == child in ProfilePolicy,
-never toggles): Debrify TV NSFW filter forced ON and VIEWER-SCOPED
+never toggles): MegaWatch TV NSFW filter forced ON and VIEWER-SCOPED
 (evaluated at browse/play against the active profile — an admin-authored
 NSFW-allowed channel must still filter for a Kid viewer); Reddit NSFW
 forced off; future rating ceiling defaults on.
 
-1. Kid Debrify TV is WATCH-ONLY — channel create/edit hidden for child
+1. Kid MegaWatch TV is WATCH-ONLY — channel create/edit hidden for child
    role (keyword channels are keyword search by the back door).
 2. Kid Review screen nudges a sources trim ("Maya currently has every
    source — review?") — all-on default + always-on catalog search means
    untrimmed Cinemeta; real fix remains the rating ceiling.
 3. Reddit page = 11th feature toggle (A ✓ / M ✓ / K —).
-4. Deep links join the reach sweep (magnet/debrify:// actions check
+4. Deep links join the reach sweep (magnet/megawatch:// actions check
    features); consider Kid quick-play-only source browsing (polish).
 5. Defined behavior: sources added later inherit the default (on,
    trackers off) for every profile — trimming is per-resource, not a

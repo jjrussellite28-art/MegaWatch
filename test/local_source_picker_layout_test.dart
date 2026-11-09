@@ -1,4 +1,4 @@
-import 'package:debrify/services/local_bound_source_service.dart';
+import 'package:megawatch/services/local_bound_source_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

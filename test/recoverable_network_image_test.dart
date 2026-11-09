@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:file/local.dart';
-import 'package:debrify/widgets/recoverable_network_image.dart';
+import 'package:megawatch/widgets/recoverable_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -44,7 +44,7 @@ void main() {
   late Directory temp;
   late File png;
   setUpAll(() async {
-    temp = await Directory.systemTemp.createTemp('debrify-image-test');
+    temp = await Directory.systemTemp.createTemp('megawatch-image-test');
     png = File('${temp.path}/image.png');
     await png.writeAsBytes(
       base64Decode(

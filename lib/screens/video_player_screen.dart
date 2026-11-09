@@ -115,7 +115,7 @@ import 'video_player/widgets/skip_segment_button.dart';
 import 'video_player/widgets/sleep_timer_sheet.dart';
 import 'video_player/widgets/sync_stepper_overlay.dart';
 import 'video_player/widgets/spotlight_dialog.dart';
-import 'video_player/widgets/debrify_tv_banner.dart';
+import 'video_player/widgets/megawatch_tv_banner.dart';
 import '../models/stremio_subtitle.dart';
 import '../models/stremio_addon.dart';
 import '../models/torrent.dart';
@@ -268,9 +268,9 @@ class VideoPlayerScreen extends StatefulWidget {
   final String? rdTorrentId; // For updating playlist poster (RealDebrid)
   final String? torboxTorrentId; // For updating playlist poster (Torbox)
   final String? pikpakCollectionId; // For updating playlist poster (PikPak)
-  // Optional: Debrify TV provider to fetch the next playable item (url & title)
+  // Optional: MegaWatch TV provider to fetch the next playable item (url & title)
   final Future<Map<String, String>?> Function()? requestMagicNext;
-  // Optional: Debrify TV channel switcher (firstUrl, firstTitle, channel metadata)
+  // Optional: MegaWatch TV channel switcher (firstUrl, firstTitle, channel metadata)
   final Future<Map<String, dynamic>?> Function()? requestNextChannel;
   // Optional: Switch to a specific channel by ID
   final Future<Map<String, dynamic>?> Function(String channelId)?
@@ -430,10 +430,10 @@ class VideoPlayerScreen extends StatefulWidget {
 class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     with TickerProviderStateMixin {
   static const MethodChannel _tvReleaseLogChannel = MethodChannel(
-    'debrify/tvlog',
+    'megawatch/tvlog',
   );
   static const MethodChannel _androidPlayerDiagnosticChannel = MethodChannel(
-    'debrify/player_diagnostics',
+    'megawatch/player_diagnostics',
   );
 
   late mk.Player _player;
@@ -629,10 +629,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Duration? _lastSliderSeekPos;
 
   // Channel badge auto-hide
-  // Debrify TV lower-third (replaces the two legacy corner badges).
-  bool _showDebrifyBanner = false;
-  bool _debrifyBannerFloatingMounted = false;
-  Timer? _debrifyBannerTimer;
+  // MegaWatch TV lower-third (replaces the two legacy corner badges).
+  bool _showMegaWatchBanner = false;
+  bool _megawatchBannerFloatingMounted = false;
+  Timer? _megawatchBannerTimer;
 
   // IPTV zap banner (live channels) — the broadcast lower third.
   //
@@ -674,7 +674,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   int _showShuffleGeneration = 0;
   int _episodeNavigationGeneration = 0;
 
-  // Channel metadata for Debrify TV flows
+  // Channel metadata for MegaWatch TV flows
   String? _currentChannelName;
   int? _currentChannelNumber;
   String? _currentChannelId;
@@ -988,9 +988,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   String get _infoPanelSignature {
     final channel = _iptvZapChannel;
     if (channel == null || !_iptvZapBannerOwnsIdentity) {
-      // Debrify TV's flush identity row: presence of plate/title is the
+      // MegaWatch TV's flush identity row: presence of plate/title is the
       // whole structure (single bounded row).
-      if (_debrifyTvOwnsIdentity) {
+      if (_megawatchTvOwnsIdentity) {
         final name = (_currentChannelName ?? widget.channelName)?.trim();
         return [
           'dtv',
@@ -1558,7 +1558,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     '📺 BRIBING THE SERVERS...',
   ];
 
-  // Dynamic title for Debrify TV (no-playlist) flow
+  // Dynamic title for MegaWatch TV (no-playlist) flow
   String _dynamicTitle = '';
 
   // Trakt scrobble state
@@ -3230,7 +3230,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _anchorIptvGuideCategory(iptvChannel);
       _ensureIptvZapPagingArmed();
     } else {
-      _raiseDebrifyBanner();
+      _raiseMegaWatchBanner();
     }
   }
 
@@ -3485,10 +3485,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       final isPikPak =
           currentEntry?.provider?.toLowerCase() == 'pikpak' ||
           currentEntry?.pikpakFileId != null;
-      // For non-playlist flows (Debrify TV, Stremio TV, etc.), detect PikPak by URL
+      // For non-playlist flows (MegaWatch TV, Stremio TV, etc.), detect PikPak by URL
       final isPikPakUrl =
           _activePlaylist == null && initialUrl.contains('mypikpak.com');
-      final isDebrifyTV = isPikPakUrl && widget.requestMagicNext != null;
+      final isMegaWatchTV = isPikPakUrl && widget.requestMagicNext != null;
 
       if (initialUrl.isNotEmpty &&
           ((isPikPak && _activePlaylist != null) || isPikPakUrl)) {
@@ -3507,7 +3507,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 _currentSourceIndex < _effectiveSources!.length
             ? _effectiveSources![_currentSourceIndex]
             : null;
-        _playPikPakVideoWithRetry(initialUrl, isDebrifyTV: isDebrifyTV).then((
+        _playPikPakVideoWithRetry(initialUrl, isMegaWatchTV: isMegaWatchTV).then((
           loaded,
         ) async {
           if (!pikpakStillCurrent()) return;
@@ -4919,7 +4919,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _releasePlayerDiagnostic(String fields) {
-    final message = 'DEBRIFY_PLAYER_DECODER $fields';
+    final message = 'MEGAWATCH_PLAYER_DECODER $fields';
     if (Platform.isAndroid) {
       // A dedicated native tag lets release captures select only this
       // privacy-safe line. Capturing Flutter's general stdout exposed unrelated
@@ -5296,7 +5296,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return;
     }
 
-    // Debrify TV (no playlist): auto-advance using provider if available
+    // MegaWatch TV (no playlist): auto-advance using provider if available
     if ((_activePlaylist == null || _activePlaylist!.isEmpty) &&
         widget.requestMagicNext != null) {
       await _goToNextEpisode();
@@ -5402,7 +5402,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     // Catalog single stream (Quick Play / Sources tap): prefer the clean
     // content title over the release filename. Packs are handled by the
-    // series branch above; Debrify TV, IPTV and Stremio TV keep their
+    // series branch above; MegaWatch TV, IPTV and Stremio TV keep their
     // dynamic titles.
     final contentTitle = _effectiveContentTitle;
     if (contentTitle != null &&
@@ -5421,8 +5421,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return (title: _activePlaylist![_currentIndex].title, fetched: false);
     }
 
-    // If Debrify TV (no playlist) is active, use dynamic title when available
-    // (a Debrify TV title can be a torrent name — keep the cleaner on it).
+    // If MegaWatch TV (no playlist) is active, use dynamic title when available
+    // (a MegaWatch TV title can be a torrent name — keep the cleaner on it).
     if ((_activePlaylist == null || _activePlaylist!.isEmpty) &&
         widget.requestMagicNext != null) {
       return _dynamicTitle.isNotEmpty
@@ -6068,9 +6068,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _tvAbandonScrub();
     });
 
-    // Only show transition overlay for Debrify TV content (when requestMagicNext is available)
-    final isDebrifyTV = widget.requestMagicNext != null;
-    if (isDebrifyTV) {
+    // Only show transition overlay for MegaWatch TV content (when requestMagicNext is available)
+    final isMegaWatchTV = widget.requestMagicNext != null;
+    if (isMegaWatchTV) {
       _startTransitionOverlay();
     }
     try {
@@ -6109,7 +6109,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (handled) return;
     }
 
-    // If there is no playlist-based next item and Debrify TV provider is present, use it
+    // If there is no playlist-based next item and MegaWatch TV provider is present, use it
     if (widget.requestMagicNext != null) {
       debugPrint('Player: MagicTV next requested.');
       try {
@@ -6145,14 +6145,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               provider.toLowerCase() == 'pikpak' || pikpakFileId.isNotEmpty;
           if (isPikPak) {
             debugPrint(
-              'Player: Detected PikPak video from Debrify TV, using retry logic',
+              'Player: Detected PikPak video from MegaWatch TV, using retry logic',
             );
             // _playPikPakVideoWithRetry will increment _pikPakRetryId to cancel previous retries
             await _playPikPakVideoWithRetry(
               url,
               overrideProvider: provider,
               overridePikPakFileId: pikpakFileId,
-              isDebrifyTV: true,
+              isMegaWatchTV: true,
             );
           } else {
             // Cancel any ongoing PikPak retry when switching to non-PikPak video
@@ -6166,9 +6166,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           // Disable auto-enabled embedded subtitles to prevent duplicates
           await _setSubtitleTrackWithDiagnostics(
             mk.SubtitleTrack.no(),
-            source: 'debrify-tv-open-disable-auto',
+            source: 'megawatch-tv-open-disable-auto',
           );
-          // If advanced option is enabled, jump to a random timestamp for Debrify TV items
+          // If advanced option is enabled, jump to a random timestamp for MegaWatch TV items
           if (widget.startFromRandom) {
             await _waitForVideoReady();
             final offset = _randomStartOffset(_duration);
@@ -6394,7 +6394,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final dockVisible =
         controlsVisible &&
         (_buildIptvInfoPanel(flush: true) != null ||
-            _buildDebrifyTvInfoPanel(flush: true) != null ||
+            _buildMegaWatchTvInfoPanel(flush: true) != null ||
             !widget.hideOptions);
     if (!dockVisible) return 28;
     final inset = MediaQuery.paddingOf(context).bottom;
@@ -7742,7 +7742,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         SnackBar(
           content: Text(
             ok
-                ? 'Recording stopped — saving to Downloads/Debrify/Recordings'
+                ? 'Recording stopped — saving to Downloads/MegaWatch/Recordings'
                 : "Couldn't stop recording",
           ),
         ),
@@ -8208,7 +8208,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       SnackBar(
         content: Text(
           published
-              ? 'Recording saved to Downloads/Debrify/Recordings'
+              ? 'Recording saved to Downloads/MegaWatch/Recordings'
               : "Recording couldn't be added to Downloads — "
                     'will retry next launch',
         ),
@@ -8254,7 +8254,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       dir = (await getDownloadsDirectory()) ?? await AppStorage.documents();
     }
     final sep = Platform.pathSeparator;
-    final prefix = '${dir.path}${sep}Debrify${sep}Recordings$sep${base}_$stamp';
+    final prefix = '${dir.path}${sep}MegaWatch${sep}Recordings$sep${base}_$stamp';
 
     var candidate = '$prefix.$extension';
     for (var n = 2; n < 100 && await File(candidate).exists(); n++) {
@@ -10091,7 +10091,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
     });
 
-    _raiseDebrifyBanner();
+    _raiseMegaWatchBanner();
 
     if (nextUrl.isEmpty) {
       setState(() {
@@ -10146,7 +10146,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
-  /// Switch to the next Debrify TV channel (MediaKit fallback)
+  /// Switch to the next MegaWatch TV channel (MediaKit fallback)
   Future<void> _goToNextChannel() async {
     final request = widget.requestNextChannel;
     if (request == null) {
@@ -10218,7 +10218,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           _currentChannelNumber = channelNumber;
         }
       });
-      _raiseDebrifyBanner();
+      _raiseMegaWatchBanner();
     }
 
     if (nextUrl.isEmpty) {
@@ -11043,13 +11043,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     String videoUrl, {
     String? overrideProvider,
     String? overridePikPakFileId,
-    bool isDebrifyTV = false,
+    bool isMegaWatchTV = false,
     bool showFailure = true,
     EpisodePlaybackRequest? request,
   }) async {
     if (request?.isCurrent == false) return false;
     // Only apply retry logic for PikPak videos
-    // Support both playlist entries and Debrify TV (requestMagicNext) flows
+    // Support both playlist entries and MegaWatch TV (requestMagicNext) flows
     final currentEntry =
         _activePlaylist != null &&
             _currentIndex >= 0 &&
@@ -11061,13 +11061,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         overridePikPakFileId != null ||
         currentEntry?.provider?.toLowerCase() == 'pikpak' ||
         currentEntry?.pikpakFileId != null ||
-        isDebrifyTV ||
+        isMegaWatchTV ||
         videoUrl.contains(
           'mypikpak.com',
         ); // Detect PikPak by URL (Stremio TV, etc.)
 
     print(
-      'PikPak: _playPikPakVideoWithRetry called for index $_currentIndex, isPikPak: $isPikPak, overrideProvider: $overrideProvider, overridePikPakFileId: $overridePikPakFileId, isDebrifyTV: $isDebrifyTV',
+      'PikPak: _playPikPakVideoWithRetry called for index $_currentIndex, isPikPak: $isPikPak, overrideProvider: $overrideProvider, overridePikPakFileId: $overridePikPakFileId, isMegaWatchTV: $isMegaWatchTV',
     );
 
     if (!isPikPak) {
@@ -11179,9 +11179,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           if (mounted) {
             setState(() {});
 
-            if (isDebrifyTV) {
-              // Auto-skip for Debrify TV
-              print('PikPak: Auto-advancing to next video in Debrify TV queue');
+            if (isMegaWatchTV) {
+              // Auto-skip for MegaWatch TV
+              print('PikPak: Auto-advancing to next video in MegaWatch TV queue');
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
@@ -11282,9 +11282,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           if (mounted) {
             setState(() {});
 
-            if (isDebrifyTV) {
-              // Auto-skip for Debrify TV
-              print('PikPak: Auto-advancing to next video in Debrify TV queue');
+            if (isMegaWatchTV) {
+              // Auto-skip for MegaWatch TV
+              print('PikPak: Auto-advancing to next video in MegaWatch TV queue');
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
@@ -11952,7 +11952,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _hideTimer?.cancel();
     _autosaveTimer?.cancel();
     _manualSelectionResetTimer?.cancel();
-    _debrifyBannerTimer?.cancel();
+    _megawatchBannerTimer?.cancel();
     _iptvZapHideTimer?.cancel();
     _iptvZapTicker?.cancel();
     _tvScrubGeneration++; // invalidate any scrub still in flight
@@ -12105,7 +12105,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
 
     // Fallback to videoUrl for single items
-    // Note: This is the expected path for Debrify TV mode
+    // Note: This is the expected path for MegaWatch TV mode
     return widget.videoUrl;
   }
 
@@ -13028,7 +13028,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// zap-banner signal, sources/guide/record from the same capability checks.
   Widget _buildTvControls() {
     // Live means a live CHANNEL — it decides which button set the dock shows.
-    // `hideSeekbar` is a different thing entirely: Magic/Debrify TV sets it on
+    // `hideSeekbar` is a different thing entirely: Magic/MegaWatch TV sets it on
     // ordinary seekable VOD to hide the scrub bar, and treating it as live
     // stripped episodes, sources and speed from those sessions.
     final isLive = _iptvZapBannerOwnsIdentity;
@@ -13087,7 +13087,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               subtitle: showIdentity ? _getCurrentEpisodeSubtitle() : null,
               infoPanel:
                   _buildIptvInfoPanel(flush: true) ??
-                  _buildDebrifyTvInfoPanel(flush: true),
+                  _buildMegaWatchTvInfoPanel(flush: true),
               clock: _playbackUiClock,
               isPlaying: _isPlaying,
               isLive: isLive,
@@ -13307,7 +13307,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         return KeyEventResult.handled;
       }
       // UP opens the guide, matching the native TV player. The desktop mapping
-      // below only knows the Debrify-TV and Stremio guides, so on an IPTV
+      // below only knows the MegaWatch-TV and Stremio guides, so on an IPTV
       // session it fell through to volume and UP appeared dead.
       if (key == LogicalKeyboardKey.arrowUp) {
         if (_openTvGuide()) return KeyEventResult.handled;
@@ -13366,7 +13366,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _controlsVisible.value = !_controlsVisible.value;
     if (_controlsVisible.value) {
       _scheduleAutoHide();
-      // Identity rides IN the bar (IPTV zap panel / Debrify TV banner both
+      // Identity rides IN the bar (IPTV zap panel / MegaWatch TV banner both
       // embed as the dock's info panel), so nothing floats when it rises.
     }
   }
@@ -13427,7 +13427,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // same panel at two different heights.
     if (_controlsVisible.value) {
       _hideIptvZapBanner(immediate: true);
-      _hideDebrifyBanner(immediate: true);
+      _hideMegaWatchBanner(immediate: true);
       // The Record button is about to be looked at — make sure it reflects
       // engine captures stopped from the notification (which this screen
       // otherwise never hears about).
@@ -14092,13 +14092,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   /// The live-IPTV panel, or null when this playback has no channel identity
   /// to present. [flush] embeds it in the controls dock; otherwise it floats.
-  /// Debrify TV owns the session identity when the launch asked for the
+  /// MegaWatch TV owns the session identity when the launch asked for the
   /// channel chrome and no live IPTV banner does.
-  bool get _debrifyTvOwnsIdentity =>
+  bool get _megawatchTvOwnsIdentity =>
       widget.showChannelName && !_iptvZapBannerOwnsIdentity;
 
-  Widget? _buildDebrifyTvInfoPanel({required bool flush}) {
-    if (!_debrifyTvOwnsIdentity) return null;
+  Widget? _buildMegaWatchTvInfoPanel({required bool flush}) {
+    if (!_megawatchTvOwnsIdentity) return null;
     final name = (_currentChannelName ?? widget.channelName)?.trim();
     final title = widget.showVideoTitle ? _getCurrentEpisodeTitle() : null;
     if ((name == null || name.isEmpty) &&
@@ -14106,7 +14106,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         (title == null || title.isEmpty)) {
       return null;
     }
-    return DebrifyTvBanner(
+    return MegaWatchTvBanner(
       channelNumber: _currentChannelNumber,
       channelName: name,
       title: title,
@@ -14119,36 +14119,36 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   /// The clock is an optimization gate — it only publishes while something
-  /// on screen reads it. That used to mean "the bar"; the floating Debrify
+  /// on screen reads it. That used to mean "the bar"; the floating MegaWatch
   /// banner's progress row reads it too (only when the session shows
   /// progress at all).
   void _syncPlaybackClockVisibility() {
     _playbackUiClock.setVisible(
       _controlsVisible.value ||
-          (_showDebrifyBanner && _debrifyTvOwnsIdentity && !widget.hideSeekbar),
+          (_showMegaWatchBanner && _megawatchTvOwnsIdentity && !widget.hideSeekbar),
     );
   }
 
   /// Raises the floating lower-third (tune, zap, launch). The hide timer
   /// re-arms while a channel switch is still resolving — the old corner
   /// badges timed out DURING the resolve, which is why tvOS never saw them.
-  void _raiseDebrifyBanner() {
-    if (!_debrifyTvOwnsIdentity) return;
+  void _raiseMegaWatchBanner() {
+    if (!_megawatchTvOwnsIdentity) return;
     if (_anyPlayerOverlayOpen || _controlsVisible.value) return;
-    _debrifyBannerTimer?.cancel();
+    _megawatchBannerTimer?.cancel();
     setState(() {
-      _showDebrifyBanner = true;
-      _debrifyBannerFloatingMounted = true;
+      _showMegaWatchBanner = true;
+      _megawatchBannerFloatingMounted = true;
     });
     _syncPlaybackClockVisibility();
-    _armDebrifyBannerTimer();
+    _armMegaWatchBannerTimer();
   }
 
-  void _armDebrifyBannerTimer() {
+  void _armMegaWatchBannerTimer() {
     // While resolving, poll fast — so the FULL display window is granted
     // from (roughly) the moment the new stream lands, not from zap start.
     final resolving = _isTransitioning;
-    _debrifyBannerTimer = Timer(
+    _megawatchBannerTimer = Timer(
       resolving
           ? const Duration(milliseconds: 400)
           : VideoPlayerTimingConstants.badgeDisplayDuration,
@@ -14157,23 +14157,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         if (resolving || _isTransitioning) {
           // Either this was a resolve-poll, or a new switch began
           // mid-window: keep the identity up and re-evaluate.
-          _armDebrifyBannerTimer();
+          _armMegaWatchBannerTimer();
           return;
         }
-        setState(() => _showDebrifyBanner = false);
+        setState(() => _showMegaWatchBanner = false);
         _syncPlaybackClockVisibility();
       },
     );
   }
 
-  void _hideDebrifyBanner({bool immediate = false}) {
-    _debrifyBannerTimer?.cancel();
-    if (!_showDebrifyBanner && !(immediate && _debrifyBannerFloatingMounted)) {
+  void _hideMegaWatchBanner({bool immediate = false}) {
+    _megawatchBannerTimer?.cancel();
+    if (!_showMegaWatchBanner && !(immediate && _megawatchBannerFloatingMounted)) {
       return;
     }
     setState(() {
-      _showDebrifyBanner = false;
-      if (immediate) _debrifyBannerFloatingMounted = false;
+      _showMegaWatchBanner = false;
+      if (immediate) _megawatchBannerFloatingMounted = false;
     });
     _syncPlaybackClockVisibility();
   }
@@ -14202,7 +14202,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// Whether an episode that isn't in the current playlist can be fetched
   /// and played without leaving the player: catalog series content with a
   /// live fetcher + resolver, outside the channel-style modes (Stremio TV /
-  /// IPTV / Debrify TV own their identity and next/prev semantics).
+  /// IPTV / MegaWatch TV own their identity and next/prev semantics).
   bool get _canFetchEpisodes =>
       widget.seriesSourceFetcher != null &&
       !widget.seriesSourceFetcher!.isMovie &&
@@ -14789,7 +14789,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               return KeyEventResult.handled;
             }
 
-            // G -> Channel guide (Debrify TV or Stremio TV)
+            // G -> Channel guide (MegaWatch TV or Stremio TV)
             if (key == LogicalKeyboardKey.keyG) {
               if (_channelEntries.isNotEmpty &&
                   widget.requestChannelById != null) {
@@ -15387,7 +15387,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                   // top of the transport bar as one surface.
                                   infoPanel:
                                       _buildIptvInfoPanel(flush: true) ??
-                                      _buildDebrifyTvInfoPanel(flush: true),
+                                      _buildMegaWatchTvInfoPanel(flush: true),
                                   infoPanelHeight: _reservedInfoPanelHeight,
                                   geometryGeneration: _dockGeometryGeneration,
                                   infoPanelGeneration: _infoPanelGeneration,
@@ -15501,7 +15501,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                   // that walk the season; a live channel gets the
                                   // same pair as previous/next channel, which is the
                                   // only way to zap without a CH +/- key. Falls back
-                                  // to the Debrify-TV episode/playlist flow.
+                                  // to the MegaWatch-TV episode/playlist flow.
                                   onNext: _hasIptvNext
                                       ? () => _switchToIptvChannel(
                                           _currentIptvIndex + 1,
@@ -15656,11 +15656,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       );
                     },
                   ),
-                // Debrify TV lower-third — channel plate + playing title —
+                // MegaWatch TV lower-third — channel plate + playing title —
                 // floating over bare video (the dock embeds its own copy).
                 // Replaces the two legacy corner badges.
-                if (_debrifyBannerFloatingMounted &&
-                    _debrifyTvOwnsIdentity &&
+                if (_megawatchBannerFloatingMounted &&
+                    _megawatchTvOwnsIdentity &&
                     !inPip)
                   Positioned(
                     left: 0,
@@ -15669,20 +15669,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     child: IgnorePointer(
                       ignoring: true,
                       child: AnimatedOpacity(
-                        opacity: _showDebrifyBanner ? 1.0 : 0.0,
+                        opacity: _showMegaWatchBanner ? 1.0 : 0.0,
                         duration: Duration(
-                          milliseconds: _showDebrifyBanner ? 200 : 350,
+                          milliseconds: _showMegaWatchBanner ? 200 : 350,
                         ),
                         curve: Curves.easeInOut,
                         // Unmount once faded: this screen rebuilds every
                         // position tick, and a transparent banner would keep
                         // re-laying out for the rest of the session.
                         onEnd: () {
-                          if (!mounted || _showDebrifyBanner) return;
-                          setState(() => _debrifyBannerFloatingMounted = false);
+                          if (!mounted || _showMegaWatchBanner) return;
+                          setState(() => _megawatchBannerFloatingMounted = false);
                         },
                         child:
-                            _buildDebrifyTvInfoPanel(flush: false) ??
+                            _buildMegaWatchTvInfoPanel(flush: false) ??
                             const SizedBox.shrink(),
                       ),
                     ),
@@ -15731,7 +15731,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                 _dockStyle.isStyled &&
                                 controlsVisible &&
                                 (_buildIptvInfoPanel(flush: true) != null ||
-                                    _buildDebrifyTvInfoPanel(flush: true) !=
+                                    _buildMegaWatchTvInfoPanel(flush: true) !=
                                         null ||
                                     !widget.hideOptions);
                             return PikPakRetryOverlay(

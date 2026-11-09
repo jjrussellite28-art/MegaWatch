@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/stremio_addon.dart';
+import 'package:megawatch/models/stremio_addon.dart';
 
 void main() {
   group('StremioMeta.trailerYtId parsing', () {

@@ -297,7 +297,7 @@ class TorboxService {
         http.MultipartFile.fromBytes(
           'file',
           torrentBytes,
-          filename: 'debrify.torrent',
+          filename: 'megawatch.torrent',
         ),
       );
     } else {

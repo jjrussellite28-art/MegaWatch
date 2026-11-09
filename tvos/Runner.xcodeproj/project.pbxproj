@@ -425,7 +425,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.debrifytv$(DEBRIFY_BUNDLE_SUFFIX).TopShelf";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.megawatchtv$(MEGAWATCH_BUNDLE_SUFFIX).TopShelf";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -452,7 +452,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.debrifytv$(DEBRIFY_BUNDLE_SUFFIX).TopShelf";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.megawatchtv$(MEGAWATCH_BUNDLE_SUFFIX).TopShelf";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -481,7 +481,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.debrifytv$(DEBRIFY_BUNDLE_SUFFIX).TopShelf";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.megawatchtv$(MEGAWATCH_BUNDLE_SUFFIX).TopShelf";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -566,7 +566,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.debrifytv$(DEBRIFY_BUNDLE_SUFFIX)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.megawatchtv$(MEGAWATCH_BUNDLE_SUFFIX)";
 				OTHER_LDFLAGS = "$(inherited) -Wl,-needed_framework,AVKit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -656,7 +656,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.debrifytv$(DEBRIFY_BUNDLE_SUFFIX)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.megawatchtv$(MEGAWATCH_BUNDLE_SUFFIX)";
 				OTHER_LDFLAGS = "$(inherited) -Wl,-needed_framework,AVKit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -740,7 +740,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.debrifytv$(DEBRIFY_BUNDLE_SUFFIX)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.varunsalian.megawatchtv$(MEGAWATCH_BUNDLE_SUFFIX)";
 				OTHER_LDFLAGS = "$(inherited) -Wl,-needed_framework,AVKit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";

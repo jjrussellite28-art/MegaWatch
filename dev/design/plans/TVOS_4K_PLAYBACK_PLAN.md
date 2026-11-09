@@ -23,7 +23,7 @@ the display pipeline at OUTPUT resolution. That is how Apple's own player shows
 4K HDR while the UI stays 1080p, and it is the same trick as the Android
 SurfaceView underlay this app already ships for trailers.
 
-Debrify's tvOS player currently goes mpv → Flutter texture, so it composites
+MegaWatch's tvOS player currently goes mpv → Flutter texture, so it composites
 through the 1080p surface. Measured cost, same box, same network, same evening:
 
 | Path | Resolution |
@@ -138,7 +138,7 @@ behaviour, long-playback thermals, background/foreground, Siri Remote.
 
 ## Licensing
 
-Debrify is **AGPL-3.0-only**. AetherEngine is **LGPL-3.0 with an Apple
+MegaWatch is **AGPL-3.0-only**. AetherEngine is **LGPL-3.0 with an Apple
 Store / DRM exception**, and ships FFmpeg/LibDovi as dynamic frameworks — link
 dynamically and this is compatible. **KSPlayer was rejected**: GPL by default,
 which is not compatible; its LGPL version is paid.
@@ -231,7 +231,7 @@ an engine session would initialise mpv. Backends are not actually isolated.
 - **TrueHD is re-encoded to lossy EAC3 5.1** (8ch → 6ch @ 768 kbps). That is an
   audio REGRESSION for exactly the audience that cares about 4K remuxes, and it
   partly cancels the reason for doing this.
-- Debrify would ship and test **two playback stacks, two FFmpeg families, two
+- MegaWatch would ship and test **two playback stacks, two FFmpeg families, two
   rendering models** — permanently.
 - The tvOS port has **almost no player-level automated coverage**
   (`test/video_player_navigation_test.dart` doesn't even instantiate
@@ -296,7 +296,7 @@ measured. With a 2x launch image, `scale` reflects retina and `nativeBounds`
 reports the attached 4K display's real pixels, i.e. **the UI renders at
 3840x2160**.
 
-Debrify's tvOS target had **no launch image at all** (only AppIcon.brandassets
+MegaWatch's tvOS target had **no launch image at all** (only AppIcon.brandassets
 and AccentColor) and no `UILaunchStoryboardName`, so on a 4K TV it was
 guaranteed to be in compatibility mode.
 

@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/media_server.dart';
-import 'package:debrify/services/diagnostic_log.dart';
-import 'package:debrify/services/source_selection_diagnostics.dart';
-import 'package:debrify/services/media_server_client.dart';
+import 'package:megawatch/models/media_server.dart';
+import 'package:megawatch/services/diagnostic_log.dart';
+import 'package:megawatch/services/source_selection_diagnostics.dart';
+import 'package:megawatch/services/media_server_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:debrify/models/advanced_search_selection.dart';
-import 'package:debrify/services/mdblist/mdblist_continue_watching_service.dart';
-import 'package:debrify/services/mdblist/mdblist_discover_models.dart';
-import 'package:debrify/services/mdblist/mdblist_discover_source.dart';
-import 'package:debrify/services/mdblist/mdblist_item_transformer.dart';
-import 'package:debrify/services/mdblist/mdblist_models.dart';
-import 'package:debrify/services/mdblist/mdblist_service.dart';
+import 'package:megawatch/models/advanced_search_selection.dart';
+import 'package:megawatch/services/mdblist/mdblist_continue_watching_service.dart';
+import 'package:megawatch/services/mdblist/mdblist_discover_models.dart';
+import 'package:megawatch/services/mdblist/mdblist_discover_source.dart';
+import 'package:megawatch/services/mdblist/mdblist_item_transformer.dart';
+import 'package:megawatch/services/mdblist/mdblist_models.dart';
+import 'package:megawatch/services/mdblist/mdblist_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

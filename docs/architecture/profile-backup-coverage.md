@@ -39,7 +39,7 @@ is not a reason to discard a setting.
 
 | Rule | Exact coverage |
 |---|---|
-| Included by default | All remaining `StorageService`, engine, Discover, Home, playlist, favorites, watchlist, search/history, filtering, tracking, IPTV, Debrify TV, Stremio TV, subtitle, renderer, audio, layout, theme, navigation, startup, and playback preferences. User playlist/stream/addon/catalog URLs remain because they are requested content inside an encrypted package. |
+| Included by default | All remaining `StorageService`, engine, Discover, Home, playlist, favorites, watchlist, search/history, filtering, tracking, IPTV, MegaWatch TV, Stremio TV, subtitle, renderer, audio, layout, theme, navigation, startup, and playback preferences. User playlist/stream/addon/catalog URLs remain because they are requested content inside an encrypted package. |
 | Resource authority excluded | Any key matching `api.?key`, `password`, `access.?token`, `refresh.?token`, `credential`, or `secret`; plus `real_debrid_api_key`, `torbox_api_key`, `premiumize_api_key`, `alldebrid_api_key`, `mdblist_api_key`, `mdblist_username`, Reddit/Trakt/Simkl token and username fields, `trakt_token_expiry`, all PikPak email/password/token/device/captcha/user fields, and WebDAV base URL/username/password. The encrypted resource graph is the sole portable authority for these. Dynamic `engine_*` settings with credential-shaped IDs are the one exception, and only in a secret-inclusive encrypted/authenticated package: custom engine settings have no registry-resource representation. |
 | Legacy resource collections excluded | `webdav_servers_v1`, `indexer_manager_configs_v1`, `iptv_playlists`, and `stremio_addons_v1`. Their normalized connection resources travel instead, including file-imported M3U content. `real_debrid_endpoint` is operational endpoint state and does not travel. |
 | Device/runtime state excluded | Every `remote_*` key, `initial_setup_complete_v1` (the authenticated profile record supplies setup state), battery-optimization status, download tree URI/name/path, and the custom-font registry. |
@@ -79,20 +79,20 @@ envelopes, generations, and journals are newly created.
 ## Databases and files
 
 Both known profile databases are exported as consistent, integrity-checked
-SQLite images. The normal file backup includes every table, including Debrify
+SQLite images. The normal file backup includes every table, including MegaWatch
 TV's complete saved hash pools. If size requires compaction—or Remote
-explicitly retries compacted—Debrify TV is omitted as one coherent feature
+explicitly retries compacted—MegaWatch TV is omitted as one coherent feature
 rather than restoring unusable channel shells. The user must confirm this
 before the compacted package is saved or sent and is directed to the dedicated
-Debrify TV **Export** action. That action creates a selected-channel ZIP (all
+MegaWatch TV **Export** action. That action creates a selected-channel ZIP (all
 channels selected by default) with one YAML member per channel and the complete
 saved pool. The existing **Import → From storage** flow restores the ZIP after
-the profile restore. **Remote → Debrify TV Channels** remains the direct-device
+the profile restore. **Remote → MegaWatch TV Channels** remains the direct-device
 convenience path.
 
 | Database | Durable user state that remains | Tables omitted during compaction |
 |---|---|---|
-| `debrify_tv.db` | `iptv_lists`, `iptv_list_channels`, `iptv_watch_history`, `video_resume`, and any other non-Debrify-TV table | The complete Debrify TV feature: `tv_channels`, `tv_channel_keywords`, `tv_channel_cache_state`, `tv_cached_torrents`, `tv_keyword_stats` |
+| `megawatch_tv.db` | `iptv_lists`, `iptv_list_channels`, `iptv_watch_history`, `video_resume`, and any other non-MegaWatch-TV table | The complete MegaWatch TV feature: `tv_channels`, `tv_channel_keywords`, `tv_channel_cache_state`, `tv_cached_torrents`, `tv_keyword_stats` |
 | `iptv_catalog.db` | `hidden_groups`, `channel_number_namespaces`, `channel_number_aliases`, `channel_number_assignments`, and any other non-cache table | `meta`, `catalogs`, `channels`, `epg_programmes`, `epg_guides` |
 
 If the durable compacted images still exceed the package budget, export fails
@@ -135,7 +135,7 @@ the actual peer version. The sender uses
 builder—and chooses raw JSON or gzip in one worker-isolate pass. A graph above
 the 32 MiB soft expansion threshold, above the 10 MiB wire budget, or above the
 hard limit on its first pass is retried in compact mode. Compact mode keeps
-durable IPTV/history rows but omits Debrify TV channels and pools together,
+durable IPTV/history rows but omits MegaWatch TV channels and pools together,
 after explicit sender confirmation. Compacted JSON may expand to at most 48
 MiB on the receiver, and a still-oversized graph fails visibly. The receiver
 verifies authentication, package integrity, bounds, local Admin authority, and

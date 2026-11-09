@@ -1,4 +1,4 @@
-import 'package:debrify/utils/tvos_device.dart';
+import 'package:megawatch/utils/tvos_device.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

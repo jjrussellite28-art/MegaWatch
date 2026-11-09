@@ -54,8 +54,8 @@ Everything here runs on the Dart VM. That boundary is real and it is not small:
 - **Native preference state.** Nine Kotlin files read `FlutterSharedPreferences`
   directly (`MainActivity`, `AndroidTvTorrentPlayerActivity`, both recording
   stores, `DownloadTaskStore`, `SubtitleSettings`, `SubtitleFontManager`,
-  `ProfilePrivacyState`), plus the native-only `debrify_pending_recordings` and
-  `debrify_permissions` files, plus tvOS `UserDefaults`. None is visible here.
+  `ProfilePrivacyState`), plus the native-only `megawatch_pending_recordings` and
+  `megawatch_permissions` files, plus tvOS `UserDefaults`. None is visible here.
 - **The native projection has no reader in tests.** Kotlin consumes profile
   preferences through a sequence-guarded JSON snapshot; nothing consumes it in
   a Dart test, so a stale or malformed projection passes silently.

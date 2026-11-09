@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/text_brightness.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_controller.dart';
-import 'package:debrify/theme/theme_core_resolver.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/text_brightness.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_controller.dart';
+import 'package:megawatch/theme/theme_core_resolver.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -154,13 +154,13 @@ void main() {
     // reading a controller's value must subscribe to it, or the incoming
     // profile keeps the outgoing profile's value until the app is killed.
     // That is precisely what happened with the theme.
-    // Scoped to _DebrifyAppState, NOT to all of main.dart. That file also
+    // Scoped to _MegaWatchAppState, NOT to all of main.dart. That file also
     // holds MainScreen, which is ~3000 lines living *below* the gate and is
     // rekeyed like everything else — scanning the whole file conflates the two
     // sides of the boundary this guard exists to police.
     final appState = _bodyOf(
       File('lib/main.dart').readAsStringSync(),
-      'class _DebrifyAppState extends State<DebrifyApp>',
+      'class _MegaWatchAppState extends State<MegaWatchApp>',
     );
     expect(
       appState,

@@ -8,7 +8,7 @@
 **Decision:**
 
 - **0.8.2 release (flags off): source blockers resolved.** VER-P0-001/002 and VER-P1-001/002 are fixed and covered by automated tests/native compilation. Normal release-device regression remains required.
-- **`DEBRIFY_PROFILES` / `DEBRIFY_PROFILES_MIGRATION_READY` are enabled for owner testing.** Source findings are resolved, but public rollout remains a NO-GO until the physical-device and fault-injection gates in the remediation record pass.
+- **`MEGAWATCH_PROFILES` / `MEGAWATCH_PROFILES_MIGRATION_READY` are enabled for owner testing.** Source findings are resolved, but public rollout remains a NO-GO until the physical-device and fault-injection gates in the remediation record pass.
 - The missing release-build CI assertion is an explicitly accepted product-owner exception and was not implemented.
 
 ## Post-review remediation closure
@@ -40,7 +40,7 @@ The original review found that the earlier security/durability rounds had not co
 | Full `flutter test` after remediation | `+3000 −9`; the 9 failures are exactly the recorded pre-existing baseline (7 series-parser, XMLTV retention, widget pending-timer). No profile-introduced failure. |
 | Profile/remote/backup focused suite after remediation | 150 tests pass. |
 | Android debug APK (`assembleDebug`, JBR 21) | Built successfully — Kotlin native changes compile. |
-| Flag defaults | `DEBRIFY_PROFILES` / `DEBRIFY_PROFILES_MIGRATION_READY` compile-time, default true for owner testing (`profile_bootstrap.dart:27-34`). Either can still be overridden with `--dart-define=...=false`. |
+| Flag defaults | `MEGAWATCH_PROFILES` / `MEGAWATCH_PROFILES_MIGRATION_READY` compile-time, default true for owner testing (`profile_bootstrap.dart:27-34`). Either can still be overridden with `--dart-define=...=false`. |
 | CI flag assertion (delta review remediation order item 1) | **Waived by product owner.** Not implemented. |
 
 ## Part A — Flags-off upgrade regressions (release blockers first)
@@ -104,7 +104,7 @@ Sealing is not gated on committed mode. `DownloadTaskStore.put` (`DownloadTaskSt
 - **VER-P2-004 — Completed downloads leave sealed "done" ghosts in the native store until next launch** (0.8.1 removed on success; legacy cleanup now only in `_reconcileWithNative`, `download_service.dart:3146`). Bounded; invisible to UI.
 - **VER-P2-005 — Native download events/queries no longer carry the URL** (`url: ""`; `ownerProfileId` replaced it in progress/complete/failed events). All current legacy consumers chase taskId or Dart-side records — verified no functional break — but post-upgrade history rows carry empty URLs; latent trap.
 - **VER-P2-006 — `LiveRecordingService.maxConcurrent` lost its Int-typed fallback** (`ProfilePreferenceProjection.getLong` returns default on ClassCastException); a legacy Int-typed write silently reverts the user's custom limit.
-- **VER-P2-007 — Backup version-gate error message regressed.** `settings_screen.dart:3890-3895` discards `FormatException.message`; 0.8.1 showed the actionable "newer than this app supports… Update the app." A v3 profile package on a flags-off build now says only "The backup format is invalid" (and even the swallowed text would be wrong advice — `format: 'debrify-profile-package'` is trivially detectable; say "this is a profile backup").
+- **VER-P2-007 — Backup version-gate error message regressed.** `settings_screen.dart:3890-3895` discards `FormatException.message`; 0.8.1 showed the actionable "newer than this app supports… Update the app." A v3 profile package on a flags-off build now says only "The backup format is invalid" (and even the swallowed text would be wrong advice — `format: 'megawatch-profile-package'` is trivially detectable; say "this is a profile backup").
 
 ## Part B — Backup/restore compatibility matrix
 

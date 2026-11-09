@@ -7,27 +7,27 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/models/home_collection_inventory.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/home_collections_store.dart';
-import 'package:debrify/services/collection_folder_loader.dart';
-import 'package:debrify/services/collection_catalog_pager.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/profiles/profile_preference_budget.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/screens/collections/collection_folder_screen.dart';
-import 'package:debrify/screens/settings/home_sections_filter_page.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_ui_refresh.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_collection_sections.dart';
-import 'package:debrify/widgets/see_all/stremio_dropdown.dart';
-import 'package:debrify/widgets/see_all/see_all_poster_grid.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/models/home_collection_inventory.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/home_collections_store.dart';
+import 'package:megawatch/services/collection_folder_loader.dart';
+import 'package:megawatch/services/collection_catalog_pager.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/profiles/profile_preference_budget.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/screens/collections/collection_folder_screen.dart';
+import 'package:megawatch/screens/settings/home_sections_filter_page.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_ui_refresh.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_collection_sections.dart';
+import 'package:megawatch/widgets/see_all/stremio_dropdown.dart';
+import 'package:megawatch/widgets/see_all/see_all_poster_grid.dart';
 
 const source = CollectionCatalogSource(
   addonId: 'addon',
@@ -141,13 +141,13 @@ void main() {
     final old = HomeCollection.fromJson({
       'id': 'same',
       'title': 'Collection',
-      'debrifyCollectionVersion': 1,
+      'megawatchCollectionVersion': 1,
       'enabled': false,
     })!;
     final modern = HomeCollection.fromJson({
       'id': 'same',
       'title': 'Collection',
-      'debrifyCollectionVersion': 2,
+      'megawatchCollectionVersion': 2,
       'enabled': true,
     })!;
     final local = hot('old-device', {

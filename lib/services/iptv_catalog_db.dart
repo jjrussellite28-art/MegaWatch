@@ -426,7 +426,7 @@ class IptvCatalogDb {
     // exclusion just keeps applying. Deliberately NOT generation-scoped for
     // the same reason.
     //
-    // Lives in the catalog database (not debrify_tv.db) so the exclusion can
+    // Lives in the catalog database (not megawatch_tv.db) so the exclusion can
     // be an argument-free sub-select inside the channel queries themselves —
     // that keeps every positional query argument where it was, and lets the
     // group-count worker isolate see the same hidden set through its own

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Mock Xtream Codes server for testing Debrify's IPTV Series support without a
+Mock Xtream Codes server for testing MegaWatch's IPTV Series support without a
 real subscription. Serves your own local video files as an Xtream "series"
 panel: speaks the player_api.php protocol the app calls, and streams the files
 back over the /series/{user}/{pass}/{id}.{ext} URLs it builds.
@@ -21,7 +21,7 @@ are fine too:
         Season 1/
           S01E01 Pilot.mkv
 
-Then in Debrify: IPTV settings -> Xtream Codes -> add a playlist with
+Then in MegaWatch: IPTV settings -> Xtream Codes -> add a playlist with
     Server URL: http://<this-machine-ip>:<port>
     Username:   test   (anything)
     Password:   test   (anything)
@@ -284,7 +284,7 @@ def _strip_html(s):
 
 
 def _tvmaze_get(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "debrify-mock/1.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "megawatch-mock/1.0"})
     with urllib.request.urlopen(req, timeout=12) as r:
         return json.load(r)
 
@@ -825,7 +825,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if parsed.path.startswith("/series/"):
             return self._serve_stream(parsed.path)
         if parsed.path in ("/", ""):
-            body = b"Mock Xtream server running. Point Debrify at this host."
+            body = b"Mock Xtream server running. Point MegaWatch at this host."
             self.send_response(200)
             self.send_header("Content-Type", "text/plain")
             self.send_header("Content-Length", str(len(body)))
@@ -931,7 +931,7 @@ def main():
           f"(EPG: short_epg={'off' if Handler.no_short_epg else 'on'}, "
           f"shift={epg_shift}h, map={Handler.epg_map}, plain={Handler.epg_plain})")
     print("-" * 64)
-    print("In Debrify -> IPTV settings -> Xtream Codes, add:")
+    print("In MegaWatch -> IPTV settings -> Xtream Codes, add:")
     print(f"  Server URL : http://{ip}:{port}")
     print("  Username   : test")
     print("  Password   : test")

@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:debrify/services/webdav_sync/webdav_sync_engine.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_maintenance.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_operation_coordinator.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_scheduler.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_maintenance.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_operation_coordinator.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_scheduler.dart';
 // Flutter's test SDK supplies fake_async for deterministic timers.
 // ignore: depend_on_referenced_packages
 import 'package:fake_async/fake_async.dart';

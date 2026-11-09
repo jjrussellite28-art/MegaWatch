@@ -67,7 +67,7 @@ final bool stillSharp;        // true → no ImageFiltered
 
 `stillSharp` disables *filtering* only. It must not mean "decode at source
 resolution": a 4K backdrop decoded uncapped is a memory spike on an A15. Cap at
-1400 to match Home's hero, and route it through `DebrifyImageCache.manager` —
+1400 to match Home's hero, and route it through `MegaWatchImageCache.manager` —
 the backdrop does not use the shared cache today, so without this the same
 artwork is fetched and held twice over.
 

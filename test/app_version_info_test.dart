@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:debrify/utils/app_version_info.dart';
+import 'package:megawatch/utils/app_version_info.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -23,8 +23,8 @@ void main() {
             calls++;
             expect(call.method, 'getAll');
             return <String, Object>{
-              'appName': 'Debrify',
-              'packageName': 'com.varunsalian.debrifytv',
+              'appName': 'MegaWatch',
+              'packageName': 'com.varunsalian.megawatchtv',
               'version': '0.8.15-alpha.1',
               'buildNumber': '43',
               'buildSignature': '',
@@ -39,8 +39,8 @@ void main() {
       final first = await AppVersionInfo.get();
       final second = await AppVersionInfo.get();
 
-      expect(first.appName, 'Debrify');
-      expect(first.packageName, 'com.varunsalian.debrifytv');
+      expect(first.appName, 'MegaWatch');
+      expect(first.packageName, 'com.varunsalian.megawatchtv');
       expect(first.version, '0.8.15-alpha.1');
       expect(first.buildNumber, '43');
       expect(identical(first, second), isTrue);
@@ -62,8 +62,8 @@ void main() {
         .where((segment) => segment.isNotEmpty)
         .join('.');
     PackageInfo.setMockInitialValues(
-      appName: 'Debrify',
-      packageName: 'com.varunsalian.debrify',
+      appName: 'MegaWatch',
+      packageName: 'com.varunsalian.megawatch',
       version: appleVersion,
       buildNumber: '48',
       buildSignature: '',

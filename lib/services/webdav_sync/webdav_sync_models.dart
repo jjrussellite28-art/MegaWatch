@@ -59,17 +59,17 @@ final class WebDavSyncFolderLocation {
   final String serverName;
 
   String get rootAuthorityPath => folderPath.isEmpty
-      ? 'debrify-sync/circle.authority'
-      : '$folderPath/debrify-sync/circle.authority';
+      ? 'megawatch-sync/circle.authority'
+      : '$folderPath/megawatch-sync/circle.authority';
 
   /// Legacy layout, retained only for authenticated repair/upgrade reads.
   String get rootMarkerPath => folderPath.isEmpty
-      ? 'debrify-sync/circle.json.enc'
-      : '$folderPath/debrify-sync/circle.json.enc';
+      ? 'megawatch-sync/circle.json.enc'
+      : '$folderPath/megawatch-sync/circle.json.enc';
 
   String get rootKeyPath => folderPath.isEmpty
-      ? 'debrify-sync/circle.key'
-      : '$folderPath/debrify-sync/circle.key';
+      ? 'megawatch-sync/circle.key'
+      : '$folderPath/megawatch-sync/circle.key';
 
   Uri get resolvedFolderUri => WebDavProtocolClient.resolvePath(
     endpoint: endpoint,

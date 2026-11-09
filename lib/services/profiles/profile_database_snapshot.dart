@@ -12,20 +12,20 @@ import '../../utils/streamed_file_copy.dart';
 import '../iptv_catalog_key.dart';
 import 'profile_scope.dart';
 
-class DebrifyTvBackupOmission {
-  static const String key = 'debrifyTvChannelsOmitted';
+class MegaWatchTvBackupOmission {
+  static const String key = 'megawatchTvChannelsOmitted';
 
   final int channels;
   final int savedHashes;
   final int profilesAffected;
 
-  const DebrifyTvBackupOmission({
+  const MegaWatchTvBackupOmission({
     required this.channels,
     required this.savedHashes,
     required this.profilesAffected,
   });
 
-  const DebrifyTvBackupOmission.none()
+  const MegaWatchTvBackupOmission.none()
     : channels = 0,
       savedHashes = 0,
       profilesAffected = 0;
@@ -40,8 +40,8 @@ class DebrifyTvBackupOmission {
     return '$channelLabel containing $hashLabel';
   }
 
-  DebrifyTvBackupOmission operator +(DebrifyTvBackupOmission other) =>
-      DebrifyTvBackupOmission(
+  MegaWatchTvBackupOmission operator +(MegaWatchTvBackupOmission other) =>
+      MegaWatchTvBackupOmission(
         channels: channels + other.channels,
         savedHashes: savedHashes + other.savedHashes,
         profilesAffected: profilesAffected + other.profilesAffected,
@@ -53,7 +53,7 @@ class DebrifyTvBackupOmission {
     'profilesAffected': profilesAffected,
   };
 
-  static DebrifyTvBackupOmission? fromOmissions(
+  static MegaWatchTvBackupOmission? fromOmissions(
     Map<String, dynamic> omissions,
   ) {
     final value = omissions[key];
@@ -69,7 +69,7 @@ class DebrifyTvBackupOmission {
         profilesAffected != profilesAffected.toInt()) {
       return null;
     }
-    final result = DebrifyTvBackupOmission(
+    final result = MegaWatchTvBackupOmission(
       channels: channels.toInt(),
       savedHashes: savedHashes.toInt(),
       profilesAffected: profilesAffected.toInt(),
@@ -87,22 +87,22 @@ class DebrifyTvBackupOmission {
 class ProfileDatabaseSnapshotExport {
   final Map<String, Object?> attachments;
   final List<String> compacted;
-  final DebrifyTvBackupOmission debrifyTvOmission;
+  final MegaWatchTvBackupOmission megawatchTvOmission;
 
   const ProfileDatabaseSnapshotExport({
     required this.attachments,
     required this.compacted,
-    required this.debrifyTvOmission,
+    required this.megawatchTvOmission,
   });
 }
 
 class _DatabaseCompactionResult {
   final int removedRows;
-  final DebrifyTvBackupOmission debrifyTvOmission;
+  final MegaWatchTvBackupOmission megawatchTvOmission;
 
   const _DatabaseCompactionResult({
     required this.removedRows,
-    this.debrifyTvOmission = const DebrifyTvBackupOmission.none(),
+    this.megawatchTvOmission = const MegaWatchTvBackupOmission.none(),
   });
 }
 
@@ -129,7 +129,7 @@ typedef ProfileDatabaseFileResolver = File? Function(String entry);
 class ProfileDatabaseSnapshot {
   ProfileDatabaseSnapshot._();
 
-  static const String debrifyTvDatabaseName = 'debrify_tv.db';
+  static const String megawatchTvDatabaseName = 'megawatch_tv.db';
   static const int maxAttachmentBytes = 64 * 1024 * 1024;
   static const int maxTotalBytes = 128 * 1024 * 1024;
 
@@ -150,7 +150,7 @@ class ProfileDatabaseSnapshot {
   @visibleForTesting
   static int? debugExportBudgetOverride;
   static const Set<String> databaseNames = <String>{
-    debrifyTvDatabaseName,
+    megawatchTvDatabaseName,
     'iptv_catalog.db',
   };
 
@@ -164,7 +164,7 @@ class ProfileDatabaseSnapshot {
   /// Snapshots every profile database that exists into base64 attachments.
   ///
   /// Full images are preferred. If the images do not fit the package budget,
-  /// IPTV catalog caches are pruned and Debrify TV is omitted as a complete
+  /// IPTV catalog caches are pruned and MegaWatch TV is omitted as a complete
   /// feature: channel definitions never travel without their saved hashes.
   /// Durable IPTV playlists, favorites, watch history, resume state, hidden
   /// groups, manual category order, and channel numbering are never silently
@@ -178,7 +178,7 @@ class ProfileDatabaseSnapshot {
   }) async {
     if (fileSink != null && compact) {
       throw ArgumentError(
-        'File-backed exports never omit Debrify TV; use '
+        'File-backed exports never omit MegaWatch TV; use '
         'pruneRebuildableCaches instead of compact',
       );
     }
@@ -195,7 +195,7 @@ class ProfileDatabaseSnapshot {
     await scratch.create(recursive: true);
     final snapshots = <String, File>{};
     final compacted = <String>[];
-    var debrifyTvOmission = const DebrifyTvBackupOmission.none();
+    var megawatchTvOmission = const MegaWatchTvBackupOmission.none();
     try {
       for (final name in databaseNames) {
         final source = scope.fileIn(documents, 'documents', name);
@@ -208,7 +208,7 @@ class ProfileDatabaseSnapshot {
       if (fileSink != null) {
         // Local archives carry whole databases as files, so the base64
         // package budget does not apply. Only rebuildable IPTV caches may be
-        // dropped, and only on request; Debrify TV is never omitted here.
+        // dropped, and only on request; MegaWatch TV is never omitted here.
         if (pruneRebuildableCaches) {
           for (final entry in snapshots.entries) {
             if (await _pruneRebuildableCaches(entry.key, entry.value) > 0) {
@@ -225,7 +225,7 @@ class ProfileDatabaseSnapshot {
             if (result.removedRows > 0) {
               compacted.add(entry.key);
             }
-            debrifyTvOmission += result.debrifyTvOmission;
+            megawatchTvOmission += result.megawatchTvOmission;
           }
           lengths = await _snapshotLengths(snapshots);
         }
@@ -281,7 +281,7 @@ class ProfileDatabaseSnapshot {
       return ProfileDatabaseSnapshotExport(
         attachments: result,
         compacted: List<String>.unmodifiable(compacted),
-        debrifyTvOmission: debrifyTvOmission,
+        megawatchTvOmission: megawatchTvOmission,
       );
     } finally {
       for (final snapshot in snapshots.values) {
@@ -429,9 +429,9 @@ class ProfileDatabaseSnapshot {
     File snapshot,
   ) async {
     final compactedTables = switch (name) {
-      // The pool contains the hashes that make a Debrify TV channel usable.
+      // The pool contains the hashes that make a MegaWatch TV channel usable.
       // Omit the complete feature rather than restoring empty channel shells.
-      debrifyTvDatabaseName => const <String>[
+      megawatchTvDatabaseName => const <String>[
         'tv_cached_torrents',
         'tv_keyword_stats',
         'tv_channel_cache_state',
@@ -444,7 +444,7 @@ class ProfileDatabaseSnapshot {
     };
     final db = await openDatabase(snapshot.path, singleInstance: false);
     var removedRows = 0;
-    var omission = const DebrifyTvBackupOmission.none();
+    var omission = const MegaWatchTvBackupOmission.none();
     try {
       final rows = await db.query(
         'sqlite_master',
@@ -455,7 +455,7 @@ class ProfileDatabaseSnapshot {
           .map((row) => row['name'])
           .whereType<String>()
           .toSet();
-      if (name == debrifyTvDatabaseName) {
+      if (name == megawatchTvDatabaseName) {
         final channels = existing.contains('tv_channels')
             ? await _tableCount(db, 'tv_channels')
             : 0;
@@ -463,7 +463,7 @@ class ProfileDatabaseSnapshot {
             ? await _tableCount(db, 'tv_cached_torrents')
             : 0;
         if (channels > 0 || savedHashes > 0) {
-          omission = DebrifyTvBackupOmission(
+          omission = MegaWatchTvBackupOmission(
             channels: channels,
             savedHashes: savedHashes,
             profilesAffected: 1,
@@ -477,7 +477,7 @@ class ProfileDatabaseSnapshot {
         // Omitted physical rows must take their sync sidecar stamps with
         // them: a joiner that adopts stamps without rows would treat the
         // matching remote records as already applied and never backfill.
-        if (name == debrifyTvDatabaseName &&
+        if (name == megawatchTvDatabaseName &&
             existing.contains('webdav_sync_record_state')) {
           await txn.delete(
             'webdav_sync_record_state',
@@ -497,7 +497,7 @@ class ProfileDatabaseSnapshot {
     }
     return _DatabaseCompactionResult(
       removedRows: removedRows,
-      debrifyTvOmission: omission,
+      megawatchTvOmission: omission,
     );
   }
 
@@ -644,7 +644,7 @@ class ProfileDatabaseSnapshot {
       )).map((row) => row['name']).whereType<String>().toSet();
       await db.transaction((txn) async {
         for (final entry in resourceIds.entries) {
-          if (name == debrifyTvDatabaseName) {
+          if (name == megawatchTvDatabaseName) {
             for (final table in const <String>{
               'iptv_list_channels',
               'iptv_watch_history',

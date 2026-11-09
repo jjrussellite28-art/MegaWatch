@@ -1,6 +1,6 @@
 # Player Dialogs Redesign — Spotlight Grammar
 
-The dart (media_kit) player — normal player, Debrify TV, IPTV, and the ONLY
+The dart (media_kit) player — normal player, MegaWatch TV, IPTV, and the ONLY
 player on Apple TV — accumulated ~15 interactive surfaces across three design
 generations: old Material bottom sheets/AlertDialogs, mid-generation custom
 overlays, and newer themed panels. This plan converges them on one grammar.

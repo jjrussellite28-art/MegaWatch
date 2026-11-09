@@ -23,7 +23,7 @@ import 'playback_settings_section.dart';
 import 'subtitle_priority_page.dart';
 import 'player_dock_page.dart';
 import 'tv_player_controls_style_page.dart';
-import 'debrify_tv_player_style_page.dart';
+import 'megawatch_tv_player_style_page.dart';
 import 'player_guide_style_page.dart';
 import 'play_loader_style_page.dart';
 
@@ -51,8 +51,8 @@ class _ExternalPlayerSettingsPageState
     skipTraversal: true,
   );
 
-  // Default player mode: 'debrify', 'external', 'deovr'
-  String _defaultPlayerMode = 'debrify';
+  // Default player mode: 'megawatch', 'external', 'deovr'
+  String _defaultPlayerMode = 'megawatch';
 
   // macOS external player settings
   ExternalPlayer _selectedPlayer = ExternalPlayer.systemDefault;
@@ -100,7 +100,7 @@ class _ExternalPlayerSettingsPageState
   bool _vrAutoDetectFormat = true;
   bool _vrShowDialog = true;
 
-  // Debrify Player default settings
+  // MegaWatch Player default settings
   bool _isAndroidTv = false;
   int _defaultAspectIndex = 2; // Fit Width (mobile) / Fill (TV)
   int _nightModeIndex = 0; // Off
@@ -139,11 +139,11 @@ class _ExternalPlayerSettingsPageState
   List<SubtitleFont> _allFonts =
       SubtitleFont.builtInOptions; // Built-in + custom fonts
 
-  // First interactive row ("Debrify Player" mode option) — receives entry
+  // First interactive row ("MegaWatch Player" mode option) — receives entry
   // focus on TV so DPAD users are never stranded on nothing.
   final FocusNode _firstModeFocusNode = FocusNode();
 
-  // Debrify Player FocusNodes for DPAD navigation
+  // MegaWatch Player FocusNodes for DPAD navigation
   final FocusNode _aspectFocusNode = FocusNode();
   final FocusNode _defaultAudioLangFocusNode = FocusNode();
   final FocusNode _defaultSubtitleLangFocusNode = FocusNode();
@@ -265,7 +265,7 @@ class _ExternalPlayerSettingsPageState
         _showDialogFocused = _showDialogFocusNode.hasFocus;
       });
     });
-    // Debrify Player focus listeners
+    // MegaWatch Player focus listeners
     _aspectFocusNode.addListener(() {
       if (!mounted) return;
       setState(() {
@@ -456,7 +456,7 @@ class _ExternalPlayerSettingsPageState
     _stereoModeFocusNode.dispose();
     _autoDetectFocusNode.dispose();
     _showDialogFocusNode.dispose();
-    // Debrify Player focus nodes
+    // MegaWatch Player focus nodes
     _aspectFocusNode.dispose();
     _defaultAudioLangFocusNode.dispose();
     _defaultSubtitleLangFocusNode.dispose();
@@ -586,7 +586,7 @@ class _ExternalPlayerSettingsPageState
         }
       }
 
-      // Load Debrify Player default settings (use platform-specific aspect setting)
+      // Load MegaWatch Player default settings (use platform-specific aspect setting)
       final defaultAspectIndex = isAndroidTv
           ? await StorageService.getPlayerDefaultAspectIndexTv()
           : await StorageService.getPlayerDefaultAspectIndex();
@@ -1135,7 +1135,7 @@ class _ExternalPlayerSettingsPageState
     await StorageService.setQuickPlayVrShowDialog(showDialog);
   }
 
-  // Debrify Player settings setters
+  // MegaWatch Player settings setters
   Future<void> _setDefaultAspectIndex(int index) async {
     setState(() => _defaultAspectIndex = index);
     // Use platform-specific storage key
@@ -2242,10 +2242,10 @@ class _ExternalPlayerSettingsPageState
         ),
       if (_isAndroidTv)
         SettingsTile.spec(
-          SettingsRows.debrifyTvPlayer,
-          subtitle: 'Debrify TV playback-screen style',
+          SettingsRows.megawatchTvPlayer,
+          subtitle: 'MegaWatch TV playback-screen style',
           onTap: () async {
-            await pushSettingsPage(context, const DebrifyTvPlayerStylePage());
+            await pushSettingsPage(context, const MegaWatchTvPlayerStylePage());
           },
         ),
       SettingsTile.spec(
@@ -2289,8 +2289,8 @@ class _ExternalPlayerSettingsPageState
               const SizedBox(height: 16),
               _buildPlayerModeOption(
                 context,
-                value: 'debrify',
-                title: 'Debrify Player',
+                value: 'megawatch',
+                title: 'MegaWatch Player',
                 subtitle: 'Use the built-in video player',
                 icon: Icons.play_circle_filled_rounded,
                 recommended: true,
@@ -2318,7 +2318,7 @@ class _ExternalPlayerSettingsPageState
         ),
       ),
 
-      if (_defaultPlayerMode == 'debrify') ...[
+      if (_defaultPlayerMode == 'megawatch') ...[
         const SizedBox(height: 16),
         if (PlatformUtil.isPhone) ...[
           _defaultsCard(
@@ -2402,7 +2402,7 @@ class _ExternalPlayerSettingsPageState
 
         // Community intro/outro timestamps. This belongs to the
         // built-in player because external players own their own UI
-        // and cannot display Debrify's manual skip button.
+        // and cannot display MegaWatch's manual skip button.
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -2458,7 +2458,7 @@ class _ExternalPlayerSettingsPageState
 
         // Network & Buffering: the escape hatch for slow stream
         // origins (Plex-backed addons, remote seedboxes). Standard
-        // leaves both players untouched — the Debrify (mpv) player
+        // leaves both players untouched — the MegaWatch (mpv) player
         // reads the presets directly; the native Android TV player
         // gets them via the launch payload.
         Card(
@@ -4229,7 +4229,7 @@ class _ExternalPlayerSettingsPageState
     }
     final managedExternally =
         section != PlaybackSettingsSection.player &&
-        _defaultPlayerMode != 'debrify';
+        _defaultPlayerMode != 'megawatch';
     return SettingsPageScaffold(
       title: section.label,
       body: SingleChildScrollView(
@@ -4251,7 +4251,7 @@ class _ExternalPlayerSettingsPageState
                   if (managedExternally) ...[
                     SettingsInfoBanner(
                       text:
-                          '${_defaultPlayerMode == 'deovr' ? 'DeoVR' : 'Your external player'} manages these settings. Choose Debrify Player to configure its defaults.',
+                          '${_defaultPlayerMode == 'deovr' ? 'DeoVR' : 'Your external player'} manages these settings. Choose MegaWatch Player to configure its defaults.',
                     ),
                     const SizedBox(height: 16),
                     SettingsSection(

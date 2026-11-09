@@ -1,9 +1,9 @@
-import 'package:debrify/services/home_return_cache.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/profiles/profile_session_memory.dart';
+import 'package:megawatch/services/home_return_cache.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/profiles/profile_session_memory.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

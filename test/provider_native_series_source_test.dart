@@ -1,4 +1,4 @@
-import 'package:debrify/services/series_source_service.dart';
+import 'package:megawatch/services/series_source_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

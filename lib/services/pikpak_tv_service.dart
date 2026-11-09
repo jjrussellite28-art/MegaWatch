@@ -6,7 +6,7 @@ import '../utils/file_utils.dart';
 import 'pikpak_api_service.dart';
 import 'storage_service.dart';
 
-/// Service for preparing PikPak torrents for Debrify TV playback.
+/// Service for preparing PikPak torrents for MegaWatch TV playback.
 ///
 /// Implements a progress threshold strategy:
 /// 1. Add magnet via PikPak's addOfflineDownload
@@ -61,16 +61,16 @@ class PikPakTvService {
       // Get parent folder ID (restricted folder or root)
       final parentFolderId = await StorageService.getPikPakRestrictedFolderId();
 
-      // Find or create "debrify-tv" subfolder
+      // Find or create "megawatch-tv" subfolder
       String? subFolderId;
       try {
         subFolderId = await _api.findOrCreateSubfolder(
-          folderName: 'debrify-tv',
+          folderName: 'megawatch-tv',
           parentFolderId: parentFolderId,
           getCachedId: StorageService.getPikPakTvFolderId,
           setCachedId: StorageService.setPikPakTvFolderId,
         );
-        log('Using debrify-tv subfolder ID: $subFolderId');
+        log('Using megawatch-tv subfolder ID: $subFolderId');
       } catch (e) {
         // Check if this is the restricted folder deleted error
         if (e.toString().contains('RESTRICTED_FOLDER_DELETED')) {

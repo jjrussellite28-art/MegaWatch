@@ -2246,7 +2246,7 @@ class _EntranceRevealState extends State<_EntranceReveal>
 
 /// Small pill next to a catalog-row header marking it as Movies / Series / etc.
 /// An optional leading [icon] lets a pill carry meaning beyond the label (e.g.
-/// a star on the Debrify TV "Favorites" pill).
+/// a star on the MegaWatch TV "Favorites" pill).
 class _CategoryTag extends StatelessWidget {
   final String label;
   final IconData? icon;

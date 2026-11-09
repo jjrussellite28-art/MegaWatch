@@ -1,5 +1,5 @@
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/widgets/search_source_dropdown.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/widgets/search_source_dropdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

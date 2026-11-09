@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/widgets/see_all/stremio_dropdown.dart';
+import 'package:megawatch/widgets/see_all/stremio_dropdown.dart';
 
 /// Section headers share the dropdown's option list, so the two things that
 /// must never happen are a header being picked as a value and a header being

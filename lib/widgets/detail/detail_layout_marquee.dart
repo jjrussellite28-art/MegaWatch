@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/stremio_addon.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../episodes_panel.dart';
 import '../horizontal_mouse_wheel.dart';
 import 'detail_episode_cells.dart';
@@ -440,7 +440,7 @@ class _RecCardState extends State<_RecCard> {
                       ? CachedNetworkImage(
                           imageUrl: poster,
                           fit: BoxFit.cover,
-                          cacheManager: DebrifyImageCache.manager,
+                          cacheManager: MegaWatchImageCache.manager,
                           memCacheWidth: 300,
                           placeholder: (_, __) =>
                               ColoredBox(color: t.placeholder),

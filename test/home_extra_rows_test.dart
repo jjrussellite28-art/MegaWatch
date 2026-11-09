@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/home_list_rows.dart';
-import 'package:debrify/services/mdblist/mdblist_list_source.dart';
-import 'package:debrify/services/simkl/simkl_list_source.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/trakt/trakt_list_source.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/home_list_rows.dart';
+import 'package:megawatch/services/mdblist/mdblist_list_source.dart';
+import 'package:megawatch/services/simkl/simkl_list_source.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/trakt/trakt_list_source.dart';
 
 StremioMeta _meta(String id) =>
     StremioMeta(id: id, type: 'movie', name: 'Title $id');

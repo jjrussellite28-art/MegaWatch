@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/widgets/iptv/iptv_list_picker_dialog.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/widgets/iptv/iptv_list_picker_dialog.dart';
 
 /// The "add to list" picker applies each row immediately, which makes how it
 /// CLOSES load-bearing: the caller reloads its markers and shelf only when

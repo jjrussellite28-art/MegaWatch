@@ -1,5 +1,5 @@
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/utils/stremio_url.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/utils/stremio_url.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

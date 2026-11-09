@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/widgets/trakt/trakt_menu_helpers.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/simkl/simkl_service.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/widgets/trakt/trakt_menu_helpers.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/simkl/simkl_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

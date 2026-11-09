@@ -100,7 +100,7 @@ void logIptvCatalogFailure(
   );
   // Source locations are enough for adb investigation, without error values.
   for (final frame in RegExp(
-    r'package:debrify/[a-zA-Z0-9_/]+\.dart:\d+:\d+',
+    r'package:megawatch/[a-zA-Z0-9_/]+\.dart:\d+:\d+',
   ).allMatches(stack.toString()).take(6)) {
     debugPrint('IPTV_CATALOG_DIAG frame=${frame[0]}');
   }

@@ -1,4 +1,4 @@
-# Debrify launch animation recreations
+# MegaWatch launch animation recreations
 
 Three self-contained dotLottie v2 packages, recreated from the existing native launch styles.
 
@@ -8,9 +8,9 @@ Three self-contained dotLottie v2 packages, recreated from the existing native l
 | [swiss.lottie](swiss.lottie) | 1.8 seconds | Vermilion rule and play block, bold rising wordmark |
 | [monogram.lottie](monogram.lottie) | 2.2 seconds | Drawn ring, purple play mark, spaced caption |
 
-Import a `.lottie` file in Debrify's launch animation settings. Preview it, then apply it. Each package contains portrait and landscape compositions. Debrify automatically chooses from the playback area shape and switches on rotation; there is no orientation chooser. Both versions fit without cropping. Existing imports also gain automatic selection when the app is updated.
+Import a `.lottie` file in MegaWatch's launch animation settings. Preview it, then apply it. Each package contains portrait and landscape compositions. MegaWatch automatically chooses from the playback area shape and switches on rotation; there is no orientation chooser. Both versions fit without cropping. Existing imports also gain automatic selection when the app is updated.
 
-All three use vector shapes with outlined lettering, and need no fonts, images, network access, or Debrify-specific runtime code. They are visual recreations rather than pixel-exact exports: lettering uses bundled Inter, Trace uses a flat background and layered vector lights, and Swiss's block rises into its clipping plane.
+All three use vector shapes with outlined lettering, and need no fonts, images, network access, or MegaWatch-specific runtime code. They are visual recreations rather than pixel-exact exports: lettering uses bundled Inter, Trace uses a flat background and layered vector lights, and Swiss's block rises into its clipping plane.
 
 Final-frame previews: [Trace landscape](previews/trace-landscape.png), [Trace portrait](previews/trace-portrait.png), [Swiss landscape](previews/swiss-landscape.png), [Swiss portrait](previews/swiss-portrait.png), [Monogram landscape](previews/monogram-landscape.png), [Monogram portrait](previews/monogram-portrait.png).
 
@@ -19,15 +19,15 @@ Final-frame previews: [Trace landscape](previews/trace-landscape.png), [Trace po
 From the repository root:
 
 ```sh
-python3 -m venv /tmp/debrify-lottie-tools
-/tmp/debrify-lottie-tools/bin/pip install -r dev/launch_animations/requirements-recreations.txt
-/tmp/debrify-lottie-tools/bin/python dev/launch_animations/generate_recreations.py
+python3 -m venv /tmp/megawatch-lottie-tools
+/tmp/megawatch-lottie-tools/bin/pip install -r dev/launch_animations/requirements-recreations.txt
+/tmp/megawatch-lottie-tools/bin/python dev/launch_animations/generate_recreations.py
 ```
 
 Generate a different main wordmark without replacing these fixtures:
 
 ```sh
-/tmp/debrify-lottie-tools/bin/python dev/launch_animations/generate_recreations.py --text 'CINEMA' --output /tmp/cinema-animations
+/tmp/megawatch-lottie-tools/bin/python dev/launch_animations/generate_recreations.py --text 'CINEMA' --output /tmp/cinema-animations
 ```
 
 The main wordmark accepts 1–24 characters supported by the bundled font. Swiss's small secondary captions remain unchanged. Colors and motion are authored in the generator; changing outlined lettering requires regeneration.

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:debrify/services/remote_control/remote_constants.dart';
-import 'package:debrify/services/remote_control/remote_pairing_store.dart';
-import 'package:debrify/services/remote_control/remote_session.dart';
-import 'package:debrify/services/secret_vault.dart';
+import 'package:megawatch/services/remote_control/remote_constants.dart';
+import 'package:megawatch/services/remote_control/remote_pairing_store.dart';
+import 'package:megawatch/services/remote_control/remote_session.dart';
+import 'package:megawatch/services/secret_vault.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -367,7 +367,7 @@ void main() {
           sid: r.sid,
           n: n,
           transferId: 't-1',
-          kind: 'debrify_channel',
+          kind: 'megawatch_channel',
           ctB64: ct,
         ),
         isNull,
@@ -511,23 +511,23 @@ void main() {
       await RemotePairingStore.pinReceiver(
         fingerprint: 'tv1',
         staticKey: List.filled(32, 1),
-        name: 'Debrify TV',
+        name: 'MegaWatch TV',
       );
       await RemotePairingStore.pinReceiver(
         fingerprint: 'tv2',
         staticKey: List.filled(32, 2),
-        name: 'Debrify TV',
+        name: 'MegaWatch TV',
       );
-      final pins = await RemotePairingStore.knownReceiversNamed('Debrify TV');
+      final pins = await RemotePairingStore.knownReceiversNamed('MegaWatch TV');
       expect(pins.map((p) => p.fingerprint).toSet(), {'tv1', 'tv2'});
       // Re-pinning one refreshes it without touching the other.
       await RemotePairingStore.pinReceiver(
         fingerprint: 'tv1',
         staticKey: List.filled(32, 9),
-        name: 'Debrify TV',
+        name: 'MegaWatch TV',
       );
       expect(
-        await RemotePairingStore.knownReceiversNamed('Debrify TV'),
+        await RemotePairingStore.knownReceiversNamed('MegaWatch TV'),
         hasLength(2),
       );
     });

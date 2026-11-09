@@ -3,15 +3,15 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/models/torrent_filter_state.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/torrent_playback_service.dart';
-import 'package:debrify/utils/filter_ladder.dart';
-import 'package:debrify/utils/torrent_curation.dart';
-import 'package:debrify/utils/torrent_filter_matcher.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/models/torrent_filter_state.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/torrent_playback_service.dart';
+import 'package:megawatch/utils/filter_ladder.dart';
+import 'package:megawatch/utils/torrent_curation.dart';
+import 'package:megawatch/utils/torrent_filter_matcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/widgets/torrent_result_row.dart'
+import 'package:megawatch/widgets/torrent_result_row.dart'
     show TorrentQualityExtension;
 
 // All assertion names below are REAL release names captured from the wild

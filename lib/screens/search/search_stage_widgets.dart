@@ -367,7 +367,7 @@ String? _firstNonEmpty(String? a, String? b) =>
 
 /// One Canvas rail — a Continue Watching row ([cw] non-null, with its
 /// position among the CW rows in [cwIndex]), a favourites-family rail
-/// ([favKind] non-null: IPTV / Debrify TV / Stremio TV / Playlist / an IPTV
+/// ([favKind] non-null: IPTV / MegaWatch TV / Stremio TV / Playlist / an IPTV
 /// custom-list row), or a catalog section ([sectionIndex] into
 /// `_sections`/`_rowNodes`).
 class _CanvasRail {

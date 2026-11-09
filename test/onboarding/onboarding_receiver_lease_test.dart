@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/services/remote_control/remote_control_state.dart';
+import 'package:megawatch/services/remote_control/remote_control_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -67,8 +67,8 @@ void main() {
     var starts = 0;
     state.debugReceiverStarter = (_) async => starts++;
     state.debugRoleStopper = () async {};
-    await state.startTvListener('Debrify TV');
-    final lease = await state.ensureReceiverMode('Debrify TV');
+    await state.startTvListener('MegaWatch TV');
+    final lease = await state.ensureReceiverMode('MegaWatch TV');
     await lease.release();
     expect(state.debugRole, 'receiver');
     expect(starts, 1);

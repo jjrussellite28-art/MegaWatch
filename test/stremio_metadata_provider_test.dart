@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/screens/addons/addon_hub_screen.dart';
-import 'package:debrify/services/profiles/sanitized_profile_preferences.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/screens/addons/addon_hub_screen.dart';
+import 'package:megawatch/services/profiles/sanitized_profile_preferences.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

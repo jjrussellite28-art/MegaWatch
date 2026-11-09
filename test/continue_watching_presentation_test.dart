@@ -1,4 +1,4 @@
-import 'package:debrify/utils/continue_watching_presentation.dart';
+import 'package:megawatch/utils/continue_watching_presentation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/launch/launch_ident.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/launch/launch_ident.dart';
 
 /// The ident palette's contract: opt-in, legible, and never flattening an
 /// ident's composition into a plain fill.
@@ -117,7 +117,7 @@ void main() {
     // The regression this pins. `LaunchIdent.palette` exposes `sweepColors`
     // as its accent/ink — those are the LOADING SWEEP's colours, not the
     // ring, the tube or the wordmark. Handing that to a painter repaints the
-    // default splash in the sweep's blue, which is a change to what Debrify
+    // default splash in the sweep's blue, which is a change to what MegaWatch
     // Classic has always shown.
     //
     // So the contract is: the painter gets NULL unless the user opted in.

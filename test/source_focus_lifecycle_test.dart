@@ -1,9 +1,9 @@
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/theme/widgets/parallax_focus.dart';
-import 'package:debrify/utils/platform_util.dart';
-import 'package:debrify/widgets/source_row.dart';
-import 'package:debrify/widgets/stream_badge_strip.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/theme/widgets/parallax_focus.dart';
+import 'package:megawatch/utils/platform_util.dart';
+import 'package:megawatch/widgets/source_row.dart';
+import 'package:megawatch/widgets/stream_badge_strip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

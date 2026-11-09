@@ -1,8 +1,8 @@
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/services/storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/screens/video_player/widgets/source_sheet.dart';
-import 'package:debrify/services/series_source_fetcher.dart';
+import 'package:megawatch/screens/video_player/widgets/source_sheet.dart';
+import 'package:megawatch/services/series_source_fetcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

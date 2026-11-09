@@ -1,34 +1,34 @@
-import 'package:debrify/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:debrify/models/debrify_tv_cache.dart';
-import 'package:debrify/models/debrify_tv_channel_record.dart';
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/debrify_tv_cache_service.dart';
-import 'package:debrify/services/debrify_tv_repository.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/iptv_catalog_key.dart';
-import 'package:debrify/services/iptv_channel_order.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_lock_controller.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_mutation.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_local_adapter.dart';
+import 'package:megawatch/models/megawatch_tv_cache.dart';
+import 'package:megawatch/models/megawatch_tv_channel_record.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/megawatch_tv_cache_service.dart';
+import 'package:megawatch/services/megawatch_tv_repository.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/iptv_catalog_key.dart';
+import 'package:megawatch/services/iptv_channel_order.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_lock_controller.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_mutation.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_local_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -121,12 +121,12 @@ void main() {
         version: 1,
         onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
         onCreate: (db, _) async {
-          await DebrifyTvDatabase.createTvStoreTables(db);
-          await DebrifyTvDatabase.createIptvStoreTables(db);
+          await MegaWatchTvDatabase.createTvStoreTables(db);
+          await MegaWatchTvDatabase.createIptvStoreTables(db);
         },
       ),
     );
-    DebrifyTvDatabase.debugDatabaseOverride = dbA;
+    MegaWatchTvDatabase.debugDatabaseOverride = dbA;
     IptvMediaStore.debugResetMigration();
     IptvCatalogDb.debugDirectoryOverride = catalogA.path;
     await IptvCatalogDb.open();
@@ -142,8 +142,8 @@ void main() {
     IptvCatalogDb.debugLibraryClock = DateTime.now;
     IptvCatalogDb.debugClose();
     IptvCatalogDb.debugDirectoryOverride = null;
-    final db = DebrifyTvDatabase.debugDatabaseOverride;
-    DebrifyTvDatabase.debugDatabaseOverride = null;
+    final db = MegaWatchTvDatabase.debugDatabaseOverride;
+    MegaWatchTvDatabase.debugDatabaseOverride = null;
     if (db != null && db.isOpen) await db.close();
     IptvMediaStore.debugResetMigration();
     ProfileLockController.instance.dispose();
@@ -330,8 +330,8 @@ void main() {
   );
 
   test('ambient build emits no TV records with a 50k saved pool', () async {
-    await DebrifyTvRepository.instance.upsertChannel(
-      DebrifyTvChannelRecord(
+    await MegaWatchTvRepository.instance.upsertChannel(
+      MegaWatchTvChannelRecord(
         channelId: 'large-channel',
         name: 'Large',
         keywords: const <String>['large'],
@@ -411,9 +411,9 @@ void main() {
     );
 
     expect(outcome.result, WebDavSyncLibraryApplyResult.applied);
-    expect(await DebrifyTvRepository.instance.fetchAllChannels(), isEmpty);
+    expect(await MegaWatchTvRepository.instance.fetchAllChannels(), isEmpty);
     expect(diagnostics, <String>[
-      'Ignored Debrify TV records in an ambient library section',
+      'Ignored MegaWatch TV records in an ambient library section',
     ]);
   });
 
@@ -434,12 +434,12 @@ void main() {
           version: 1,
           onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
           onCreate: (db, _) async {
-            await DebrifyTvDatabase.createTvStoreTables(db);
-            await DebrifyTvDatabase.createIptvStoreTables(db);
+            await MegaWatchTvDatabase.createTvStoreTables(db);
+            await MegaWatchTvDatabase.createIptvStoreTables(db);
           },
         ),
       );
-      DebrifyTvDatabase.debugDatabaseOverride = dbA;
+      MegaWatchTvDatabase.debugDatabaseOverride = dbA;
       events.clear();
 
       final watchTargets = List<WebDavSyncIptvWatchTarget>.generate(500, (
@@ -464,7 +464,7 @@ void main() {
           ),
         );
       });
-      final outcome = await DebrifyTvDatabase.instance.applyWebDavSyncFamilies(
+      final outcome = await MegaWatchTvDatabase.instance.applyWebDavSyncFamilies(
         ProfileRuntime.capture(),
         expectedRevision: 0,
         channelTargets: const <WebDavSyncTvChannelTarget>[],
@@ -499,7 +499,7 @@ void main() {
   );
 
   test(
-    'one ambient and one manual apply carry IPTV and Debrify TV families A to B with exact stamps',
+    'one ambient and one manual apply carry IPTV and MegaWatch TV families A to B with exact stamps',
     () async {
       var now = 1000;
       IptvMediaStore.debugLibraryClock = () =>
@@ -575,8 +575,8 @@ void main() {
           'updatedAt': 1000,
         },
       );
-      await DebrifyTvRepository.instance.upsertChannel(
-        DebrifyTvChannelRecord(
+      await MegaWatchTvRepository.instance.upsertChannel(
+        MegaWatchTvChannelRecord(
           channelId: 'channel-a',
           name: 'TV Alpha',
           keywords: const <String>['Alpha', 'Beta'],
@@ -586,13 +586,13 @@ void main() {
           updatedAt: DateTime.fromMillisecondsSinceEpoch(900),
         ),
       );
-      await DebrifyTvCacheService.saveEntry(
-        DebrifyTvChannelCacheEntry(
+      await MegaWatchTvCacheService.saveEntry(
+        MegaWatchTvChannelCacheEntry(
           version: 1,
           channelId: 'channel-a',
           normalizedKeywords: const <String>['alpha', 'beta'],
           fetchedAt: 901,
-          status: DebrifyTvCacheStatus.ready,
+          status: MegaWatchTvCacheStatus.ready,
           errorMessage: null,
           torrents: <CachedTorrent>[
             CachedTorrent(
@@ -683,12 +683,12 @@ void main() {
           version: 1,
           onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
           onCreate: (db, _) async {
-            await DebrifyTvDatabase.createTvStoreTables(db);
-            await DebrifyTvDatabase.createIptvStoreTables(db);
+            await MegaWatchTvDatabase.createTvStoreTables(db);
+            await MegaWatchTvDatabase.createIptvStoreTables(db);
           },
         ),
       );
-      DebrifyTvDatabase.debugDatabaseOverride = dbB;
+      MegaWatchTvDatabase.debugDatabaseOverride = dbB;
       IptvMediaStore.debugResetMigration();
       final blankB = await adapter.readLibrary(
         session,
@@ -724,8 +724,8 @@ void main() {
         'iptv/watch',
         'resume',
       });
-      expect(await DebrifyTvRepository.instance.fetchAllChannels(), isEmpty);
-      expect(await DebrifyTvCacheService.getEntry('channel-a'), isNull);
+      expect(await MegaWatchTvRepository.instance.fetchAllChannels(), isEmpty);
+      expect(await MegaWatchTvCacheService.getEntry('channel-a'), isNull);
       final beforeTv = await adapter.readTvLibrary(
         session,
         profileId,
@@ -744,10 +744,10 @@ void main() {
       );
       expect(tvOutcome.result, WebDavSyncLibraryApplyResult.applied);
       expect(tvOutcome.appliedNamespaces, <String>{'tv/ch', 'tv/pool'});
-      final tvChannels = await DebrifyTvRepository.instance.fetchAllChannels();
+      final tvChannels = await MegaWatchTvRepository.instance.fetchAllChannels();
       expect(tvChannels.single.name, 'TV Alpha');
       expect(tvChannels.single.keywords, <String>['Alpha', 'Beta']);
-      final tvCache = await DebrifyTvCacheService.getEntry('channel-a');
+      final tvCache = await MegaWatchTvCacheService.getEntry('channel-a');
       expect(tvCache!.torrents.single.infohash, 'a' * 40);
       expect(tvCache.torrents.single.sizeBytes, 1234);
       expect(IptvCatalogDb.savedCategoryOrder(catalogKey), <String>[
@@ -1104,7 +1104,7 @@ void main() {
   });
 
   test(
-    'debrify_tv revision fence rejects a concurrent local mutation',
+    'megawatch_tv revision fence rejects a concurrent local mutation',
     () async {
       final blank = await adapter.readLibrary(
         session,

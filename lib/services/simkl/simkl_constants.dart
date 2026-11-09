@@ -12,7 +12,7 @@ const String kSimklApiBaseUrl = 'https://api.simkl.com';
 
 // Simkl's docs list client_id/app-name/app-version as required query params
 // on every request (beyond the PIN flow, which only needed client_id).
-const String kSimklAppName = 'debrify';
+const String kSimklAppName = 'megawatch';
 const String kSimklAppVersion = '1.0';
 
 /// CDN host for the pre-built trending data files (public, no auth) — a

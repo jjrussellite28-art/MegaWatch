@@ -1,5 +1,5 @@
-import 'package:debrify/services/webdav_sync/webdav_sync_graph_tier.dart';
-import 'package:debrify/screens/settings/widgets/sync_device_tile.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_graph_tier.dart';
+import 'package:megawatch/screens/settings/widgets/sync_device_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

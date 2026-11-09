@@ -1,6 +1,6 @@
-import 'package:debrify/models/media_server_source.dart';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/services/source_priority.dart';
+import 'package:megawatch/models/media_server_source.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/services/source_priority.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

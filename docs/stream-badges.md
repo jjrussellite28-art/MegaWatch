@@ -10,7 +10,7 @@ Rulesets come from a link (refreshable later), a file, or pasted text.
 Several can be active at once and apply in list order; each can be disabled
 or deleted, and the page has an on/off switch for the whole feature.
 While enabled presets contain active valid rules, imported badges replace
-Debrify's built-in format/quality tags, including for sources with no match.
+MegaWatch's built-in format/quality tags, including for sources with no match.
 Disabling the feature or all active rules restores the built-in tags. Cache
 status, size, seeders, coverage, and playing indicators remain visible.
 Rulesets are stored per profile and are included in Backup & Restore and in
@@ -120,7 +120,7 @@ alone.
 | Matcher (name-or-description, memoised) | `lib/services/stream_badge_matcher.dart` |
 | Store, import (link/file/paste), refresh, backup, live matcher | `lib/services/stream_badges_service.dart` |
 | Chip widgets (`StreamBadgeStrip`, `StreamBadgeStripFor`, `StreamBadgeChip`) | `lib/widgets/stream_badge_strip.dart` |
-| SVG validation and cached bitmap decoding | `lib/utils/stream_badge_svg.dart`, `lib/services/stream_badge_svg_image.dart`, `android/app/src/main/kotlin/com/debrify/app/tv/StreamBadgeSvg.kt` |
+| SVG validation and cached bitmap decoding | `lib/utils/stream_badge_svg.dart`, `lib/services/stream_badge_svg_image.dart`, `android/app/src/main/kotlin/com/megawatch/app/tv/StreamBadgeSvg.kt` |
 | Settings page | `lib/screens/settings/stream_badges_settings_page.dart` |
 | Row model (`streamLabel`, `streamDescription`, `badgeDescription`) | `lib/models/torrent.dart`, `lib/services/stremio_service.dart` |
 | Rendering sites (`badgeName`/`badgeDescription` on `SourceRow`) | `lib/widgets/source_row.dart`, `lib/screens/video_player/widgets/source_sheet.dart` |

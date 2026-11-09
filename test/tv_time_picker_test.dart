@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/widgets/tv_time_picker.dart';
+import 'package:megawatch/widgets/tv_time_picker.dart';
 
 /// The TV spinner exists because Material's picker can't be driven by a remote,
 /// so what matters here is purely the key grammar: UP/DOWN changes the selected

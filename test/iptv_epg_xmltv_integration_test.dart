@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/iptv_epg_service.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/iptv_catalog_key.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/iptv_epg_service.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/iptv_catalog_key.dart';
 
 /// True end-to-end run of the Xtream→xmltv.php guide layering, the exact
 /// scenario field reports describe: a panel whose per-stream get_short_epg

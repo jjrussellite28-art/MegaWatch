@@ -78,7 +78,7 @@ class TrackingSourcePolicy {
       source == TrackingSource.local || scrobbleTargets.contains(source);
 
   /// Smart preserves the legacy merged/recency behavior. A dedicated source
-  /// admits only itself; local means data written by this Debrify profile.
+  /// admits only itself; local means data written by this MegaWatch profile.
   bool progressFrom(TrackingSource source) => switch (progressSource) {
     WatchProgressSource.smart => true,
     WatchProgressSource.local => source == TrackingSource.local,

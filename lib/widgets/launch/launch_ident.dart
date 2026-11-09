@@ -243,7 +243,7 @@ String launchIdentLabel(String? id) => launchIdentFor(id).label;
 // Shared paint helpers
 // ─────────────────────────────────────────────────────────────────────────
 
-const String kIdentWord = 'DEBRIFY';
+const String kIdentWord = 'MEGAWATCH';
 
 double identClamp(double v, double a, double b) => v < a ? a : (v > b ? b : v);
 double identLerp(double a, double b, double t) => a + (b - a) * t;
@@ -348,7 +348,7 @@ void identGlowPath(
 // Word machinery
 // ─────────────────────────────────────────────────────────────────────────
 
-/// Per-letter layout of DEBRIFY for one type treatment, with any number of
+/// Per-letter layout of MEGAWATCH for one type treatment, with any number of
 /// pre-laid-out [TextPainter] "sets" (fill variants: base, highlight,
 /// reflection…). Everything is laid out ONCE per canvas size and cached by
 /// the owning painter — per-frame work is transforms and paint only.

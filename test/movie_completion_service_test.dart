@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/movie_completion_service.dart';
-import 'package:debrify/services/tracking_source_policy.dart';
+import 'package:megawatch/services/movie_completion_service.dart';
+import 'package:megawatch/services/tracking_source_policy.dart';
 
 void main() {
   for (final mode in WatchProgressSource.values) {

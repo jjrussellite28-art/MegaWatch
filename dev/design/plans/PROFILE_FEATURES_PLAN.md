@@ -14,7 +14,7 @@ architecture:
 |-------------------------|------------------------------------------------------|
 | Keyword search          | `ProfileFeature.torrentSearch`                       |
 | Manage own sources      | `ProfileFeature.addonsAndEngines`                    |
-| Debrify TV / Stremio TV | `ProfileFeature.debrifyTv` / `.stremioTv`            |
+| MegaWatch TV / Stremio TV | `ProfileFeature.megawatchTv` / `.stremioTv`            |
 | Live TV / YouTube       | `ProfileFeature.iptv` / `.youtube`                   |
 | Downloads & recording   | `ProfileFeature.downloads` + `.recordings`           |
 | Remote                  | `ProfileFeature.remoteControl` + `.remoteTransfer`   |
@@ -50,7 +50,7 @@ grant semantics, and the preset deltas the mock specifies.
 
 1. `defaultsFor` deltas: Member loses `cloud` (mock matrix); Child
    additionally loses `torrentSearch`, `addonsAndEngines`, `stremioTv`,
-   `iptv`, `youtube`, `cloud`, `remoteControl` (keeps `debrifyTv`,
+   `iptv`, `youtube`, `cloud`, `remoteControl` (keeps `megawatchTv`,
    catalog browsing, `externalPlayers`, `incomingLinks` per dispositions).
 2. Ceiling: add `allowAdultContent` to the child ceiling so it is
    non-grantable, not merely default-off. Audit whether `cloud` for
@@ -74,12 +74,12 @@ Surface inventory per feature (each row = "off ⇒ invisible"):
   profile-filtered tab list), convert every `switchTab(N)` call site, THEN
   filter tabs per profile. Tabs rebuild on profile switch (sessionEpoch
   rekey already exists in ProfileGate).
-- **Home**: IPTV rows/custom-list rows (`iptv`), Debrify TV shelves
-  (`debrifyTv`), YouTube-derived rows if any (`youtube`).
+- **Home**: IPTV rows/custom-list rows (`iptv`), MegaWatch TV shelves
+  (`megawatchTv`), YouTube-derived rows if any (`youtube`).
 - **Search screen**: keyword segment/results (`torrentSearch`) — catalog
   title-search remains for everyone.
 - **Settings**: pages + settings-search entries of gated features
-  (IPTV settings, Debrify TV settings, download settings, Remote,
+  (IPTV settings, MegaWatch TV settings, download settings, Remote,
   Cloud accounts pages…). The Profiles card itself stays.
 - **Startup**: IPTV boot-to-channel honors `iptv` (wall already clears
   session conveniences; add the feature check where the convenience fires).
@@ -94,7 +94,7 @@ Surface inventory per feature (each row = "off ⇒ invisible"):
 ## Phase 3 — NSFW rail (viewer-scoped)
 
 1. Route every `NsfwFilter` consultation through the active profile:
-   `storage_service` already exposes the check — sweep Debrify TV
+   `storage_service` already exposes the check — sweep MegaWatch TV
    (channel create/edit/browse/play), keyword results, and any
    "allow adult" toggles to consult it.
 2. Child sessions: toggle UIs hidden (ceiling makes the value
@@ -248,7 +248,7 @@ Confirmed clean: MainTab↔_pages order, policy v2 presets + v1 upgrade,
 keyword-gate entry points, legacy-mode fail-open, policyFor split.
 Findings, all fixed same day:
 
-- **P0** Debrify TV QUICK-PLAY missed the NSFW force-lock (channel flows had
+- **P0** MegaWatch TV QUICK-PLAY missed the NSFW force-lock (channel flows had
   it): five `_quickAvoidNsfw` filter sites now OR `_viewerForcesNsfw`, and
   the quick-scope options SwitchRow is role-locked like the other dialogs.
 - **P0** Questionnaire DPAD: footer sat on row 90 but the focus grid has no

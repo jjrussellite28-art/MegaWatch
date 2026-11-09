@@ -1,10 +1,10 @@
-import 'package:debrify/screens/settings/settings_spotlight_shell.dart';
-import 'package:debrify/screens/settings/widgets/settings_widgets.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/text_brightness.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_adapter.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
+import 'package:megawatch/screens/settings/settings_spotlight_shell.dart';
+import 'package:megawatch/screens/settings/widgets/settings_widgets.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/text_brightness.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_adapter.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -63,7 +63,7 @@ const _categories = [
     subtitle: 'Channels and recordings',
     eyebrow: 'Live TV & DVR',
     title: 'Keep live viewing close.',
-    description: 'Manage channels, recordings, and Debrify TV.',
+    description: 'Manage channels, recordings, and MegaWatch TV.',
   ),
   SettingsCategoryDefinition(
     icon: Icons.devices_rounded,
@@ -87,12 +87,12 @@ const _categories = [
     subtitle: 'Version and community',
     eyebrow: 'About',
     title: 'Updates and community.',
-    description: 'Check your build or find the people behind Debrify.',
+    description: 'Check your build or find the people behind MegaWatch.',
   ),
   SettingsCategoryDefinition(
     icon: Icons.warning_amber_rounded,
     label: 'Danger Zone',
-    subtitle: 'Reset Debrify',
+    subtitle: 'Reset MegaWatch',
     eyebrow: 'Danger Zone',
     title: 'Start over, deliberately.',
     description: 'Destructive actions stay isolated.',

@@ -6,7 +6,7 @@ import '../account_service.dart';
 import '../alldebrid_account_service.dart';
 import '../discover_prefs.dart';
 import '../hide_watched_prefs.dart';
-import '../debrify_tv_database.dart';
+import '../megawatch_tv_database.dart';
 import '../download_service.dart';
 import '../iptv_catalog_db.dart';
 import '../iptv_service.dart';
@@ -54,7 +54,7 @@ class ProfileAppLifecycleParticipant implements ProfileLifecycleParticipant {
     RemoteCommandRouter().clearProfileSessionState();
     await DownloadService.instance.prepareProfileSwitch();
     await IptvCatalogDb.closeScope();
-    await DebrifyTvDatabase.instance.closeScope(current);
+    await MegaWatchTvDatabase.instance.closeScope(current);
     StremioService.instance.invalidateCache();
     TraktService.instance.resetProfileScope();
     SimklService.instance.resetProfileScope();
@@ -84,7 +84,7 @@ class ProfileAppLifecycleParticipant implements ProfileLifecycleParticipant {
 
   @override
   Future<void> didActivate(ProfileScope active) async {
-    DebrifyTvDatabase.instance.activateScope(active);
+    MegaWatchTvDatabase.instance.activateScope(active);
     await NativeProfileProjection.publish(active);
     DownloadService.instance.finishProfileSwitch();
   }
@@ -95,11 +95,11 @@ class ProfileAppLifecycleParticipant implements ProfileLifecycleParticipant {
     // Close it before warming the restored scope so a failed switch/restore
     // cannot leave the process attached to the invisible generation.
     await IptvCatalogDb.closeScope();
-    await DebrifyTvDatabase.instance.closeScope();
+    await MegaWatchTvDatabase.instance.closeScope();
     // closeScope deliberately tombstones its owner before awaiting the close.
     // Re-authorize the restored authoritative scope before warmers may touch
-    // Debrify TV storage.
-    DebrifyTvDatabase.instance.activateScope(restored);
+    // MegaWatch TV storage.
+    MegaWatchTvDatabase.instance.activateScope(restored);
     await _warm(restored);
     await NativeProfileProjection.publish(restored);
     DownloadService.instance.finishProfileSwitch();
@@ -170,7 +170,7 @@ class ProfileAppLifecycleParticipant implements ProfileLifecycleParticipant {
         StorageService.getTvHomeStyle(),
         StorageService.getTvSidebarStyle(),
         StorageService.getDesktopSidebarStyle(),
-        StorageService.getDebrifyTvStyle(),
+        StorageService.getMegaWatchTvStyle(),
         StorageService.getUiSounds(),
         StorageService.getUiHaptics(),
         StorageService.getLaunchAnimation(),

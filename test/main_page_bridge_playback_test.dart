@@ -1,4 +1,4 @@
-import 'package:debrify/services/main_page_bridge.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

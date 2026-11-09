@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/launch_animation/launch_package.dart';
-import 'package:debrify/services/launch_animation/launch_animation_library.dart';
-import 'package:debrify/widgets/launch/imported_launch_player.dart';
+import 'package:megawatch/services/launch_animation/launch_package.dart';
+import 'package:megawatch/services/launch_animation/launch_animation_library.dart';
+import 'package:megawatch/widgets/launch/imported_launch_player.dart';
 
 void main() {
   testWidgets('a draw error is reported once without escaping the painter', (

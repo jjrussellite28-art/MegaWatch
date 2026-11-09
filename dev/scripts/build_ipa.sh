@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Build Debrify for iOS, ad-hoc sign it for sideloading, and drop the .ipa in
+# Build MegaWatch for iOS, ad-hoc sign it for sideloading, and drop the .ipa in
 # ~/Downloads/ios so AltServer can pick it up (menu bar -> Sideload .ipa -> iPad).
 #
 # Usage:
@@ -34,7 +34,7 @@ say() { printf '\n\033[1m==> %s\033[0m\n' "$*"; }
 # Name the artifact after pubspec's "version: 0.6.4-alpha.1+21".
 VERSION="$(awk -F': ' '/^version:/{print $2; exit}' pubspec.yaml | tr -d '[:space:]')"
 VERSION="${VERSION/+/-}"
-IPA="$OUT_DIR/debrify-${VERSION:-local}.ipa"
+IPA="$OUT_DIR/megawatch-${VERSION:-local}.ipa"
 
 if [ "$DO_BUILD" -eq 1 ]; then
   say "flutter build ios --release --no-codesign"

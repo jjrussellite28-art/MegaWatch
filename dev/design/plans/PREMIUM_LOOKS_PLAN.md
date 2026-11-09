@@ -231,7 +231,7 @@ id can never silently mean a new theme):
 | Console | `console` | instrument | rule separation, mono type, invert focus, snap, scanline wait, terminal clicks, no grading |
 | Midnight Cinema | `reel` | letterboxed film | near-black, grain+letterbox, warm grade, lift+bloom focus, slow settle, plate scrims, theater idle |
 
-Debrify Classic remains the `legacy` sentinel. Each look ships as a Look
+MegaWatch Classic remains the `legacy` sentinel. Each look ships as a Look
 bundle naming the details layout, ident (+ themed palette) and TV layouts
 that agree with it.
 
@@ -243,7 +243,7 @@ that agree with it.
 - **Deleted (19):** `noir, broadsheet, phosphor, aurora, concrete, velvet,
   blueprint, broadcast, sepia, obsidian, halo, prestige, deep_field,
   graphite, vault, spectrum, verdant, frost, cinemascope`.
-- **Look → id map:** §7's table, plus Debrify Classic → `legacy`. To be
+- **Look → id map:** §7's table, plus MegaWatch Classic → `legacy`. To be
   precise about the two id spaces: the table maps each Look's
   `values['app_theme']` — the THEME id. `AppLook.id` (`classic`, `midnight`,
   …) is a separate namespace that never touches theme storage; Classic

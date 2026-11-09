@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:debrify/models/media_server.dart';
-import 'package:debrify/services/media_server_client.dart';
+import 'package:megawatch/models/media_server.dart';
+import 'package:megawatch/services/media_server_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -61,7 +61,7 @@ void main() {
         expect(
           headers['Authorization'],
           '${kind == MediaServerKind.emby ? 'Emby' : 'MediaBrowser'} '
-          'Client="Debrify", Device="Debrify", DeviceId="device1", Version="1.0", '
+          'Client="MegaWatch", Device="MegaWatch", DeviceId="device1", Version="1.0", '
           'Token="opaque.token_123-abc=="',
         );
         expect(headers['X-Emby-Token'], 'opaque.token_123-abc==');

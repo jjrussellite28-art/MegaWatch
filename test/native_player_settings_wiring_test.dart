@@ -57,7 +57,7 @@ void main() {
           .length,
       3,
     );
-    // Every direct Debrify TV helper call sits inside a terminal-error handler:
+    // Every direct MegaWatch TV helper call sits inside a terminal-error handler:
     // ten ordinary watch paths plus the early-search launch path.
     expect(
       'on NativePlayerSettingsUnavailable catch (error)'

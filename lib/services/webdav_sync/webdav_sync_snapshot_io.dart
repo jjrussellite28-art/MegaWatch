@@ -21,7 +21,7 @@ final class WebDavSyncSnapshotIo {
   const WebDavSyncSnapshotIo();
   static final Lock _largeTransfer = Lock();
   static String _context(String circleId) =>
-      'debrify/sync-snapshot/v2/$circleId';
+      'megawatch/sync-snapshot/v2/$circleId';
 
   Future<WebDavSyncSnapshotDescriptor> publish({
     required WebDavSyncTransport transport,
@@ -217,7 +217,7 @@ final class WebDavSyncSnapshotIo {
       }
     }
     final staging = await LocalBackupScratch.create('sync-restore');
-    final archive = File('${staging.path}/snapshot.debrify');
+    final archive = File('${staging.path}/snapshot.megawatch');
     try {
       await StreamingEncryptedFile.decrypt(
         source: encrypted,

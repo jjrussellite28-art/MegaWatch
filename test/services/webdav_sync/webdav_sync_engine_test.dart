@@ -1,42 +1,42 @@
-import 'package:debrify/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/models/home_collection_inventory.dart';
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/services/diagnostic_log.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_device_removal.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_clock.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_adoption_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_diagnostics.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine_state.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_collection_sections.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_local_adapter.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_runtime.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_setup_service.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_transport.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/models/home_collection_inventory.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/services/diagnostic_log.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_device_removal.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_clock.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_adoption_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_diagnostics.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine_state.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_collection_sections.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_local_adapter.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_runtime.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_setup_service.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_transport.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_device_names.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_device_names.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -965,7 +965,7 @@ void main() {
       },
     );
     source.revisions = WebDavSyncDatabaseRevisions(
-      debrifyTv: source.revisions.debrifyTv,
+      megawatchTv: source.revisions.megawatchTv,
       iptvCatalog: source.revisions.iptvCatalog + 1,
     );
     await sourceEngine.runCycle(
@@ -1377,7 +1377,7 @@ void main() {
 
   test('a failed cycle records only the failure shape', () async {
     final directory = await Directory.systemTemp.createTemp(
-      'debrify-webdav-cycle-failure-diagnostics-',
+      'megawatch-webdav-cycle-failure-diagnostics-',
     );
     await DiagnosticLog.instance.initialize(directoryOverride: directory);
     try {
@@ -1424,7 +1424,7 @@ void main() {
 
   test('cycle emits one complete redacted instrumentation event', () async {
     final directory = await Directory.systemTemp.createTemp(
-      'debrify-webdav-cycle-diagnostics-',
+      'megawatch-webdav-cycle-diagnostics-',
     );
     await DiagnosticLog.instance.initialize(directoryOverride: directory);
     try {
@@ -4798,7 +4798,7 @@ void main() {
         diagnostics.where(
           (message) =>
               message ==
-              'Ignored Debrify TV records in an ambient library section',
+              'Ignored MegaWatch TV records in an ambient library section',
         ),
         hasLength(1),
       );
@@ -5509,7 +5509,7 @@ final class _FakeLibraryLocalAdapter extends _FakeLocalAdapter
 
   WebDavSyncLibraryDocument document;
   WebDavSyncDatabaseRevisions revisions = const WebDavSyncDatabaseRevisions(
-    debrifyTv: 0,
+    megawatchTv: 0,
     iptvCatalog: 0,
   );
   bool conflictNextLibraryApply = false;
@@ -5550,7 +5550,7 @@ final class _FakeLibraryLocalAdapter extends _FakeLocalAdapter
     if (conflictNextLibraryApply) {
       conflictNextLibraryApply = false;
       revisions = WebDavSyncDatabaseRevisions(
-        debrifyTv: revisions.debrifyTv,
+        megawatchTv: revisions.megawatchTv,
         iptvCatalog: revisions.iptvCatalog + 1,
       );
       return const WebDavSyncLibraryApplyOutcome(
@@ -5560,7 +5560,7 @@ final class _FakeLibraryLocalAdapter extends _FakeLocalAdapter
     appliedLibraries.add(request.document);
     document = request.document;
     revisions = WebDavSyncDatabaseRevisions(
-      debrifyTv: revisions.debrifyTv,
+      megawatchTv: revisions.megawatchTv,
       iptvCatalog: revisions.iptvCatalog + 1,
     );
     return const WebDavSyncLibraryApplyOutcome(
@@ -5596,7 +5596,7 @@ final class _FakeTvLibraryLocalAdapter extends _FakeLibraryLocalAdapter
   ) async => WebDavSyncLocalLibrarySnapshot(
     document: tvDocument,
     revisions: WebDavSyncDatabaseRevisions(
-      debrifyTv: tvRevision,
+      megawatchTv: tvRevision,
       iptvCatalog: 0,
     ),
     tvPendingRevision: tvPendingRevision,

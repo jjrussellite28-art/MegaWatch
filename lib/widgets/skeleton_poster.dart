@@ -210,7 +210,7 @@ class SkeletonPosterGrid extends StatelessWidget {
   }
 }
 
-/// The home board's load state: a quiet brand moment — the DEBRIFY wordmark
+/// The home board's load state: a quiet brand moment — the MEGAWATCH wordmark
 /// centred on the page ink with a thin breathing accent bar beneath — instead
 /// of a screenful of skeleton boxes (which read as "broken app", the old
 /// complaint). This is the Netflix grammar: brand holds the stage, then the
@@ -234,7 +234,7 @@ class BrandLoadingStage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'DEBRIFY',
+            'MEGAWATCH',
             // Poppins — the same display face the hero titles wear, so the
             // brand and the content read as one voice.
             style: GoogleFonts.poppins(

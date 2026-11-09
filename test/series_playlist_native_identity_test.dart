@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:debrify/models/media_identity.dart';
-import 'package:debrify/models/series_playlist.dart';
-import 'package:debrify/services/native_series_metadata_service.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/secret_vault.dart';
-import 'package:debrify/services/simkl/simkl_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/tmdb_metadata_repository.dart';
-import 'package:debrify/utils/series_parser.dart';
+import 'package:megawatch/models/media_identity.dart';
+import 'package:megawatch/models/series_playlist.dart';
+import 'package:megawatch/services/native_series_metadata_service.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/secret_vault.dart';
+import 'package:megawatch/services/simkl/simkl_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/tmdb_metadata_repository.dart';
+import 'package:megawatch/utils/series_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

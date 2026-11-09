@@ -230,7 +230,7 @@ class BackupRestoreService {
             'api_key': mdblistApiKey,
             if (mdblistUsername != null && mdblistUsername.isNotEmpty)
               'username': mdblistUsername,
-            // Retained only as a compatibility field for older Debrify
+            // Retained only as a compatibility field for older MegaWatch
             // restores. Derive it from the new master; never read the retired
             // preference again after one-time master seeding.
             'sync_catalog_items': scrobbleTargets.contains('mdblist'),

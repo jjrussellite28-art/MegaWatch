@@ -210,7 +210,7 @@ class RecordingCallResult {
 /// keep the in-player libmpv tee.
 class LiveRecordingService {
   static const MethodChannel _channel = MethodChannel(
-    'com.debrify.app/downloader',
+    'com.megawatch.app/downloader',
   );
 
   /// Bumped whenever THIS process mutates the schedule set (page, player
@@ -866,7 +866,7 @@ class LiveRecordingService {
   static Future<bool> ensureNotificationPermission() =>
       _invokeBool('ensureNotificationPermission');
 
-  /// Whether Debrify is excluded from battery optimization — the difference
+  /// Whether MegaWatch is excluded from battery optimization — the difference
   /// between hours-long recordings surviving OEM app killers or not.
   static Future<bool> isIgnoringBatteryOptimizations() =>
       _invokeBool('isIgnoringBatteryOptimizations');

@@ -22,7 +22,7 @@ import '../utils/platform_util.dart';
 class TvosKeyboardSignal {
   TvosKeyboardSignal._();
 
-  static const MethodChannel _channel = MethodChannel('debrify/tvkeyboard');
+  static const MethodChannel _channel = MethodChannel('megawatch/tvkeyboard');
 
   /// Fields currently willing to be told. A set (not a single slot) because
   /// nothing guarantees only one field is mounted; each decides for itself

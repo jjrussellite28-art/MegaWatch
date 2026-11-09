@@ -1,10 +1,10 @@
 #!/bin/bash
-# Debrify nightly triage — run by launchd at 1am. Runs the autonomous triage headless
+# MegaWatch nightly triage — run by launchd at 1am. Runs the autonomous triage headless
 # on the LOCAL machine (which has the secrets in .dev.vars + gh auth), so it can fetch
-# Discord, dedupe/size, and file tickets with full AI triage. See com.debrify.nightly-triage.plist.
+# Discord, dedupe/size, and file tickets with full AI triage. See com.megawatch.nightly-triage.plist.
 #
 # NOTE: the copy that actually runs lives at
-#   ~/Library/Application Support/debrify-triage/nightly_triage.sh
+#   ~/Library/Application Support/megawatch-triage/nightly_triage.sh
 # (macOS TCC blocks launchd from exec'ing scripts under ~/Documents). If you edit this
 # file in the repo, re-copy it there (see dev/tool/discord/README.md).
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
@@ -16,17 +16,17 @@ export DISABLE_AUTOUPDATER=1
 
 # Optional: a long-lived headless token (from `claude setup-token`) avoids depending on the
 # macOS Keychain for auth refresh. Drop it at the path below (chmod 600) to use it.
-TOKEN_FILE="$HOME/Library/Application Support/debrify-triage/.claude_oauth_token"
+TOKEN_FILE="$HOME/Library/Application Support/megawatch-triage/.claude_oauth_token"
 [ -f "$TOKEN_FILE" ] && export CLAUDE_CODE_OAUTH_TOKEN="$(tr -d '[:space:]' < "$TOKEN_FILE")"
 
-REPO="/Users/varunbsalian/Documents/Projects/debrify"
+REPO="/Users/varunbsalian/Documents/Projects/megawatch"
 cd "$REPO" || { echo "nightly-triage: repo not found: $REPO" >&2; exit 1; }
 
 mkdir -p dev/tool/discord/nightly_logs
 LOG="dev/tool/discord/nightly_logs/$(date +%Y-%m-%d_%H%M).log"
 
 {
-  echo "======== Debrify nightly triage :: $(date) ========"
+  echo "======== MegaWatch nightly triage :: $(date) ========"
   # Hard 15-min cap (perl alarm — macOS has no `timeout`). Prevents a hung run.
   perl -e 'alarm shift @ARGV; exec @ARGV' 900 \
     claude -p "Read and follow .claude/commands/triage-nightly.md exactly. This is the unattended 1am run — never ask questions or wait for approval; be fast and decisive; auto-file only genuinely-new, deduped tickets, auto-size them, then print the summary." \

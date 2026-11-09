@@ -3,16 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/screens/settings/iptv_hidden_categories_page.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/iptv_catalog_key.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_mutation.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/screens/settings/iptv_hidden_categories_page.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/iptv_catalog_key.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_mutation.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:sqlite3/sqlite3.dart' as raw;
 
 IptvChannel _ch(int i, {required String group, int? number}) => IptvChannel(

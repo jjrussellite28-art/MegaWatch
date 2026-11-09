@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/screens/video_player/services/subtitle_aligner.dart';
+import 'package:megawatch/screens/video_player/services/subtitle_aligner.dart';
 
 typedef _Span = ({int start, int end});
 

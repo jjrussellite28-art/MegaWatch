@@ -1,6 +1,6 @@
-import 'package:debrify/models/trakt/trakt_calendar_entry.dart';
-import 'package:debrify/services/mdblist/mdblist_calendar_service.dart';
-import 'package:debrify/services/mdblist/mdblist_models.dart';
+import 'package:megawatch/models/trakt/trakt_calendar_entry.dart';
+import 'package:megawatch/services/mdblist/mdblist_calendar_service.dart';
+import 'package:megawatch/services/mdblist/mdblist_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:debrify/theme/app_motion.dart';
-import 'package:debrify/theme/premium_looks.dart';
-import 'package:debrify/theme/widgets/parallax_focus.dart';
-import 'package:debrify/widgets/home/spotlight_board.dart';
+import 'package:megawatch/theme/app_motion.dart';
+import 'package:megawatch/theme/premium_looks.dart';
+import 'package:megawatch/theme/widgets/parallax_focus.dart';
+import 'package:megawatch/widgets/home/spotlight_board.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

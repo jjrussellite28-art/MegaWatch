@@ -4,7 +4,7 @@
 **Reviewed baseline:** `591ec0a008115b8fd4ffa7c7ed3ffad70d582e86` (`0.8.2_alpha`) plus the uncommitted multi-profile implementation and first remediation pass
 **Supersedes the release decision in:** [Multi-Profile Review Remediation Record](./2026-08-13-profiles-remediation.md)
 **Supported platforms:** Android, Android TV, iOS, tvOS, macOS, Windows, and Linux. Web is not supported and is out of scope.
-**Decision:** **NO-GO. Keep `DEBRIFY_PROFILES` and `DEBRIFY_PROFILES_MIGRATION_READY` disabled.**
+**Decision:** **NO-GO. Keep `MEGAWATCH_PROFILES` and `MEGAWATCH_PROFILES_MIGRATION_READY` disabled.**
 
 > **Resolution status:** This document records the findings at review time.
 > All 23 source findings have since been remediated in the uncommitted working
@@ -117,7 +117,7 @@ Severity is release-oriented:
 - Registry authority mutations commit before invoking the checkpoint/publication callback: `lib/services/profiles/profile_registry.dart:480-495,1191-1230,1526-1590`.
 - Projection publication is one last-writer-wins preferences value and does not invalidate the previous snapshot first: `lib/services/profiles/native_profile_projection.dart:42-106`.
 - Concurrent publications have no mutex or monotonic compare-and-set; an older snapshot can be read first, publish after a newer one, and overwrite it.
-- Kotlin validates only the stored snapshot, with no registry-generation comparison: `android/app/src/main/kotlin/com/debrify/app/profiles/ProfilePreferenceProjection.kt:16-23,60-98`.
+- Kotlin validates only the stored snapshot, with no registry-generation comparison: `android/app/src/main/kotlin/com/megawatch/app/profiles/ProfilePreferenceProjection.kt:16-23,60-98`.
 
 **Impact:** A failed A-to-B publication can leave A's native Stremio/settings authority visible while Dart believes B is active. A failed or reordered revocation publication can let downloads/recordings continue under an old grant.
 
@@ -193,7 +193,7 @@ Credential insertion advances Admin revision (`lib/services/profiles/profile_reg
 
 ### DELTA-P1-011 — Android native resealing races active old-revision writers
 
-Three native stores migrate sequentially and one completion marker is then written (`android/app/src/main/kotlin/com/debrify/app/MainActivity.kt:1202-1233`). Locks are store-local (`DownloadTaskStore.kt:94-116`, `RecordingTaskStore.kt:116-134`, `RecordingScheduleStore.kt:82-101`). Workers/alarms can later persist in-memory old authority (`MediaStoreDownloadService.kt:357-380`, `LiveRecordingService.kt:877-903`, `RecordingAlarmReceiver.kt:121-143`). The marker prevents a future retry.
+Three native stores migrate sequentially and one completion marker is then written (`android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt:1202-1233`). Locks are store-local (`DownloadTaskStore.kt:94-116`, `RecordingTaskStore.kt:116-134`, `RecordingScheduleStore.kt:82-101`). Workers/alarms can later persist in-memory old authority (`MediaStoreDownloadService.kt:357-380`, `LiveRecordingService.kt:877-903`, `RecordingAlarmReceiver.kt:121-143`). The marker prevents a future retry.
 
 **Gate:** Instrument latches at every store replacement/marker boundary while workers and alarms write. The marker may commit only after producers are quiesced or a generation/row gate guarantees that every late write is resealed/rejected.
 
@@ -207,7 +207,7 @@ Bootstrap correctly refuses legacy fallback but throws on marker-without-authori
 
 ### DELTA-P1-013 — Device reset releases Android SAF authority before stopping downloads
 
-Directory cleanup is drained before general downloads (`lib/services/profiles/profile_device_reset_service.dart:187-224`). Native cleanup releases persisted URI grants (`android/app/src/main/kotlin/com/debrify/app/MainActivity.kt:1948-1981`). Downloads are canceled only later (`lib/services/download_service.dart:794-838`).
+Directory cleanup is drained before general downloads (`lib/services/profiles/profile_device_reset_service.dart:187-224`). Native cleanup releases persisted URI grants (`android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt:1948-1981`). Downloads are canceled only later (`lib/services/download_service.dart:794-838`).
 
 **Gate:** Trace reset with an active SAF-backed download. Every writer must be confirmed stopped before storage authority is released, then private partials may be deleted.
 

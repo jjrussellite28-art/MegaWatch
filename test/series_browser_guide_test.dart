@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/series_playlist.dart';
-import 'package:debrify/screens/video_player/models/playlist_entry.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/widgets/series_browser.dart';
+import 'package:megawatch/models/series_playlist.dart';
+import 'package:megawatch/screens/video_player/models/playlist_entry.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/widgets/series_browser.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

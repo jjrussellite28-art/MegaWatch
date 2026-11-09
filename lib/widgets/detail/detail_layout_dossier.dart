@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../services/imdb_enrichment_service.dart';
 import '../episodes_panel.dart';
 import '../horizontal_mouse_wheel.dart';
@@ -192,7 +192,7 @@ class _DetailDossierState extends State<DetailDossier> {
                       child: CachedNetworkImage(
                         imageUrl: poster,
                         fit: BoxFit.cover,
-                        cacheManager: DebrifyImageCache.manager,
+                        cacheManager: MegaWatchImageCache.manager,
                         memCacheWidth: 240,
                         placeholder: (_, __) =>
                             ColoredBox(color: _t.placeholder),
@@ -602,7 +602,7 @@ class _CastChip extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: url,
                       fit: BoxFit.cover,
-                      cacheManager: DebrifyImageCache.manager,
+                      cacheManager: MegaWatchImageCache.manager,
                       memCacheWidth: 150,
                       placeholder: (_, __) => ColoredBox(color: t.placeholder),
                       errorWidget: (_, __, ___) =>
@@ -657,7 +657,7 @@ class _RecPosterState extends State<_RecPoster> {
                 ? CachedNetworkImage(
                     imageUrl: poster,
                     fit: BoxFit.cover,
-                    cacheManager: DebrifyImageCache.manager,
+                    cacheManager: MegaWatchImageCache.manager,
                     memCacheWidth: 300,
                     placeholder: (_, __) => ColoredBox(color: t.placeholder),
                     errorWidget: (_, __, ___) =>

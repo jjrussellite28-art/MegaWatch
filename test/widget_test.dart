@@ -8,12 +8,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/main.dart';
+import 'package:megawatch/main.dart';
 
 void main() {
-  testWidgets('Debrify app smoke test', (WidgetTester tester) async {
+  testWidgets('MegaWatch app smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const DebrifyApp());
+    await tester.pumpWidget(const MegaWatchApp());
 
     // Verify that the app loads without errors
     expect(find.byType(MaterialApp), findsOneWidget);

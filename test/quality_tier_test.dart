@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/models/torrent_filter_state.dart';
-import 'package:debrify/utils/torrent_filter_matcher.dart';
-import 'package:debrify/widgets/torrent_result_row.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/models/torrent_filter_state.dart';
+import 'package:megawatch/utils/torrent_filter_matcher.dart';
+import 'package:megawatch/widgets/torrent_result_row.dart';
 
 void main() {
   Torrent named(String name) => Torrent(

@@ -39,7 +39,7 @@ final class StreamingFileResult {
 /// Work runs in one worker at a time, passing paths and key material only.
 /// Neither the UI isolate nor the crypto library receives a whole file.
 abstract final class StreamingEncryptedFile {
-  static const String extension = '.debrify.enc';
+  static const String extension = '.megawatch.enc';
   static const int segmentBytes = TransferIo.bufferBytes;
   static const int headerBytes = 69;
   static const int streamHeaderBytes = 40;

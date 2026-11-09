@@ -1,4 +1,4 @@
-import 'package:debrify/services/mdblist/mdblist_menu_helpers.dart';
+import 'package:megawatch/services/mdblist/mdblist_menu_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

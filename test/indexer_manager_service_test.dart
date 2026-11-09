@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/indexer_manager_config.dart';
-import 'package:debrify/services/indexer_manager_service.dart';
+import 'package:megawatch/models/indexer_manager_config.dart';
+import 'package:megawatch/services/indexer_manager_service.dart';
 
 void main() {
   group('IndexerManagerService', () {

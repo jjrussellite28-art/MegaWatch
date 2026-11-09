@@ -22,7 +22,7 @@ PIN ladder **and** behind a compile-time flag.
 ## The flag is OFF
 
 `kProfileAudit` (`profile_audit_flag.dart`) is
-`bool.fromEnvironment('DEBRIFY_PROFILE_AUDIT', defaultValue: false)`, so this
+`bool.fromEnvironment('MEGAWATCH_PROFILE_AUDIT', defaultValue: false)`, so this
 tooling does not ship. It was `true` for one day (2026-08-15) so local
 `--release` tvOS builds carried it without remembering a define, and was flipped
 back the same day once alpha became real: an alpha is a release to other people,
@@ -35,7 +35,7 @@ neither the entry point nor the code behind it — the tree-shaker drops both.
 Turn it on for a single build without editing the file:
 
 ```
-flutter-tvos build tvos --release --dart-define=DEBRIFY_PROFILE_AUDIT=true
+flutter-tvos build tvos --release --dart-define=MEGAWATCH_PROFILE_AUDIT=true
 ```
 
 Two tests guard this, and both are needed because either alone would permit the

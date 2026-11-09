@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:debrify/services/profiles/portable_profile_package.dart';
-import 'package:debrify/services/profiles/legacy_backup_adapter.dart';
-import 'package:debrify/services/profiles/profile_database_snapshot.dart';
-import 'package:debrify/services/remote_control/remote_constants.dart';
+import 'package:megawatch/services/profiles/portable_profile_package.dart';
+import 'package:megawatch/services/profiles/legacy_backup_adapter.dart';
+import 'package:megawatch/services/profiles/profile_database_snapshot.dart';
+import 'package:megawatch/services/remote_control/remote_constants.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'avatar_fixtures.dart';
@@ -67,14 +67,14 @@ void main() {
       iterations: 1,
       hashLength: 32,
     ).deriveKey(secretKey: SecretKey(utf8.encode(passphrase)), nonce: salt);
-    const aad = 'debrify-profile-backup-v3';
+    const aad = 'megawatch-profile-backup-v3';
     final box = await AesGcm.with256bits().encrypt(
       utf8.encode(jsonEncode(await legacyV3Integrity(source))),
       secretKey: key,
       aad: utf8.encode(aad),
     );
     return <String, dynamic>{
-      'format': 'debrify-profile-package',
+      'format': 'megawatch-profile-package',
       'version': 3,
       'encrypted': true,
       'createdAt': source.createdAt.toUtc().toIso8601String(),
@@ -112,7 +112,7 @@ void main() {
       iterations: 1,
     );
     expect(encrypted['version'], 4);
-    expect((encrypted['aead'] as Map)['aad'], 'debrify-profile-backup-v4');
+    expect((encrypted['aead'] as Map)['aad'], 'megawatch-profile-backup-v4');
     final restored = await PortableProfilePackage.decrypt(
       encrypted,
       'correct horse',
@@ -359,7 +359,7 @@ void main() {
     expect(transport.expandedBytes, greaterThan(transport.wireBytes));
     expect(transport.compressed, isTrue);
     final wrapper = jsonDecode(encoded) as Map<String, dynamic>;
-    expect(wrapper['format'], 'debrify-profile-transport');
+    expect(wrapper['format'], 'megawatch-profile-transport');
     expect(wrapper['compression'], 'gzip');
     expect(wrapper['requestId'], 'request-compressed-1');
 
@@ -479,7 +479,7 @@ void main() {
         'borrowedConnections': 2,
         'futureDurableCategory': 'not exported',
         'futureInactiveCategory': 0,
-        DebrifyTvBackupOmission.key: const DebrifyTvBackupOmission(
+        MegaWatchTvBackupOmission.key: const MegaWatchTvBackupOmission(
           channels: 2,
           savedHashes: 40,
           profilesAffected: 1,
@@ -492,15 +492,15 @@ void main() {
     );
   });
 
-  test('Debrify TV omission metadata round-trips and is validated', () async {
-    const omission = DebrifyTvBackupOmission(
+  test('MegaWatch TV omission metadata round-trips and is validated', () async {
+    const omission = MegaWatchTvBackupOmission(
       channels: 3,
       savedHashes: 120,
       profilesAffected: 2,
     );
     final source = await package(
       omissions: <String, dynamic>{
-        DebrifyTvBackupOmission.key: omission.toJson(),
+        MegaWatchTvBackupOmission.key: omission.toJson(),
       },
     );
     final encrypted = await PortableProfilePackage.encrypt(
@@ -513,14 +513,14 @@ void main() {
       encrypted,
       'correct horse',
     );
-    final decoded = DebrifyTvBackupOmission.fromOmissions(restored.omissions);
+    final decoded = MegaWatchTvBackupOmission.fromOmissions(restored.omissions);
     expect(decoded?.channels, 3);
     expect(decoded?.savedHashes, 120);
     expect(decoded?.profilesAffected, 2);
 
     final malformed = await package(
       omissions: <String, dynamic>{
-        DebrifyTvBackupOmission.key: <String, Object?>{
+        MegaWatchTvBackupOmission.key: <String, Object?>{
           'channels': 'three',
           'savedHashes': 120,
           'profilesAffected': 2,
@@ -539,7 +539,7 @@ void main() {
         isA<FormatException>().having(
           (error) => error.message,
           'message',
-          'Invalid Debrify TV backup omission',
+          'Invalid MegaWatch TV backup omission',
         ),
       ),
     );

@@ -98,7 +98,7 @@ class _AppInitializerState extends State<AppInitializer>
     // as its accent/ink, which are the LOADING SWEEP's colours — not the
     // ring, the tube or the wordmark. Handing that to a painter would repaint
     // the default splash in the sweep's blue, which is a change to what
-    // Debrify Classic has always shown. "No palette" must mean "your own
+    // MegaWatch Classic has always shown. "No palette" must mean "your own
     // literals", and this is what makes that true at runtime as well as in
     // the tests.
     _painterPalette = themed ? _palette : null;
@@ -434,7 +434,7 @@ class _AppInitializerState extends State<AppInitializer>
 
       var deviceName = await StorageService.getRemoteTvDeviceName();
       deviceName ??= await PlatformUtil.getDeviceName();
-      deviceName ??= 'Debrify TV';
+      deviceName ??= 'MegaWatch TV';
 
       debugPrint('AppInitializer: Starting TV listener early as "$deviceName"');
 

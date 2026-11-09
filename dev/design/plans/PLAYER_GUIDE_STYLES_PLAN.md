@@ -47,7 +47,7 @@ Same four styles, same names, same pref on every platform. Pref key:
 - Pref read at launch via `FlutterSharedPreferences` (`flutter.iptv_player_guide_style`), same route as `loadPlayerDefaults`
 
 **Out of scope (explicitly deferred, keep legacy in all styles):**
-- Debrify-TV `ChannelGuide` (green overlay — different feature, not IPTV)
+- MegaWatch-TV `ChannelGuide` (green overlay — different feature, not IPTV)
 - `StremioTvGuideSheet` (both players) — separate mode; restyle later if asked
 - Dart `Controls` dock itself (seekbar, buttons — Netflix look stays; only its `infoPanel` content restyles). Native dock DOES restyle because its live restyle already exists.
 - Native stock `AlertDialog`s (source picker, jump dialog) — legacy in v1
@@ -427,7 +427,7 @@ classic path is a single `if (guideTokens == null) return`.
 
 ## 8. Deferred (recorded, not built)
 
-- StremioTvGuideSheet + Debrify-TV ChannelGuide restyles.
+- StremioTvGuideSheet + MegaWatch-TV ChannelGuide restyles.
 - Native source-picker / jump-dialog restyle (stock AlertDialogs).
 - Live re-theming on pref change mid-session.
 - Any structural redesign of the guide (new panes, new data) — this effort

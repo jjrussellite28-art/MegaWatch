@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:debrify/models/engine_config/engine_config.dart';
-import 'package:debrify/services/engine/config_loader.dart';
+import 'package:megawatch/models/engine_config/engine_config.dart';
+import 'package:megawatch/services/engine/config_loader.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

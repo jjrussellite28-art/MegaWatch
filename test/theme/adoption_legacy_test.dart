@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/theme/app_light.dart';
-import 'package:debrify/theme/app_surface.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/theme/premium_looks.dart';
-import 'package:debrify/theme/widgets/glass_surface.dart';
-import 'package:debrify/theme/widgets/themed_skeleton.dart';
-import 'package:debrify/widgets/shimmer.dart';
-import 'package:debrify/widgets/detail/detail_style.dart';
-import 'package:debrify/widgets/detail/theme/detail_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/theme/app_light.dart';
+import 'package:megawatch/theme/app_surface.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/theme/premium_looks.dart';
+import 'package:megawatch/theme/widgets/glass_surface.dart';
+import 'package:megawatch/theme/widgets/themed_skeleton.dart';
+import 'package:megawatch/widgets/shimmer.dart';
+import 'package:megawatch/widgets/detail/detail_style.dart';
+import 'package:megawatch/widgets/detail/theme/detail_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
 
 /// The adoption wave's blast radius, pinned.
 ///
 /// Every widget below replaced a hand-rolled decoration at a live site. The
 /// question that matters is not "does the new widget work" — it is "does it
-/// paint what the site painted before, under Debrify Classic". A drift here is
+/// paint what the site painted before, under MegaWatch Classic". A drift here is
 /// a legacy break at ten sheets and five heroes at once.
 void main() {
   Widget host(AppTheme theme, Widget child, {DetailTheme? detail}) =>

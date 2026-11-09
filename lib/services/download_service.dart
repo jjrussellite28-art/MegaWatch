@@ -64,7 +64,7 @@ class AndroidBytesProgress {
   });
 }
 
-/// A generated file written beside the user's normal Debrify downloads.
+/// A generated file written beside the user's normal MegaWatch downloads.
 ///
 /// [reference] is the filesystem path on desktop/iOS, or a content URI when
 /// Android published through MediaStore/SAF. [displayLocation] is the
@@ -170,7 +170,7 @@ class DownloadService {
       'download_legacy_plugin_authority_v1';
   static const String _recordsFile = 'downloads_db_v1.json';
   static final List<int> _recordsAad = utf8.encode(
-    'debrify-device-download-records-v2',
+    'megawatch-device-download-records-v2',
   );
 
   Map<String, Map<String, dynamic>> _records = {}; // recordId -> record map
@@ -2682,7 +2682,7 @@ class DownloadService {
         if (downloadsDir != null) {
           if (Platform.isWindows) {
             final Directory appDownloadsDir = Directory(
-              path.join(downloadsDir.path, 'Debrify'),
+              path.join(downloadsDir.path, 'MegaWatch'),
             );
             if (!await appDownloadsDir.exists()) {
               await appDownloadsDir.create(recursive: true);
@@ -2698,9 +2698,9 @@ class DownloadService {
     return Directory((await AppStorage.documents()).path);
   }
 
-  /// Saves bytes produced by Debrify itself beside normal downloads without
+  /// Saves bytes produced by MegaWatch itself beside normal downloads without
   /// creating a queue/history entry. This is for portable artifacts such as
-  /// profile backups and Debrify TV channel archives, not remote URLs.
+  /// profile backups and MegaWatch TV channel archives, not remote URLs.
   Future<GeneratedFileSaveResult> saveGeneratedFile({
     required String fileName,
     required Uint8List bytes,
@@ -2792,7 +2792,7 @@ class DownloadService {
         (_) => null,
       );
       for (final directory in <Directory>[
-        Directory('/storage/emulated/0/Download/Debrify'),
+        Directory('/storage/emulated/0/Download/MegaWatch'),
         if (external != null) external,
       ]) {
         try {
@@ -2839,7 +2839,7 @@ class DownloadService {
       var saved = await AndroidNativeDownloader.saveLocalFileDetails(
         path: stagedFile.path,
         fileName: fileName,
-        subDir: 'Debrify',
+        subDir: 'MegaWatch',
         mimeType: mimeType,
         treeUri: treeUri,
       );
@@ -2853,13 +2853,13 @@ class DownloadService {
         saved = await AndroidNativeDownloader.saveLocalFileDetails(
           path: stagedFile.path,
           fileName: fileName,
-          subDir: 'Debrify',
+          subDir: 'MegaWatch',
           mimeType: mimeType,
         );
       }
       if (saved == null) return null;
       final parent = usedTreeUri == null
-          ? 'Downloads/Debrify'
+          ? 'Downloads/MegaWatch'
           : (treeName?.trim().isNotEmpty ?? false)
           ? treeName!.trim()
           : 'Selected download folder';
@@ -2942,7 +2942,7 @@ class DownloadService {
 
   Future<String> _appDownloadsSubdir() async {
     // User-chosen download folder (Windows/Linux). Mirrors the Android SAF
-    // semantics: the custom root is used as-is (no forced 'Debrify' segment —
+    // semantics: the custom root is used as-is (no forced 'MegaWatch' segment —
     // the user picked the exact folder) and per-item subfolders nest inside
     // it. Unlike the Android grant-lost path, an invalid folder does NOT
     // clear the pref: on desktop unavailability is routinely transient (USB
@@ -2969,7 +2969,7 @@ class DownloadService {
         if (downloadsDir != null) {
           // Create a subfolder for the app to organize downloads
           final Directory appDownloadsDir = Directory(
-            path.join(downloadsDir.path, 'Debrify'),
+            path.join(downloadsDir.path, 'MegaWatch'),
           );
           if (!await appDownloadsDir.exists()) {
             await appDownloadsDir.create(recursive: true);
@@ -3205,7 +3205,7 @@ class DownloadService {
     try {
       if (await Directory(dirPath).exists()) {
         final probe = File(
-          path.join(dirPath, '.debrify_write_probe_${_idSeq++}'),
+          path.join(dirPath, '.megawatch_write_probe_${_idSeq++}'),
         );
         await probe.writeAsString('probe', flush: true);
         // Write success alone proves writability. The delete is best-effort:
@@ -3263,12 +3263,12 @@ class DownloadService {
   /// shape the scheduler's start path computes.
   String _subDirForRecord(Map<String, dynamic>? rec) {
     final torrentName = (rec?['torrentName'] as String?)?.trim() ?? '';
-    if (torrentName.isEmpty) return 'Debrify';
+    if (torrentName.isEmpty) return 'MegaWatch';
     final rel = (rec?['relativeSubDir'] as String?)?.trim() ?? '';
     final sanitizedRel = rel.isNotEmpty ? _sanitizeRelativePath(rel) : '';
     final parts = sanitizedRel.isNotEmpty
-        ? ['Debrify', _sanitizeName(torrentName), sanitizedRel]
-        : ['Debrify', _sanitizeName(torrentName)];
+        ? ['MegaWatch', _sanitizeName(torrentName), sanitizedRel]
+        : ['MegaWatch', _sanitizeName(torrentName)];
     return parts.join('/').replaceAll(r'\', '/');
   }
 
@@ -3291,7 +3291,7 @@ class DownloadService {
       url: url,
       fileName: name,
       // Only consulted when the native store has nothing to adopt (fresh
-      // destination) — without it the file would land in the Debrify root
+      // destination) — without it the file would land in the MegaWatch root
       // instead of its torrent subfolder.
       subDir: _subDirForRecord(rec),
       headers: (rec?['headers'] as Map?)?.cast<String, String>(),
@@ -3943,16 +3943,16 @@ class DownloadService {
               p.torrentName != null && p.torrentName!.trim().isNotEmpty
               ? (sanitizedRelativeDir.isNotEmpty
                         ? path.join(
-                            'Debrify',
+                            'MegaWatch',
                             _sanitizeName(p.torrentName!.trim()),
                             sanitizedRelativeDir,
                           )
                         : path.join(
-                            'Debrify',
+                            'MegaWatch',
                             _sanitizeName(p.torrentName!.trim()),
                           ))
                     .replaceAll(r'\', '/')
-              : 'Debrify';
+              : 'MegaWatch';
 
           final startRes = await AndroidNativeDownloader.start(
             // Same id as the durable record: the service adopts persisted

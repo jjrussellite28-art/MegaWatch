@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/services/prepared_stream_requests.dart';
+import 'package:megawatch/services/prepared_stream_requests.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

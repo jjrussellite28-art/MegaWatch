@@ -1,52 +1,52 @@
-import 'package:debrify/services/profiles/local_backup/local_backup_archive.dart';
+import 'package:megawatch/services/profiles/local_backup/local_backup_archive.dart';
 import 'dart:convert';
-import 'package:debrify/models/media_server_source.dart';
-import 'package:debrify/models/quick_play_rules.dart';
-import 'package:debrify/services/series_source_service.dart';
+import 'package:megawatch/models/media_server_source.dart';
+import 'package:megawatch/models/quick_play_rules.dart';
+import 'package:megawatch/services/series_source_service.dart';
 import 'dart:math';
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/services/profiles/profile_preference_budget.dart';
-import 'package:debrify/models/home_collection_inventory.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/services/profiles/profile_preference_budget.dart';
+import 'package:megawatch/models/home_collection_inventory.dart';
 import 'dart:io';
-import 'package:debrify/models/indexer_manager_config.dart';
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/profiles/profile_collection_resource_facade.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_adoption.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_adoption_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_adoption_operations.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine_state.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_graph.dart';
+import 'package:megawatch/models/indexer_manager_config.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/profiles/profile_collection_resource_facade.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_adoption.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_adoption_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_adoption_operations.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine_state.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_graph.dart';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_avatar.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/legacy_backup_adapter.dart';
-import 'package:debrify/services/profiles/portable_profile_package.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_avatar_ingest.dart';
-import 'package:debrify/services/profiles/profile_avatar_storage.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_database_snapshot.dart';
-import 'package:debrify/services/profiles/profile_data_generation.dart';
-import 'package:debrify/services/profiles/profile_lifecycle.dart';
-import 'package:debrify/services/profiles/profile_package_service.dart';
-import 'package:debrify/services/profiles/profile_pin_service.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_restore_coordinator.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_avatar.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/legacy_backup_adapter.dart';
+import 'package:megawatch/services/profiles/portable_profile_package.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_avatar_ingest.dart';
+import 'package:megawatch/services/profiles/profile_avatar_storage.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_database_snapshot.dart';
+import 'package:megawatch/services/profiles/profile_data_generation.dart';
+import 'package:megawatch/services/profiles/profile_lifecycle.dart';
+import 'package:megawatch/services/profiles/profile_package_service.dart';
+import 'package:megawatch/services/profiles/profile_pin_service.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_restore_coordinator.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -119,14 +119,14 @@ Future<Map<String, dynamic>> _legacyV3EncryptedEnvelope(
     iterations: 1,
     hashLength: 32,
   ).deriveKey(secretKey: SecretKey(utf8.encode(passphrase)), nonce: salt);
-  const aad = 'debrify-profile-backup-v3';
+  const aad = 'megawatch-profile-backup-v3';
   final box = await AesGcm.with256bits().encrypt(
     utf8.encode(jsonEncode(stamped)),
     secretKey: key,
     aad: utf8.encode(aad),
   );
   return <String, dynamic>{
-    'format': 'debrify-profile-package',
+    'format': 'megawatch-profile-package',
     'version': 3,
     'encrypted': true,
     'createdAt': source.createdAt.toUtc().toIso8601String(),
@@ -201,7 +201,7 @@ void main() {
   });
 
   tearDown(() async {
-    await DebrifyTvDatabase.instance.closeScope();
+    await MegaWatchTvDatabase.instance.closeScope();
     IptvMediaStore.debugResetMigration();
     ProfileRuntime.debugReset();
     ProfileBootstrap.debugInstallRegistry(null);
@@ -228,7 +228,7 @@ void main() {
     await prefs.setString('series_source_tt123', jsonEncode(original.map((pin) => pin.toJson()).toList()));
     for (final movie in [true, false]) {
       await StorageService.setQuickPlayRules(
-        QuickPlayRules.debrifyDefault(isMovie: movie).copyWith(sourcePriority: [
+        QuickPlayRules.megawatchDefault(isMovie: movie).copyWith(sourcePriority: [
           'mediaserver:${resource.id}'.toLowerCase(), 'stremio:backup',
         ]), isMovie: movie);
     }
@@ -271,7 +271,7 @@ void main() {
       await prefs.setString('app_theme', 'aurora');
       await prefs.setInt('defaults_generation', 3);
       await prefs.setString('tv_player_controls_style', 'frost');
-      await prefs.setString('debrify_tv_player_style', 'cinema');
+      await prefs.setString('megawatch_tv_player_style', 'cinema');
       await prefs.setString('player_dock_style', 'compact');
 
       await prefs.setString('tv_sidebar_style', 'pill');
@@ -316,7 +316,7 @@ void main() {
               as Map;
       expect(valuesOf(backup)['tv_home_style'], 'spotlight');
       expect(valuesOf(sync.package)['tv_player_controls_style'], 'frost');
-      expect(valuesOf(sync.package)['debrify_tv_player_style'], 'cinema');
+      expect(valuesOf(sync.package)['megawatch_tv_player_style'], 'cinema');
       expect(valuesOf(sync.package)['player_dock_style'], 'compact');
 
       expect(valuesOf(backup)['defaults_generation'], 3);
@@ -423,7 +423,7 @@ void main() {
         'frost',
       );
       expect(
-        raw.getString(joinedScope.preferenceKey('debrify_tv_player_style')),
+        raw.getString(joinedScope.preferenceKey('megawatch_tv_player_style')),
         'cinema',
       );
       expect(
@@ -1057,10 +1057,10 @@ void main() {
   );
 
   test(
-    'compact profile package reports complete Debrify TV omission',
+    'compact profile package reports complete MegaWatch TV omission',
     () async {
       final scope = ProfileRuntime.capture();
-      final source = scope.fileIn(documents, 'documents', 'debrify_tv.db');
+      final source = scope.fileIn(documents, 'documents', 'megawatch_tv.db');
       await source.parent.create(recursive: true);
       final database = await openDatabase(source.path, singleInstance: false);
       await database.execute(
@@ -1094,7 +1094,7 @@ void main() {
             compactDatabaseSnapshots: true,
           );
 
-      final omission = DebrifyTvBackupOmission.fromOmissions(package.omissions);
+      final omission = MegaWatchTvBackupOmission.fromOmissions(package.omissions);
       expect(omission?.channels, 1);
       expect(omission?.savedHashes, 1);
       expect(omission?.profilesAffected, 1);
@@ -1109,7 +1109,7 @@ void main() {
     'compacted TV omission drops matching sync stamps so a joiner backfills',
     () async {
       final scope = ProfileRuntime.capture();
-      final source = scope.fileIn(documents, 'documents', 'debrify_tv.db');
+      final source = scope.fileIn(documents, 'documents', 'megawatch_tv.db');
       await source.parent.create(recursive: true);
       final database = await openDatabase(source.path, singleInstance: false);
       await database.execute(
@@ -1165,7 +1165,7 @@ void main() {
             includeSecrets: true,
             compactDatabaseSnapshots: true,
           );
-      expect(package.omissions, contains(DebrifyTvBackupOmission.key));
+      expect(package.omissions, contains(MegaWatchTvBackupOmission.key));
 
       final report = await ProfileRestoreCoordinator(
         registry: registry,
@@ -1181,7 +1181,7 @@ void main() {
         sessionEpoch: 0,
       );
       final restored = await openDatabase(
-        importedScope.fileIn(documents, 'documents', 'debrify_tv.db').path,
+        importedScope.fileIn(documents, 'documents', 'megawatch_tv.db').path,
         readOnly: true,
         singleInstance: false,
       );
@@ -1806,7 +1806,7 @@ void main() {
           jsonEncode(const <String, Object?>{'accessToken': 'archived-token'}),
         ),
         associatedData: utf8.encode(
-          'debrify-resource|id=$sourceId|type=${type.name}|'
+          'megawatch-resource|id=$sourceId|type=${type.name}|'
           'owner=$profileId|public=1|secret=1',
         ),
       );
@@ -2392,7 +2392,7 @@ void main() {
           jsonEncode(const <String, Object?>{'accessToken': 'archived-token'}),
         ),
         associatedData: utf8.encode(
-          'debrify-resource|id=$disabledId|type=${disabledType.name}|'
+          'megawatch-resource|id=$disabledId|type=${disabledType.name}|'
           'owner=$profileId|public=1|secret=1',
         ),
       );
@@ -2493,7 +2493,7 @@ void main() {
       final sourceDatabase = source.fileIn(
         documents,
         'documents',
-        'debrify_tv.db',
+        'megawatch_tv.db',
       );
       await sourceDatabase.parent.create(recursive: true);
       final database = await openDatabase(
@@ -2572,7 +2572,7 @@ void main() {
       final sourceDatabase = source.fileIn(
         documents,
         'documents',
-        'debrify_tv.db',
+        'megawatch_tv.db',
       );
       await sourceDatabase.parent.create(recursive: true);
       final database = await openDatabase(
@@ -2613,7 +2613,7 @@ void main() {
           .cast<Map>()
           .map((record) => record['path'])
           .toSet();
-      expect(files, contains(p.join('documents', 'debrify_tv.db')));
+      expect(files, contains(p.join('documents', 'megawatch_tv.db')));
       expect(files, contains(p.join('documents', 'engines', 'portable.json')));
 
       final importedScope = ProfileScope(
@@ -2628,7 +2628,7 @@ void main() {
         '{"engine":"sentinel"}',
       );
       final restoredDatabase = await openDatabase(
-        importedScope.fileIn(documents, 'documents', 'debrify_tv.db').path,
+        importedScope.fileIn(documents, 'documents', 'megawatch_tv.db').path,
         readOnly: true,
         singleInstance: false,
       );

@@ -1,5 +1,5 @@
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/services/remote_control/remote_webdav_accounts.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/services/remote_control/remote_webdav_accounts.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

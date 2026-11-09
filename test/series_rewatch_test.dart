@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/utils/series_rewatch.dart';
+import 'package:megawatch/utils/series_rewatch.dart';
 
 void main() {
   test('requires every episode of every regular season', () {

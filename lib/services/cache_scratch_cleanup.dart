@@ -41,9 +41,9 @@ class CacheScratchCleanup {
     r'^(?:xmltv_\d+\.tmp|torrent_payload_\d+\.json|'
     r'episode_(?:metadata|guide)_\d+\.json|'
     r'stremio_sub_[\w.-]+|update-inspection-[\w.-]+\.apk|'
-    r'debrify-iptv-[\w-]+|xtream-[\w-]+|'
-    r'webdav-sync-section-[\w-]+|debrify-migrate-[\w-]+|'
-    r'debrify-(?:channel-)?send-[\w-]+)$',
+    r'megawatch-iptv-[\w-]+|xtream-[\w-]+|'
+    r'webdav-sync-section-[\w-]+|megawatch-migrate-[\w-]+|'
+    r'megawatch-(?:channel-)?send-[\w-]+)$',
   );
 
   static Future<void> _deleteOld(

@@ -1,4 +1,4 @@
-/// Brand identity for the trackers Debrify syncs with.
+/// Brand identity for the trackers MegaWatch syncs with.
 ///
 /// Nothing branded ships in `assets/` today and the app has no SVG renderer
 /// (no `flutter_svg` dependency), so these marks are drawn in code —

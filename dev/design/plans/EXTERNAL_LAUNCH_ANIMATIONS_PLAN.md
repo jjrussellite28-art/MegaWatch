@@ -20,7 +20,7 @@ No separate proof-of-concept phase. Build the production path incrementally.
 
 - Add the Flutter `lottie` package as a new dependency, with a small archive
   adapter for dotLottie manifests and assets. Pin the version validated by the
-  release; the package is not currently included in Debrify.
+  release; the package is not currently included in MegaWatch.
 - Reuse `archive`, `file_picker`, `path_provider`, preferences, the existing
   Launch Animation page and the existing startup handoff.
 - Keep current built-in painters and their IDs. Imported animations use a widget
@@ -178,8 +178,8 @@ cleanup failures must not stop startup or overwrite another completed import.
 
 - Use file picking on platforms that support it, including testing actual Android
   TV provider availability rather than assuming mobile behavior.
-- For devices without a file picker, reuse Debrify's existing paired remote
-  transfer transport to send an imported package from another Debrify device.
+- For devices without a file picker, reuse MegaWatch's existing paired remote
+  transfer transport to send an imported package from another MegaWatch device.
   Route received bytes through the same limits and import validator.
 - Add only an animation transfer payload/action; retain the transport's existing
   pairing, authorization and retries. No separate upload server or website.

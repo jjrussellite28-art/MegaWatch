@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/home/catalog_continuation_button.dart';
+import 'package:megawatch/widgets/home/catalog_continuation_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

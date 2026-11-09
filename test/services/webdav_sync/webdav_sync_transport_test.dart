@@ -3,11 +3,11 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:debrify/services/profiles/local_backup/local_backup_zip.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_transport.dart';
+import 'package:megawatch/services/profiles/local_backup/local_backup_zip.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_transport.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -98,7 +98,7 @@ void main() {
       client: MockClient((request) async {
         methods.add(request.method);
         if (request.method == 'MKCOL') {
-          expect(request.url.path, endsWith('/debrify-sync/removed/'));
+          expect(request.url.path, endsWith('/megawatch-sync/removed/'));
           removalCollectionExists = true;
           return http.Response('', 201);
         }
@@ -505,7 +505,7 @@ void main() {
         expect(request.method, 'HEAD');
         expect(
           request.url.path,
-          '/dav/Family/debrify-sync/devices/device-b/manifest.enc',
+          '/dav/Family/megawatch-sync/devices/device-b/manifest.enc',
         );
         return http.Response(
           '',
@@ -576,7 +576,7 @@ void main() {
         return http.Response('''<?xml version="1.0" encoding="utf-8"?>
           <D:multistatus xmlns:D="DAV:">
             <D:response>
-              <D:href>/dav/Family/debrify-sync/devices/device-b/manifest.enc</D:href>
+              <D:href>/dav/Family/megawatch-sync/devices/device-b/manifest.enc</D:href>
               <D:propstat>
                 <D:prop>
                   <D:getetag>"dav-revision-3"</D:getetag>
@@ -624,7 +624,7 @@ void main() {
       credentials: const WebDavCredentials(username: '', password: ''),
       client: MockClient((request) async {
         expect(request.method, 'PUT');
-        expect(request.url.path, '/dav/Family/debrify-sync/circle.authority');
+        expect(request.url.path, '/dav/Family/megawatch-sync/circle.authority');
         expect(request.headers['if-none-match'], '*');
         return http.Response('', 204);
       }),
@@ -659,7 +659,7 @@ void main() {
       }),
     );
 
-    await transport.verifyLinearizability(syncRootPath: 'Family/debrify-sync');
+    await transport.verifyLinearizability(syncRootPath: 'Family/megawatch-sync');
 
     expect(methods, <String>['PUT', 'GET', 'DELETE']);
     transport.close();
@@ -684,7 +684,7 @@ void main() {
       );
 
       await expectLater(
-        transport.verifyLinearizability(syncRootPath: 'Family/debrify-sync'),
+        transport.verifyLinearizability(syncRootPath: 'Family/megawatch-sync'),
         throwsA(isA<WebDavSyncStoreNotLinearizableException>()),
       );
       expect(diagnostics, <String>[
@@ -708,7 +708,7 @@ void main() {
         }),
       );
       await expectLater(
-        transport.verifyLinearizability(syncRootPath: 'Family/debrify-sync'),
+        transport.verifyLinearizability(syncRootPath: 'Family/megawatch-sync'),
         throwsA(isA<WebDavSyncSetupInconclusiveException>()),
       );
       transport.close();
@@ -731,7 +731,7 @@ void main() {
     );
 
     await expectLater(
-      transport.verifyLinearizability(syncRootPath: 'Family/debrify-sync'),
+      transport.verifyLinearizability(syncRootPath: 'Family/megawatch-sync'),
       throwsA(isA<WebDavSyncSetupInconclusiveException>()),
     );
     expect(writes, 3);
@@ -776,7 +776,7 @@ void main() {
       );
 
       await expectLater(
-        transport.verifyLinearizability(syncRootPath: 'Family/debrify-sync'),
+        transport.verifyLinearizability(syncRootPath: 'Family/megawatch-sync'),
         throwsA(
           isA<WebDavSyncSetupInconclusiveException>()
               .having((error) => error.probeStep, 'step', 1)
@@ -816,7 +816,7 @@ void main() {
       );
 
       expect(requests.first, startsWith('MKCOL '));
-      expect(requests, contains('PROPFIND /dav/Family/debrify-sync/'));
+      expect(requests, contains('PROPFIND /dav/Family/megawatch-sync/'));
       transport.close();
     },
   );
@@ -842,7 +842,7 @@ void main() {
     await transport.readRootMarker();
 
     expect(requests, <String>[
-      'GET /dav/Koofr/Koofr%20sync/debrify-sync/circle.authority',
+      'GET /dav/Koofr/Koofr%20sync/megawatch-sync/circle.authority',
     ]);
     expect(requests.single, isNot(contains('circle.key')));
     transport.close();
@@ -870,7 +870,7 @@ void main() {
         expect(request.method, 'PROPFIND');
         expect(
           request.url.path,
-          '/dav/Family/debrify-sync/devices/device-a/sections/',
+          '/dav/Family/megawatch-sync/devices/device-a/sections/',
         );
         expect(request.headers['depth'], '1');
         return http.Response(
@@ -926,10 +926,10 @@ void main() {
 
 String _listing(List<String> ids) =>
     '<?xml version="1.0"?><D:multistatus xmlns:D="DAV:">'
-    '<D:response><D:href>/dav/Family/debrify-sync/devices/</D:href>'
+    '<D:response><D:href>/dav/Family/megawatch-sync/devices/</D:href>'
     '<D:propstat><D:prop><D:resourcetype><D:collection/>'
     '</D:resourcetype></D:prop></D:propstat></D:response>'
-    '${ids.map((id) => '<D:response><D:href>/dav/Family/debrify-sync/'
+    '${ids.map((id) => '<D:response><D:href>/dav/Family/megawatch-sync/'
         'devices/$id/</D:href><D:propstat><D:prop><D:resourcetype>'
         '<D:collection/></D:resourcetype></D:prop></D:propstat>'
         '</D:response>').join()}'
@@ -937,18 +937,18 @@ String _listing(List<String> ids) =>
 
 String _sectionListing(String hash) =>
     '<?xml version="1.0"?><D:multistatus xmlns:D="DAV:">'
-    '<D:response><D:href>/dav/Family/debrify-sync/devices/device-a/'
+    '<D:response><D:href>/dav/Family/megawatch-sync/devices/device-a/'
     'sections/</D:href><D:propstat><D:prop><D:resourcetype>'
     '<D:collection/></D:resourcetype></D:prop></D:propstat></D:response>'
-    '<D:response><D:href>/dav/Family/debrify-sync/devices/device-a/'
+    '<D:response><D:href>/dav/Family/megawatch-sync/devices/device-a/'
     'sections/$hash.enc</D:href><D:propstat><D:prop><D:resourcetype/>'
     '<D:getlastmodified>Thu, 20 Aug 2026 00:00:00 GMT</D:getlastmodified>'
     '</D:prop></D:propstat></D:response>'
-    '<D:response><D:href>/dav/Family/debrify-sync/devices/device-a/'
+    '<D:response><D:href>/dav/Family/megawatch-sync/devices/device-a/'
     'sections/not-a-hash.enc</D:href><D:propstat><D:prop>'
     '<D:resourcetype/><D:getlastmodified>Thu, 20 Aug 2026 00:00:00 GMT'
     '</D:getlastmodified></D:prop></D:propstat></D:response>'
-    '<D:response><D:href>/dav/Family/debrify-sync/devices/device-a/'
+    '<D:response><D:href>/dav/Family/megawatch-sync/devices/device-a/'
     'sections/${List<String>.filled(64, 'b').join()}.enc</D:href>'
     '<D:propstat><D:prop>'
     '<D:resourcetype/><D:getlastmodified>unknown</D:getlastmodified>'
@@ -957,10 +957,10 @@ String _sectionListing(String hash) =>
 
 String _sectionListingBatch(List<String> hashes) =>
     '<?xml version="1.0"?><D:multistatus xmlns:D="DAV:">'
-    '<D:response><D:href>/dav/Family/debrify-sync/devices/device-a/'
+    '<D:response><D:href>/dav/Family/megawatch-sync/devices/device-a/'
     'sections/</D:href><D:propstat><D:prop><D:resourcetype>'
     '<D:collection/></D:resourcetype></D:prop></D:propstat></D:response>'
-    '${hashes.map((hash) => '<D:response><D:href>/dav/Family/debrify-sync/'
+    '${hashes.map((hash) => '<D:response><D:href>/dav/Family/megawatch-sync/'
         'devices/device-a/sections/$hash.enc</D:href><D:propstat><D:prop>'
         '<D:resourcetype/><D:getlastmodified>'
         'Thu, 20 Aug 2026 00:00:00 GMT</D:getlastmodified>'

@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../../models/home_collection.dart';
 import '../../models/stremio_addon.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../theme/app_theme_scope.dart';
 import 'collection_list_gallery.dart';
 import 'collection_focus_art.dart';
@@ -60,7 +60,7 @@ class CollectionBrowserHero extends StatelessWidget {
     Widget network(String url, {BoxFit fit = BoxFit.cover, Widget? fallback}) =>
         CachedNetworkImage(
           imageUrl: url,
-          cacheManager: DebrifyImageCache.manager,
+          cacheManager: MegaWatchImageCache.manager,
           fit: fit,
           memCacheWidth: fit == BoxFit.cover ? 1280 : 400,
           placeholder: (_, _) => fallback ?? const SizedBox.shrink(),

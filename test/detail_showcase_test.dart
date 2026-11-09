@@ -1,26 +1,26 @@
-import 'package:debrify/services/metadata_explore_service.dart';
+import 'package:megawatch/services/metadata_explore_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:debrify/widgets/detail/showcase_availability.dart';
-import 'package:debrify/models/metadata_preferences.dart';
-import 'package:debrify/screens/metadata_explore_page.dart';
+import 'package:megawatch/widgets/detail/showcase_availability.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
+import 'package:megawatch/screens/metadata_explore_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/imdb_enrichment_service.dart';
-import 'package:debrify/services/series_source_service.dart';
-import 'package:debrify/services/trakt/trakt_episode_model.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/widgets/detail/detail_layout_showcase.dart';
-import 'package:debrify/widgets/detail/detail_model.dart';
-import 'package:debrify/widgets/detail/showcase_parts.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/episodes_panel.dart';
-import 'package:debrify/widgets/tracker_brand_marks.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/imdb_enrichment_service.dart';
+import 'package:megawatch/services/series_source_service.dart';
+import 'package:megawatch/services/trakt/trakt_episode_model.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/widgets/detail/detail_layout_showcase.dart';
+import 'package:megawatch/widgets/detail/detail_model.dart';
+import 'package:megawatch/widgets/detail/showcase_parts.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/episodes_panel.dart';
+import 'package:megawatch/widgets/tracker_brand_marks.dart';
+import 'package:megawatch/utils/platform_util.dart';
 
 /// Showcase's band model and DPAD map.
 ///

@@ -18,12 +18,12 @@
 /// Turn it on for one build without editing this file:
 /// ```
 /// flutter-tvos build tvos --release \
-///   --dart-define=DEBRIFY_PROFILE_AUDIT=true
+///   --dart-define=MEGAWATCH_PROFILE_AUDIT=true
 /// ```
 ///
 /// The real end state is the removal recipe in README.md; this flag only keeps
 /// the tooling cheap to carry until then.
 const bool kProfileAudit = bool.fromEnvironment(
-  'DEBRIFY_PROFILE_AUDIT',
+  'MEGAWATCH_PROFILE_AUDIT',
   defaultValue: false,
 );

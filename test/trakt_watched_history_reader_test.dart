@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:debrify/services/trakt/trakt_watched_history_reader.dart';
+import 'package:megawatch/services/trakt/trakt_watched_history_reader.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 

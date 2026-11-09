@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/widgets/rewatch_progress_dialog.dart';
+import 'package:megawatch/widgets/rewatch_progress_dialog.dart';
 
 void main() {
   for (final movie in [true, false]) {

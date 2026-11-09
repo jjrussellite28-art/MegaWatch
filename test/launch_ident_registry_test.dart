@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/services/profiles/sanitized_profile_preferences.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/widgets/launch/launch_ident.dart';
+import 'package:megawatch/services/profiles/sanitized_profile_preferences.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/widgets/launch/launch_ident.dart';
 
 /// The ident registry and StorageService's accepted-values set are two lists
 /// that must agree. When they drift, nothing errors — the pref is silently

@@ -9,9 +9,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/transfer/streaming_encrypted_file.dart';
-import 'package:debrify/services/transfer/transfer_io.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/transfer/streaming_encrypted_file.dart';
+import 'package:megawatch/services/transfer/transfer_io.dart';
 
 Future<void> main(List<String> args) async {
   final mib = int.parse(args.first);

@@ -159,7 +159,7 @@ void main() {
 
   test('native TVMaze placeholders render the serialized watch state', () {
     final native = File(
-      'android/app/src/main/kotlin/com/debrify/app/tv/AndroidTvTorrentPlayerActivity.kt',
+      'android/app/src/main/kotlin/com/megawatch/app/tv/AndroidTvTorrentPlayerActivity.kt',
     ).readAsStringSync();
     final placeholder = _between(
       native,
@@ -178,7 +178,7 @@ void main() {
 
   test('native actual rows adopt refreshed guide watch state', () {
     final native = File(
-      'android/app/src/main/kotlin/com/debrify/app/tv/AndroidTvTorrentPlayerActivity.kt',
+      'android/app/src/main/kotlin/com/megawatch/app/tv/AndroidTvTorrentPlayerActivity.kt',
     ).readAsStringSync();
     final handler = _between(
       native,

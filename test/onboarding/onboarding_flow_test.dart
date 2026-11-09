@@ -1,26 +1,26 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/screens/settings/profile_backup_flows.dart';
-import 'package:debrify/services/engine/remote_engine_manager.dart';
-import 'package:debrify/services/mdblist/mdblist_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_restore_coordinator.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_activation.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_binding_store.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_connect_controller.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_runtime.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_setup_authorization.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_setup_service.dart';
-import 'package:debrify/widgets/initial_setup_flow.dart';
-import 'package:debrify/widgets/onboarding/onboarding_theme.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/screens/settings/profile_backup_flows.dart';
+import 'package:megawatch/services/engine/remote_engine_manager.dart';
+import 'package:megawatch/services/mdblist/mdblist_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_restore_coordinator.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_activation.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_binding_store.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_connect_controller.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_runtime.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_setup_authorization.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_setup_service.dart';
+import 'package:megawatch/widgets/initial_setup_flow.dart';
+import 'package:megawatch/widgets/onboarding/onboarding_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -299,7 +299,7 @@ void main() {
     await store.stageBinding(
       location: WebDavSyncFolderLocation(
         endpoint: 'https://example.test/dav',
-        folderPath: 'Debrify',
+        folderPath: 'MegaWatch',
         serverName: 'Server',
       ),
       config: _webDavConfig,

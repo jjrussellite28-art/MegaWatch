@@ -1,6 +1,6 @@
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/iptv_epg_service.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_programme_hero.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/iptv_epg_service.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_programme_hero.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

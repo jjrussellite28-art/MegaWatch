@@ -1,14 +1,14 @@
 import 'dart:convert';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/services/storage_service.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/models/home_collection_inventory.dart';
-import 'package:debrify/services/home_collections_store.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_preference_budget.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/models/home_collection_inventory.dart';
+import 'package:megawatch/services/home_collections_store.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_preference_budget.dart';
 
 const c = HomeCollection(
   id: 'one',

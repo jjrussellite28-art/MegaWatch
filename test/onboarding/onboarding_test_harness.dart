@@ -1,5 +1,5 @@
-import 'package:debrify/services/engine/remote_engine_manager.dart';
-import 'package:debrify/widgets/onboarding/onboarding_theme.dart';
+import 'package:megawatch/services/engine/remote_engine_manager.dart';
+import 'package:megawatch/widgets/onboarding/onboarding_theme.dart';
 import 'package:flutter/material.dart';
 
 class FakeRemoteEngineManager extends RemoteEngineManager {

@@ -1,8 +1,8 @@
-# Debrify Discord bot
+# MegaWatch Discord bot
 
-Structured bug/feature intake for the Debrify community, plus a read-only CLI to sweep
+Structured bug/feature intake for the MegaWatch community, plus a read-only CLI to sweep
 the free-text channels. Bug reports and feature requests become GitHub issues in the
-private **[debrify-tracker](https://github.com/varunsalian/debrify-tracker)** repo.
+private **[megawatch-tracker](https://github.com/varunsalian/debrify-tracker)** repo.
 
 ## Pieces
 
@@ -60,13 +60,13 @@ workload — all test runs did minutes of real work first, so auth is fine at st
 **To enable it (one-time, ~1 min):**
 ```bash
 claude setup-token          # follow the browser prompt, copy the long-lived token
-mkdir -p "$HOME/Library/Application Support/debrify-triage"
-printf '%s' 'PASTE_TOKEN_HERE' > "$HOME/Library/Application Support/debrify-triage/.claude_oauth_token"
-chmod 600 "$HOME/Library/Application Support/debrify-triage/.claude_oauth_token"
+mkdir -p "$HOME/Library/Application Support/megawatch-triage"
+printf '%s' 'PASTE_TOKEN_HERE' > "$HOME/Library/Application Support/megawatch-triage/.claude_oauth_token"
+chmod 600 "$HOME/Library/Application Support/megawatch-triage/.claude_oauth_token"
 # re-enable + test:
-launchctl bootstrap gui/$(id -u) "$HOME/Library/LaunchAgents/com.debrify.nightly-triage.plist"
-launchctl enable    gui/$(id -u)/com.debrify.nightly-triage
-launchctl kickstart gui/$(id -u)/com.debrify.nightly-triage
+launchctl bootstrap gui/$(id -u) "$HOME/Library/LaunchAgents/com.megawatch.nightly-triage.plist"
+launchctl enable    gui/$(id -u)/com.megawatch.nightly-triage
+launchctl kickstart gui/$(id -u)/com.megawatch.nightly-triage
 ```
 The wrapper auto-uses that token file as `CLAUDE_CODE_OAUTH_TOKEN`, bypassing the Keychain entirely.
 Until then, just run `/triage` manually in a normal Claude Code session — that works fine.
@@ -74,17 +74,17 @@ Until then, just run `/triage` manually in a normal Claude Code session — that
 **Install / reinstall:**
 ```bash
 # 1. Launcher must live OUTSIDE ~/Documents (macOS TCC blocks launchd from exec'ing scripts there)
-mkdir -p "$HOME/Library/Application Support/debrify-triage"
-cp dev/tool/discord/nightly_triage.sh "$HOME/Library/Application Support/debrify-triage/nightly_triage.sh"
-chmod +x "$HOME/Library/Application Support/debrify-triage/nightly_triage.sh"
+mkdir -p "$HOME/Library/Application Support/megawatch-triage"
+cp dev/tool/discord/nightly_triage.sh "$HOME/Library/Application Support/megawatch-triage/nightly_triage.sh"
+chmod +x "$HOME/Library/Application Support/megawatch-triage/nightly_triage.sh"
 
 # 2. Install + load the launchd job (1am local, Hour=1)
-cp dev/tool/discord/com.debrify.nightly-triage.plist "$HOME/Library/LaunchAgents/"
-launchctl bootout   gui/$(id -u)/com.debrify.nightly-triage 2>/dev/null
-launchctl bootstrap gui/$(id -u) "$HOME/Library/LaunchAgents/com.debrify.nightly-triage.plist"
-launchctl enable    gui/$(id -u)/com.debrify.nightly-triage
+cp dev/tool/discord/com.megawatch.nightly-triage.plist "$HOME/Library/LaunchAgents/"
+launchctl bootout   gui/$(id -u)/com.megawatch.nightly-triage 2>/dev/null
+launchctl bootstrap gui/$(id -u) "$HOME/Library/LaunchAgents/com.megawatch.nightly-triage.plist"
+launchctl enable    gui/$(id -u)/com.megawatch.nightly-triage
 
-# Run it now (test):   launchctl kickstart gui/$(id -u)/com.debrify.nightly-triage
+# Run it now (test):   launchctl kickstart gui/$(id -u)/com.megawatch.nightly-triage
 # Logs:                dev/tool/discord/nightly_logs/  (gitignored, keeps last 30)
 ```
 
@@ -97,7 +97,7 @@ launchctl enable    gui/$(id -u)/com.debrify.nightly-triage
 The wrapper now sets `DISABLE_AUTOUPDATER=1` (update Claude manually instead), caps the run at 15 min
 (`perl` alarm — macOS has no `timeout`), and logs the exit code. If auth/`EPERM` trouble ever recurs,
 run `claude setup-token` and save the token (chmod 600) to
-`~/Library/Application Support/debrify-triage/.claude_oauth_token` — the wrapper auto-uses it as
+`~/Library/Application Support/megawatch-triage/.claude_oauth_token` — the wrapper auto-uses it as
 `CLAUDE_CODE_OAUTH_TOKEN`, removing the Keychain dependency entirely.
 
 ## Notes

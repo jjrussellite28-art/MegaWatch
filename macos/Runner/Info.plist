@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleDisplayName</key>
-	<string>$(DEBRIFY_APP_DISPLAY_NAME)</string>
+	<string>$(MEGAWATCH_APP_DISPLAY_NAME)</string>
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
@@ -31,7 +31,7 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Debrify connects to your devices to pair the remote and securely transfer your setup.</string>
+	<string>MegaWatch connects to your devices to pair the remote and securely transfer your setup.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -41,17 +41,17 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.debrify.app</string>
+			<string>com.megawatch.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.debrify.app</string>
+				<string>com.megawatch.app</string>
 			</array>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>com.debrify.app.magnet</string>
+			<string>com.megawatch.app.magnet</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>magnet</string>
@@ -61,7 +61,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>com.debrify.app.stremio</string>
+			<string>com.megawatch.app.stremio</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>stremio</string>
@@ -71,10 +71,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>com.debrify.app.debrify</string>
+			<string>com.megawatch.app.megawatch</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>debrify</string>
+				<string>megawatch</string>
 			</array>
 		</dict>
 	</array>

@@ -1,10 +1,10 @@
 ---
-description: Sweep the Debrify Discord for bugs/feature requests, cross-check against recent commits & releases, dedupe against the tracker, and file new GitHub issues (with one approval gate)
+description: Sweep the MegaWatch Discord for bugs/feature requests, cross-check against recent commits & releases, dedupe against the tracker, and file new GitHub issues (with one approval gate)
 argument-hint: [days]   e.g. /triage 1  (default 7)
 allowed-tools: Bash, Read, Edit, Write
 ---
 
-You are running the **Debrify Discord triage**. Goal: turn the last few days of community
+You are running the **MegaWatch Discord triage**. Goal: turn the last few days of community
 chatter into a clean, deduped backlog in the private tracker — without refiling things that
 are already fixed or already tracked.
 

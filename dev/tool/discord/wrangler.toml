@@ -1,4 +1,4 @@
-name = "debrify-discord"
+name = "megawatch-discord"
 main = "src/worker.js"
 compatibility_date = "2025-07-01"
 workers_dev = true

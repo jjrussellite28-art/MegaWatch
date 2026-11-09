@@ -42,7 +42,7 @@ android {
     }
 
     defaultConfig {
-        minSdk 24 // Debrify Android floor; also supports the native test dependencies.
+        minSdk 24 // MegaWatch Android floor; also supports the native test dependencies.
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     testOptions {

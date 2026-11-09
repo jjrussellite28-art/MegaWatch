@@ -172,9 +172,9 @@ abstract final class SettingsRows {
     title: 'Default View',
     subtitle: 'Default source and poster details',
   );
-  static const debrifyTv = SettingsRowContent(
+  static const megawatchTv = SettingsRowContent(
     icon: Icons.live_tv_rounded,
-    title: 'Debrify TV',
+    title: 'MegaWatch TV',
     subtitle: 'Limits, channels, and playback configuration',
   );
   static const recordings = SettingsRowContent(
@@ -189,7 +189,7 @@ abstract final class SettingsRows {
   );
   static const tvKeyboard = SettingsRowContent(
     icon: Icons.keyboard_rounded,
-    title: 'Debrify Keyboard',
+    title: 'MegaWatch Keyboard',
     subtitle: 'Remote-friendly on-screen keyboard for text fields',
   );
   // Subtitle is dynamic (the chosen size) — passed per call site.
@@ -264,9 +264,9 @@ abstract final class SettingsRows {
     subtitle: '',
   );
   // Subtitle is dynamic (the chosen style) — passed per call site.
-  static const debrifyTvAppearance = SettingsRowContent(
+  static const megawatchTvAppearance = SettingsRowContent(
     icon: Icons.connected_tv_rounded,
-    title: 'Debrify TV',
+    title: 'MegaWatch TV',
     subtitle: '',
   );
   // Subtitle is dynamic (style + palette) — passed per call site.
@@ -283,10 +283,10 @@ abstract final class SettingsRows {
     subtitle: '',
   );
   // Subtitle is dynamic (the chosen style) — passed per call site. Android
-  // TV only: the Debrify TV playback screen (native TorboxTvPlayerActivity).
-  static const debrifyTvPlayer = SettingsRowContent(
+  // TV only: the MegaWatch TV playback screen (native TorboxTvPlayerActivity).
+  static const megawatchTvPlayer = SettingsRowContent(
     icon: Icons.live_tv_rounded,
-    title: 'Debrify TV Player',
+    title: 'MegaWatch TV Player',
     subtitle: '',
   );
   // Subtitle is dynamic (the chosen look) — passed per call site.
@@ -397,9 +397,9 @@ abstract final class SettingsRows {
     title: 'Export Diagnostic Logs',
     subtitle: 'Save recent logs (2h) and critical events (24h)',
   );
-  static const resetDebrify = SettingsRowContent(
+  static const resetMegaWatch = SettingsRowContent(
     icon: Icons.warning_rounded,
-    title: 'Reset Debrify',
+    title: 'Reset MegaWatch',
     subtitle: 'Remove connections, preferences, and caches',
   );
   static const autoUpdate = SettingsRowContent(
@@ -418,15 +418,15 @@ abstract final class SettingsRows {
     title: 'Check for Updates',
     subtitle: '',
   );
-  static const supportDebrify = SettingsRowContent(
+  static const supportMegaWatch = SettingsRowContent(
     icon: Icons.favorite_rounded,
-    title: 'Support Debrify',
+    title: 'Support MegaWatch',
     subtitle: '',
   );
   static const reddit = SettingsRowContent(
     icon: Icons.forum_rounded,
     title: 'Reddit Community',
-    subtitle: 'r/debrify - Questions, tips, and discussion',
+    subtitle: 'r/debrify (the original project) - Questions, tips, and discussion',
     url: 'https://www.reddit.com/r/debrify/',
   );
   static const discord = SettingsRowContent(
@@ -439,7 +439,7 @@ abstract final class SettingsRows {
     icon: Icons.code_rounded,
     title: 'GitHub',
     subtitle: 'Source code and contributions',
-    url: 'https://github.com/varunsalian/debrify',
+    url: 'https://github.com/jjrussellite28-art/MegaWatch',
   );
   static const version = SettingsRowContent(
     icon: Icons.info_outline_rounded,
@@ -2468,7 +2468,7 @@ const List<TvRenderQualityChoice> kTvRenderQualityChoices = [
   TvRenderQualityChoice(
     TvRenderQuality.auto,
     'Automatic',
-    "Default — Debrify picks based on this TV's graphics",
+    "Default — MegaWatch picks based on this TV's graphics",
   ),
   TvRenderQualityChoice(
     TvRenderQuality.sharp,

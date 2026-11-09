@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/see_all/see_all_filter_bar.dart';
+import 'package:megawatch/widgets/see_all/see_all_filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

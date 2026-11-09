@@ -16,7 +16,7 @@ import '../profiles/privacy_log.dart';
 /// full persistent identifiers.
 abstract final class RemoteTransferDiagnostics {
   static const MethodChannel _androidLog = MethodChannel(
-    'debrify/remote_transfer_diagnostics',
+    'megawatch/remote_transfer_diagnostics',
   );
 
   static final RegExp _fieldKey = RegExp(r'^[a-zA-Z][a-zA-Z0-9_]{0,39}$');
@@ -32,7 +32,7 @@ abstract final class RemoteTransferDiagnostics {
     String event, {
     Map<String, Object?> fields = const <String, Object?>{},
   }) {
-    final parts = <String>['DEBRIFY_TRANSFER', 'event=$event'];
+    final parts = <String>['MEGAWATCH_TRANSFER', 'event=$event'];
     final diagnosticFields = <String, Object?>{};
     for (final entry in fields.entries) {
       if (!_fieldKey.hasMatch(entry.key) || entry.value == null) continue;

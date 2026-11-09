@@ -1,10 +1,10 @@
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/iptv_channel_order.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_ui_refresh.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/iptv_channel_order.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_ui_refresh.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -195,17 +195,17 @@ void main() {
     () {
       var playbackRefreshes = 0;
       var playbackStops = 0;
-      var debrifyTvRefreshes = 0;
+      var megawatchTvRefreshes = 0;
       void refreshListener() => playbackRefreshes++;
       void stopListener() => playbackStops++;
-      void debrifyTvListener() => debrifyTvRefreshes++;
+      void megawatchTvListener() => megawatchTvRefreshes++;
       MainPageBridge.addPlaybackReturnListener(refreshListener);
       MainPageBridge.addContentPlaybackStopListener(stopListener);
-      MainPageBridge.registerDebrifyTvLibraryListener(debrifyTvListener);
+      MainPageBridge.registerMegaWatchTvLibraryListener(megawatchTvListener);
       addTearDown(() {
         MainPageBridge.removePlaybackReturnListener(refreshListener);
         MainPageBridge.removeContentPlaybackStopListener(stopListener);
-        MainPageBridge.unregisterDebrifyTvLibraryListener(debrifyTvListener);
+        MainPageBridge.unregisterMegaWatchTvLibraryListener(megawatchTvListener);
         MainPageBridge.notifyContentPlaybackStopped();
       });
       MainPageBridge.notifyPlayerLaunching();
@@ -222,7 +222,7 @@ void main() {
       });
 
       expect(playbackRefreshes, 1);
-      expect(debrifyTvRefreshes, 1);
+      expect(megawatchTvRefreshes, 1);
       expect(
         playbackStops,
         0,

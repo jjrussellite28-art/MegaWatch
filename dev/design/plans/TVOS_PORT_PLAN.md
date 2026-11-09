@@ -1,4 +1,4 @@
-# Debrify on Apple TV — port plan
+# MegaWatch on Apple TV — port plan
 
 Status: **Phase A done. Phase B done (app builds AND runs on the tvOS
 simulator).** Everything below Phase B is planned, not built.
@@ -25,7 +25,7 @@ Verified working on tvOS:
 | `path_provider_tvos` | image cache populated (posters render) |
 | Networking (`http`) | Cinemeta catalogs load |
 | App migration pipeline | runs, seeds Cinemeta/OpenSubtitles/Watch Next |
-| **`sqflite_tvos` + a real `Documents/` dir** | `Documents/debrify_tv.db` created on device container |
+| **`sqflite_tvos` + a real `Documents/` dir** | `Documents/megawatch_tv.db` created on device container |
 | `cached_network_image` | `Library/Application Support/libCachedImageData.db` |
 
 Verified BROKEN on tvOS:
@@ -148,7 +148,7 @@ or iPhone-only behaviour silently activates on Apple TV.
 **Correction to the original assessment.** The classic tvOS guidance ("no
 Documents directory, 500 KB `NSUserDefaults`, everything else purgeable") comes
 from tvOS 9-era documentation. On **tvOS 26.5 the app has a real `Documents/`
-directory and sqflite wrote `debrify_tv.db` into it** — observed, not assumed.
+directory and sqflite wrote `megawatch_tv.db` into it** — observed, not assumed.
 So lists/favorites/history are not obviously doomed, and the storage re-architecture
 I originally scoped may be unnecessary.
 
@@ -258,7 +258,7 @@ xcrun simctl launch  850D871B-E1FC-404A-8DC1-0B2718B64FEC com.varunsalian
 ```
 
 Bundle id is `com.varunsalian` (the scaffold used the `--org` value directly);
-worth renaming to `com.varunsalian.debrify` for consistency with iOS/Android.
+worth renaming to `com.varunsalian.megawatch` for consistency with iOS/Android.
 
 Runtime logs:
 `xcrun simctl spawn <device> log show --predicate 'process == "Runner"' --last 5m --style compact`

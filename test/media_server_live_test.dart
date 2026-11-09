@@ -1,23 +1,23 @@
 // Opt-in integration checks against the isolated local test servers.
-// DEBRIFY_MEDIA_SERVER_LIVE=1 flutter test --no-pub test/media_server_live_test.dart
+// MEGAWATCH_MEDIA_SERVER_LIVE=1 flutter test --no-pub test/media_server_live_test.dart
 // Test account passwords come from environment variables or macOS Keychain.
 // Only the synthetic test library's watch state is modified.
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/media_server.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/services/direct_source_authorization.dart';
-import 'package:debrify/services/media_server_client.dart';
-import 'package:debrify/services/media_server_service.dart';
-import 'package:debrify/services/media_server_watch_sync.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/models/media_server.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/services/direct_source_authorization.dart';
+import 'package:megawatch/services/media_server_client.dart';
+import 'package:megawatch/services/media_server_service.dart';
+import 'package:megawatch/services/media_server_watch_sync.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/storage_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,7 +61,7 @@ class _RecordingClient extends http.BaseClient {
 
 Future<String> _password(MediaServerKind kind) async {
   final fromEnvironment =
-      Platform.environment['DEBRIFY_${kind.name.toUpperCase()}_PASSWORD'];
+      Platform.environment['MEGAWATCH_${kind.name.toUpperCase()}_PASSWORD'];
   if (fromEnvironment != null && fromEnvironment.isNotEmpty) {
     return fromEnvironment;
   }
@@ -69,9 +69,9 @@ Future<String> _password(MediaServerKind kind) async {
     final result = await Process.run('security', [
       'find-generic-password',
       '-s',
-      'Debrify Test ${kind.label}',
+      'MegaWatch Test ${kind.label}',
       '-a',
-      'debrify-test',
+      'megawatch-test',
       '-w',
     ]);
     if (result.exitCode == 0) return (result.stdout as String).trim();
@@ -89,7 +89,7 @@ Future<void> _eventually(bool Function() predicate) async {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  final enabled = Platform.environment['DEBRIFY_MEDIA_SERVER_LIVE'] == '1';
+  final enabled = Platform.environment['MEGAWATCH_MEDIA_SERVER_LIVE'] == '1';
 
   group(
     'local media-server integration',
@@ -112,7 +112,7 @@ void main() {
         ProfileRuntime.debugReset();
         DeviceKeyProvider.debugReset();
         directory = await Directory.systemTemp.createTemp(
-          'debrify-live-server-',
+          'megawatch-live-server-',
         );
         registry = await ProfileRegistry.open(
           path: '${directory.path}/profiles.db',
@@ -158,7 +158,7 @@ void main() {
         int episode = 1,
       }) async {
         final base =
-            Platform.environment['DEBRIFY_${kind.name.toUpperCase()}_URL'] ??
+            Platform.environment['MEGAWATCH_${kind.name.toUpperCase()}_URL'] ??
             (kind == MediaServerKind.jellyfin
                 ? 'http://127.0.0.1:8096'
                 : 'http://127.0.0.1:8097/emby');
@@ -168,14 +168,14 @@ void main() {
         final info = jsonDecode(infoResponse.body) as Map<String, dynamic>;
         expect(
           info['ServerName'],
-          'Debrify Test ${kind.label}',
+          'MegaWatch Test ${kind.label}',
           reason: 'Never modify watch state on a personal/production server',
         );
         await MediaServerService.connect(
           kind: kind,
           label: 'Live ${kind.label}',
           baseUrl: base,
-          username: 'debrify-test',
+          username: 'megawatch-test',
           password: await _password(kind),
         );
         final result = await MediaServerService.search(
@@ -189,7 +189,7 @@ void main() {
         final source = sources.single;
         expect(
           source.displayTitle,
-          contains(movie ? 'Debrify Test Movie' : 'Synthetic Test Episode'),
+          contains(movie ? 'MegaWatch Test Movie' : 'Synthetic Test Episode'),
         );
         final account = MediaServerService.watchTargetFor(source)!.account;
         final userResponse = await http.get(
@@ -198,7 +198,7 @@ void main() {
         );
         expect(userResponse.statusCode, 200);
         final user = jsonDecode(userResponse.body) as Map<String, dynamic>;
-        expect(user['Name'], 'debrify-test');
+        expect(user['Name'], 'megawatch-test');
         expect(user['Policy']['IsAdministrator'], false);
         await MediaServerWatchSync.setEnabled(true);
         return source;
@@ -304,7 +304,7 @@ void main() {
               }
               await library.browse(parentId: view.id, mode: 'recent');
               await library.browse(parentId: view.id, mode: 'resume');
-              await library.browse(parentId: view.id, search: 'Debrify');
+              await library.browse(parentId: view.id, search: 'MegaWatch');
             }
             expect(foundMovie, true, reason: browsed.join('\n'));
             expect(foundEpisode, true);
@@ -324,14 +324,14 @@ void main() {
               addTearDown(controller.close);
               await controller.prepare(
                 source,
-                contentTitle: 'Debrify Test Series',
+                contentTitle: 'MegaWatch Test Series',
               );
               final local = movie
                   ? await StorageService.getVideoPlaybackStateByImdbId(
                       'tt1254207',
                     )
                   : await StorageService.getSeriesPlaybackState(
-                      seriesTitle: 'Debrify Test Series',
+                      seriesTitle: 'MegaWatch Test Series',
                       imdbId: 'tt0903747',
                       season: 1,
                       episode: 1,
@@ -374,7 +374,7 @@ void main() {
               addTearDown(replayController.close);
               await replayController.prepare(
                 source,
-                contentTitle: 'Debrify Test Series',
+                contentTitle: 'MegaWatch Test Series',
               );
               replayController.commit(source);
               replayController.observe(
@@ -512,6 +512,6 @@ void main() {
     },
     skip: enabled
         ? false
-        : 'Set DEBRIFY_MEDIA_SERVER_LIVE=1 for isolated live servers',
+        : 'Set MEGAWATCH_MEDIA_SERVER_LIVE=1 for isolated live servers',
   );
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/widgets/season_action_region.dart';
+import 'package:megawatch/widgets/season_action_region.dart';
 
 void main() {
   for (final ink in [false, true]) {

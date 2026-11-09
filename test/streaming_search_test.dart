@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/services/torrent_service.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/services/torrent_service.dart';
 
 // The streaming Sources list builds PROVISIONAL result sets by merging
 // accumulated per-engine batches with TorrentService.mergeSearchResults and

@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/add_source_picker_dialog.dart';
+import 'package:megawatch/widgets/add_source_picker_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

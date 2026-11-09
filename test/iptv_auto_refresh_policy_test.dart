@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/iptv_catalog_refresh_service.dart';
+import 'package:megawatch/services/iptv_catalog_refresh_service.dart';
 
 void main() {
   final now = DateTime.utc(2026, 9, 21);

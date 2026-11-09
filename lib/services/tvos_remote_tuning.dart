@@ -2,7 +2,7 @@ import 'package:flutter_tvos/flutter_tvos.dart';
 
 import '../utils/platform_util.dart';
 
-/// Debrify's app-wide Siri Remote tuning.
+/// MegaWatch's app-wide Siri Remote tuning.
 ///
 /// Uses the flutter_tvos publisher's tuning example:
 /// https://pub.dev/packages/flutter_tvos#tuning

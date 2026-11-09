@@ -1,8 +1,8 @@
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/screens/settings/iptv_settings_page.dart';
-import 'package:debrify/screens/settings/iptv_settings_two_pane.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/screens/settings/iptv_settings_page.dart';
+import 'package:megawatch/screens/settings/iptv_settings_two_pane.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/storage_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

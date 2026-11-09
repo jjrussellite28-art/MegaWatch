@@ -1,4 +1,4 @@
-import 'package:debrify/services/recording_capacity.dart';
+import 'package:megawatch/services/recording_capacity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

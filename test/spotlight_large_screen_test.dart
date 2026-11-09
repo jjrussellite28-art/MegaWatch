@@ -3,14 +3,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/theme/widgets/parallax_focus.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/home/spotlight_board.dart';
-import 'package:debrify/widgets/home/spotlight_card_trailer.dart';
-import 'package:debrify/utils/spotlight_interaction_policy.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/theme/widgets/parallax_focus.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/home/spotlight_board.dart';
+import 'package:megawatch/widgets/home/spotlight_card_trailer.dart';
+import 'package:megawatch/utils/spotlight_interaction_policy.dart';
 
 void main() {
   test(

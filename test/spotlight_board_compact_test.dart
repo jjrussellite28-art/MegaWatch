@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/home/spotlight_board.dart';
-import 'package:debrify/widgets/home/snowy_mountain_background.dart';
-import 'package:debrify/widgets/home/midnight_rain_background.dart';
-import 'package:debrify/widgets/home/moonlit_ocean_background.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/home/spotlight_board.dart';
+import 'package:megawatch/widgets/home/snowy_mountain_background.dart';
+import 'package:megawatch/widgets/home/midnight_rain_background.dart';
+import 'package:megawatch/widgets/home/moonlit_ocean_background.dart';
 
 /// The board's second life on phones, tablets and desktop.
 ///

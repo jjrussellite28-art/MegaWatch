@@ -23,7 +23,7 @@ settings only.
 - Record now (in player); background engine captures survive zap/Home/app-kill
 - Schedule from EPG (REC tag on future programmes) + manual timer
   (channel + time + duration); scheduled list w/ cancel; 2-capture cap
-- Recordings land in Downloads/Debrify/Recordings — NO in-app library yet:
+- Recordings land in Downloads/MegaWatch/Recordings — NO in-app library yet:
   the redesign should give it a home (design hook, build later)
 
 **TV experience (the priority)**

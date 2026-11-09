@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 import 'dart:convert';
 
-import 'package:debrify/services/profiles/portable_profile_package.dart';
-import 'package:debrify/services/profiles/profile_database_snapshot.dart';
-import 'package:debrify/services/profiles/profile_package_service.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_graph.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/profiles/portable_profile_package.dart';
+import 'package:megawatch/services/profiles/profile_database_snapshot.dart';
+import 'package:megawatch/services/profiles/profile_package_service.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_graph.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -290,10 +290,10 @@ void main() {
         const <String, Object?>{'theme_mode': 'light'},
       );
       final databaseA = await PortableProfilePackage.buildSection(
-        const <String, Object?>{'debrify_tv.db': 'bytes-a'},
+        const <String, Object?>{'megawatch_tv.db': 'bytes-a'},
       );
       final databaseB = await PortableProfilePackage.buildSection(
-        const <String, Object?>{'debrify_tv.db': 'bytes-b'},
+        const <String, Object?>{'megawatch_tv.db': 'bytes-b'},
       );
       PortableProfilePackage package(Object preferences, Object database) =>
           PortableProfilePackage(
@@ -537,7 +537,7 @@ void main() {
         },
         omissions: <String, dynamic>{
           'rebuildableDatabaseCachesOmitted': 'Admin: iptv_catalog.db',
-          DebrifyTvBackupOmission.key: const DebrifyTvBackupOmission(
+          MegaWatchTvBackupOmission.key: const MegaWatchTvBackupOmission(
             channels: 37,
             savedHashes: 0,
             profilesAffected: 1,
@@ -599,7 +599,7 @@ void main() {
     for (final omissions in <Map<String, dynamic>>[
       <String, dynamic>{'rebuildableDatabaseCachesOmitted': true},
       <String, dynamic>{
-        DebrifyTvBackupOmission.key: <String, Object?>{
+        MegaWatchTvBackupOmission.key: <String, Object?>{
           'channels': 'thirty-seven',
           'savedHashes': 0,
           'profilesAffected': 1,

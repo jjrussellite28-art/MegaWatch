@@ -1,12 +1,12 @@
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/iptv_epg_service.dart';
-import 'package:debrify/widgets/iptv/spotlight/iptv_spotlight_layout.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_category_control.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_content_type_control.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_hero_chrome.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_programme_hero.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_shell.dart';
-import 'package:debrify/widgets/iptv/styles/iptv_style.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/iptv_epg_service.dart';
+import 'package:megawatch/widgets/iptv/spotlight/iptv_spotlight_layout.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_category_control.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_content_type_control.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_hero_chrome.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_programme_hero.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_shell.dart';
+import 'package:megawatch/widgets/iptv/styles/iptv_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -147,7 +147,7 @@ void main() {
       expect(find.text('Parent search', skipOffstage: false), findsOneWidget);
       expect(find.text('My provider · 26'), findsOneWidget);
       expect(find.text('All channels · 26'), findsOneWidget);
-      expect(find.text('Debrify'), findsNothing);
+      expect(find.text('MegaWatch'), findsNothing);
       expect(find.text('Live TV'), findsOneWidget);
       expect(
         find.byKey(const ValueKey<String>('native-preview-probe')),

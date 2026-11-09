@@ -193,10 +193,10 @@ class RemoteReliableTransfer {
         final method = uploaded ? 'GET' : 'PUT';
         final request = await _client.openUrl(method, uri).timeout(ioTimeout);
         pendingRequest = request;
-        request.headers.set('x-debrify-meta', header);
-        request.headers.set('x-debrify-offset', resumeAt.toString());
+        request.headers.set('x-megawatch-meta', header);
+        request.headers.set('x-megawatch-offset', resumeAt.toString());
         request.headers.set(
-          'x-debrify-auth',
+          'x-megawatch-auth',
           _auth(key, '$method:$resumeAt', id, header),
         );
         if (!uploaded) {
@@ -261,7 +261,7 @@ class RemoteReliableTransfer {
           );
         } else {
           if (!_equal(
-            response.headers.value('x-debrify-receipt') ?? '',
+            response.headers.value('x-megawatch-receipt') ?? '',
             _auth(key, 'reply:${response.statusCode}', id, body),
           )) {
             throw const RemoteTransferException(
@@ -356,7 +356,7 @@ class RemoteReliableTransfer {
         return;
       }
       final id = segments[2];
-      final header = request.headers.value('x-debrify-meta') ?? '';
+      final header = request.headers.value('x-megawatch-meta') ?? '';
       if (header.isEmpty || header.length > _maxHeaderBytes) {
         await _reply(request, HttpStatus.badRequest);
         return;
@@ -365,7 +365,7 @@ class RemoteReliableTransfer {
           jsonDecode(utf8.decode(base64Url.decode(header)))
               as Map<String, dynamic>;
       final offset = int.tryParse(
-        request.headers.value('x-debrify-offset') ?? '0',
+        request.headers.value('x-megawatch-offset') ?? '0',
       );
       if (offset == null || offset < 0) {
         await _reply(request, HttpStatus.badRequest);
@@ -386,7 +386,7 @@ class RemoteReliableTransfer {
           : await receiveKey(sid, sourceIp);
       if (key == null ||
           !_equal(
-            request.headers.value('x-debrify-auth') ?? '',
+            request.headers.value('x-megawatch-auth') ?? '',
             _auth(key, '${request.method}:$offset', id, header),
           )) {
         await _reply(request, HttpStatus.unauthorized);
@@ -714,7 +714,7 @@ class RemoteReliableTransfer {
       final receipt = _receipts[id] ?? await _loadReceipt(id);
       if (receipt != null) {
         request.response.headers.set(
-          'x-debrify-receipt',
+          'x-megawatch-receipt',
           _auth(receipt.key, 'reply:$status', id, body),
         );
       }
@@ -726,7 +726,7 @@ class RemoteReliableTransfer {
   static List<int> _key(List<int> key, String id) => digest.Hmac(
     digest.sha256,
     key,
-  ).convert(utf8.encode('debrify-file-v1:$id')).bytes;
+  ).convert(utf8.encode('megawatch-file-v1:$id')).bytes;
   static String _auth(List<int> key, String method, String id, String header) =>
       digest.Hmac(
         digest.sha256,

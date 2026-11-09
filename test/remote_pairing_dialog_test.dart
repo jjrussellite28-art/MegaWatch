@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/remote_control/remote_session.dart';
-import 'package:debrify/utils/platform_util.dart';
-import 'package:debrify/widgets/remote/remote_pairing_dialog.dart';
-import 'package:debrify/widgets/tv_text_field.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/remote_control/remote_session.dart';
+import 'package:megawatch/utils/platform_util.dart';
+import 'package:megawatch/widgets/remote/remote_pairing_dialog.dart';
+import 'package:megawatch/widgets/tv_text_field.dart';
 
 void main() {
   testWidgets('receiver cancellation dismisses only its pairing dialog', (

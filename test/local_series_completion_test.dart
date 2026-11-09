@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:debrify/services/local_series_completion_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/tracking_source_policy.dart';
-import 'package:debrify/services/trakt/trakt_episode_model.dart';
-import 'package:debrify/services/watched_action_coordinator.dart';
+import 'package:megawatch/services/local_series_completion_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/tracking_source_policy.dart';
+import 'package:megawatch/services/trakt/trakt_episode_model.dart';
+import 'package:megawatch/services/watched_action_coordinator.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

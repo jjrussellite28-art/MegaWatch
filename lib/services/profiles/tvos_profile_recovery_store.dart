@@ -8,7 +8,7 @@ class TvOsProfileRecoveryStore {
   TvOsProfileRecoveryStore._();
 
   static const MethodChannel _channel = MethodChannel(
-    'debrify/tvos_profile_recovery',
+    'megawatch/tvos_profile_recovery',
   );
 
   static bool get supported => PlatformUtil.isTvOS;

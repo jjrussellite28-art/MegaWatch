@@ -1,21 +1,21 @@
 # Build a Torrent Engine (No Dart Required)
 
-Want Debrify to speak to your favorite torrent indexer? All you need is a single YAML file. This guide keeps the moving parts simple, shows how the pieces fit, and gives you a verified template you can copy immediately.
+Want MegaWatch to speak to your favorite torrent indexer? All you need is a single YAML file. This guide keeps the moving parts simple, shows how the pieces fit, and gives you a verified template you can copy immediately.
 
 ## Fast track
 
 1. **Duplicate an engine** from the GitLab catalog ([`mediacontent/search-engines/torrents`](https://gitlab.com/mediacontent/search-engines/-/tree/main/torrents)), rename the file, and update the fields you need.
-2. **Edit with the cheat sheet below.** Debrify uses a flat YAML schema (no nested JSON objects to fight).
+2. **Edit with the cheat sheet below.** MegaWatch uses a flat YAML schema (no nested JSON objects to fight).
 3. **Test your API call** in Postman/Insomnia until you know the JSON paths you'll map.
 4. **Import the YAML** through *Addons → Import Engine*. The UI copies the file into local storage, clears caches, and reloads running engines.
-5. **Search in Debrify** (keyword). Watch the console output from `EngineExecutor` for URLs, pagination steps, and field-mapping errors.
+5. **Search in MegaWatch** (keyword). Watch the console output from `EngineExecutor` for URLs, pagination steps, and field-mapping errors.
 6. **Iterate**: tweak the YAML, re-import (same filename), repeat.
 
 ## Engine anatomy cheat sheet
 
 | Section | Why it exists | Must-haves |
 | --- | --- | --- |
-| `id`, `display_name`, `icon`, `categories`, `capabilities` | Tell Debrify how to present your engine. | Unique `id`, at least one capability toggled on. |
+| `id`, `display_name`, `icon`, `categories`, `capabilities` | Tell MegaWatch how to present your engine. | Unique `id`, at least one capability toggled on. |
 | `api`, `query_params`, `path_params`, `request` | Describe the HTTP request(s). | `api.urls` with placeholders like `{imdb_id}` when needed. |
 | `series_config` | Optional helpers for IMDB/series search. | Only when `series_support: true`. |
 | `pagination` | How to fetch multiple pages (page/cursor/offset/none). | `type` plus the knobs for that type. |
@@ -74,7 +74,7 @@ series_config:
 ```
 
 What to remember:
-- `api.urls` can include placeholders `{imdb_id}`, `{season}`, `{episode}`. Debrify swaps them automatically.
+- `api.urls` can include placeholders `{imdb_id}`, `{season}`, `{episode}`. MegaWatch swaps them automatically.
 - Use `api.params` for constants (limit, sort, auth headers). Set `location: query`, `body`, or `header`.
 - `query_params.param_name` accepts a single string (`q`) or a map keyed by search type.
 - `path_params` switches the URL builder into template mode for APIs that put search values directly in the URL path.
@@ -275,4 +275,4 @@ Whether you built the engine for yourself or plan to share it, the delivery path
 
 Keep this table handy when debugging—logs from any layer immediately tell you which box misbehaved.
 
-You now have everything needed to teach Debrify how to talk to almost any torrent indexer. Happy hacking!
+You now have everything needed to teach MegaWatch how to talk to almost any torrent indexer. Happy hacking!

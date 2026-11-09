@@ -172,8 +172,8 @@ class HomeCollectionInventory {
       final parsed = HomeCollection.fromJson(_migrateVisuals(value));
       if (parsed == null) return value;
       return parsed.toJson()
-        ..remove('debrifyCollectionVersion')
-        ..remove('debrifyVisualVersion');
+        ..remove('megawatchCollectionVersion')
+        ..remove('megawatchVisualVersion');
     } catch (_) {
       return value;
     }
@@ -202,12 +202,12 @@ class HomeCollectionInventory {
             ));
     final migrateGif =
         !hasModernFields &&
-        value['debrifyCollectionVersion'] != 2 &&
-        value['debrifyVisualVersion'] != 2;
+        value['megawatchCollectionVersion'] != 2 &&
+        value['megawatchVisualVersion'] != 2;
     return {
       ...value,
-      'debrifyCollectionVersion':
-          value['debrifyCollectionVersion'] ?? (hasModernFields ? 2 : 1),
+      'megawatchCollectionVersion':
+          value['megawatchCollectionVersion'] ?? (hasModernFields ? 2 : 1),
       if (value['folders'] is List)
         'folders': [
           for (final folder in value['folders'] as List)

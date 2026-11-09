@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:debrify/services/episode_tracker_snapshot_service.dart';
-import 'package:debrify/services/trakt/trakt_service.dart';
+import 'package:megawatch/services/episode_tracker_snapshot_service.dart';
+import 'package:megawatch/services/trakt/trakt_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

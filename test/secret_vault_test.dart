@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/secret_vault.dart';
+import 'package:megawatch/services/secret_vault.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

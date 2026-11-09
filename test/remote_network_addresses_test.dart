@@ -1,4 +1,4 @@
-import 'package:debrify/services/remote_control/remote_network_addresses.dart';
+import 'package:megawatch/services/remote_control/remote_network_addresses.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

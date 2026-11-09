@@ -20,7 +20,7 @@ enum _WebDavSyncUiRefreshTarget {
   iptvSource,
   iptvLists,
   playbackData,
-  debrifyTvLibrary,
+  megawatchTvLibrary,
 }
 
 /// Replays the same live-UI notifications used by local settings writes after
@@ -33,8 +33,8 @@ enum _WebDavSyncUiRefreshTarget {
 abstract final class WebDavSyncUiRefresh {
   static const Map<String, Set<_WebDavSyncUiRefreshTarget>> _targetsByKey = {
     HideWatchedPrefs.key: {_WebDavSyncUiRefreshTarget.homeSettings},
-    'tv/ch': {_WebDavSyncUiRefreshTarget.debrifyTvLibrary},
-    'tv/pool': {_WebDavSyncUiRefreshTarget.debrifyTvLibrary},
+    'tv/ch': {_WebDavSyncUiRefreshTarget.megawatchTvLibrary},
+    'tv/pool': {_WebDavSyncUiRefreshTarget.megawatchTvLibrary},
     'catalog/hidden': {_WebDavSyncUiRefreshTarget.iptvCatalog},
     'catalog/category-order': {_WebDavSyncUiRefreshTarget.iptvCatalog},
     'iptv/order': {_WebDavSyncUiRefreshTarget.iptvSource},
@@ -158,8 +158,8 @@ abstract final class WebDavSyncUiRefresh {
             IptvMediaStore.notifyListsChanged();
           case _WebDavSyncUiRefreshTarget.playbackData:
             MainPageBridge.notifyPlaybackDataChanged();
-          case _WebDavSyncUiRefreshTarget.debrifyTvLibrary:
-            MainPageBridge.notifyDebrifyTvLibraryChanged();
+          case _WebDavSyncUiRefreshTarget.megawatchTvLibrary:
+            MainPageBridge.notifyMegaWatchTvLibraryChanged();
         }
       } catch (_) {
         // A UI notification can never turn an already committed sync batch

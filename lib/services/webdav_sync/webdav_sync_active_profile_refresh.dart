@@ -52,7 +52,7 @@ final class DefaultWebDavSyncActiveProfileRefresher
 
     await warmIf('tv_keyboard_enabled', StorageService.getTvKeyboardEnabled);
     await warmIf('tv_home_style', StorageService.getTvHomeStyle);
-    await warmIf('debrify_tv_style', StorageService.getDebrifyTvStyle);
+    await warmIf('megawatch_tv_style', StorageService.getMegaWatchTvStyle);
     await warmIf('detail_page_style', StorageService.getDetailPageStyle);
     if (changedKeys.any(
       StorageService.detailPageSectionPreferenceKeys.contains,

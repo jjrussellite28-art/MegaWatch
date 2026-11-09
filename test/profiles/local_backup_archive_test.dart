@@ -1,40 +1,40 @@
-import 'package:debrify/services/webdav_sync/webdav_sync_activation.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_local_adapter.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_activation.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_local_adapter.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
 import '../services/webdav_sync/connector_test_fakes.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_backup.dart';
-import 'package:debrify/services/webdav_backup_archive.dart';
-import 'package:debrify/services/transfer/streaming_encrypted_file.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_graph.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_large_section_io.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_snapshot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_transport.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_backup.dart';
+import 'package:megawatch/services/webdav_backup_archive.dart';
+import 'package:megawatch/services/transfer/streaming_encrypted_file.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_graph.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_large_section_io.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_snapshot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_transport.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/local_backup/local_backup_archive.dart';
-import 'package:debrify/services/profiles/local_backup/local_backup_zip.dart';
-import 'package:debrify/services/profiles/portable_profile_package.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_database_snapshot.dart';
-import 'package:debrify/services/profiles/profile_package_service.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_restore_coordinator.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/local_backup/local_backup_archive.dart';
+import 'package:megawatch/services/profiles/local_backup/local_backup_zip.dart';
+import 'package:megawatch/services/profiles/portable_profile_package.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_database_snapshot.dart';
+import 'package:megawatch/services/profiles/profile_package_service.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_restore_coordinator.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,7 +102,7 @@ void main() {
   });
 
   tearDown(() async {
-    await DebrifyTvDatabase.instance.closeScope();
+    await MegaWatchTvDatabase.instance.closeScope();
     IptvMediaStore.debugResetMigration();
     ProfileRuntime.debugReset();
     ProfileBootstrap.debugInstallRegistry(null);
@@ -260,8 +260,8 @@ void main() {
     },
   );
 
-  Future<void> seedDebrifyTv(ProfileScope target, {int hashes = 400}) async {
-    final file = target.fileIn(documents, 'documents', 'debrify_tv.db');
+  Future<void> seedMegaWatchTv(ProfileScope target, {int hashes = 400}) async {
+    final file = target.fileIn(documents, 'documents', 'megawatch_tv.db');
     await file.parent.create(recursive: true);
     final db = await openDatabase(file.path);
     await db.execute(
@@ -411,7 +411,7 @@ void main() {
   test(
     'WebDAV encrypted archive restores file-backed databases and prunes only caches',
     () async {
-      await seedDebrifyTv(scope);
+      await seedMegaWatchTv(scope);
       await seedCatalog(scope);
       await createImportedPlaylist(
         '#EXTM3U\n#EXTINF:-1,News\nhttps://example.test/live\n',
@@ -435,7 +435,7 @@ void main() {
         ).exists(),
         isFalse,
       );
-      final archive = File('${staging.path}/unlocked.debrify');
+      final archive = File('${staging.path}/unlocked.megawatch');
       await WebDavBackupArchive.decrypt(
         source: exported.file,
         destination: archive,
@@ -454,15 +454,15 @@ void main() {
           .whereType<Map>()
           .firstWhere(
             (section) =>
-                (section['values'] as Map?)?.containsKey('debrify_tv.db') ==
+                (section['values'] as Map?)?.containsKey('megawatch_tv.db') ==
                 true,
           );
       final records = databaseSection['values'] as Map;
-      expect((records['debrify_tv.db'] as Map)['encoding'], 'file');
+      expect((records['megawatch_tv.db'] as Map)['encoding'], 'file');
       final tv = await openDatabase(
         restored
             .resolveDatabase(
-              (records['debrify_tv.db'] as Map)['entry'] as String,
+              (records['megawatch_tv.db'] as Map)['entry'] as String,
             )!
             .path,
       );
@@ -503,7 +503,7 @@ void main() {
   test(
     'a second device reuses the shared bootstrap after the original device is deleted',
     () async {
-      await seedDebrifyTv(scope);
+      await seedMegaWatchTv(scope);
       await createImportedPlaylist('#EXTM3U\nhttps://example.test/live\n');
       final allResources = await registry.listAllResourcesIncludingDisabled();
       final maps = WebDavSyncGraphIdentityPlanner.ensure(
@@ -832,7 +832,7 @@ void main() {
   test(
     'export streams databases and playlists into a verified archive',
     () async {
-      await seedDebrifyTv(scope);
+      await seedMegaWatchTv(scope);
       await seedCatalog(scope);
       final playlist = bigPlaylist();
       await createImportedPlaylist(playlist);
@@ -847,13 +847,13 @@ void main() {
         onStage: stages.add,
         now: DateTime.utc(2026, 9, 5, 10),
       );
-      expect(result.fileName, 'debrify-profile-2026-09-05.debrify');
+      expect(result.fileName, 'megawatch-profile-2026-09-05.megawatch');
       expect(result.archive.existsSync(), isTrue);
       expect(result.cachesPruned, isTrue);
       expect(stages.first, 'Preparing backup…');
       expect(stages, contains('Checking backup…'));
       expect(
-        DebrifyTvBackupOmission.fromOmissions(result.package.omissions),
+        MegaWatchTvBackupOmission.fromOmissions(result.package.omissions),
         isNull,
       );
 
@@ -863,7 +863,7 @@ void main() {
               as Map;
       expect(
         databases.keys,
-        containsAll(<String>['debrify_tv.db', 'iptv_catalog.db']),
+        containsAll(<String>['megawatch_tv.db', 'iptv_catalog.db']),
       );
       for (final record in databases.values) {
         expect((record as Map)['encoding'], 'file');
@@ -900,7 +900,7 @@ void main() {
       expect(
         manifest.entries.map((e) => e.name),
         unorderedEquals(<String>[
-          'databases/profile-0/debrify_tv.db',
+          'databases/profile-0/megawatch_tv.db',
           'databases/profile-0/iptv_catalog.db',
           'attachments/resource-0.m3u',
         ]),
@@ -926,7 +926,7 @@ void main() {
         });
         final extractedTv = File(p.join(temporaryDirectory.path, 'tv.db'));
         await reader.extract(
-          reader.find('databases/profile-0/debrify_tv.db')!,
+          reader.find('databases/profile-0/megawatch_tv.db')!,
           extractedTv,
         );
         expect(await tableRows(extractedTv, 'tv_cached_torrents'), {
@@ -947,7 +947,7 @@ void main() {
   test(
     'archive restores through the coordinator with caches rebuilt later',
     () async {
-      await seedDebrifyTv(scope, hashes: 50);
+      await seedMegaWatchTv(scope, hashes: 50);
       await seedCatalog(scope);
       final playlist = bigPlaylist(lines: 2000);
       final originalResourceId = await createImportedPlaylist(playlist);
@@ -964,14 +964,14 @@ void main() {
       await LocalBackupScratch.delete(exportStaging);
 
       // Simulate the source being gone: restore must not depend on it.
-      await scope.fileIn(documents, 'documents', 'debrify_tv.db').delete();
+      await scope.fileIn(documents, 'documents', 'megawatch_tv.db').delete();
       await scope.fileIn(documents, 'documents', 'iptv_catalog.db').delete();
 
       final restoreStaging = await LocalBackupScratch.create('restore');
       final inspection = await LocalBackupRestorer.inspect(saved);
       // A different archive swapped in under the same path must be refused
       // when staging reuses an earlier inspection.
-      final other = File(p.join(temporaryDirectory.path, 'other.debrify'));
+      final other = File(p.join(temporaryDirectory.path, 'other.megawatch'));
       await LocalBackupZip.write(
         output: other,
         sources: const <LocalBackupZipSource>[],
@@ -998,7 +998,7 @@ void main() {
           isFalse,
         );
         expect(
-          stage.resolveDatabase('databases/profile-0/debrify_tv.db'),
+          stage.resolveDatabase('databases/profile-0/megawatch_tv.db'),
           isNotNull,
         );
         expect(stage.resolveDatabase('../etc/passwd'), isNull);
@@ -1022,7 +1022,7 @@ void main() {
         final tv = restoredScope.fileIn(
           documents,
           'documents',
-          'debrify_tv.db',
+          'megawatch_tv.db',
         );
         final catalog = restoredScope.fileIn(
           documents,
@@ -1060,7 +1060,7 @@ void main() {
   test(
     'damaged, tampered, and future archives are refused before staging',
     () async {
-      await seedDebrifyTv(scope, hashes: 20);
+      await seedMegaWatchTv(scope, hashes: 20);
       final exportStaging = await LocalBackupScratch.create('export');
       final exported = await LocalBackupExporter(service: packages).export(
         context: await ProfileAuthorizationContext.capture(registry),
@@ -1068,7 +1068,7 @@ void main() {
         allProfiles: false,
         scope: scope,
       );
-      final good = File(p.join(temporaryDirectory.path, 'good.debrify'));
+      final good = File(p.join(temporaryDirectory.path, 'good.megawatch'));
       await exported.archive.copy(good.path);
       await LocalBackupScratch.delete(exportStaging);
 
@@ -1094,7 +1094,7 @@ void main() {
       }
 
       // Flip one byte inside the database entry.
-      final flipped = File(p.join(temporaryDirectory.path, 'flipped.debrify'));
+      final flipped = File(p.join(temporaryDirectory.path, 'flipped.megawatch'));
       await good.copy(flipped.path);
       final raf = await flipped.open(mode: FileMode.append);
       await raf.setPosition(4096);
@@ -1105,7 +1105,7 @@ void main() {
       await expectRefused(flipped, isA<LocalBackupFormatException>());
 
       // Truncate.
-      final truncated = File(p.join(temporaryDirectory.path, 'short.debrify'));
+      final truncated = File(p.join(temporaryDirectory.path, 'short.megawatch'));
       await good.copy(truncated.path);
       final shortRaf = await truncated.open(mode: FileMode.append);
       await shortRaf.truncate((await good.length()) ~/ 2);
@@ -1135,7 +1135,7 @@ void main() {
       }
       final stray = File(p.join(rebuildDir.path, 'stray.bin'))
         ..writeAsBytesSync(<int>[1, 2, 3]);
-      final withStray = File(p.join(temporaryDirectory.path, 'stray.debrify'));
+      final withStray = File(p.join(temporaryDirectory.path, 'stray.megawatch'));
       await LocalBackupZip.write(
         output: withStray,
         sources: <LocalBackupZipSource>[
@@ -1157,7 +1157,7 @@ void main() {
       await File(
         p.join(rebuildDir.path, LocalBackupManifest.digestEntry),
       ).writeAsString(await StreamedSha256.ofFile(manifestFile));
-      final future = File(p.join(temporaryDirectory.path, 'future.debrify'));
+      final future = File(p.join(temporaryDirectory.path, 'future.megawatch'));
       await LocalBackupZip.write(
         output: future,
         sources: <LocalBackupZipSource>[
@@ -1175,14 +1175,14 @@ void main() {
         isA<LocalBackupFormatException>().having(
           (error) => error.message,
           'message',
-          contains('newer Debrify'),
+          contains('newer MegaWatch'),
         ),
       );
     },
   );
 
   test('cancellation during packing leaves no archive', () async {
-    await seedDebrifyTv(scope, hashes: 600);
+    await seedMegaWatchTv(scope, hashes: 600);
     final staging = await LocalBackupScratch.create('export');
     final cancellation = LocalBackupCancellation();
     await expectLater(
@@ -1213,7 +1213,7 @@ void main() {
   test(
     'file-backed database records are rejected by the ordinary decoder',
     () async {
-      await seedDebrifyTv(scope, hashes: 5);
+      await seedMegaWatchTv(scope, hashes: 5);
       final staging = await LocalBackupScratch.create('export');
       final exported = await LocalBackupExporter(service: packages).export(
         context: await ProfileAuthorizationContext.capture(registry),
@@ -1265,9 +1265,9 @@ void main() {
   });
 
   test('base64 snapshot export and restore are unchanged', () async {
-    await seedDebrifyTv(scope, hashes: 3);
+    await seedMegaWatchTv(scope, hashes: 3);
     final export = await ProfileDatabaseSnapshot.export(scope);
-    final record = export.attachments['debrify_tv.db'] as Map;
+    final record = export.attachments['megawatch_tv.db'] as Map;
     expect(record['encoding'], 'base64');
     final destination = ProfileScope(
       profileId: profileId,
@@ -1280,7 +1280,7 @@ void main() {
     );
     expect(
       await tableRows(
-        destination.fileIn(documents, 'documents', 'debrify_tv.db'),
+        destination.fileIn(documents, 'documents', 'megawatch_tv.db'),
         'tv_cached_torrents',
       ),
       {'count': 3},

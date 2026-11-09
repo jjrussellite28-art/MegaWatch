@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/services/iptv_catalog_key.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/xtream_codes_service.dart';
+import 'package:megawatch/services/iptv_catalog_key.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/xtream_codes_service.dart';
 
 /// End-to-end coverage of the Xtream stream fetch against a fake panel.
 ///

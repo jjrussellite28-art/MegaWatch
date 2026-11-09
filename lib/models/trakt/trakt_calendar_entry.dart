@@ -162,7 +162,7 @@ class TraktCalendarEntry {
 
   /// Parse MDBList's `/calendar/events` episode shape. MDBList calendar dates
   /// are nominal local days, not air-time instants. Movie/person events are
-  /// intentionally rejected because Debrify's Calendar is episode-only.
+  /// intentionally rejected because MegaWatch's Calendar is episode-only.
   static TraktCalendarEntry? fromMdblistCalendarJson(
     Map<String, dynamic> json, {
     Map<String, dynamic>? resolvedShow,

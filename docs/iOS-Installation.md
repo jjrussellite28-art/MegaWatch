@@ -1,8 +1,8 @@
 # iOS Installation Guide
 
-Debrify provides an **unsigned IPA** for iOS users. Since Apple requires a $99/year developer account for official distribution, you'll need to sideload the app using one of the methods below.
+MegaWatch provides an **unsigned IPA** for iOS users. Since Apple requires a $99/year developer account for official distribution, you'll need to sideload the app using one of the methods below.
 
-> **Important**: Sideloaded apps expire after **7 days** and need to be reinstalled. This is an Apple limitation, not a Debrify limitation.
+> **Important**: Sideloaded apps expire after **7 days** and need to be reinstalled. This is an Apple limitation, not a MegaWatch limitation.
 >
 > **Unless you have a paid Apple Developer account** — then it's **1 year**. See [the section below](#have-a-paid-apple-developer-account).
 
@@ -23,7 +23,7 @@ Good news: it doesn't change *how* you install, but it makes the result last **1
 
 ### What does *not* change
 
-- **You still need a computer for the first install.** Debrify ships an *unsigned* IPA, so the signing has to happen on your machine. Sideloadly / AltStore do exactly that — they just sign it with your paid team instead of a free Apple ID.
+- **You still need a computer for the first install.** MegaWatch ships an *unsigned* IPA, so the signing has to happen on your machine. Sideloadly / AltStore do exactly that — they just sign it with your paid team instead of a free Apple ID.
 - **You still have to tap Trust once** in Settings → General → VPN & Device Management.
 - **There's no App Store / TestFlight shortcut.** A developer account lets you sign apps; it doesn't let you install someone else's app straight from a link.
 
@@ -32,7 +32,7 @@ Good news: it doesn't change *how* you install, but it makes the result last **1
 Works on **Windows and macOS**. This is the simplest path.
 
 1. Install [Sideloadly](https://sideloadly.io/) on your computer.
-2. Download `debrify-*-unsigned.ipa` from [GitHub Releases](https://github.com/varunsalian/debrify/releases).
+2. Download `megawatch-*-unsigned.ipa` from [GitHub Releases](https://github.com/varunsalian/debrify/releases).
 3. Plug your iPhone in via USB and unlock it. Tap **Trust This Computer** if prompted.
 4. Drag the IPA into Sideloadly.
 5. In the **Apple ID** field, enter **the Apple ID that the paid membership is on** — this is the part that matters. If you sign in with a different Apple ID, you'll silently get a 7-day certificate.
@@ -44,7 +44,7 @@ Then on your iPhone:
 8. **Settings → General → VPN & Device Management**
 9. Tap your developer profile → **Trust**
 10. **(iOS 16 and later)** Enable **Developer Mode**: **Settings → Privacy & Security → Developer Mode** → toggle it on → restart when prompted → tap **Turn On** and enter your passcode after the reboot. Development-signed apps won't launch without this — trusting the profile alone is not enough. (The Developer Mode menu item only appears after the first install attempt.)
-11. Open Debrify. You're set for a year.
+11. Open MegaWatch. You're set for a year.
 
 ### Alternative: AltStore Classic with your paid account
 
@@ -56,7 +56,7 @@ This is where a paid account really shines — no IPA juggling at all. Follow [O
 
 ### Gotchas worth knowing
 
-- **Bundle ID suffixing.** Sideloadly appends your team ID to the bundle identifier by default (e.g. `com.varunsalian.debrify.ABCDE12345`). That's fine and it's why a Sideloadly install can sit alongside an existing one — but it also means the two are *separate apps* with separate data. If you're replacing an older install, delete the old one first.
+- **Bundle ID suffixing.** Sideloadly appends your team ID to the bundle identifier by default (e.g. `com.varunsalian.megawatch.ABCDE12345`). That's fine and it's why a Sideloadly install can sit alongside an existing one — but it also means the two are *separate apps* with separate data. If you're replacing an older install, delete the old one first.
 - **Device slots don't free up mid-year.** Every device you register counts against your 100. You can disable a device in the developer portal, but the count only resets when your membership renews.
 - **Certificate limit.** Apple caps how many development certificates you can have. If signing starts failing with a certificate error, go to [developer.apple.com](https://developer.apple.com/account/resources/certificates/list) → Certificates and revoke stale ones.
 - **1 year is the ceiling, not a promise.** If you revoke the certificate, let the membership lapse, or re-sign a pile of other apps, the existing install can stop opening. Re-running the same steps fixes it.
@@ -91,9 +91,9 @@ AltStore automatically refreshes your apps in the background so you don't have t
 7. Tap your Apple ID under "Developer App" and tap **Trust**
 8. **(iOS 16 and later)** Enable **Developer Mode**: **Settings → Privacy & Security → Developer Mode** → toggle it on → restart when prompted → tap **Turn On** after the reboot. AltStore and the apps it installs won't launch without this. (The menu item only appears after AltStore has been installed once.)
 
-### Install Debrify
+### Install MegaWatch
 
-1. Download `debrify-*-unsigned.ipa` from [GitHub Releases](https://github.com/varunsalian/debrify/releases)
+1. Download `megawatch-*-unsigned.ipa` from [GitHub Releases](https://github.com/varunsalian/debrify/releases)
 2. Open the file with AltStore, or:
    - Open AltStore on your iPhone
    - Go to **My Apps** tab
@@ -124,7 +124,7 @@ Sideloadly is a simple tool for one-time sideloading. You'll need to reinstall e
 1. Download Sideloadly from [sideloadly.io](https://sideloadly.io/)
 2. Install and run Sideloadly
 3. Connect your iPhone via USB cable
-4. Download `debrify-*-unsigned.ipa` from [GitHub Releases](https://github.com/varunsalian/debrify/releases)
+4. Download `megawatch-*-unsigned.ipa` from [GitHub Releases](https://github.com/varunsalian/debrify/releases)
 5. Drag and drop the IPA file into Sideloadly
 6. Enter your Apple ID and password
 7. Click **Start**
@@ -135,7 +135,7 @@ Sideloadly is a simple tool for one-time sideloading. You'll need to reinstall e
 9. Go to **Settings → General → VPN & Device Management**
 10. Tap your Apple ID under "Developer App" and tap **Trust**
 11. **(iOS 16 and later)** Enable **Developer Mode**: **Settings → Privacy & Security → Developer Mode** → toggle it on → restart when prompted → tap **Turn On** after the reboot. Sideloaded apps won't launch without this. (The menu item only appears after the first install attempt.)
-12. Open Debrify
+12. Open MegaWatch
 
 ### Reinstalling
 
@@ -150,7 +150,7 @@ If you have a Mac with Xcode, you can build and run directly on your device:
 ```bash
 # Clone the repository
 git clone https://github.com/varunsalian/debrify.git
-cd debrify
+cd megawatch
 
 # Get dependencies
 flutter pub get
@@ -190,7 +190,7 @@ In Xcode:
 ### AltStore not refreshing automatically
 - Ensure AltServer is running on your computer
 - Both devices must be on the same Wi-Fi network
-- Try manually refreshing in AltStore → My Apps → hold on Debrify → Refresh
+- Try manually refreshing in AltStore → My Apps → hold on MegaWatch → Refresh
 
 ---
 

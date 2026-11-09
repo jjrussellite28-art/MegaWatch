@@ -1,12 +1,12 @@
-import 'package:debrify/models/quick_play_rules.dart';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/models/torrent_filter_state.dart';
-import 'package:debrify/services/alldebrid_service.dart';
-import 'package:debrify/services/debrid_service.dart';
-import 'package:debrify/services/series_source_fetcher.dart';
-import 'package:debrify/services/startup_recovery_sources.dart';
-import 'package:debrify/services/torrent_playback_service.dart';
-import 'package:debrify/utils/filter_ladder.dart';
+import 'package:megawatch/models/quick_play_rules.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/models/torrent_filter_state.dart';
+import 'package:megawatch/services/alldebrid_service.dart';
+import 'package:megawatch/services/debrid_service.dart';
+import 'package:megawatch/services/series_source_fetcher.dart';
+import 'package:megawatch/services/startup_recovery_sources.dart';
+import 'package:megawatch/services/torrent_playback_service.dart';
+import 'package:megawatch/utils/filter_ladder.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Torrent row(
@@ -43,7 +43,7 @@ void main() {
         source: 'stremio:AIOStreams',
       );
       final high = row('Movie 2160p', hash: 'a' * 40, source: 'comet');
-      final rules = QuickPlayRules.debrifyDefault(isMovie: true).copyWith(
+      final rules = QuickPlayRules.megawatchDefault(isMovie: true).copyWith(
         relaxFilters: false,
         sourcePriority: ['stremio:aiostreams', 'engine:comet'],
       );
@@ -97,7 +97,7 @@ void main() {
           final prepared = await TorrentPlaybackService.prepareRecoverySources(
             [cold, cached],
             provider: provider,
-            rules: QuickPlayRules.debrifyDefault(
+            rules: QuickPlayRules.megawatchDefault(
               isMovie: true,
             ).copyWith(ranking: ranking),
             ladder: FilterLadder(TorrentFilterState()),

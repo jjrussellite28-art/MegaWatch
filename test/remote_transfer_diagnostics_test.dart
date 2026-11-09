@@ -15,15 +15,15 @@ void main() {
     expect(removalBlock, isNot(contains('public static *** w(...);')));
 
     final activity = File(
-      'android/app/src/main/kotlin/com/debrify/app/MainActivity.kt',
+      'android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt',
     ).readAsStringSync();
     expect(
       activity,
-      contains('android.util.Log.w("DEBRIFY_TRANSFER", message)'),
+      contains('android.util.Log.w("MEGAWATCH_TRANSFER", message)'),
     );
     expect(
       activity,
-      isNot(contains('android.util.Log.i("DEBRIFY_TRANSFER", message)')),
+      isNot(contains('android.util.Log.i("MEGAWATCH_TRANSFER", message)')),
     );
   });
 
@@ -35,9 +35,9 @@ void main() {
     expect(dartSink, contains("source: 'remote_transfer'"));
 
     final activity = File(
-      'android/app/src/main/kotlin/com/debrify/app/MainActivity.kt',
+      'android/app/src/main/kotlin/com/megawatch/app/MainActivity.kt',
     ).readAsStringSync();
-    expect(activity, contains('message.startsWith("DEBRIFY_TRANSFER ")'));
+    expect(activity, contains('message.startsWith("MEGAWATCH_TRANSFER ")'));
     expect(activity, contains('.take(1_024)'));
   });
 }

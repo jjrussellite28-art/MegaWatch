@@ -4,7 +4,7 @@ set -eu
 repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 platform=${1:-}
 configuration=${2:-Release}
-display_name="Debrify Personal"
+display_name="MegaWatch Personal"
 suffix=.personal
 
 usage() {
@@ -24,7 +24,7 @@ case "$platform" in
       JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
       export JAVA_HOME
     fi
-    ./gradlew "$task" -PdebrifyPersonalBuild=true
+    ./gradlew "$task" -PmegawatchPersonalBuild=true
     ;;
   ios)
     exec xcodebuild \
@@ -34,8 +34,8 @@ case "$platform" in
       -destination 'generic/platform=iOS' \
       -allowProvisioningUpdates \
       -derivedDataPath "$repo_dir/build/personal/ios" \
-      DEBRIFY_BUNDLE_SUFFIX="$suffix" \
-      DEBRIFY_APP_DISPLAY_NAME="$display_name"
+      MEGAWATCH_BUNDLE_SUFFIX="$suffix" \
+      MEGAWATCH_APP_DISPLAY_NAME="$display_name"
     ;;
   tvos)
     # The personal build deliberately omits App Group entitlements. Its main
@@ -47,9 +47,9 @@ case "$platform" in
       -destination 'generic/platform=tvOS' \
       -allowProvisioningUpdates \
       -derivedDataPath "$repo_dir/build/personal/tvos" \
-      DEBRIFY_BUNDLE_SUFFIX="$suffix" \
-      DEBRIFY_APP_DISPLAY_NAME="$display_name" \
-      DEBRIFY_APP_GROUP=group.com.varunsalian.debrifytv.personal \
+      MEGAWATCH_BUNDLE_SUFFIX="$suffix" \
+      MEGAWATCH_APP_DISPLAY_NAME="$display_name" \
+      MEGAWATCH_APP_GROUP=group.com.varunsalian.megawatchtv.personal \
       CODE_SIGN_ENTITLEMENTS=
     ;;
   macos)
@@ -59,9 +59,9 @@ case "$platform" in
       -configuration "$configuration" \
       -destination 'platform=macOS' \
       -derivedDataPath "$repo_dir/build/personal/macos" \
-      DEBRIFY_BUNDLE_SUFFIX="$suffix" \
-      DEBRIFY_APP_DISPLAY_NAME="$display_name" \
-      DEBRIFY_PRODUCT_NAME="$display_name"
+      MEGAWATCH_BUNDLE_SUFFIX="$suffix" \
+      MEGAWATCH_APP_DISPLAY_NAME="$display_name" \
+      MEGAWATCH_PRODUCT_NAME="$display_name"
     ;;
   *) usage ;;
 esac

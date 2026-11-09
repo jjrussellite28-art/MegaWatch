@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:debrify/services/player_display_controls.dart';
-import 'package:debrify/widgets/webdav_sync/webdav_foreground_sync.dart';
+import 'package:megawatch/services/player_display_controls.dart';
+import 'package:megawatch/widgets/webdav_sync/webdav_foreground_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

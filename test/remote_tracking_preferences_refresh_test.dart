@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:debrify/services/hide_watched_prefs.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/remote_control/remote_command_router.dart';
-import 'package:debrify/services/remote_control/remote_constants.dart';
-import 'package:debrify/services/remote_control/remote_session.dart';
+import 'package:megawatch/services/hide_watched_prefs.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/remote_control/remote_command_router.dart';
+import 'package:megawatch/services/remote_control/remote_constants.dart';
+import 'package:megawatch/services/remote_control/remote_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

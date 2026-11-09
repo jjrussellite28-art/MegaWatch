@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/not_cached_dialog.dart';
+import 'package:megawatch/widgets/not_cached_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

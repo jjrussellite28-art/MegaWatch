@@ -2,9 +2,9 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/widgets/iptv/db_channel_list.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/widgets/iptv/db_channel_list.dart';
 
 /// The paging facade's instance-stability contract: across the fresh facade
 /// each filter/search recompute builds, a row that stays in the result set

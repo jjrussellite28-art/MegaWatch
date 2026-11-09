@@ -4,14 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/widgets/see_all/discover_detail_rail.dart';
-import 'package:debrify/widgets/catalog_item_tile.dart';
-import 'package:debrify/widgets/home/card_focus_rise.dart';
-import 'package:debrify/widgets/movie_watched_badge.dart';
-import 'package:debrify/widgets/see_all/discover_card_settings_scope.dart';
-import 'package:debrify/widgets/see_all/discover_shelf_scope.dart';
-import 'package:debrify/widgets/see_all/see_all_poster_grid.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/widgets/see_all/discover_detail_rail.dart';
+import 'package:megawatch/widgets/catalog_item_tile.dart';
+import 'package:megawatch/widgets/home/card_focus_rise.dart';
+import 'package:megawatch/widgets/movie_watched_badge.dart';
+import 'package:megawatch/widgets/see_all/discover_card_settings_scope.dart';
+import 'package:megawatch/widgets/see_all/discover_shelf_scope.dart';
+import 'package:megawatch/widgets/see_all/see_all_poster_grid.dart';
 
 /// The Discover STAGE shelf: [SeeAllPosterGrid] laying its items out as one
 /// bottom row instead of a wall, and the DPAD contract that goes with it.

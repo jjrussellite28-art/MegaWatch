@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/launch_animation/launch_animation_library.dart';
-import 'package:debrify/services/launch_animation/launch_package.dart';
+import 'package:megawatch/services/launch_animation/launch_animation_library.dart';
+import 'package:megawatch/services/launch_animation/launch_package.dart';
 import 'launch_package_test.dart' show packageBytes, animation;
 
 void main() {

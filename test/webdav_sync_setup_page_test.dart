@@ -1,26 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/screens/settings/sync_and_migrate_page.dart';
-import 'package:debrify/screens/settings/widgets/settings_widgets.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/text_brightness.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_binding_store.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_activation.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_connect_controller.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_engine.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_graph_tier.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_runtime.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_setup_authorization.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_setup_service.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_adapter.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/screens/settings/sync_and_migrate_page.dart';
+import 'package:megawatch/screens/settings/widgets/settings_widgets.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/text_brightness.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_binding_store.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_activation.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_connect_controller.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_engine.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_graph_tier.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_runtime.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_setup_authorization.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_setup_service.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_adapter.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -143,7 +143,7 @@ void main() {
       runInBackground: false,
     );
     var active = await store.stageBinding(
-      location: WebDavSyncFolderLocation.fromConfig(_config, 'Debrify'),
+      location: WebDavSyncFolderLocation.fromConfig(_config, 'MegaWatch'),
       config: _config,
       syncPassphrase: 'circle-secret',
     );
@@ -509,7 +509,7 @@ void main() {
     expect(find.text('Sync passphrase'), findsNothing);
     final binding = (await store.load()).stagedBinding!;
     expect(binding.lifecycle, WebDavSyncLifecycle.awaitingSeedCommit);
-    expect(binding.location.folderPath, 'Debrify');
+    expect(binding.location.folderPath, 'MegaWatch');
     expect(transport.reads, 2);
     expect(authorization.barriers, 4);
   });
@@ -685,7 +685,7 @@ void main() {
       runInBackground: false,
     );
     var waiting = await store.stageBinding(
-      location: WebDavSyncFolderLocation.fromConfig(_config, 'Debrify'),
+      location: WebDavSyncFolderLocation.fromConfig(_config, 'MegaWatch'),
       config: _config,
       syncPassphrase: 'circle-secret',
     );
@@ -722,7 +722,7 @@ void main() {
       runInBackground: false,
     );
     var waiting = await store.stageBinding(
-      location: WebDavSyncFolderLocation.fromConfig(_config, 'Debrify'),
+      location: WebDavSyncFolderLocation.fromConfig(_config, 'MegaWatch'),
       config: _config,
       syncPassphrase: 'circle-secret',
     );
@@ -747,7 +747,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.text('Finish the first sync before syncing Debrify TV'),
+      find.text('Finish the first sync before syncing MegaWatch TV'),
       findsOneWidget,
     );
 
@@ -781,7 +781,7 @@ void main() {
         runInBackground: false,
       );
       var waiting = await store.stageBinding(
-        location: WebDavSyncFolderLocation.fromConfig(_config, 'Debrify'),
+        location: WebDavSyncFolderLocation.fromConfig(_config, 'MegaWatch'),
         config: _config,
         syncPassphrase: 'circle-secret',
       );
@@ -809,7 +809,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.text('Finish the first sync before syncing Debrify TV'),
+        find.text('Finish the first sync before syncing MegaWatch TV'),
         findsOneWidget,
       );
 
@@ -844,7 +844,7 @@ void main() {
       runInBackground: false,
     );
     var waiting = await store.stageBinding(
-      location: WebDavSyncFolderLocation.fromConfig(_config, 'Debrify'),
+      location: WebDavSyncFolderLocation.fromConfig(_config, 'MegaWatch'),
       config: _config,
       syncPassphrase: 'circle-secret',
     );
@@ -869,7 +869,7 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
-  testWidgets('setup discloses manual-only Debrify TV sync', (tester) async {
+  testWidgets('setup discloses manual-only MegaWatch TV sync', (tester) async {
     await pumpPage(tester, enabled: true);
 
     expect(
@@ -880,7 +880,7 @@ void main() {
     );
   });
 
-  testWidgets('manual Debrify TV block shows pending status and Stop works', (
+  testWidgets('manual MegaWatch TV block shows pending status and Stop works', (
     tester,
   ) async {
     final marker = await codec.sealRoot(
@@ -896,7 +896,7 @@ void main() {
       runInBackground: false,
     );
     var active = await store.stageBinding(
-      location: WebDavSyncFolderLocation.fromConfig(_config, 'Debrify'),
+      location: WebDavSyncFolderLocation.fromConfig(_config, 'MegaWatch'),
       config: _config,
       syncPassphrase: 'circle-secret',
     );
@@ -914,7 +914,7 @@ void main() {
       ..tvStageRelease = release;
     await pumpPage(tester, enabled: true, activation: activation);
 
-    expect(find.text('DEBRIFY TV CHANNELS'), findsOneWidget);
+    expect(find.text('MEGAWATCH TV CHANNELS'), findsOneWidget);
     expect(find.text('Sync channels now'), findsOneWidget);
     expect(find.text('Changes are waiting for a manual sync'), findsOneWidget);
     expect(find.textContaining('Channels last synced'), findsOneWidget);
@@ -922,7 +922,7 @@ void main() {
     await tester.ensureVisible(find.text('Sync channels now'));
     await tester.tap(find.text('Sync channels now'));
     await tester.pump();
-    expect(find.text('Syncing Debrify TV'), findsOneWidget);
+    expect(find.text('Syncing MegaWatch TV'), findsOneWidget);
     expect(find.text('Reading'), findsOneWidget);
     expect(find.text('Stop'), findsOneWidget);
     await tester.tap(find.text('Stop'));
@@ -932,7 +932,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(activation.tvSyncs, 1);
-    expect(find.text('Debrify TV sync stopped safely.'), findsOneWidget);
+    expect(find.text('MegaWatch TV sync stopped safely.'), findsOneWidget);
   });
 
   testWidgets('manual TV platform gates show actionable disabled reasons', (
@@ -1026,7 +1026,7 @@ void main() {
 
     expect(activation.tvAvailabilityReads, 1);
     expect(activation.tvSyncs, 1);
-    expect(find.text('Syncing Debrify TV'), findsOneWidget);
+    expect(find.text('Syncing MegaWatch TV'), findsOneWidget);
     readRelease.complete();
     await tester.pumpAndSettle();
   });
@@ -1047,7 +1047,7 @@ void main() {
       runInBackground: false,
     );
     var active = await store.stageBinding(
-      location: WebDavSyncFolderLocation.fromConfig(_config, 'Debrify'),
+      location: WebDavSyncFolderLocation.fromConfig(_config, 'MegaWatch'),
       config: _config,
       syncPassphrase: 'circle-secret',
     );
@@ -1138,7 +1138,7 @@ void main() {
     transport.bytes = marker;
     final inspection = await service.inspectFolder(
       config: _config,
-      folderPath: 'Debrify',
+      folderPath: 'MegaWatch',
       context: WebDavSyncFolderInspectionContext.setup,
     );
     var active = await service.configureExistingRoot(
@@ -1170,7 +1170,7 @@ void main() {
       );
       final missing = await service.inspectFolder(
         config: _config,
-        folderPath: 'Debrify',
+        folderPath: 'MegaWatch',
         context: WebDavSyncFolderInspectionContext.setup,
       );
       final candidate = await service.configureNewRoot(
@@ -1254,7 +1254,7 @@ void main() {
         password: 'secret',
       );
       var oldBinding = await store.stageBinding(
-        location: WebDavSyncFolderLocation.fromConfig(oldConfig, 'Debrify'),
+        location: WebDavSyncFolderLocation.fromConfig(oldConfig, 'MegaWatch'),
         config: oldConfig,
         syncPassphrase: 'circle-secret',
       );
@@ -1494,7 +1494,7 @@ final class _FakeActivation
   }
 
   @override
-  Future<WebDavSyncTvManualReport> syncDebrifyTv({
+  Future<WebDavSyncTvManualReport> syncMegaWatchTv({
     required WebDavSyncTvCancellationToken cancellationToken,
     WebDavSyncTvStageCallback? onStage,
   }) async {

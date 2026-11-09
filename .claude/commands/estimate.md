@@ -1,10 +1,10 @@
 ---
-description: Code-grounded effort estimation for tracker tickets — investigate the Debrify repo for each open issue, then apply an effort:* label and a "where the work lives" note
+description: Code-grounded effort estimation for tracker tickets — investigate the MegaWatch repo for each open issue, then apply an effort:* label and a "where the work lives" note
 argument-hint: [issue numbers]   e.g. /estimate 5 14 21   (default: all open issues with no effort label)
 allowed-tools: Bash, Read, Grep, Glob, Agent, Edit, Write
 ---
 
-You are sizing Debrify tracker tickets by **actually reading the code**, not guessing. Each ticket
+You are sizing MegaWatch tracker tickets by **actually reading the code**, not guessing. Each ticket
 gets an `effort:*` label and a short, grounded note on where the work lives.
 
 Raw arguments: `$ARGUMENTS`
@@ -89,7 +89,7 @@ Print a table: issue · title · priority · effort. Then surface the **quick wi
 high-priority + low-effort.
 
 ## Guardrails
-- **Read-only on the app repo** — investigation never edits Debrify code. Writes go only to the tracker
+- **Read-only on the app repo** — investigation never edits MegaWatch code. Writes go only to the tracker
   (labels + comments).
 - Ground every estimate in files you actually located; if you genuinely can't find the code, size it
   `effort:xl` and say why (unknown scope) rather than guessing low.

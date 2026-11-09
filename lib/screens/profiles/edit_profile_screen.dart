@@ -1767,8 +1767,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 group('SOURCE PAGES'),
                 tile(
-                  ProfileFeature.debrifyTv,
-                  'Debrify TV',
+                  ProfileFeature.megawatchTv,
+                  'MegaWatch TV',
                   'Channels curated on this device.',
                 ),
                 tile(
@@ -1788,7 +1788,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 tile(
                   ProfileFeature.remoteControl,
                   'Remote',
-                  'Control other Debrify devices and send this setup to '
+                  'Control other MegaWatch devices and send this setup to '
                       'them.',
                 ),
                 tile(
@@ -2143,7 +2143,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   value: _lockOnResume,
                   title: const Text('Lock when the app resumes'),
-                  subtitle: const Text('Require the PIN after leaving Debrify'),
+                  subtitle: const Text('Require the PIN after leaving MegaWatch'),
                   onChanged: (value) => setState(() => _lockOnResume = value),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),

@@ -15,7 +15,7 @@
 > tool/iptv_fault_server.py, wiring in AndroidTvTorrentPlayerActivity.kt +
 > video_player_screen.dart.
 
-**Goal:** live IPTV in Debrify should feel like TiviMate — a channel you tune stays up, drops heal invisibly, zaps are fast and never leave a black screen, and the app never parks on a frozen frame pretending to be paused. Both players: native TV (media3/ExoPlayer 1.8.0) and phone/desktop (media_kit/mpv, patched fork).
+**Goal:** live IPTV in MegaWatch should feel like TiviMate — a channel you tune stays up, drops heal invisibly, zaps are fast and never leave a black screen, and the app never parks on a frozen frame pretending to be paused. Both players: native TV (media3/ExoPlayer 1.8.0) and phone/desktop (media_kit/mpv, patched fork).
 
 **Origin:** Discord report (iRRV.2, 2026-08-12): "The live tv pauses… it is only in this app. Tivimate, televizio all work without pausing." Devices: Galaxy Z Fold7 (Dart player) + Google TV Streamer (native TV player). Second symptom: a "paused" channel resumed from the tune-in point instead of the live edge.
 

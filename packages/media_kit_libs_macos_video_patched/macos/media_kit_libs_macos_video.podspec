@@ -4,10 +4,10 @@ Pod::Spec.new do |s|
   s.name             = 'media_kit_libs_macos_video'
   s.version          = '1.1.4'
   s.summary          = 'PGS-capable macOS native libraries for media_kit'
-  s.description      = 'Debrify-pinned libmpv and FFmpeg frameworks with common subtitle decoders.'
+  s.description      = 'MegaWatch-pinned libmpv and FFmpeg frameworks with common subtitle decoders.'
   s.homepage         = 'https://github.com/media-kit/media-kit'
   s.license          = { :type => 'LGPL-3.0-or-later' }
-  s.author           = { 'Debrify' => 'noreply@example.com' }
+  s.author           = { 'MegaWatch' => 'noreply@example.com' }
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
   s.dependency 'FlutterMacOS'

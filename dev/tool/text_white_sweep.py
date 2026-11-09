@@ -24,7 +24,7 @@ EXCLUDE_PATH_PARTS = (
     'deprecated',
     'video_player',            # player: excluded by decision
     'stremio_tv',              # TV tuner/player surfaces
-    'magic_tv',                # Debrify TV (player-adjacent)
+    'magic_tv',                # MegaWatch TV (player-adjacent)
     'iptv',                    # IPTV: excluded by decision
     'player',                  # playlist_player_service etc. keep out
     'initial_setup_flow',      # onboarding: deferred

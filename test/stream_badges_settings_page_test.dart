@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:debrify/screens/settings/stream_badges_settings_page.dart';
-import 'package:debrify/services/stream_badges_service.dart';
+import 'package:megawatch/screens/settings/stream_badges_settings_page.dart';
+import 'package:megawatch/services/stream_badges_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

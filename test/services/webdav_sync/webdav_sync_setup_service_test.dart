@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_binding_store.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_setup_service.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_binding_store.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_setup_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -98,8 +98,8 @@ void main() {
 
       expect(inspection, isA<WebDavSyncFolderMissing>());
       expect(transport.paths, <String>[
-        'Family/debrify-sync/circle.json.enc',
-        'Family/debrify-sync/circle.key',
+        'Family/megawatch-sync/circle.json.enc',
+        'Family/megawatch-sync/circle.key',
       ]);
       expect(transport.endpoint, Uri.parse('https://example.test/dav/'));
       expect(transport.credentials!.username, 'alice');
@@ -144,9 +144,9 @@ void main() {
         expect(inspection, isA<WebDavSyncFolderMissing>());
         expect(methods, <String>['GET', 'GET', 'GET']);
         expect(paths, <String>[
-          '/dav/Family/debrify-sync/circle.authority',
-          '/dav/Family/debrify-sync/circle.json.enc',
-          '/dav/Family/debrify-sync/circle.key',
+          '/dav/Family/megawatch-sync/circle.authority',
+          '/dav/Family/megawatch-sync/circle.json.enc',
+          '/dav/Family/megawatch-sync/circle.key',
         ]);
         expect((await store.load()).bindings, isEmpty);
       } finally {

@@ -1,9 +1,9 @@
 ---
-description: Unattended nightly Debrify triage — a FAST single-pass sweep that auto-files genuinely-new tickets. No approval gate, no code investigation, no sub-agents, no effort sizing (that's deferred to /estimate). Designed for the 1am launchd run.
+description: Unattended nightly MegaWatch triage — a FAST single-pass sweep that auto-files genuinely-new tickets. No approval gate, no code investigation, no sub-agents, no effort sizing (that's deferred to /estimate). Designed for the 1am launchd run.
 allowed-tools: Bash, Read
 ---
 
-You are the **unattended** nightly Debrify triage. **No human is awake** — never ask questions, never
+You are the **unattended** nightly MegaWatch triage. **No human is awake** — never ask questions, never
 wait for approval. **Be fast and decisive: this must finish in a few minutes, well under the 15-minute
 hard cap.** Do NOT read code, do NOT spawn sub-agents, do NOT size effort — the nightly job only
 *captures* new reports; deep analysis + `effort:*` sizing happen later via the manual `/estimate`.

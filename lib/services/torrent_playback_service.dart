@@ -51,7 +51,7 @@ import '../widgets/pipeline_loading_overlay.dart';
 import '../widgets/provider_picker_dialog.dart';
 import 'alldebrid_service.dart';
 import 'debrid_service.dart';
-import 'debrify_tv_channel_add_service.dart';
+import 'megawatch_tv_channel_add_service.dart';
 import 'download_service.dart';
 import 'local_bound_source_service.dart';
 import 'local_playback_resume_resolver.dart';
@@ -474,9 +474,9 @@ class TorrentPlaybackService {
         break;
       case 'channel':
         // Saved "Add to channel" action (parity with the old screen): cache the
-        // torrent into a Debrify TV channel instead of playing it. Without this
+        // torrent into a MegaWatch TV channel instead of playing it. Without this
         // case the switch fell through to `default` and silently played.
-        await DebrifyTvChannelAddService.addTorrentsToChannel(
+        await MegaWatchTvChannelAddService.addTorrentsToChannel(
           context,
           torrents: [torrent],
           searchKeyword: searchKeyword,
@@ -2103,7 +2103,7 @@ class TorrentPlaybackService {
 
     int compare(Torrent a, Torrent b) {
       switch (rules.ranking) {
-        case QuickPlayRanking.debrify:
+        case QuickPlayRanking.megawatch:
         case QuickPlayRanking.exactOrder:
           return 0;
         case QuickPlayRanking.quality:
@@ -2122,7 +2122,7 @@ class TorrentPlaybackService {
       }
     }
 
-    if (rules.ranking != QuickPlayRanking.debrify &&
+    if (rules.ranking != QuickPlayRanking.megawatch &&
         rules.ranking != QuickPlayRanking.exactOrder) {
       // Dart's List.sort isn't documented stable. Carry original positions so
       // equal-ranked addon/engine results never shuffle unexpectedly.
@@ -2507,7 +2507,7 @@ class TorrentPlaybackService {
     void Function()? onCacheCheck,
     bool preserveRepresentations = false,
   }) async {
-    final activeRules = rules ?? QuickPlayRules.debrifyDefault(isMovie: false);
+    final activeRules = rules ?? QuickPlayRules.megawatchDefault(isMovie: false);
     final engineTimeout = activeRules.searchTimeoutSeconds == 0
         ? null
         : Duration(seconds: activeRules.searchTimeoutSeconds);
@@ -2793,7 +2793,7 @@ class TorrentPlaybackService {
     PlaybackMeta? originMeta,
   }) async {
     final configuredRules =
-        rules ?? QuickPlayRules.debrifyDefault(isMovie: isMovie);
+        rules ?? QuickPlayRules.megawatchDefault(isMovie: isMovie);
     // A custom Stremio episode ID is the authoritative identity for fan edits
     // and other non-Cinemeta catalogs. Torrent engines cannot represent that
     // identity, so recovery must not let a torrents-only profile skip the
@@ -3063,7 +3063,7 @@ class TorrentPlaybackService {
       [source],
       season: season,
       episode: episode,
-      rules: QuickPlayRules.debrifyDefault(
+      rules: QuickPlayRules.megawatchDefault(
         isMovie: season == null,
       ).copyWith(tryNextOnFailure: false, maxAttempts: 1),
     );
@@ -3332,7 +3332,7 @@ class TorrentPlaybackService {
           final prov = await effectiveProvider();
           final List<Torrent> list;
           if (prov == null) {
-            // A direct-addon episode can launch without a Debrify debrid
+            // A direct-addon episode can launch without a MegaWatch debrid
             // provider. Keep that contract when Next crosses a one-entry
             // playlist: query the episode-scoped addon endpoints and retain
             // only links this provider-free resolver can actually open.
@@ -7650,9 +7650,9 @@ class TorrentPlaybackService {
           icon: Icons.connected_tv,
           color: const Color(0xFF14B8A6),
           title: 'Add to channel',
-          subtitle: 'Cache this torrent in a Debrify TV channel.',
+          subtitle: 'Cache this torrent in a MegaWatch TV channel.',
           onTap: () => unawaited(
-            DebrifyTvChannelAddService.addTorrentsToChannel(
+            MegaWatchTvChannelAddService.addTorrentsToChannel(
               context,
               torrents: [torrent],
               searchKeyword: searchKeyword,

@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/addon_identity.dart';
+import 'package:megawatch/widgets/addon_identity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

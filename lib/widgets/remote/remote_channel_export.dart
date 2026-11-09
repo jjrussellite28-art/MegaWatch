@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../models/debrify_tv_channel_record.dart';
+import '../../models/megawatch_tv_channel_record.dart';
 import '../../services/community/channel_yaml_builder.dart';
 import '../../services/community/magnet_yaml_service.dart';
-import '../../services/debrify_tv_repository.dart';
+import '../../services/megawatch_tv_repository.dart';
 import '../../services/remote_control/remote_chunked_send.dart';
 import '../../services/remote_control/remote_constants.dart';
 import '../../services/remote_control/remote_channel_file.dart';
@@ -16,7 +16,7 @@ import '../../services/profiles/profile_async_authorization.dart';
 import '../../models/profiles/profile_policy.dart';
 import 'remote_pairing_dialog.dart';
 
-/// Widget for exporting Debrify TV channels to a TV via remote control
+/// Widget for exporting MegaWatch TV channels to a TV via remote control
 class RemoteChannelExport extends StatefulWidget {
   final VoidCallback onBack;
   final bool headless;
@@ -36,7 +36,7 @@ class RemoteChannelExport extends StatefulWidget {
 class RemoteChannelExportState extends State<RemoteChannelExport> {
   bool get loading => _loading;
   String? inventoryError;
-  List<DebrifyTvChannelRecord> get channels => List.unmodifiable(_channels);
+  List<MegaWatchTvChannelRecord> get channels => List.unmodifiable(_channels);
   Future<void> reload() => _loadChannels();
   final Set<String> _succeeded = {};
   Future<Set<String>> sendSelection(Set<String> ids) async {
@@ -59,7 +59,7 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
   bool _loading = true;
   bool _sending = false;
   String? _transferError;
-  List<DebrifyTvChannelRecord> _channels = [];
+  List<MegaWatchTvChannelRecord> _channels = [];
   final Set<String> _selectedIds = {};
 
   @override
@@ -72,7 +72,7 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
     inventoryError = null;
     setState(() => _loading = true);
     try {
-      final channels = await DebrifyTvRepository.instance.fetchAllChannels();
+      final channels = await MegaWatchTvRepository.instance.fetchAllChannels();
       if (!mounted) return;
       setState(() {
         _channels = channels;
@@ -169,7 +169,7 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
             if (session.peerProtocolVersion >=
                 kReliableTransferProtocolVersion) {
               final staging = await Directory.systemTemp.createTemp(
-                'debrify-channel-send-',
+                'megawatch-channel-send-',
               );
               try {
                 final file = File('${staging.path}/channel.gz');
@@ -177,7 +177,7 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
                 return await _sendChannelToTv(
                   state,
                   targetIp,
-                  'debrify://file',
+                  'megawatch://file',
                   selectedChannel.name,
                   waitForApplication: true,
                   file: file,
@@ -186,9 +186,9 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
                 await staging.delete(recursive: true);
               }
             }
-            final currentChannels = await DebrifyTvRepository.instance
+            final currentChannels = await MegaWatchTvRepository.instance
                 .fetchAllChannels();
-            DebrifyTvChannelRecord? currentChannel;
+            MegaWatchTvChannelRecord? currentChannel;
             for (final candidate in currentChannels) {
               if (candidate.channelId == selectedChannel.channelId) {
                 currentChannel = candidate;
@@ -197,14 +197,14 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
             }
             if (currentChannel == null) return false;
             final yamlContent = await ChannelYamlBuilder.build(currentChannel);
-            final debrifyUri = MagnetYamlService.encode(
+            final megawatchUri = MagnetYamlService.encode(
               yamlContent: yamlContent,
               channelName: currentChannel.name,
             );
             return _sendChannelToTv(
               state,
               targetIp,
-              debrifyUri,
+              megawatchUri,
               currentChannel.name,
               waitForApplication: supportsApplicationResult,
             );
@@ -294,7 +294,7 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
   Future<bool> _sendChannelToTv(
     RemoteControlState state,
     String targetIp,
-    String debrifyUri,
+    String megawatchUri,
     String channelName, {
     required bool waitForApplication,
     File? file,
@@ -321,14 +321,14 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
             )
           : await sendConfigPayloadToDevice(
               state,
-              ConfigCommand.debrifyChannel,
+              ConfigCommand.megawatchChannel,
               targetIp,
               waitForApplication
                   ? remoteChannelTransferBody(
                       requestId: requestId,
-                      uri: debrifyUri,
+                      uri: megawatchUri,
                     )
-                  : debrifyUri,
+                  : megawatchUri,
               label: channelName,
               resultRequestId: waitForApplication ? requestId : null,
             );
@@ -362,7 +362,7 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
 
         // Title
         const Text(
-          'Debrify TV Channels',
+          'MegaWatch TV Channels',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
 
@@ -488,7 +488,7 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Create channels in Debrify TV first',
+              'Create channels in MegaWatch TV first',
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.5),
                 fontSize: 14,
@@ -538,7 +538,7 @@ class RemoteChannelExportState extends State<RemoteChannelExport> {
     );
   }
 
-  Widget _buildChannelTile(DebrifyTvChannelRecord channel, bool isSelected) {
+  Widget _buildChannelTile(MegaWatchTvChannelRecord channel, bool isSelected) {
     return Material(
       color: Colors.transparent,
       child: InkWell(

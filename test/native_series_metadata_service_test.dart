@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/native_series_metadata_service.dart';
-import 'package:debrify/services/tmdb_metadata_repository.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/services/next_episode_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/torrent_playback_service.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/native_series_metadata_service.dart';
+import 'package:megawatch/services/tmdb_metadata_repository.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/services/next_episode_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/torrent_playback_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

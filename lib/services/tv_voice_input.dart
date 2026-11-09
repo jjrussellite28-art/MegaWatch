@@ -53,7 +53,7 @@ class TvVoiceEvent {
 /// Records IN-APP via the platform `SpeechRecognizer` service rather than
 /// launching `ACTION_RECOGNIZE_SPEECH`. The intent route was tried first and
 /// dropped: it throws a full-screen system voice UI (its own text box) over the
-/// Debrify keyboard, pauses our activity — firing every lifecycle handler,
+/// MegaWatch keyboard, pauses our activity — firing every lifecycle handler,
 /// trailer and playback included — and returns nothing until it's over. Binding
 /// the recognition service keeps the whole interaction inside our own keyboard
 /// panel: live partial words, a level meter, and no foreign UI at all.
@@ -66,9 +66,9 @@ class TvVoiceEvent {
 class TvVoiceInput {
   TvVoiceInput._();
 
-  static const MethodChannel _channel = MethodChannel('debrify/tv_voice');
+  static const MethodChannel _channel = MethodChannel('megawatch/tv_voice');
   static const EventChannel _eventChannel = EventChannel(
-    'debrify/tv_voice_events',
+    'megawatch/tv_voice_events',
   );
 
   static bool? _available;

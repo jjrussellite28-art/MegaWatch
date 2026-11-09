@@ -1,5 +1,5 @@
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/iptv_source_stats.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/iptv_source_stats.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

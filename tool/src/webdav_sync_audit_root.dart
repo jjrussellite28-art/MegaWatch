@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
 
 /// Current authority wins. Only a missing file permits legacy fallback;
 /// corrupt authority and access failures must remain visible to the auditor.

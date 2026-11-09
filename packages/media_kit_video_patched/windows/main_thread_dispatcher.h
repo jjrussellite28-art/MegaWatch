@@ -1,4 +1,4 @@
-// Copyright (c) 2026 Debrify contributors. MIT license (see ../LICENSE).
+// Copyright (c) 2026 MegaWatch contributors. MIT license (see ../LICENSE).
 #ifndef MEDIA_KIT_MAIN_THREAD_DISPATCHER_H_
 #define MEDIA_KIT_MAIN_THREAD_DISPATCHER_H_
 

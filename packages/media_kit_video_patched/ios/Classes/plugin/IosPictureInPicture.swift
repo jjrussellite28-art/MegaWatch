@@ -30,7 +30,7 @@ final class IosPictureInPicture: NSObject, AVPictureInPictureControllerDelegate,
   private var frameQueued = false
 
   init(messenger: FlutterBinaryMessenger, outputs: VideoOutputManager) {
-    self.channel = FlutterMethodChannel(name: "com.debrify.app/pip", binaryMessenger: messenger)
+    self.channel = FlutterMethodChannel(name: "com.megawatch.app/pip", binaryMessenger: messenger)
     self.outputs = outputs
     super.init()
     channel.setMethodCallHandler { [weak self] call, result in

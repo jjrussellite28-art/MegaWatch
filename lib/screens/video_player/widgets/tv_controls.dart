@@ -206,7 +206,7 @@ class _TvControlsState extends State<TvControls> {
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
     // Exactly the host's timeline rule: live, an unknown duration, or a
-    // session that asked for no seekbar at all (Magic/Debrify TV) each mean
+    // session that asked for no seekbar at all (Magic/MegaWatch TV) each mean
     // there is no timeline to draw. Drawing one and merely refusing focus
     // showed a scrubber the session had explicitly turned off.
     final showProgress = widget.progressFocusable;

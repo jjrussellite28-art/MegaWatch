@@ -1,6 +1,6 @@
 # settings_spotlight_mockup
 
-A category-first redesign of Debrify Settings in the same Spotlight language as
+A category-first redesign of MegaWatch Settings in the same Spotlight language as
 the new onboarding flow.
 
 Open `index.html` directly in a browser. The wide frame is interactive:

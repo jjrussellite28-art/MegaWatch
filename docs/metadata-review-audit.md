@@ -64,8 +64,8 @@ changes remain uncommitted. No AGENTS.md was found in the repository.
 ## Verification evidence
 
 - Final combined run: **1,639 passed; one pre-existing test failure**.
-  `/tmp/debrify-audit-final-tests.log`;
-  exact file selection: `/tmp/debrify-audit-test-files.txt`.
+  `/tmp/megawatch-audit-final-tests.log`;
+  exact file selection: `/tmp/megawatch-audit-test-files.txt`.
 - The failure is `detail_theme_test.dart`'s colour-literal guard against white
   ink in `_DetailHoldHintPill`, an intentionally dark floating hint. Both the
   test file and `detail_episode_cells.dart` are byte-for-byte identical to HEAD.
@@ -77,9 +77,9 @@ changes remain uncommitted. No AGENTS.md was found in the repository.
 - Final analysis: no errors, no diagnostics on newly changed source lines.
   The unused `_plateFill` warning and informational diagnostics predate this
   work (flagged source lines checked against HEAD).
-  `/tmp/debrify-audit-final-analysis.log`.
-- macOS release build succeeded: `debrify.app`, 153.7 MB.
-  `/tmp/debrify-audit-final-build.log`.
+  `/tmp/megawatch-audit-final-analysis.log`.
+- macOS release build succeeded: `megawatch.app`, 153.7 MB.
+  `/tmp/megawatch-audit-final-build.log`.
 - `git diff --check` passed. No JWT/GitHub-token pattern matches in task Dart
   files; no exposed untracked environment files. Nothing staged or committed.
 
@@ -123,14 +123,14 @@ not claim exhaustive coverage or physical-device verification.
 Verification: the 58-file combined regression run passed 1,650 tests with the
 same inherited color-guard failure documented above. Both files involved in
 that failure remain byte-for-byte identical to HEAD. The final additional
-hero/focus/ambient checks are recorded in `/tmp/debrify-metadata-last-tests.log`.
+hero/focus/ambient checks are recorded in `/tmp/megawatch-metadata-last-tests.log`.
 Targeted analysis reported no errors or warnings (20 existing informational
 diagnostics). `git diff --check` passed. No commit, push, install or fresh native
 release build was performed for this follow-up.
 
-Logs: `/tmp/debrify-metadata-fix-full-tests.log`,
-`/tmp/debrify-metadata-fix-analysis.log`;
-file selection: `/tmp/debrify-metadata-fix-test-files.txt`.
+Logs: `/tmp/megawatch-metadata-fix-full-tests.log`,
+`/tmp/megawatch-metadata-fix-analysis.log`;
+file selection: `/tmp/megawatch-metadata-fix-test-files.txt`.
 
 
 ## Final source-action and listener follow-up

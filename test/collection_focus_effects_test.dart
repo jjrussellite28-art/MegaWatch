@@ -3,16 +3,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/home_collection.dart';
-import 'package:debrify/services/app_route_observer.dart';
-import 'package:debrify/services/collection_focus_playback.dart';
-import 'package:debrify/services/home_collection_rows.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/widgets/collections/collection_focus_art.dart';
-import 'package:debrify/widgets/collections/collection_focus_glow.dart';
-import 'package:debrify/widgets/hero_trailer_backdrop.dart';
-import 'package:debrify/widgets/serialized_trailer_engine.dart';
-import 'package:debrify/widgets/trailer_engine.dart';
+import 'package:megawatch/models/home_collection.dart';
+import 'package:megawatch/services/app_route_observer.dart';
+import 'package:megawatch/services/collection_focus_playback.dart';
+import 'package:megawatch/services/home_collection_rows.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/widgets/collections/collection_focus_art.dart';
+import 'package:megawatch/widgets/collections/collection_focus_glow.dart';
+import 'package:megawatch/widgets/hero_trailer_backdrop.dart';
+import 'package:megawatch/widgets/serialized_trailer_engine.dart';
+import 'package:megawatch/widgets/trailer_engine.dart';
 
 const _video = 'https://example.test/focus.mp4';
 

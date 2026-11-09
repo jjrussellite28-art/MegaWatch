@@ -68,7 +68,7 @@ class ProfileCreationService {
     'iptv_player_guide_style',
     'play_loader_style',
     'tv_player_controls_style',
-    'debrify_tv_player_style',
+    'megawatch_tv_player_style',
     'recording_engine_enabled',
     'tv_hero_artwork_quality',
   };

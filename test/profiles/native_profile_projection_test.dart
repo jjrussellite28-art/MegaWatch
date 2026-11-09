@@ -2,19 +2,19 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/services/profiles/connection_resource_service.dart';
-import 'package:debrify/services/profiles/device_key_provider.dart';
-import 'package:debrify/services/profiles/native_profile_projection.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_lock_controller.dart';
-import 'package:debrify/services/profiles/profile_native_lock_bridge.dart';
-import 'package:debrify/services/profiles/profile_preferences.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/services/profiles/connection_resource_service.dart';
+import 'package:megawatch/services/profiles/device_key_provider.dart';
+import 'package:megawatch/services/profiles/native_profile_projection.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_lock_controller.dart';
+import 'package:megawatch/services/profiles/profile_native_lock_bridge.dart';
+import 'package:megawatch/services/profiles/profile_preferences.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
@@ -503,7 +503,7 @@ void main() {
       // The main Settings page retains these values even when an earlier
       // native publication failed, leaving the native view denied.
       await prefs.setString('tv_player_controls_style', 'frost');
-      await prefs.setString('debrify_tv_player_style', 'cinema');
+      await prefs.setString('megawatch_tv_player_style', 'cinema');
       await prefs.setString('player_default_subtitle_language', 'off');
       await prefs.setInt('player_night_mode_index', 3);
       for (var run = 0; run < 2; run++) {
@@ -520,7 +520,7 @@ void main() {
           );
           final values = snapshot['values'] as Map;
           expect(values['tv_player_controls_style'], 'frost');
-          expect(values['debrify_tv_player_style'], 'cinema');
+          expect(values['megawatch_tv_player_style'], 'cinema');
           expect(values['player_default_subtitle_language'], 'off');
           expect(values['player_night_mode_index'], 3);
           return true;

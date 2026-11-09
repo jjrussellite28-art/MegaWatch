@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/widgets/cloud/cloud_theme.dart';
+import 'package:megawatch/widgets/cloud/cloud_theme.dart';
 
 /// The cloud provider pages (Real-Debrid, TorBox, AllDebrid) render their own
 /// floating toolbar at the very top of the body and pass no [AppBar] at the

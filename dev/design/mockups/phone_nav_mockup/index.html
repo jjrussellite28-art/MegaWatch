@@ -45,11 +45,11 @@
 <p class="sub">The community ask: <b>"a proper classic nav system for Android."</b> Today phones navigate through the
 floating glass button — every switch is <b>two taps + a hunt</b> through an overlay, the current tab is never glanceable,
 and no muscle memory can form. These concepts replace it with a persistent bottom bar, each solving the same hard
-problem a different way: <b>Debrify has 10–11 phone destinations and a classic bar holds five.</b></p>
+problem a different way: <b>MegaWatch has 10–11 phone destinations and a classic bar holds five.</b></p>
 
 <div class="problem">Real phone inventory (integration-gated per user): <b>Main</b> Home · Discover · Downloads · Calendar† &nbsp;|&nbsp;
-<b>Browse</b> IPTV · YouTube &nbsp;|&nbsp; <b>TV</b> Debrify TV · Stremio TV &nbsp;|&nbsp; <b>Library</b> Cloud &nbsp;|&nbsp;
-<b>Setup</b> Addons · Settings. &nbsp;†Calendar only when Trakt/Simkl is connected; Downloads/Cloud/Debrify TV only with a debrid configured — the bar must survive items appearing and disappearing.</div>
+<b>Browse</b> IPTV · YouTube &nbsp;|&nbsp; <b>TV</b> MegaWatch TV · Stremio TV &nbsp;|&nbsp; <b>Library</b> Cloud &nbsp;|&nbsp;
+<b>Setup</b> Addons · Settings. &nbsp;†Calendar only when Trakt/Simkl is connected; Downloads/Cloud/MegaWatch TV only with a debrid configured — the bar must survive items appearing and disappearing.</div>
 
 <div class="cards">
   <a class="c" href="c1_classic_five.html">
@@ -91,7 +91,7 @@ problem a different way: <b>Debrify has 10–11 phone destinations and a classic
 <div class="rec2">
   <h2>Recommendation — ship C2 (it is C1 with one extra sheet)</h2>
   <p><b>C1 is the correct skeleton</b> — a real Material bottom bar, labels on, active state always visible, one-handed. But any <i>fixed</i> five is wrong for someone: no-debrid users have no Cloud, Trakt users live in Calendar, IPTV-first users never touch Discover.</p>
-  <p><b>C2 fixes exactly that</b> with machinery Debrify already believes in — per-user nav is house DNA (integrations can already hide from nav; Calendar appears only when connected). Defaults = C1; long-press or Edit in the More sheet to swap slots 2–4. Ezrik gets his classic bar on day one and never has to know the edit exists.</p>
+  <p><b>C2 fixes exactly that</b> with machinery MegaWatch already believes in — per-user nav is house DNA (integrations can already hide from nav; Calendar appears only when connected). Defaults = C1; long-press or Edit in the More sheet to swap slots 2–4. Ezrik gets his classic bar on day one and never has to know the edit exists.</p>
   <p><b>Rollout safety:</b> the floating glass button stays as a Settings choice ("Navigation style: Classic bar / Floating button"), classic default on phones. TV sidebar and desktop rail untouched. One caveat for the build: tab indices are load-bearing (<i>switchTab(n)</i> sites project-wide) — the bar must map by index table, never by position.</p>
 </div>
 

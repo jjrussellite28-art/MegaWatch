@@ -1,10 +1,10 @@
-import 'package:debrify/models/metadata_preferences.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/metadata_explore_service.dart';
-import 'package:debrify/services/metadata_preferences_service.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/widgets/metadata_explore_spotlight.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/metadata_explore_service.dart';
+import 'package:megawatch/services/metadata_preferences_service.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/widgets/metadata_explore_spotlight.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

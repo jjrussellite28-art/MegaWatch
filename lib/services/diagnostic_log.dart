@@ -62,17 +62,17 @@ class DiagnosticLog {
 
   static final DiagnosticLog instance = DiagnosticLog(
     retention: const Duration(
-      hours: bool.fromEnvironment('DEBRIFY_LOCAL_VALIDATION') ? 12 : 2,
+      hours: bool.fromEnvironment('MEGAWATCH_LOCAL_VALIDATION') ? 12 : 2,
     ),
-    maxSegmentBytes: const bool.fromEnvironment('DEBRIFY_LOCAL_VALIDATION')
+    maxSegmentBytes: const bool.fromEnvironment('MEGAWATCH_LOCAL_VALIDATION')
         ? 1024 * 1024
         : 256 * 1024,
   );
 
   static const MethodChannel _nativeChannel = MethodChannel(
-    'debrify/native_diagnostics',
+    'megawatch/native_diagnostics',
   );
-  static const String _filePrefix = 'debrify-diagnostics-';
+  static const String _filePrefix = 'megawatch-diagnostics-';
   static const String _fileSuffix = '.jsonl';
   static const Duration criticalRetention = Duration(hours: 24);
   static const int _maxPendingEntries = 2000;
@@ -455,7 +455,7 @@ class DiagnosticLog {
     }
 
     return DiagnosticLogExport(
-      fileName: 'debrify-diagnostics-${_fileTimestamp(now)}.jsonl',
+      fileName: 'megawatch-diagnostics-${_fileTimestamp(now)}.jsonl',
       bytes: Uint8List.fromList(utf8.encode(output.toString())),
       entryCount: entries.length,
       windowStart: cutoff,

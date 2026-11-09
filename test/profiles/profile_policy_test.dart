@@ -1,4 +1,4 @@
-import 'package:debrify/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -107,11 +107,11 @@ void main() {
       expect(child.contains(off), isFalse, reason: 'child ${off.name}');
     }
     // The operations that keep a Kid's curated playback working — and
-    // Debrify TV, whose channels ARE keyword operations under the hood.
+    // MegaWatch TV, whose channels ARE keyword operations under the hood.
     for (final on in <ProfileFeature>[
       ProfileFeature.cloud,
       ProfileFeature.torrentSearch,
-      ProfileFeature.debrifyTv,
+      ProfileFeature.megawatchTv,
       ProfileFeature.trackersAndDiscovery,
     ]) {
       expect(child.contains(on), isTrue, reason: 'child ${on.name}');
@@ -158,14 +158,14 @@ void main() {
     expect(member.enabled.contains(ProfileFeature.cloudFiles), isFalse);
 
     final child = ProfilePolicy.decode(
-      v1(<ProfileFeature>[ProfileFeature.debrifyTv, ProfileFeature.cloud]),
+      v1(<ProfileFeature>[ProfileFeature.megawatchTv, ProfileFeature.cloud]),
       UserProfileRole.child,
     );
     expect(child.enabled.contains(ProfileFeature.keywordSearch), isFalse);
     expect(child.enabled.contains(ProfileFeature.cloudFiles), isFalse);
     // Upgrade never touches v1-era bits: this "customized" child keeps
     // exactly what its stored policy said.
-    expect(child.enabled.contains(ProfileFeature.debrifyTv), isTrue);
+    expect(child.enabled.contains(ProfileFeature.megawatchTv), isTrue);
     expect(child.enabled.contains(ProfileFeature.cloud), isTrue);
     expect(child.enabled.contains(ProfileFeature.iptv), isFalse);
     // …but every upgrade seeds the addon-read operation.
@@ -178,7 +178,7 @@ void main() {
     // operation or its Home shelves break, while the v2-era bits (no
     // keywordSearch, no iptv) stay exactly as stored.
     final kidV2 = ProfilePolicy.decode(
-      '{"schemaVersion":2,"enabled":["cloud","torrentSearch","debrifyTv",'
+      '{"schemaVersion":2,"enabled":["cloud","torrentSearch","megawatchTv",'
       '"trackersAndDiscovery","externalPlayers","incomingLinks"]}',
       UserProfileRole.child,
     );
@@ -186,6 +186,6 @@ void main() {
     expect(kidV2.enabled.contains(ProfileFeature.addonUse), isTrue);
     expect(kidV2.enabled.contains(ProfileFeature.keywordSearch), isFalse);
     expect(kidV2.enabled.contains(ProfileFeature.iptv), isFalse);
-    expect(kidV2.enabled.contains(ProfileFeature.debrifyTv), isTrue);
+    expect(kidV2.enabled.contains(ProfileFeature.megawatchTv), isTrue);
   });
 }

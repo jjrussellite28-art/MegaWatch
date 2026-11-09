@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/imdb_parents_guide_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/trakt/trakt_episode_model.dart';
-import 'package:debrify/widgets/detail/detail_layout_console.dart';
-import 'package:debrify/widgets/detail/detail_layout_dossier.dart';
-import 'package:debrify/widgets/detail/detail_layout_marquee.dart';
-import 'package:debrify/widgets/detail/detail_layout_premium.dart';
-import 'package:debrify/widgets/detail/detail_layout_stage.dart';
-import 'package:debrify/widgets/detail/detail_episode_cells.dart';
-import 'package:debrify/widgets/detail/detail_identity.dart';
-import 'package:debrify/widgets/detail/detail_model.dart';
-import 'package:debrify/widgets/detail/theme/detail_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/episodes_panel.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/imdb_parents_guide_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/trakt/trakt_episode_model.dart';
+import 'package:megawatch/widgets/detail/detail_layout_console.dart';
+import 'package:megawatch/widgets/detail/detail_layout_dossier.dart';
+import 'package:megawatch/widgets/detail/detail_layout_marquee.dart';
+import 'package:megawatch/widgets/detail/detail_layout_premium.dart';
+import 'package:megawatch/widgets/detail/detail_layout_stage.dart';
+import 'package:megawatch/widgets/detail/detail_episode_cells.dart';
+import 'package:megawatch/widgets/detail/detail_identity.dart';
+import 'package:megawatch/widgets/detail/detail_model.dart';
+import 'package:megawatch/widgets/detail/theme/detail_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/episodes_panel.dart';
 
 /// Renders every layout under every theme, at TV and phone size.
 ///

@@ -22,7 +22,7 @@ paced bitrate and injects the failures the recovery layers must survive:
     /hls/stale.m3u8?after=30         same, but the playlist stops advancing
                                      its media sequence after N seconds
     /playlist.m3u                    all of the above as an M3U — add THIS
-                                     one URL as an IPTV source in Debrify and
+                                     one URL as an IPTV source in MegaWatch and
                                      every fault becomes a channel
 
 Usage:
@@ -31,7 +31,7 @@ Usage:
 
 Then add  http://<this-machine's-LAN-IP>:8899/playlist.m3u  as an M3U source.
 
-The source must be a raw MPEG-TS file (a Debrify DVR recording works, or:
+The source must be a raw MPEG-TS file (a MegaWatch DVR recording works, or:
 `ffmpeg -i anything.mp4 -c copy -f mpegts sample.ts`). It is looped forever,
 188-byte aligned; PAT/PMT repeat throughout a normal TS so mid-file joins
 decode after a moment, exactly like joining a real live stream mid-GOP.
@@ -338,7 +338,7 @@ def main():
     KBPS = args.kbps
 
     server = ThreadingHTTPServer(("0.0.0.0", args.port), Handler)
-    print(f"IPTV fault lab up. Add this as an M3U source in Debrify:")
+    print(f"IPTV fault lab up. Add this as an M3U source in MegaWatch:")
     print(f"  http://{lan_ip()}:{args.port}/playlist.m3u")
     print(f"Source: {args.source} ({len(SOURCE)//1024} KiB looped @ {KBPS} kbps)")
     try:

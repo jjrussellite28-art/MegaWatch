@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/secret_vault.dart';
-import 'package:debrify/services/simkl/simkl_continue_watching_service.dart';
-import 'package:debrify/services/simkl/simkl_service.dart';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/secret_vault.dart';
+import 'package:megawatch/services/simkl/simkl_continue_watching_service.dart';
+import 'package:megawatch/services/simkl/simkl_service.dart';
+import 'package:megawatch/services/storage_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

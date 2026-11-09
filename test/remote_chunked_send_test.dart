@@ -2,20 +2,20 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_remote_lease.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_remote_lease.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/remote_control/remote_chunked_send.dart';
-import 'package:debrify/services/remote_control/remote_command_router.dart';
-import 'package:debrify/services/remote_control/remote_constants.dart';
-import 'package:debrify/services/remote_control/remote_control_state.dart';
-import 'package:debrify/services/remote_control/remote_session.dart';
-import 'package:debrify/services/remote_control/udp_command_service.dart';
-import 'package:debrify/services/remote_control/udp_discovery_service.dart';
+import 'package:megawatch/services/remote_control/remote_chunked_send.dart';
+import 'package:megawatch/services/remote_control/remote_command_router.dart';
+import 'package:megawatch/services/remote_control/remote_constants.dart';
+import 'package:megawatch/services/remote_control/remote_control_state.dart';
+import 'package:megawatch/services/remote_control/remote_session.dart';
+import 'package:megawatch/services/remote_control/udp_command_service.dart';
+import 'package:megawatch/services/remote_control/udp_discovery_service.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -300,7 +300,7 @@ void main() {
       expect(result.ok, isTrue);
       expect(result.message, 'Applied on TV');
 
-      const uri = 'debrify://channel-payload';
+      const uri = 'megawatch://channel-payload';
       final channel = parseRemoteChannelTransferBody(
         remoteChannelTransferBody(requestId: requestId, uri: uri),
       );
@@ -310,13 +310,13 @@ void main() {
 
       final chunkStart = chunkStartBody(
         transferId: 'transfer-1',
-        command: ConfigCommand.debrifyChannel,
+        command: ConfigCommand.megawatchChannel,
         label: 'Channel',
         totalChunks: 2,
         resultRequestId: requestId,
       );
       expect(parseChunkResultRequestId(chunkStart), requestId);
-      expect(parseChunkResultCommand(chunkStart), ConfigCommand.debrifyChannel);
+      expect(parseChunkResultCommand(chunkStart), ConfigCommand.megawatchChannel);
     });
 
     test('malformed and oversized outcome envelopes are rejected', () {
@@ -708,7 +708,7 @@ void productionRouteIntegrationTest() {
         final rememberedChunkContext = state.debugAuthenticatedChunkContext(
           RemoteCommand(
             action: RemoteAction.config,
-            command: ConfigCommand.debrifyChannelStart,
+            command: ConfigCommand.megawatchChannelStart,
             data: '{}',
           ),
           'sender',

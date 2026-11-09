@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:debrify/services/episode_tracker_snapshot_revision.dart';
-import 'package:debrify/services/mdblist/mdblist_list_source.dart';
-import 'package:debrify/services/mdblist/mdblist_models.dart';
-import 'package:debrify/services/mdblist/mdblist_service.dart';
+import 'package:megawatch/services/episode_tracker_snapshot_revision.dart';
+import 'package:megawatch/services/mdblist/mdblist_list_source.dart';
+import 'package:megawatch/services/mdblist/mdblist_models.dart';
+import 'package:megawatch/services/mdblist/mdblist_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

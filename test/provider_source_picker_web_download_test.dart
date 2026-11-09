@@ -1,6 +1,6 @@
-import 'package:debrify/screens/alldebrid/alldebrid_files_screen.dart';
-import 'package:debrify/screens/debrid_downloads_screen.dart';
-import 'package:debrify/screens/torbox/torbox_downloads_screen.dart';
+import 'package:megawatch/screens/alldebrid/alldebrid_files_screen.dart';
+import 'package:megawatch/screens/debrid_downloads_screen.dart';
+import 'package:megawatch/screens/torbox/torbox_downloads_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

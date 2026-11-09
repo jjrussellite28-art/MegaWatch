@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/services/android_tv_player_bridge.dart';
+import 'package:megawatch/services/android_tv_player_bridge.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

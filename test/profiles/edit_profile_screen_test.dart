@@ -1,22 +1,22 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:debrify/models/profiles/connection_resource.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/models/profiles/user_profile.dart';
-import 'package:debrify/screens/profiles/edit_profile_screen.dart';
-import 'package:debrify/services/profiles/profile_authorization.dart';
-import 'package:debrify/services/profiles/profile_avatar_policy.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_engine_assignment_service.dart';
-import 'package:debrify/services/profiles/profile_pin_service.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/widgets/tv_text_field.dart';
-import 'package:debrify/utils/app_storage.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/models/profiles/connection_resource.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/models/profiles/user_profile.dart';
+import 'package:megawatch/screens/profiles/edit_profile_screen.dart';
+import 'package:megawatch/services/profiles/profile_authorization.dart';
+import 'package:megawatch/services/profiles/profile_avatar_policy.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_engine_assignment_service.dart';
+import 'package:megawatch/services/profiles/profile_pin_service.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/widgets/tv_text_field.dart';
+import 'package:megawatch/utils/app_storage.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -52,7 +52,7 @@ void main() {
         'silently un-restrict a questionnaire-configured profile', () {
       final configured = ProfilePolicy(
         enabled: <ProfileFeature>{
-          ProfileFeature.debrifyTv,
+          ProfileFeature.megawatchTv,
           ProfileFeature.cloud,
           ProfileFeature.torrentSearch,
         },
@@ -78,7 +78,7 @@ void main() {
       // toggles something — only then does the selection become the author.
       final selection = <ProfileFeature>{
         ProfileFeature.cloud,
-        ProfileFeature.debrifyTv,
+        ProfileFeature.megawatchTv,
       };
       expect(
         EditProfileScreen.policyFor(
@@ -458,7 +458,7 @@ void main() {
             await press(tester, LogicalKeyboardKey.select);
             const features = [
               'keywordSearch',
-              'debrifyTv',
+              'megawatchTv',
               'stremioTv',
               'iptv',
               'youtube',

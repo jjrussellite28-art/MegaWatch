@@ -86,20 +86,20 @@ class HomeListSection extends CatalogSection {
   bool get isMdblist => mdblistList != null;
 
   static final StremioAddon traktPlaceholderAddon = StremioAddon(
-    id: 'debrify.home.trakt',
+    id: 'megawatch.home.trakt',
     name: 'Trakt',
     manifestUrl: '',
     baseUrl: '',
   );
 
   static final StremioAddon simklPlaceholderAddon = StremioAddon(
-    id: 'debrify.home.simkl',
+    id: 'megawatch.home.simkl',
     name: 'Simkl',
     manifestUrl: '',
     baseUrl: '',
   );
   static final StremioAddon mdblistPlaceholderAddon = StremioAddon(
-    id: 'debrify.home.mdblist',
+    id: 'megawatch.home.mdblist',
     name: 'MDBList',
     manifestUrl: '',
     baseUrl: '',

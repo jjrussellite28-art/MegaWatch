@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
     <!-- Device-bound profile/resource/job state is restored only through the
-         authenticated Debrify portable-backup pipeline. A cloud copy without
+         authenticated MegaWatch portable-backup pipeline. A cloud copy without
          its non-exportable Keystore key would be corrupt and could revive
          stale native jobs on another device. -->
     <exclude domain="sharedpref" path="."/>

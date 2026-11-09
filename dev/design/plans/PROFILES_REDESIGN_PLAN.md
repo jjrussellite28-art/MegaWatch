@@ -397,8 +397,8 @@ The only pleasant way to get a picture onto an **Android** TV — browsing a
 filesystem with a D-pad is the alternative. Not needed for tvOS, which is
 art-only, and the receiver must **refuse** an avatar payload there.
 
-Reuse the existing chunked transfer (`ConfigCommand.debrifyChannelStart` /
-`debrifyChannelChunk`) with a new payload kind — payload sealed once before
+Reuse the existing chunked transfer (`ConfigCommand.megawatchChannelStart` /
+`megawatchChannelChunk`) with a new payload kind — payload sealed once before
 chunking, transport stays plaintext, same 1400 B UDP budget. Those two commands
 are already exempt from the lease rate limiter in
 `_dispatchAfterProfileAuthorization`, so a multi-hundred-KB image won't trip it.

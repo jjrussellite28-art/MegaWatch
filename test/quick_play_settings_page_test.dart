@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/quick_play_rules.dart';
-import 'package:debrify/screens/settings/quick_play_settings_page.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
+import 'package:megawatch/models/quick_play_rules.dart';
+import 'package:megawatch/screens/settings/quick_play_settings_page.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +51,7 @@ void main() {
     // Movies tab never shows the packs switch.
     expect(find.text('Prefer season packs'), findsNothing);
     // The old preset cards are gone.
-    expect(find.text('Debrify default'), findsNothing);
+    expect(find.text('MegaWatch default'), findsNothing);
     expect(find.text('Follow addon order'), findsNothing);
   });
 
@@ -90,7 +90,7 @@ void main() {
     await tester.tap(find.text('Prefer torrents'));
     await tester.pumpAndSettle();
     final restored = await StorageService.getQuickPlayRules(isMovie: true);
-    expect(restored.matchesDebrifyDefault(isMovie: true), isTrue);
+    expect(restored.matchesMegaWatchDefault(isMovie: true), isTrue);
   });
 
   testWidgets('series pack switch off persists and clears exact-only trap', (
@@ -99,7 +99,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     // A legacy profile stuck on exactEpisodeOnly must not defeat the switch.
     await StorageService.setQuickPlayRules(
-      QuickPlayRules.debrifyDefault(isMovie: false).copyWith(
+      QuickPlayRules.megawatchDefault(isMovie: false).copyWith(
         preset: QuickPlayPreset.custom,
         preferSeriesPacks: false,
         packPreference: QuickPlayPackPreference.exactEpisodeOnly,
@@ -127,7 +127,7 @@ void main() {
   ) async {
     SharedPreferences.setMockInitialValues({});
     await StorageService.setQuickPlayRules(
-      QuickPlayRules.debrifyDefault(isMovie: true).copyWith(
+      QuickPlayRules.megawatchDefault(isMovie: true).copyWith(
         preset: QuickPlayPreset.custom,
         maxAttempts: 2,
         ranking: QuickPlayRanking.smallest,
@@ -198,7 +198,7 @@ void main() {
   testWidgets('restore defaults resets both tabs', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await StorageService.setQuickPlayRules(
-      QuickPlayRules.debrifyDefault(isMovie: true).copyWith(
+      QuickPlayRules.megawatchDefault(isMovie: true).copyWith(
         preset: QuickPlayPreset.custom,
         sourceMode: QuickPlaySourceMode.addonsThenTorrents,
         sourcePriority: const ['engine:a', 'stremio:b'],
@@ -215,7 +215,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final movie = await StorageService.getQuickPlayRules(isMovie: true);
-    expect(movie.matchesDebrifyDefault(isMovie: true), isTrue);
+    expect(movie.matchesMegaWatchDefault(isMovie: true), isTrue);
     expect(movie.sourcePriority, isEmpty);
   });
 }

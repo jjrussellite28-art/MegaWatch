@@ -434,7 +434,7 @@ class TheIntroDbSegmentProvider extends _HttpSkipSegmentProvider {
 /// boundary is exact despite 0.9 being unrepresentable.
 ///
 /// Must stay in step with `MIN_OUTRO_START_FRACTION` in
-/// android/app/src/main/kotlin/com/debrify/app/tv/SkipDbSegmentClient.kt, which
+/// android/app/src/main/kotlin/com/megawatch/app/tv/SkipDbSegmentClient.kt, which
 /// gates the native TV player. The two read the same providers and must not
 /// disagree about the same episode.
 const double _minOutroStartFraction = 0.9;

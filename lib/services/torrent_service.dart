@@ -439,7 +439,7 @@ class TorrentService {
     int? season,
     int? episode,
     bool includeStremio = true,
-    // URL-only consumers (Debrify TV) cannot carry native session headers yet.
+    // URL-only consumers (MegaWatch TV) cannot carry native session headers yet.
     bool includeMediaServers = true,
     List<int>? availableSeasons,
     String?
@@ -918,7 +918,7 @@ class TorrentService {
           id: config.engineId,
           displayName: config.displayName,
           description:
-              'Direct ${config.type.label} search engine configured in Debrify.',
+              'Direct ${config.type.label} search engine configured in MegaWatch.',
           icon: 'hub',
           categories: const ['general', 'movies', 'tv'],
           capabilities: const EngineCapabilities(

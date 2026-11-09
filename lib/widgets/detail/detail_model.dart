@@ -161,7 +161,7 @@ class DetailModel {
   final VoidCallback? onSimklMenu;
   final VoidCallback? onMdblistMenu;
 
-  /// Debrify's local, account-independent movie/series watchlist.
+  /// MegaWatch's local, account-independent movie/series watchlist.
   final bool inMyWatchlist;
   final VoidCallback? onToggleMyWatchlist;
 

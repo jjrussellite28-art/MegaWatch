@@ -2,19 +2,19 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:archive/archive.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/stremio_service.dart';
-import 'package:debrify/widgets/launch/launch_ident.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/stremio_service.dart';
+import 'package:megawatch/widgets/launch/launch_ident.dart';
 
-import 'package:debrify/services/launch_animation/launch_animation_library.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/utils/app_storage.dart';
-import 'package:debrify/utils/platform_util.dart';
-import 'package:debrify/widgets/app_initializer.dart';
-import 'package:debrify/widgets/initial_setup_flow.dart';
-import 'package:debrify/widgets/launch/imported_launch_player.dart';
+import 'package:megawatch/services/launch_animation/launch_animation_library.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/utils/app_storage.dart';
+import 'package:megawatch/utils/platform_util.dart';
+import 'package:megawatch/widgets/app_initializer.dart';
+import 'package:megawatch/widgets/initial_setup_flow.dart';
+import 'package:megawatch/widgets/launch/imported_launch_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -97,7 +97,7 @@ void main() {
           'app_last_build_number': '1',
         });
         PackageInfo.setMockInitialValues(
-          appName: 'Debrify',
+          appName: 'MegaWatch',
           packageName: 'test',
           version: 'test',
           buildNumber: '1',

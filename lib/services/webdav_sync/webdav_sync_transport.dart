@@ -351,7 +351,7 @@ final class ProtocolWebDavSyncTransport
   final WebDavProtocolClient _client;
   final WebDavSyncAuthorityDiagnostic _diagnostic;
 
-  String get _syncRoot => _join(_location.folderPath, 'debrify-sync');
+  String get _syncRoot => _join(_location.folderPath, 'megawatch-sync');
   String get _devices => _join(_syncRoot, 'devices');
   bool _objectsReady = false;
 

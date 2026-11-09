@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:debrify/services/engine/config_loader.dart';
-import 'package:debrify/services/engine/engine_profile_lifecycle.dart';
-import 'package:debrify/services/engine/engine_registry.dart';
-import 'package:debrify/services/engine/local_engine_storage.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/services/engine/config_loader.dart';
+import 'package:megawatch/services/engine/engine_profile_lifecycle.dart';
+import 'package:megawatch/services/engine/engine_registry.dart';
+import 'package:megawatch/services/engine/local_engine_storage.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 

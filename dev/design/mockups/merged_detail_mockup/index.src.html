@@ -608,7 +608,7 @@ h1{font-size:clamp(30px,4.4vw,46px);line-height:1.03;letter-spacing:-.035em;font
 </style>
 
 <div class="wrap">
-  <p class="eyebrow">Debrify · merged details page</p>
+  <p class="eyebrow">MegaWatch · merged details page</p>
   <h1>Eleven layouts for the one screen that decides what you watch</h1>
   <p class="lede">The merged page answers two questions at once — <em>what is this</em> and <em>which episode do I press play on</em>. Each concept below settles that tension differently, and each is drawn at four sizes from the same content, so the answer has to survive a 10-foot TV and a phone in one hand.</p>
 
@@ -967,7 +967,7 @@ const console_ = () => { const up = EPS.find(e=>e.n===9) || EPS[0];
 /* ── VII · VISTA ───────────────────────────────────────────────────────── */
 const vista = () => { const up = EPS.find(e=>e.n===9) || EPS[0]; return `<div class="vis">
   <img class="art" src="${IMG[SHOW.bg]}" alt=""><div class="scrim"></div>
-  <div class="vtop">${backi()}<span class="brandline">Debrify Originals</span><span style="flex:1"></span><span class="vguide rnd" data-f>Parents Guide <b>MODERATE</b></span><span class="cert">${SHOW.cert}</span></div>
+  <div class="vtop">${backi()}<span class="brandline">MegaWatch Originals</span><span style="flex:1"></span><span class="vguide rnd" data-f>Parents Guide <b>MODERATE</b></span><span class="cert">${SHOW.cert}</span></div>
   <div class="vid"><img class="logo" src="${IMG[SHOW.logo]}" alt="${SHOW.name}">${meta()}${genres()}
     <p class="syn" style="margin:0;font-size:12px;max-width:48ch">${SHOW.syn}</p><div class="acts">${btnPri()}${btnTrailer()}${btnSrc()}${btnMore()}</div></div>
   <div class="vdeck">
@@ -982,7 +982,7 @@ const vista = () => { const up = EPS.find(e=>e.n===9) || EPS[0]; return `<div cl
 /* ── VIII · MONOLITH ───────────────────────────────────────────────────── */
 const monolith = () => `<div class="mon">
   <div class="mhero"><img class="art" src="${IMG[SHOW.bg]}" alt=""><div class="scrim"></div>
-    <span class="mposter"><img src="${IMG[SHOW.poster]}" alt=""></span><span class="stamp">A Debrify presentation</span></div>
+    <span class="mposter"><img src="${IMG[SHOW.poster]}" alt=""></span><span class="stamp">A MegaWatch presentation</span></div>
   <div class="mdeck"><div class="mhead">${backi()}<div class="copy"><span class="eyeb">${SHOW.kind} · ${SHOW.year}</span><span class="ttl">${SHOW.name}</span>${meta()}</div></div>
     <div class="acts">${btnPri()}${btnTrailer()}${btnSources()}${btnSrc()}${btnMore()}</div>
     <div class="mglass"><div class="mnav"><b>${isMovie()?"The film":"Season 5"}</b><span>${isMovie()?"Cast & details":SHOW.epcount+" episodes"}</span><span style="flex:1"></span><span class="mparent" data-f>Parents Guide <b>Moderate</b></span></div>

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/screens/video_player/models/gesture_state.dart';
-import 'package:debrify/screens/video_player/services/playback_ui_clock.dart';
-import 'package:debrify/screens/video_player/widgets/tv_controls.dart';
+import 'package:megawatch/screens/video_player/models/gesture_state.dart';
+import 'package:megawatch/screens/video_player/services/playback_ui_clock.dart';
+import 'package:megawatch/screens/video_player/widgets/tv_controls.dart';
 
 void main() {
   Future<void> mount(

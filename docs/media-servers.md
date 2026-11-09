@@ -9,7 +9,7 @@ Open a movie or an individual episode and select **Sources**. Matching versions
 appear under the server's display name, with resolution/container/codec labels.
 They also participate in Quick Play when direct links and addon sources are
 allowed, and can be ordered in source priority settings.
-Debrify TV's automatic channel playback currently excludes native media-server
+MegaWatch TV's automatic channel playback currently excludes native media-server
 sources because its channel-switching path cannot carry authentication headers.
 
 Matching uses exact IMDb, TMDB, or TVDB IDs, verifies the returned item type,
@@ -21,13 +21,13 @@ Audio-language filters use the available embedded audio tracks, not subtitle
 languages or guesses from the library title. Unknown languages are not assumed
 to be English.
 
-Playback streams the original file through the server to Debrify. It does not
+Playback streams the original file through the server to MegaWatch. It does not
 hand authenticated streams to external players or DeoVR; these streams always
 use the internal player. It does not
 open the server's filesystem path on the client. The device must support the
 file's formats and have enough bandwidth; transcoding/remux negotiation and
 external server subtitle fetching are not implemented. Embedded audio/subtitle
-tracks and Debrify's existing progress
+tracks and MegaWatch's existing progress
 and subtitle features continue to use the normal player.
 Downloading Jellyfin/Emby sources to the device is currently disabled; the
 background downloader does not yet support their authenticated stream lifecycle.
@@ -47,10 +47,10 @@ Legacy installs without a committed profile cannot add media servers.
 ## Watch-state sync
 
 Enable **Settings → Jellyfin & Emby → Sync server watch progress** for the
-current Debrify profile. It is off by default. Shared connections use the same
+current MegaWatch profile. It is off by default. Shared connections use the same
 server account: enabling this also updates that account's progress in other apps.
 
-For a selected server movie or episode, Debrify reads that user's resume and
+For a selected server movie or episode, MegaWatch reads that user's resume and
 watched state before opening playback. Server progress seeds the local bookmark
 when none exists, or replaces it when the server supplies a newer timestamp.
 Unknown timestamps do not replace existing bookmarks, and local completed marks
@@ -115,7 +115,7 @@ empty-body check-ins, throttling/coalescing, ordering, conflict handling,
 per-profile opt-in and authorization changes.
 
 The opt-in `test/media_server_live_test.dart` suite exercises actual HTTP calls
-and Debrify's source/watch services against isolated synthetic test libraries.
+and MegaWatch's source/watch services against isolated synthetic test libraries.
 On September 22, 2026 it passed against Jellyfin 12.1.0 and Emby 4.9.3.0:
 ordinary-user login, exact movie/episode matching, authenticated byte-range
 streaming, pin resolution, resume import, pause/stop, EOF completion, fresh replay
@@ -131,15 +131,15 @@ in-memory preferences and a temporary profile, not personal application data.
 Run with:
 
 ```sh
-DEBRIFY_MEDIA_SERVER_LIVE=1 flutter test --no-pub test/media_server_live_test.dart
+MEGAWATCH_MEDIA_SERVER_LIVE=1 flutter test --no-pub test/media_server_live_test.dart
 ```
 
 Tests are skipped by default and require
-servers named `Debrify Test Jellyfin` / `Debrify Test Emby`, ordinary user
-`debrify-test`, and the documented synthetic titles/catalog IDs. URLs may be
-overridden using `DEBRIFY_JELLYFIN_URL` / `DEBRIFY_EMBY_URL`; passwords come from
-matching `DEBRIFY_*_PASSWORD` environment variables or macOS Keychain services
-`Debrify Test Jellyfin` / `Debrify Test Emby`, account `debrify-test`. Tests change
+servers named `MegaWatch Test Jellyfin` / `MegaWatch Test Emby`, ordinary user
+`megawatch-test`, and the documented synthetic titles/catalog IDs. URLs may be
+overridden using `MEGAWATCH_JELLYFIN_URL` / `MEGAWATCH_EMBY_URL`; passwords come from
+matching `MEGAWATCH_*_PASSWORD` environment variables or macOS Keychain services
+`MegaWatch Test Jellyfin` / `MegaWatch Test Emby`, account `megawatch-test`. Tests change
 only synthetic watch data and restore the movie/first episode bookmark to 04:00.
 
 Before release, check against real Jellyfin and Emby servers on supported

@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:debrify/models/tracking_source.dart';
-import 'package:debrify/services/episode_tracker_snapshot_revision.dart';
-import 'package:debrify/services/mdblist/mdblist_models.dart';
-import 'package:debrify/services/mdblist/mdblist_scrobble_session.dart';
-import 'package:debrify/services/mdblist/mdblist_service.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/secret_vault.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/trakt/trakt_service.dart';
+import 'package:megawatch/models/tracking_source.dart';
+import 'package:megawatch/services/episode_tracker_snapshot_revision.dart';
+import 'package:megawatch/services/mdblist/mdblist_models.dart';
+import 'package:megawatch/services/mdblist/mdblist_scrobble_session.dart';
+import 'package:megawatch/services/mdblist/mdblist_service.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/secret_vault.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/trakt/trakt_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

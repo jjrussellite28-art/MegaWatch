@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:debrify/models/tracking_source.dart';
-import 'package:debrify/services/mdblist/mdblist_service.dart';
-import 'package:debrify/services/local_series_completion_service.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/secret_vault.dart';
-import 'package:debrify/services/series_progress_reset_service.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/trakt/trakt_service.dart';
+import 'package:megawatch/models/tracking_source.dart';
+import 'package:megawatch/services/mdblist/mdblist_service.dart';
+import 'package:megawatch/services/local_series_completion_service.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/secret_vault.dart';
+import 'package:megawatch/services/series_progress_reset_service.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/trakt/trakt_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

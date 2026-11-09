@@ -1,4 +1,4 @@
-import 'package:debrify/screens/video_player/widgets/dock_style.dart';
+import 'package:megawatch/screens/video_player/widgets/dock_style.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 

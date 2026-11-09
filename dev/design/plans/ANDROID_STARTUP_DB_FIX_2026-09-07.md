@@ -1,6 +1,6 @@
 # Android startup database fix — isolated worktree
 
-Worktree: `/private/tmp/debrify-webdav-startup-fix`
+Worktree: `/private/tmp/megawatch-webdav-startup-fix`
 Branch: `webdav-sync`, base `93b92cafcf3b8e71d7333fa28ae84848ab7e4226`.
 Changes are uncommitted. The original worktree also checks out this branch;
 committing here would move its branch reference too. No commit, push, APK
@@ -46,9 +46,9 @@ does not close or roll back a live database transaction.
   notices remain in unchanged SearchScreen code (primarily deprecations).
 - `git diff --check` passed.
 
-Logs: `/tmp/debrify-startup-android-check.log`,
-`/tmp/debrify-flutter-regressions.log`, `/tmp/debrify-startup-sync-check.log`,
-`/tmp/debrify-startup-analysis.log`.
+Logs: `/tmp/megawatch-startup-android-check.log`,
+`/tmp/megawatch-flutter-regressions.log`, `/tmp/megawatch-startup-sync-check.log`,
+`/tmp/megawatch-startup-analysis.log`.
 
 The live-profile-switch tests print font-download diagnostics but pass. The
 original intermittent incident has not been reproduced end to end on the phone;
@@ -79,6 +79,6 @@ completion of both responses; the original remaining rows and sources survive.
 
 ## Integration with current webdav-sync
 
-Pulled origin/webdav-sync with --ff-only; already current at 82edcd2a. The shared branch had advanced while this worktree retained the 93b92caf index. Backed up the startup patch and untracked files under /tmp/debrify-startup-before-pull*, refreshed this checkout, and reapplied the patch. Resolved the one search_screen.dart conflict by wrapping the latest Home pipeline, retaining collections reads, claimed-catalog filtering, and pinned collection ordering. No commit created.
+Pulled origin/webdav-sync with --ff-only; already current at 82edcd2a. The shared branch had advanced while this worktree retained the 93b92caf index. Backed up the startup patch and untracked files under /tmp/megawatch-startup-before-pull*, refreshed this checkout, and reapplied the patch. Resolved the one search_screen.dart conflict by wrapping the latest Home pipeline, retaining collections reads, claimed-catalog filtering, and pinned collection ordering. No commit created.
 
 Validation: 78 Home/deadline/collections tests passed. Targeted analysis reports no errors or warnings, with 17 existing informational diagnostics outside the changed code. Native patch unchanged.

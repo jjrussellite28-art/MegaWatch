@@ -56,7 +56,7 @@ Captions rule (as BUILT, revised 2026-08-16): catalog, watchlist AND CW rows
 none — the mock kept CW captions for the informative "48 min left" case, but
 the card model only carries the title, and a title caption under one row on
 an otherwise caption-free board read as inconsistency, not information (the
-progress bar stays CW's signal). Channel/logo rails (IPTV, Debrify TV,
+progress bar stays CW's signal). Channel/logo rails (IPTV, MegaWatch TV,
 Stremio TV) and playlists keep names — a logo tile without its name is a
 guess.
 

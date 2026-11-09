@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:debrify/services/startup_stream_policy.dart';
+import 'package:megawatch/services/startup_stream_policy.dart';
 // Flutter's test SDK supplies fake_async transitively for deterministic timers.
 // ignore: depend_on_referenced_packages
 import 'package:fake_async/fake_async.dart';

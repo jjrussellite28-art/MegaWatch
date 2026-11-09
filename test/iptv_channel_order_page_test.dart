@@ -4,13 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-import 'package:debrify/screens/settings/iptv_channel_order_page.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/screens/settings/iptv_channel_order_page.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/utils/platform_util.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -20,13 +20,13 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     IptvMediaStore.debugResetMigration();
-    DebrifyTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
+    MegaWatchTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
         .openDatabase(
           inMemoryDatabasePath,
           options: OpenDatabaseOptions(
             version: 1,
             onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
-            onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
+            onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
           ),
         );
     for (final entry in const [
@@ -45,8 +45,8 @@ void main() {
 
   tearDown(() async {
     PlatformUtil.debugSetAndroidTvCached(null);
-    await DebrifyTvDatabase.debugDatabaseOverride?.close();
-    DebrifyTvDatabase.debugDatabaseOverride = null;
+    await MegaWatchTvDatabase.debugDatabaseOverride?.close();
+    MegaWatchTvDatabase.debugDatabaseOverride = null;
     IptvMediaStore.debugResetMigration();
   });
 

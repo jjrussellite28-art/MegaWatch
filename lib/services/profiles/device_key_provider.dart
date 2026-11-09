@@ -189,7 +189,7 @@ class DeviceKeyProvider {
       await (await SharedPreferences.getInstance()).remove(linuxStateKey);
     } else {
       await const MethodChannel(
-        'debrify/device_secret',
+        'megawatch/device_secret',
       ).invokeMethod<void>('destroy');
     }
     _cipher = null;
@@ -273,7 +273,7 @@ class DeviceVaultException implements Exception {
 /// channel: native code performs authenticated encryption and returns only an
 /// opaque envelope. Linux intentionally requires the passphrase provider.
 class PlatformDeviceSecretCipher implements DeviceSecretCipher {
-  static const MethodChannel _channel = MethodChannel('debrify/device_secret');
+  static const MethodChannel _channel = MethodChannel('megawatch/device_secret');
   final bool allowCreate;
   bool _requiresMigrationAudit = false;
 
@@ -500,7 +500,7 @@ class PassphraseDeviceSecretCipher implements DeviceSecretCipher {
     final box = await AesGcm.with256bits().encrypt(
       deviceKey,
       secretKey: wrappingKey,
-      aad: utf8.encode('debrify-linux-device-key-v1'),
+      aad: utf8.encode('megawatch-linux-device-key-v1'),
     );
     return base64Encode(<int>[
       ...box.nonce,
@@ -522,7 +522,7 @@ class PassphraseDeviceSecretCipher implements DeviceSecretCipher {
         mac: Mac(packed.sublist(44)),
       ),
       secretKey: wrappingKey,
-      aad: utf8.encode('debrify-linux-device-key-v1'),
+      aad: utf8.encode('megawatch-linux-device-key-v1'),
     );
   }
 

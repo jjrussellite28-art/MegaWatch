@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:debrify/services/cache_scratch_cleanup.dart';
+import 'package:megawatch/services/cache_scratch_cleanup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
@@ -11,7 +11,7 @@ void main() {
   final now = DateTime.now().add(const Duration(days: 3));
   final old = now.subtract(const Duration(days: 2));
   setUp(() async {
-    final temp = await Directory.systemTemp.createTemp('debrify-cleanup-test-');
+    final temp = await Directory.systemTemp.createTemp('megawatch-cleanup-test-');
     root = Directory(await temp.resolveSymbolicLinks());
   });
   tearDown(() async => root.delete(recursive: true));
@@ -31,7 +31,7 @@ void main() {
       final recent = await file('xmltv_456.tmp', aged: false);
       final unrelated = await file('movie.mkv');
       final remote = await file('remote-transfers/transfer.part');
-      final image = await file('debrifyImageCache/art.jpg');
+      final image = await file('megawatchImageCache/art.jpg');
       await CacheScratchCleanup.clean(root, now: now);
       expect(await stale.exists(), isFalse);
       for (final kept in [recent, unrelated, remote, image]) {
@@ -50,7 +50,7 @@ void main() {
   });
 
   test('preserves a scratch directory with a recent active child', () async {
-    final active = await file('debrify-iptv-abc/playlist.m3u', aged: false);
+    final active = await file('megawatch-iptv-abc/playlist.m3u', aged: false);
     await CacheScratchCleanup.clean(root, now: now);
     expect(await active.exists(), isTrue);
   });
@@ -58,7 +58,7 @@ void main() {
   test('never follows scratch or picker symlinks', () async {
     final original = await file('saved/original.zip');
     await Link(
-      p.join(root.path, 'debrify-iptv-link'),
+      p.join(root.path, 'megawatch-iptv-link'),
     ).create(original.parent.path);
     final picker = Directory(p.join(root.path, 'file_picker'));
     await picker.create();

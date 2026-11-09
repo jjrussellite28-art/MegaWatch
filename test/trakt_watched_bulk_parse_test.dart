@@ -1,4 +1,4 @@
-import 'package:debrify/services/trakt/trakt_service.dart';
+import 'package:megawatch/services/trakt/trakt_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

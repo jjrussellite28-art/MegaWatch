@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:debrify/widgets/clear_pinned_sources_button.dart';
-import 'package:debrify/widgets/detail/showcase_parts.dart';
-import 'package:debrify/services/series_source_service.dart';
+import 'package:megawatch/widgets/clear_pinned_sources_button.dart';
+import 'package:megawatch/widgets/detail/showcase_parts.dart';
+import 'package:megawatch/services/series_source_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

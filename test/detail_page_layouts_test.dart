@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/screens/settings/detail_page_style_page.dart';
-import 'package:debrify/models/detail_page_section_visibility.dart';
-import 'package:debrify/services/profiles/sanitized_profile_preferences.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/widgets/detail/detail_style.dart';
+import 'package:megawatch/screens/settings/detail_page_style_page.dart';
+import 'package:megawatch/models/detail_page_section_visibility.dart';
+import 'package:megawatch/services/profiles/sanitized_profile_preferences.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/widgets/detail/detail_style.dart';
 
 void main() {
   group('resolveDetailSize', () {

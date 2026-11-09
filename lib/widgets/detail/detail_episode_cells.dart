@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../services/trakt/trakt_episode_model.dart';
 import '../../theme/widgets/themed_artwork.dart';
 import '../../utils/platform_util.dart';
@@ -404,7 +404,7 @@ class DetailEpisodeThumb extends StatelessWidget {
               fit: BoxFit.cover,
               color: blend?.$1,
               colorBlendMode: blend?.$2,
-              cacheManager: DebrifyImageCache.manager,
+              cacheManager: MegaWatchImageCache.manager,
               // Rail/grid thumbs are ~200 logical px at most; never decode a
               // full-size poster fallback for one.
               memCacheWidth: 400,

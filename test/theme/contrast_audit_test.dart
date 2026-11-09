@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
 
 import 'golden_harness.dart';
 import 'surface_gallery.dart';

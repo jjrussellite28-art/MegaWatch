@@ -1,4 +1,4 @@
-# Debrify native render-context shutdown
+# MegaWatch native render-context shutdown
 
 Base: pub.dev `media_kit_video` 2.0.1. Dart, Android and Linux
 implementations are unchanged. Upstream LICENSE is retained.
@@ -18,7 +18,7 @@ mpv_render_context_free, triggering libmpv's fatal mp_clients_destroy abort.
 - Render jobs check disposal before reading the mpv handle. Canceled workers
   reject/drop pending jobs, avoiding late handle access and retained closures.
 
-The shared Apple files also compile into upstream's iOS plugin. Debrify's
+The shared Apple files also compile into upstream's iOS plugin. MegaWatch's
 separate media_kit_video_tvos package is not changed by this override.
 
 Native validation: see tool/native_video_disposal_probe.dart. Run a macOS release

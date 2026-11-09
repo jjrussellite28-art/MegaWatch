@@ -5,7 +5,7 @@ import '../profiles/profile_database_snapshot.dart';
 ///
 /// Most entries are permanent device-local exclusions. The two database
 /// entries are a bounded fallback: when a complete SQLite snapshot cannot fit
-/// the portable envelope, IPTV catalogue/EPG rows and Debrify TV
+/// the portable envelope, IPTV catalogue/EPG rows and MegaWatch TV
 /// channels/hash pools are removed from a scratch copy. IPTV connection
 /// resources and the durable database tables remain in the package.
 abstract final class WebDavSyncGraphOmissionPolicy {
@@ -44,14 +44,14 @@ abstract final class WebDavSyncGraphOmissionPolicy {
         }
         continue;
       }
-      if (entry.key == DebrifyTvBackupOmission.key) {
-        final omission = DebrifyTvBackupOmission.fromOmissions(
+      if (entry.key == MegaWatchTvBackupOmission.key) {
+        final omission = MegaWatchTvBackupOmission.fromOmissions(
           package.omissions,
         );
         if (omission == null ||
             omission.profilesAffected > package.profiles.length) {
           throw const FormatException(
-            'WebDAV sync graph has malformed Debrify TV omissions',
+            'WebDAV sync graph has malformed MegaWatch TV omissions',
           );
         }
         continue;

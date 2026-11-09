@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../utils/platform_util.dart';
 import '../../utils/tv_keys.dart';
 import '../tracker_brand_marks.dart';
@@ -663,7 +663,7 @@ class DetailLogo extends StatelessWidget {
         height: height,
         fit: BoxFit.contain,
         alignment: Alignment.bottomLeft,
-        cacheManager: DebrifyImageCache.manager,
+        cacheManager: MegaWatchImageCache.manager,
         // Logo art is often a huge transparent PNG; never decode it at full
         // resolution for a 70px lockup on a 2 GB box.
         memCacheHeight: (height * 3).round(),

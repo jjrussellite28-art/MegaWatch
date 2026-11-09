@@ -1,4 +1,4 @@
-import 'package:debrify/screens/profiles/linux_vault_screen.dart';
+import 'package:megawatch/screens/profiles/linux_vault_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

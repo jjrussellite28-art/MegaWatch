@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/stremio_service.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/stremio_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:debrify/services/profiles/profile_cache_ledger.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/profiles/profile_cache_ledger.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

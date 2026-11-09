@@ -1,5 +1,5 @@
-import 'package:debrify/models/android_video_renderer_mode.dart';
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/models/android_video_renderer_mode.dart';
+import 'package:megawatch/services/storage_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

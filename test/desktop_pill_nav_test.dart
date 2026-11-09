@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/widgets/desktop_pill_nav.dart';
-import 'package:debrify/widgets/desktop_sidebar_nav.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/widgets/desktop_pill_nav.dart';
+import 'package:megawatch/widgets/desktop_sidebar_nav.dart';
 
 /// The desktop 'pill' is the wide-layout sibling of the TV rail's pill: no
 /// rail, content full-bleed, a capsule that opens the menu as an overlay.

@@ -1,23 +1,23 @@
 import 'dart:io';
 
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/screens/browse_screen.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/utils/platform_util.dart';
-import 'package:debrify/widgets/tv_keyboard.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/iptv_media_store.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/utils/app_storage.dart';
-import 'package:debrify/widgets/browse/browse_search_header.dart';
-import 'package:debrify/widgets/iptv/iptv_filters.dart';
-import 'package:debrify/widgets/iptv/iptv_results_view.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_live_timeline.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_shell.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/screens/browse_screen.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/utils/platform_util.dart';
+import 'package:megawatch/widgets/tv_keyboard.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/iptv_media_store.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/utils/app_storage.dart';
+import 'package:megawatch/widgets/browse/browse_search_header.dart';
+import 'package:megawatch/widgets/iptv/iptv_filters.dart';
+import 'package:megawatch/widgets/iptv/iptv_results_view.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_live_timeline.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_shell.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,13 +47,13 @@ void main() {
       cache: catalogDirectory,
     );
     IptvMediaStore.debugResetMigration();
-    DebrifyTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
+    MegaWatchTvDatabase.debugDatabaseOverride = await databaseFactoryFfiNoIsolate
         .openDatabase(
           inMemoryDatabasePath,
           options: OpenDatabaseOptions(
             version: 1,
             onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
-            onCreate: (db, _) => DebrifyTvDatabase.createIptvStoreTables(db),
+            onCreate: (db, _) => MegaWatchTvDatabase.createIptvStoreTables(db),
           ),
         );
     IptvCatalogDb.debugDirectoryOverride = catalogDirectory.path;
@@ -81,8 +81,8 @@ https://example.com/live/two.ts
     MainPageBridge.cancelIptvStartup = null;
     IptvCatalogDb.debugClose();
     IptvCatalogDb.debugDirectoryOverride = null;
-    await DebrifyTvDatabase.debugDatabaseOverride?.close();
-    DebrifyTvDatabase.debugDatabaseOverride = null;
+    await MegaWatchTvDatabase.debugDatabaseOverride?.close();
+    MegaWatchTvDatabase.debugDatabaseOverride = null;
     IptvMediaStore.debugResetMigration();
     AppStorage.debugReset();
     ProfileRuntime.debugReset();

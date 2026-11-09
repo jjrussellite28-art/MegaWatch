@@ -21,12 +21,12 @@ if (keystorePropertiesFile.exists()) {
 }
 
 // Opt-in identity used by tool/build_personal.sh. Normal builds are unchanged.
-val isPersonalBuild = providers.gradleProperty("debrifyPersonalBuild")
+val isPersonalBuild = providers.gradleProperty("megawatchPersonalBuild")
     .map(String::toBoolean)
     .orElse(false)
 
 android {
-    namespace = "com.debrify.app"
+    namespace = "com.megawatch.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -34,7 +34,7 @@ android {
     // which stores the .so files uncompressed. That is Google's recommendation
     // — mmap'd straight from the APK, so LESS space on the device and a faster
     // start — but it nearly doubles the DOWNLOAD (85MB -> 160MB universal),
-    // and Debrify ships its APK by hand through GitHub, where the download is
+    // and MegaWatch ships its APK by hand through GitHub, where the download is
     // the number users see. Keep the pre-upgrade behaviour until that trade is
     // deliberately made; the alternative worth considering is --split-per-abi.
     packaging {
@@ -57,12 +57,12 @@ android {
     }
 
     defaultConfig {
-        applicationId = if (isPersonalBuild.get()) "com.debrify.app.personal" else "com.debrify.app"
+        applicationId = if (isPersonalBuild.get()) "com.megawatch.app.personal" else "com.megawatch.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        resValue("string", "app_name", if (isPersonalBuild.get()) "Debrify Personal" else "Debrify")
+        resValue("string", "app_name", if (isPersonalBuild.get()) "MegaWatch Personal" else "MegaWatch")
     }
 
     signingConfigs {
@@ -123,7 +123,7 @@ abstract class LocalDiagnosticsManifest : DefaultTask() {
 
 androidComponents {
     onVariants(selector().withBuildType("release")) { variant ->
-        if (providers.gradleProperty("debrifyLocalDiagnostics").orNull == "true") {
+        if (providers.gradleProperty("megawatchLocalDiagnostics").orNull == "true") {
             val localManifest = tasks.register<LocalDiagnosticsManifest>("${variant.name}LocalDiagnosticsManifest")
             variant.artifacts.use(localManifest)
                 .wiredWithFiles(LocalDiagnosticsManifest::inputManifest, LocalDiagnosticsManifest::outputManifest)

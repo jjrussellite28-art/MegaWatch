@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:debrify/services/engine/remote_engine_manager.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/widgets/initial_setup_flow.dart';
-import 'package:debrify/widgets/onboarding/key_codec.dart';
-import 'package:debrify/widgets/onboarding/onboarding_models.dart';
-import 'package:debrify/widgets/onboarding/onboarding_theme.dart';
-import 'package:debrify/widgets/tv_text_field.dart';
+import 'package:megawatch/services/engine/remote_engine_manager.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/widgets/initial_setup_flow.dart';
+import 'package:megawatch/widgets/onboarding/key_codec.dart';
+import 'package:megawatch/widgets/onboarding/onboarding_models.dart';
+import 'package:megawatch/widgets/onboarding/onboarding_theme.dart';
+import 'package:megawatch/widgets/tv_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

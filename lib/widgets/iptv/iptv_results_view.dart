@@ -16,7 +16,7 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/iptv_playlist.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../browse/brand_accent.dart';
 import '../browse/browse_results_focus.dart';
 import '../browse/browse_search_header.dart';
@@ -5027,7 +5027,7 @@ class IptvResultsViewState extends State<IptvResultsView>
       SnackBar(
         content: Text(
           ok
-              ? 'Recording stopped — saving to Downloads/Debrify/Recordings'
+              ? 'Recording stopped — saving to Downloads/MegaWatch/Recordings'
               : "Couldn't stop recording",
         ),
       ),
@@ -5182,7 +5182,7 @@ class IptvResultsViewState extends State<IptvResultsView>
           capture == null
               ? "Couldn't start recording"
               : 'Recording ${channel.name} — stop from this Record button; '
-                    'runs while Debrify is open',
+                    'runs while MegaWatch is open',
         ),
       ),
     );
@@ -5299,7 +5299,7 @@ class IptvResultsViewState extends State<IptvResultsView>
           );
     unawaited(_refreshScheduledCount());
     if (result.errorCode == 'exact_alarms_required') {
-      return 'Allow "Alarms & reminders" for Debrify to schedule recordings';
+      return 'Allow "Alarms & reminders" for MegaWatch to schedule recordings';
     }
     return result.ok
         ? (airsNow
@@ -6671,7 +6671,7 @@ class IptvResultsViewState extends State<IptvResultsView>
   }
 
   static const String _kSpotlightAllCategory =
-      '__debrify_spotlight_all_categories__';
+      '__megawatch_spotlight_all_categories__';
 
   Future<void> _showSpotlightCategoryPicker() async {
     final picked = await showDialog<String>(
@@ -7114,7 +7114,7 @@ class IptvResultsViewState extends State<IptvResultsView>
                 child: (channel.logoUrl != null && channel.logoUrl!.isNotEmpty)
                     ? CachedNetworkImage(
                         imageUrl: channel.logoUrl!,
-                        cacheManager: DebrifyImageCache.iptvLogos,
+                        cacheManager: MegaWatchImageCache.iptvLogos,
                         fit: BoxFit.contain,
                         memCacheHeight: 96,
                         fadeInDuration: Duration.zero,
@@ -8473,7 +8473,7 @@ class _IptvStageFloorState extends State<_IptvStageFloor>
             padding: const EdgeInsets.all(38),
             child: CachedNetworkImage(
               imageUrl: logo,
-              cacheManager: DebrifyImageCache.iptvLogos,
+              cacheManager: MegaWatchImageCache.iptvLogos,
               fit: BoxFit.contain,
               // Cap the decode — see the row logo chip's rationale.
               memCacheHeight: 240,
@@ -8811,7 +8811,7 @@ class _IptvFocusStageInfo extends StatelessWidget {
                                 channel.logoUrl!.isNotEmpty)
                             ? CachedNetworkImage(
                                 imageUrl: channel.logoUrl!,
-                                cacheManager: DebrifyImageCache.iptvLogos,
+                                cacheManager: MegaWatchImageCache.iptvLogos,
                                 fit: BoxFit.contain,
                                 memCacheHeight: 96,
                                 fadeInDuration: Duration.zero,
@@ -8954,7 +8954,7 @@ class _IptvRailInfo extends StatelessWidget {
                 child: (ch.logoUrl != null && ch.logoUrl!.isNotEmpty)
                     ? CachedNetworkImage(
                         imageUrl: ch.logoUrl!,
-                        cacheManager: DebrifyImageCache.iptvLogos,
+                        cacheManager: MegaWatchImageCache.iptvLogos,
                         fit: BoxFit.contain,
                         // Cap the decode — see the row logo chip's rationale.
                         memCacheHeight: 96,

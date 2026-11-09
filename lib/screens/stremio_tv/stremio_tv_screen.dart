@@ -905,7 +905,7 @@ class _StremioTvScreenState extends State<StremioTvScreen> {
       loaderAccent2: app.stremioTv.loaderAccent2,
       railFar: app.stremioTv.loaderRailFar,
       // Settings → Appearance → Play Loader: the same look the Home/detail
-      // play path uses, so a Debrify TV launch doesn't contradict the choice.
+      // play path uses, so a MegaWatch TV launch doesn't contradict the choice.
       style: PlayLoaderStyleController.cached ==
               PlayLoaderStyleController.classic
           ? PlayLoaderStyle.classic

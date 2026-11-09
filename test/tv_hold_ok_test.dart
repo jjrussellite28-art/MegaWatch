@@ -1,4 +1,4 @@
-import 'package:debrify/utils/tv_keys.dart';
+import 'package:megawatch/utils/tv_keys.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -352,7 +352,7 @@ class ProfileRestoreCoordinator {
         final sealed = await cipher.seal(
           utf8.encode(jsonEncode(secret)),
           associatedData: utf8.encode(
-            'debrify-resource|id=$resourceId|type=${type.name}|'
+            'megawatch-resource|id=$resourceId|type=${type.name}|'
             'owner=$ownerId|public=1|secret=1',
           ),
         );
@@ -838,7 +838,7 @@ class ProfileRestoreCoordinator {
           }
         }
         final aad = utf8.encode(
-          'debrify-resource|id=$resourceId|type=${type.name}|'
+          'megawatch-resource|id=$resourceId|type=${type.name}|'
           'owner=$destinationProfileId|public=1|secret=1',
         );
         final sealed = await cipher.seal(

@@ -1,6 +1,6 @@
-import 'package:debrify/screens/video_player/utils/subtitle_audio_policy.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/profiles/sanitized_profile_preferences.dart';
+import 'package:megawatch/screens/video_player/utils/subtitle_audio_policy.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/profiles/sanitized_profile_preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

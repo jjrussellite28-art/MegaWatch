@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/tracking_source_policy.dart';
-import 'package:debrify/services/simkl/simkl_item_transformer.dart';
-import 'package:debrify/services/simkl/simkl_service.dart';
-import 'package:debrify/widgets/movie_watched_badge.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/tracking_source_policy.dart';
+import 'package:megawatch/services/simkl/simkl_item_transformer.dart';
+import 'package:megawatch/services/simkl/simkl_service.dart';
+import 'package:megawatch/widgets/movie_watched_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

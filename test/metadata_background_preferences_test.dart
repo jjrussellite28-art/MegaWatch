@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:debrify/models/metadata_preferences.dart';
-import 'package:debrify/services/metadata_preferences_service.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
+import 'package:megawatch/services/metadata_preferences_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-name: debrify
+name: megawatch
 publish_to: none
 environment:
   sdk: '>=3.12.2 <4.0.0'

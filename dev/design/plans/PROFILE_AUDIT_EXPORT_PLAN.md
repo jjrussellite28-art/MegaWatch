@@ -128,7 +128,7 @@ id-bearing key is a plan-review item, not a silent leak.
 ```jsonc
 {
   "schemaVersion": 1,
-  "generatedBy": "debrify-profile-audit",
+  "generatedBy": "megawatch-profile-audit",
   "runtime": { "mode": "committed", "activeScope": "p.profile-1.g.3.e.12",
                "packageVersion": 3 },
   "registry": { /* privacySafeDiagnostics(), verbatim */ },
@@ -148,10 +148,10 @@ id-bearing key is a plan-review item, not a silent leak.
                    "owner": "profile-1", "grants": {"profile-2": 3},
                    "secretKeysReadable": true,
                    "secretKeys": ["name","serverUrl","username","password"] } ],
-  "stores": [ { "profile": "profile-1", "name": "debrify_tv.db",
+  "stores": [ { "profile": "profile-1", "name": "megawatch_tv.db",
                 "health": "ok", "tables": {"video_resume": 214} } ],
   // health: ok | unhealthy | unavailable | absent. A non-active profile's DB is
-  // opened directly read-only rather than through DebrifyTvDatabase, whose scope
+  // opened directly read-only rather than through MegaWatchTvDatabase, whose scope
   // machinery would (correctly) refuse a foreign scope. 16a8392d showed a
   // WAL-header database can fail SQLITE_CANTOPEN read-only when its -wal/-shm
   // companions are missing, so any open failure lands in "unavailable" and the
@@ -277,7 +277,7 @@ Checked before writing a line, because each would fail the build late:
 1. **Raw `SharedPreferences.getInstance()` counts are pinned per file.** The
    exporter must go through `ProfilePreferences.forCapturedScope`; a raw call
    means editing a security allowlist for a dev tool.
-2. **`'debrify_tv.db'` / `'iptv_catalog.db'` literals are confined** to six
+2. **`'megawatch_tv.db'` / `'iptv_catalog.db'` literals are confined** to six
    reviewed files. Use `ProfileDatabaseSnapshot.databaseNames`, which
    `ProfileDiagnosticsService` already does.
 3. **`print(` is banned anywhere under `lib/services/`** (recursive, so `dev/`

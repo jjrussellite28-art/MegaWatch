@@ -1,8 +1,8 @@
-import 'package:debrify/models/metadata_preferences.dart';
-import 'package:debrify/models/detail_page_section_visibility.dart';
-import 'package:debrify/services/metadata_explore_service.dart';
-import 'package:debrify/widgets/detail/showcase_availability.dart';
-import 'package:debrify/widgets/detail/showcase_parts.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
+import 'package:megawatch/models/detail_page_section_visibility.dart';
+import 'package:megawatch/services/metadata_explore_service.dart';
+import 'package:megawatch/widgets/detail/showcase_availability.dart';
+import 'package:megawatch/widgets/detail/showcase_parts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

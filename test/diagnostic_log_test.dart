@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/services/diagnostic_log.dart';
+import 'package:megawatch/services/diagnostic_log.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,7 +12,7 @@ void main() {
   late DiagnosticLog log;
 
   setUp(() async {
-    root = await Directory.systemTemp.createTemp('debrify-diagnostics-');
+    root = await Directory.systemTemp.createTemp('megawatch-diagnostics-');
     now = DateTime.utc(2026, 8, 29, 12);
     log = DiagnosticLog(clock: () => now, maxSegmentBytes: 2048);
     await log.initialize(directoryOverride: root);
@@ -96,7 +96,7 @@ void main() {
           }),
         );
         await File(
-          '${dir.path}/debrify-diagnostics-${now.millisecondsSinceEpoch}-${2 - group}-android.jsonl',
+          '${dir.path}/megawatch-diagnostics-${now.millisecondsSinceEpoch}-${2 - group}-android.jsonl',
         ).writeAsString('${lines.join('\n')}\n');
       }
       final exported = await log.exportLastWindow(maxBytes: 8192);
@@ -137,7 +137,7 @@ void main() {
         now.millisecondsSinceEpoch -
         now.millisecondsSinceEpoch % const Duration(minutes: 15).inMilliseconds;
     final file = File(
-      '${root.path}/diagnostics/debrify-diagnostics-$segment-android-critical.jsonl',
+      '${root.path}/diagnostics/megawatch-diagnostics-$segment-android-critical.jsonl',
     );
     final record = jsonEncode({
       'timestamp': now.toIso8601String(),
@@ -210,7 +210,7 @@ void main() {
         error: StateError('failed while playing $sentinel'),
         stackTrace: StackTrace.fromString(
           '#0 /Users/private-user/project/lib/main.dart:10:2\n'
-          '#1 package:debrify/main.dart:20:4',
+          '#1 package:megawatch/main.dart:20:4',
         ),
         flushImmediately: false,
       );
@@ -251,7 +251,7 @@ void main() {
       log.recordFlutterError(
         FlutterErrorDetails(
           exception: FlutterError('widget title $sentinel'),
-          stack: StackTrace.fromString('#0 package:debrify/main.dart:20:4'),
+          stack: StackTrace.fromString('#0 package:megawatch/main.dart:20:4'),
           context: ErrorDescription('while rendering $sentinel'),
           library: 'private library $sentinel',
         ),
@@ -286,7 +286,7 @@ void main() {
             const Duration(minutes: 15).inMilliseconds);
     final directory = Directory('${root.path}/diagnostics');
     final nativeFile = File(
-      '${directory.path}/debrify-diagnostics-$segmentMs-android.jsonl',
+      '${directory.path}/megawatch-diagnostics-$segmentMs-android.jsonl',
     );
     await nativeFile.writeAsString(
       '${jsonEncode(<String, Object?>{'timestamp': now.toIso8601String(), 'level': 'warning', 'source': 'android_process', 'event': 'previous_exit', 'message': 'reason=native_crash'})}\n',

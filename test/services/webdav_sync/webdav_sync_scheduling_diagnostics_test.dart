@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:debrify/services/diagnostic_log.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_diagnostics.dart';
+import 'package:megawatch/services/diagnostic_log.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_diagnostics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -7,10 +7,10 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:debrify/models/home_collection_inventory.dart';
-import 'package:debrify/services/home_collections_store.dart';
-import 'package:debrify/services/home_collection_rows.dart';
-import 'package:debrify/utils/canonical_json.dart';
+import 'package:megawatch/models/home_collection_inventory.dart';
+import 'package:megawatch/services/home_collections_store.dart';
+import 'package:megawatch/services/home_collection_rows.dart';
+import 'package:megawatch/utils/canonical_json.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/painting.dart';
 

@@ -71,7 +71,7 @@ class SettingsSearchEntry {
 /// result looks and behaves exactly like the same row on its home screen —
 /// tapping a navigable result opens its page; a toggle result flips in place.
 ///
-/// TV: the field is a [TvTextField] shell (OK opens the Debrify keyboard).
+/// TV: the field is a [TvTextField] shell (OK opens the MegaWatch keyboard).
 /// DOWN from the field drops into the first result; from there the framework's
 /// directional traversal walks the list (and scrolls each focused row into
 /// view). Phone: autofocus raises the IME and results filter as you type.

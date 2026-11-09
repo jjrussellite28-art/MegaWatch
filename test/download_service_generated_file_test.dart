@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:debrify/services/download_service.dart';
+import 'package:megawatch/services/download_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -9,7 +9,7 @@ void main() {
 
   setUp(() async {
     destination = await Directory.systemTemp.createTemp(
-      'debrify-generated-download-',
+      'megawatch-generated-download-',
     );
     DownloadService.instance.debugOverrideGeneratedFileDirectory(destination);
   });
@@ -27,7 +27,7 @@ void main() {
       final bytes = Uint8List.fromList(<int>[0x50, 0x4b, 0x03, 0x04]);
 
       final saved = await DownloadService.instance.saveGeneratedFile(
-        fileName: 'debrify-tv-channels.zip',
+        fileName: 'megawatch-tv-channels.zip',
         bytes: bytes,
         mimeType: 'application/zip',
       );
@@ -41,18 +41,18 @@ void main() {
 
   test('generated files do not overwrite an earlier export', () async {
     final first = await DownloadService.instance.saveGeneratedFile(
-      fileName: 'debrify-profile.json',
+      fileName: 'megawatch-profile.json',
       bytes: Uint8List.fromList(<int>[1]),
       mimeType: 'application/json',
     );
     final second = await DownloadService.instance.saveGeneratedFile(
-      fileName: 'debrify-profile.json',
+      fileName: 'megawatch-profile.json',
       bytes: Uint8List.fromList(<int>[2]),
       mimeType: 'application/json',
     );
 
     expect(first.reference, isNot(second.reference));
-    expect(second.reference, endsWith('debrify-profile (1).json'));
+    expect(second.reference, endsWith('megawatch-profile (1).json'));
     expect(await File(first.reference).readAsBytes(), <int>[1]);
     expect(await File(second.reference).readAsBytes(), <int>[2]);
   });

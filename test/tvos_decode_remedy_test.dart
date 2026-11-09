@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 
-import 'package:debrify/services/tvos_decode_remedy.dart';
+import 'package:megawatch/services/tvos_decode_remedy.dart';
 
 /// A scriptable mpv property backend. Records every access in order and
 /// serves `video-params/hw-pixelformat` reads from a queue so tests can

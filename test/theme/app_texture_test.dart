@@ -4,14 +4,14 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/theme/app_surfaces.dart';
-import 'package:debrify/theme/app_texture.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/utils/platform_util.dart';
-import 'package:debrify/widgets/detail/detail_style.dart';
-import 'package:debrify/widgets/detail/theme/detail_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/theme/app_surfaces.dart';
+import 'package:megawatch/theme/app_texture.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/utils/platform_util.dart';
+import 'package:megawatch/widgets/detail/detail_style.dart';
+import 'package:megawatch/widgets/detail/theme/detail_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
 
 /// The texture layer's two dangerous properties: it sits above the root
 /// Navigator, so it must never paint over a frozen surface; and it paints

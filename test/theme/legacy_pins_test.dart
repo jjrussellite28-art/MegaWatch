@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/screens/settings/widgets/settings_widgets.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/widgets/cloud/cloud_theme.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/home/home_theme.dart';
-import 'package:debrify/widgets/see_all/see_all_theme.dart';
+import 'package:megawatch/screens/settings/widgets/settings_widgets.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/widgets/cloud/cloud_theme.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/home/home_theme.dart';
+import 'package:megawatch/widgets/see_all/see_all_theme.dart';
 
 /// The compatibility contract: `AppThemes.legacy` must reproduce the literal
 /// each token replaced, so `legacy` renders today's app exactly.
@@ -507,10 +507,10 @@ test('stremioTv subprofile pins the tuner literals', () {
     }
   });
 
-test('debrify_tv subprofile pins the magic_tv literals', () {
+test('megawatch_tv subprofile pins the magic_tv literals', () {
     // Repeated-literal pins (the inline sources are gone), so they fix the
     // values going forward rather than proving the swap — see the header note.
-    final tv = legacy.debrifyTv;
+    final tv = legacy.megawatchTv;
     expect(tv.accent, const Color(0xFFE50914));
     expect(tv.dialogBg, const Color(0xFF0F0F0F));
     expect(tv.noticeBg, const Color(0xFF1B1B1F));
@@ -532,7 +532,7 @@ test('debrify_tv subprofile pins the magic_tv literals', () {
     expect(tv.textFaint, Colors.white54);
     expect(tv.favorite, const Color(0xFFFFD700));
 
-    // Roles Debrify TV reads from elsewhere instead of re-declaring. If one of
+    // Roles MegaWatch TV reads from elsewhere instead of re-declaring. If one of
     // these ever stops matching, the surface must grow its own token — not be
     // left silently pointing at a colour that moved.
     expect(legacy.core.tx, Colors.white); // page ink
@@ -545,7 +545,7 @@ test('debrify_tv subprofile pins the magic_tv literals', () {
     expect(tv.focusRingAlt, isNot(tv.focusRing)); // legacy runs two grammars
 
     for (final core in DetailThemes.all) {
-      final t = AppTheme.fromDetail(core).debrifyTv;
+      final t = AppTheme.fromDetail(core).megawatchTv;
       // Focus must stay a visible STEP off the row it lands on. This is the
       // failure a borrowed dialog ground would have caused: two roles that
       // derive to `core.pane` collapse, and the cursor stops being visible.
@@ -629,8 +629,8 @@ test('iptv subprofile pins the Command Center palette', () {
         const Color(0xFF8A5CFF).withValues(alpha: 0.16));
     expect(legacy.stremioTv.loaderRailFar, const Color(0xFFC4B2FF));
     expect(legacy.stremioTv.loaderInk, Colors.white);
-    expect(legacy.debrifyTv.dialogDeep, const Color(0xFF101014));
-    expect(legacy.debrifyTv.controlResting, const Color(0xFF141418));
+    expect(legacy.megawatchTv.dialogDeep, const Color(0xFF101014));
+    expect(legacy.megawatchTv.controlResting, const Color(0xFF141418));
   });
 
   test('the loader plate stays dark on every theme', () {

@@ -1,6 +1,6 @@
 # Collections (Nuvio / Xperience-style folder imports)
 
-Debrify imports **collections JSON** files — the format Nuvio and Xperience
+MegaWatch imports **collections JSON** files — the format Nuvio and Xperience
 use to describe named groups of "folders", where each folder bundles one or
 more Stremio addon catalogs, native TMDB sources or public Trakt lists. Every imported collection becomes a row of folder
 tiles on the Home screen; opening a folder browses its catalogs.
@@ -120,7 +120,7 @@ Field notes:
 
 The glow flag follows [Nuvio’s collection model](https://github.com/NuvioMedia/NuvioTV/blob/dev/app/src/main/java/com/nuvio/tv/domain/model/Collection.kt).
 Its artwork-derived appearance follows the same intent as
-[Nuvio’s glow component](https://github.com/NuvioMedia/NuvioTV/blob/dev/app/src/main/java/com/nuvio/tv/ui/components/CollectionCardGlow.kt), using Debrify’s existing
+[Nuvio’s glow component](https://github.com/NuvioMedia/NuvioTV/blob/dev/app/src/main/java/com/nuvio/tv/ui/components/CollectionCardGlow.kt), using MegaWatch’s existing
 small-image color extractor and focus styling. `focusVideoUrl` is accepted from
 community exports; it is distinct from Nuvio’s `heroVideoUrl`.
 

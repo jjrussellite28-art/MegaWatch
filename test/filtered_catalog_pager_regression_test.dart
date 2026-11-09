@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/services/filtered_catalog_pager.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/services/filtered_catalog_pager.dart';
 
 void main() {
   test(

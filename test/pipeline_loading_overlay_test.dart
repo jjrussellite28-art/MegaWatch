@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/play_loader_art.dart';
-import 'package:debrify/widgets/pipeline_loading_overlay.dart';
+import 'package:megawatch/models/play_loader_art.dart';
+import 'package:megawatch/widgets/pipeline_loading_overlay.dart';
 
 void main() {
   Future<PipelineLoadingOverlay> showOverlay(

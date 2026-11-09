@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:debrify/services/diagnostic_log.dart';
-import 'package:debrify/services/webdav_protocol_client.dart';
-import 'package:debrify/services/webdav_sync/webdav_log_upload.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_models.dart';
+import 'package:megawatch/services/diagnostic_log.dart';
+import 'package:megawatch/services/webdav_protocol_client.dart';
+import 'package:megawatch/services/webdav_sync/webdav_log_upload.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_models.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -26,7 +26,7 @@ WebDavLogTarget target(String device) => WebDavLogTarget(
   revision: 'credentials-v1',
   location: WebDavSyncFolderLocation(
     endpoint: 'https://example.invalid/dav',
-    folderPath: 'Debrify',
+    folderPath: 'MegaWatch',
     serverName: 'Test',
   ),
   credentials: const WebDavCredentials(username: 'user', password: 'private'),
@@ -41,7 +41,7 @@ void main() {
   late WebDavLogUpload service;
   setUp(() {
     PackageInfo.setMockInitialValues(
-      appName: 'Debrify',
+      appName: 'MegaWatch',
       packageName: 'test',
       version: '1.0',
       buildNumber: '2',
@@ -83,7 +83,7 @@ void main() {
     final puts = requests.where((request) => request.method == 'PUT').toList();
     expect(puts, hasLength(2));
     expect(puts.map((request) => request.url.path).toSet(), {
-      '/dav/Debrify/logs/device-phone.jsonl',
+      '/dav/MegaWatch/logs/device-phone.jsonl',
     });
     expect(puts.first.body, contains('"appVersion":"1.0+2"'));
     expect(puts.first.body, isNot(contains('private')));

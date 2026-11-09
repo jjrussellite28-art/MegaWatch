@@ -13,7 +13,7 @@ The flip is deliberately not done — see *Before you flip*.
 
 | Stage | State |
 | --- | --- |
-| **Stage 0** — token contract | ✅ 6 subprofiles (`Downloads`, `Youtube`, `Playlist`, `StremioTv`, `DebrifyTv`, `Iptv`), derived for all 20 themes, legacy values pinned |
+| **Stage 0** — token contract | ✅ 6 subprofiles (`Downloads`, `Youtube`, `Playlist`, `StremioTv`, `MegaWatchTv`, `Iptv`), derived for all 20 themes, legacy values pinned |
 | **Stage 0b** — cross-boundary widgets | ✅ 9 optional params across `tv_text_field`, `tv_keyboard`, `shimmer`, `browse_search_header`; **0 callers edited** |
 | **Guards** | ✅ `kThemingPrepared` + 3 new tests |
 | **Surfaces** | ✅ all six converted, ~38 files registered as prepared |

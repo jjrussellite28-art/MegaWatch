@@ -1,4 +1,4 @@
-# Debrify cache maintenance patch
+# MegaWatch cache maintenance patch
 
 Base: flutter_cache_manager 3.4.1, published pub.dev archive. MIT license retained.
 

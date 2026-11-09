@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/theme/app_ambience.dart';
-import 'package:debrify/theme/app_art.dart';
-import 'package:debrify/theme/app_focus.dart';
-import 'package:debrify/theme/app_light.dart';
-import 'package:debrify/theme/app_motion.dart';
-import 'package:debrify/theme/app_surface.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/premium_looks.dart';
-import 'package:debrify/screens/settings/detail_theme_page.dart'
+import 'package:megawatch/theme/app_ambience.dart';
+import 'package:megawatch/theme/app_art.dart';
+import 'package:megawatch/theme/app_focus.dart';
+import 'package:megawatch/theme/app_light.dart';
+import 'package:megawatch/theme/app_motion.dart';
+import 'package:megawatch/theme/app_surface.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/premium_looks.dart';
+import 'package:megawatch/screens/settings/detail_theme_page.dart'
     show kDetailThemesShipped;
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
 
 /// Phase four's vocabulary: the legacy no-ops, the geometry caps that make
 /// `space` legal at all, the TV policies, and what each of the five looks
@@ -21,7 +21,7 @@ void main() {
   group('legacy is a no-op across every new group', () {
     // Same argument as phase three's: these are not colour pins that could
     // drift, they are identities. If they hold, a surface reading the new
-    // tokens under Debrify Classic renders exactly what it renders now.
+    // tokens under MegaWatch Classic renders exactly what it renders now.
     final l = AppThemes.legacy;
 
     test('separation is fill for every family', () {

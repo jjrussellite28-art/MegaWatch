@@ -28,7 +28,7 @@ class TvosTopShelfService {
   TvosTopShelfService._();
 
   static final TvosTopShelfService instance = TvosTopShelfService._();
-  static const MethodChannel _channel = MethodChannel('debrify/topshelf');
+  static const MethodChannel _channel = MethodChannel('megawatch/topshelf');
   static const int _maxCachedPreviews = 3;
   static const int _maxPreviewCandidates = 5;
   static const int _previewHeight = 1080;
@@ -411,7 +411,7 @@ class TvosTopShelfService {
 
   static String _topShelfContext(String? sourceTitle) {
     final source = sourceTitle?.trim();
-    if (source == null || source.isEmpty) return 'Spotlight on Debrify';
+    if (source == null || source.isEmpty) return 'Spotlight on MegaWatch';
     return 'Spotlight · $source';
   }
 

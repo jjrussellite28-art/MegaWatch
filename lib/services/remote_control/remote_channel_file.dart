@@ -2,22 +2,22 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import '../../models/debrify_tv_cache.dart';
-import '../../models/debrify_tv_channel_record.dart';
-import '../debrify_tv_cache_service.dart';
-import '../debrify_tv_database.dart';
-import '../debrify_tv_repository.dart';
+import '../../models/megawatch_tv_cache.dart';
+import '../../models/megawatch_tv_channel_record.dart';
+import '../megawatch_tv_cache_service.dart';
+import '../megawatch_tv_database.dart';
+import '../megawatch_tv_repository.dart';
 
 /// A channel header followed by streamed torrent records. No keyword-based
 /// filtering and no all-pool YAML/JSON object on either device. Imports use one
 /// transaction, so a failed/truncated file cannot replace a working channel.
 class RemoteChannelFile {
-  static const _format = 'debrify-channel-records-v1';
+  static const _format = 'megawatch-channel-records-v1';
   static const _pageSize = 500;
   static const _maxLineBytes = 1024 * 1024;
 
   static Future<void> export(String channelId, File destination) async {
-    await DebrifyTvDatabase.instance.runTxn((txn) async {
+    await MegaWatchTvDatabase.instance.runTxn((txn) async {
       final rows = await txn.query(
         'tv_channels',
         where: 'channel_id = ?',
@@ -142,7 +142,7 @@ class RemoteChannelFile {
         throw const FormatException('Invalid channel header');
       }
       final now = DateTime.now();
-      await DebrifyTvDatabase.instance.runTxn((txn) async {
+      await MegaWatchTvDatabase.instance.runTxn((txn) async {
         // SQLite LOWER only folds ASCII. Match the existing Dart import's
         // Unicode behavior without loading channel pools or other metadata.
         final candidates = await txn.query(
@@ -157,7 +157,7 @@ class RemoteChannelFile {
         final channelId = existing.isEmpty
             ? now.microsecondsSinceEpoch.toString()
             : existing.single['channel_id'] as String;
-        final record = DebrifyTvChannelRecord(
+        final record = MegaWatchTvChannelRecord(
           channelId: channelId,
           name: name,
           keywords: List<String>.from(keywords),
@@ -170,7 +170,7 @@ class RemoteChannelFile {
                 ),
           updatedAt: now,
         );
-        await DebrifyTvRepository.instance.upsertChannel(
+        await MegaWatchTvRepository.instance.upsertChannel(
           record,
           transaction: txn,
         );
@@ -197,14 +197,14 @@ class RemoteChannelFile {
         }
 
         final rawStats = header['stats'] as Map<String, dynamic>;
-        final entry = DebrifyTvChannelCacheEntry(
+        final entry = MegaWatchTvChannelCacheEntry(
           version: 1,
           channelId: channelId,
           normalizedKeywords: record.keywords
               .map((k) => k.toLowerCase())
               .toList(),
           fetchedAt: now.millisecondsSinceEpoch,
-          status: DebrifyTvCacheStatus.ready,
+          status: MegaWatchTvCacheStatus.ready,
           errorMessage: null,
           torrents: const [],
           keywordStats: {
@@ -214,7 +214,7 @@ class RemoteChannelFile {
               ),
           },
         );
-        await DebrifyTvCacheService.saveEntry(
+        await MegaWatchTvCacheService.saveEntry(
           entry,
           transaction: txn,
           torrentStream: torrents(),

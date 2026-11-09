@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:debrify/models/stremio_addon.dart';
+import 'package:megawatch/models/stremio_addon.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A Stremio manifest may declare `resources` as plain strings or as objects

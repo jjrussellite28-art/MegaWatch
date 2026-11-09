@@ -3,7 +3,7 @@
 **Date:** 2026-08-14  
 **Branch reviewed:** `feature/profiles` at `26adfc1e`  
 **Evidence device:** Apple TV named **Bedroom**  
-**Scope:** the entire Debrify application, not only Profiles
+**Scope:** the entire MegaWatch application, not only Profiles
 
 ## Executive summary
 
@@ -52,7 +52,7 @@ terminates the process. This is a database-wide limit, not a per-key limit.
 
 Source: [Apple — `UserDefaults.sizeLimitExceededNotification`](https://developer.apple.com/documentation/foundation/userdefaults/sizelimitexceedednotification)
 
-Consequences for Debrify:
+Consequences for MegaWatch:
 
 - A 4 MiB per-value allowance is not safe on tvOS.
 - Moving a value behind a profile prefix does not move it out of
@@ -75,7 +75,7 @@ Sources:
 - [Apple — App Programming Guide for tvOS: Local Storage for Your App Is Limited](https://developer.apple.com/library/archive/documentation/General/Conceptual/AppleTV_PG/)
 - [Apple — Using the file system effectively](https://developer.apple.com/documentation/foundation/using-the-file-system-effectively)
 
-Debrify's `AppStorage` intentionally maps documents, application support, and
+MegaWatch's `AppStorage` intentionally maps documents, application support, and
 cache roots to `Library/Caches` on physical tvOS. Therefore every SQLite DB and
 file reached through those helpers is a projection. User-created identity,
 profile authorization, and connection ownership must be recoverable from the
@@ -111,7 +111,7 @@ No credentials, URLs, playlist names, or viewing titles are included.
 | Preferences file observed on disk | approximately 105 KB | Safely below the current warning, after the offending rebuildable cache was removed. |
 | Legacy IPTV catalog DB | 425,963,520 bytes | Retained source from the migration rollback window. |
 | Profile-scoped IPTV catalog DB | 425,963,520 bytes | Byte-for-byte scale duplication of the largest store. |
-| Profile `debrify_tv.db` | approximately 17.85 MB | Material but not the dominant store. |
+| Profile `megawatch_tv.db` | approximately 17.85 MB | Material but not the dominant store. |
 | Active IPTV catalog rows | approximately 330,993 | About 206,448 VOD, 56,632 live, 55,166 live, and 12,747 public-list rows. |
 | SQLite integrity check | `ok` | The large catalog was healthy; its size was real data, not corruption. |
 
@@ -126,7 +126,7 @@ promise that other providers have similar payload sizes.
 | Profile/security recovery | device-only Keychain, 8 KiB immutable shards plus atomic manifest | 768 KiB envelope; recoverable preferences also capped at 512 KiB | **Red.** Bounded, but the budget is checked after ordinary mutations can commit. |
 | `profiles.db` | `Library/Caches` projection | Rebuilt from recovery envelope | Green only while every authority mutation is successfully checkpointed. |
 | IPTV catalogs and stored EPG | profile generation `iptv_catalog.db` in `Library/Caches` | Per-download caps; no total on-disk quota | **Amber/red.** 426 MB observed and multiple providers add linearly. |
-| Debrify TV channels/torrent pool and IPTV activity | profile `debrify_tv.db` in `Library/Caches` | IPTV watch history 100; Debrify TV torrent pool has no row/byte cap | **Amber.** Activity is purgeable, but manual imports can grow indefinitely. |
+| MegaWatch TV channels/torrent pool and IPTV activity | profile `megawatch_tv.db` in `Library/Caches` | IPTV watch history 100; MegaWatch TV torrent pool has no row/byte cap | **Amber.** Activity is purgeable, but manual imports can grow indefinitely. |
 | Home/poster/backdrop disk cache | `flutter_cache_manager` under caches | 1,000 objects, 30 days; count-based only | **Amber.** Object count is not a byte ceiling. |
 | IPTV logo disk cache | separate cache manager | 2,000 objects, 30 days | Amber/green; isolated from poster churn but count-based. |
 | Flutter decoded image cache | process RAM | 140 images and 56 MiB on TV | Green. Hard byte cap. |
@@ -192,7 +192,7 @@ conservative whole-database byte budget before every remaining write; and
 listen for `sizeLimitExceededNotification` as telemetry and emergency cleanup,
 not as the primary guard.
 
-Suggested internal ceiling: keep controlled Debrify values below roughly
+Suggested internal ceiling: keep controlled MegaWatch values below roughly
 384 KiB, leaving space for plugin/native keys and serialization overhead. The
 exact threshold should be validated against the native database size, not the
 sum of Dart string lengths alone.
@@ -284,7 +284,7 @@ returns disk space.
 
 ### P2 — two import paths can still create excessive RAM peaks
 
-Debrify TV's device-file import rejects files above 100 MB, but a 100 MB ZIP or
+MegaWatch TV's device-file import rejects files above 100 MB, but a 100 MB ZIP or
 YAML is still materialized whole and a ZIP can expand far beyond its compressed
 size. The URL and community-channel download helpers buffer responses without
 an equivalent byte limit before parsing. `archive` decoding then holds the

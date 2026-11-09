@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ═══════════════════════════════════════════════════════════════════════════════════
+     SPORTS BROADCAST STYLE - Full Width TV Bar
+     ESPN/Fox Sports inspired - Bold graphics, wide ticker-style layout
+     ═══════════════════════════════════════════════════════════════════════════════════ -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/megawatch_controls_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:visibility="gone">
+
+    <!-- Main TV Bar Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:orientation="vertical"
+        android:background="#F0000000"
+        android:elevation="16dp">
+
+        <!-- Top Accent Line (ESPN Red) -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="#E50914" />
+
+        <!-- Main Content Row -->
+        <LinearLayout
+            android:id="@+id/megawatch_controls_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
+
+            <!-- LEFT SECTION: Time (Single Line) -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="12dp">
+
+                <!-- Current Time -->
+                <TextView
+                    android:id="@+id/megawatch_time_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-bold" />
+
+                <!-- Progress Bar (Inline) -->
+                <FrameLayout
+                    android:layout_width="60dp"
+                    android:layout_height="3dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/tv_progress_bar_bg" />
+
+                    <View
+                        android:id="@+id/megawatch_progress_line"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/tv_progress_bar_fill" />
+
+                </FrameLayout>
+
+                <!-- Total Time -->
+                <TextView
+                    android:id="@+id/megawatch_time_total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="#80FFFFFF"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif" />
+
+            </LinearLayout>
+
+            <!-- Section Divider -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:background="#33FFFFFF" />
+
+            <!-- RIGHT SECTION: Control Buttons -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <!-- Audio -->
+                <LinearLayout
+                    android:id="@+id/megawatch_audio_button"
+                    style="@style/TvControlButton"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_audio"
+                        android:tint="#FFFFFF" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="AUDIO"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+
+                <!-- Subtitles -->
+                <LinearLayout
+                    android:id="@+id/megawatch_subtitle_button"
+                    style="@style/TvControlButton"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_subtitles"
+                        android:tint="#FFFFFF" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SUBS"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+
+                <!-- Aspect -->
+                <LinearLayout
+                    android:id="@+id/megawatch_aspect_button"
+                    style="@style/TvControlButton"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_aspect"
+                        android:tint="#FFFFFF" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FILL"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+
+                <!-- Guide -->
+                <LinearLayout
+                    android:id="@+id/megawatch_guide_button"
+                    style="@style/TvControlButton"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_guide"
+                        android:tint="#FFFFFF" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="GUIDE"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+
+                <!-- PLAY/PAUSE (Center, Prominent) -->
+                <LinearLayout
+                    android:id="@+id/megawatch_pause_button"
+                    style="@style/TvControlButtonPlay"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:id="@+id/megawatch_pause_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_pause"
+                        android:tint="#FFFFFF" />
+                    <TextView
+                        android:id="@+id/megawatch_pause_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PAUSE"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+
+                <!-- Next Stream -->
+                <LinearLayout
+                    android:id="@+id/megawatch_next_button"
+                    style="@style/TvControlButton"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_next_stream"
+                        android:tint="#FFFFFF" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NEXT"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+
+                <!-- Next Channel -->
+                <LinearLayout
+                    android:id="@+id/megawatch_channel_next_button"
+                    style="@style/TvControlButton"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_next_channel"
+                        android:tint="#FFFFFF" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CH+"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+
+                <!-- Speed -->
+                <LinearLayout
+                    android:id="@+id/megawatch_speed_button"
+                    style="@style/TvControlButton"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_speed"
+                        android:tint="#FFFFFF" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SPEED"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+
+                <!-- Night Mode -->
+                <LinearLayout
+                    android:id="@+id/megawatch_night_mode_button"
+                    style="@style/TvControlButton"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_night_mode"
+                        android:tint="#FFFFFF" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NIGHT"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="10sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Hidden time display for compatibility (Java code references this) -->
+    <TextView
+        android:id="@+id/megawatch_time_display"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+</FrameLayout>

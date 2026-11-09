@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:debrify/screens/video_player/services/media_kit_audio_feature_tap.dart';
-import 'package:debrify/screens/video_player/services/media_kit_subtitle_auto_sync.dart';
-import 'package:debrify/screens/video_player/services/subtitle_aligner.dart';
+import 'package:megawatch/screens/video_player/services/media_kit_audio_feature_tap.dart';
+import 'package:megawatch/screens/video_player/services/media_kit_subtitle_auto_sync.dart';
+import 'package:megawatch/screens/video_player/services/subtitle_aligner.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

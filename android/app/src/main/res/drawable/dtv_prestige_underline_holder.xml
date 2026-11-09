@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Underline focus for the Prestige Debrify TV skin: the button box stays
+<!-- Underline focus for the Prestige MegaWatch TV skin: the button box stays
      invisible; focus draws a 3dp bar at the bottom edge. The layer offset
      fakes bottom gravity (android:top = box height 40dp − 3dp), which works
      on old APIs where <layer-list> gravity doesn't. -->

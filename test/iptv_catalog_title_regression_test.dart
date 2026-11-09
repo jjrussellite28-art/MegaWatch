@@ -1,7 +1,7 @@
 // Title-only examples from the user's local 8K Strong catalog (2026-09-20).
 // No provider endpoints, account identifiers, credentials or stream URLs.
-import 'package:debrify/utils/iptv_title.dart';
-import 'package:debrify/services/iptv_source_search.dart';
+import 'package:megawatch/utils/iptv_title.dart';
+import 'package:megawatch/services/iptv_source_search.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

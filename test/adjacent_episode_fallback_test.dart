@@ -1,8 +1,8 @@
-import 'package:debrify/models/custom_series_identity.dart';
-import 'package:debrify/services/adjacent_episode_resolver.dart';
-import 'package:debrify/services/native_series_metadata_service.dart';
-import 'package:debrify/services/next_episode_service.dart';
-import 'package:debrify/services/tmdb_metadata_repository.dart';
+import 'package:megawatch/models/custom_series_identity.dart';
+import 'package:megawatch/services/adjacent_episode_resolver.dart';
+import 'package:megawatch/services/native_series_metadata_service.dart';
+import 'package:megawatch/services/next_episode_service.dart';
+import 'package:megawatch/services/tmdb_metadata_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

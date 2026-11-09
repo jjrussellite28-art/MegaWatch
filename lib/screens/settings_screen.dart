@@ -55,7 +55,7 @@ import '../services/torbox_account_service.dart';
 import '../services/premiumize_account_service.dart';
 import '../services/alldebrid_account_service.dart';
 import '../services/pikpak_api_service.dart';
-import '../services/debrify_tv_repository.dart';
+import '../services/megawatch_tv_repository.dart';
 import '../services/stremio_service.dart';
 import '../services/android_native_downloader.dart';
 import '../services/live_recording_service.dart';
@@ -63,14 +63,14 @@ import '../services/desktop_schedule_service.dart';
 import '../services/update_service.dart';
 import '../widgets/support_donation_chooser_dialog.dart';
 import '../widgets/tv_text_field.dart';
-import 'settings/debrify_tv_settings_page.dart';
+import 'settings/megawatch_tv_settings_page.dart';
 import 'settings/settings_tv_layout.dart';
 import 'settings/settings_spotlight_shell.dart';
 import 'settings/settings_search.dart';
 import 'settings/discover_layout_page.dart';
 import 'settings/discover_settings_page.dart';
 import 'settings/iptv_style_page.dart';
-import 'settings/debrify_tv_style_page.dart';
+import 'settings/megawatch_tv_style_page.dart';
 import 'settings/text_brightness_page.dart';
 import 'settings/launch_animation_page.dart';
 import '../widgets/launch/launch_ident.dart';
@@ -87,7 +87,7 @@ import 'settings/player_dock_page.dart';
 import 'settings/play_loader_style_page.dart';
 import 'settings/player_guide_style_page.dart';
 import 'settings/tv_player_controls_style_page.dart';
-import 'settings/debrify_tv_player_style_page.dart';
+import 'settings/megawatch_tv_player_style_page.dart';
 import 'settings/tv_home_style_page.dart';
 import 'settings/tv_render_quality_page.dart';
 import 'settings/tv_hero_artwork_quality_page.dart';
@@ -276,11 +276,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _discoverLayout = 'stage';
   String _tvSidebarStyle = 'ghost';
   String _iptvStyle = StorageService.kIptvStyleDefault;
-  String _debrifyTvStyle = 'grid';
+  String _megawatchTvStyle = 'grid';
   String _playerGuideStyle = 'classic';
   String _playLoaderStyle = PlayLoaderStyleController.defaultStyle;
   String _tvPlayerControlsStyle = 'ott';
-  String _debrifyTvPlayerStyle = 'cinema';
+  String _megawatchTvPlayerStyle = 'cinema';
   String _playerDockStyle = 'classic';
   String _playerDockPalette = 'ultraviolet';
   String _playerDockSize = 'auto';
@@ -293,9 +293,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _desktopSidebarStyle = 'rail';
   String _textBrightness = 'bright';
   String _launchAnimation = 'trace';
-  String _downloadLocationSubtitle = 'Downloads/Debrify (default)';
+  String _downloadLocationSubtitle = 'Downloads/MegaWatch (default)';
   SupportDonationConfig _supportDonation = SupportDonationConfig.empty;
-  String _supportSettingsLabel = 'Support Debrify';
+  String _supportSettingsLabel = 'Support MegaWatch';
   String _supportSettingsSubtitle = 'Help fund development with a donation';
 
   @override
@@ -594,9 +594,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _desktopSidebarStyle,
       ),
       summaries.read(
-        'Debrify TV',
-        () => StorageService.getDebrifyTvStyle(),
-        _debrifyTvStyle,
+        'MegaWatch TV',
+        () => StorageService.getMegaWatchTvStyle(),
+        _megawatchTvStyle,
       ),
       summaries.read(
         'TV controls',
@@ -605,8 +605,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       summaries.read(
         'TV player',
-        () => StorageService.getDebrifyTvPlayerStyle(),
-        _debrifyTvPlayerStyle,
+        () => StorageService.getMegaWatchTvPlayerStyle(),
+        _megawatchTvPlayerStyle,
       ),
       summaries.read(
         'Play loader',
@@ -679,9 +679,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final playerDockPalette = results[34] as String;
     final playerDockSize = results[35] as String;
     final desktopSidebarStyle = results[36] as String;
-    final debrifyTvStyle = results[37] as String;
+    final megawatchTvStyle = results[37] as String;
     final tvPlayerControlsStyle = results[38] as String;
-    final debrifyTvPlayerStyle = results[39] as String;
+    final megawatchTvPlayerStyle = results[39] as String;
     final playLoaderStyle = results[40] as String;
     final diagnosticExportVisible = results[41] as bool;
     final pendingCredentialTypes = results[42] as Set<ConnectionResourceType>;
@@ -913,11 +913,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _tvSidebarStyle = tvSidebarStyle;
     _discoverLayout = discoverLayout;
     _iptvStyle = iptvStyle;
-    _debrifyTvStyle = debrifyTvStyle;
+    _megawatchTvStyle = megawatchTvStyle;
     _playerGuideStyle = playerGuideStyle;
     _playLoaderStyle = playLoaderStyle;
     _tvPlayerControlsStyle = tvPlayerControlsStyle;
-    _debrifyTvPlayerStyle = debrifyTvPlayerStyle;
+    _megawatchTvPlayerStyle = megawatchTvPlayerStyle;
     _playerDockStyle = playerDockStyle;
     _playerDockPalette = playerDockPalette;
     _playerDockSize = playerDockSize;
@@ -1317,7 +1317,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onOpenProviderSettings: _openProviderSettings,
       onOpenQuickPlaySettings: _openQuickPlaySettings,
       onOpenDiscoverSettings: _openDiscoverSettings,
-      onOpenDebrifyTvSettings: _openDebrifyTvSettings,
+      onOpenMegaWatchTvSettings: _openMegaWatchTvSettings,
       onClearDownloads: _clearDownloadData,
       onClearPlayback: _clearPlaybackData,
       onOpenDownloadLocation: _downloadLocationSupported
@@ -1366,8 +1366,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onOpenProfileAppearance: _openProfileAppearance,
       iptvStyleLabel: iptvStyleLabel(_iptvStyle),
       onOpenIptvStyle: _openIptvStylePage,
-      debrifyTvStyleLabel: debrifyTvStyleLabel(_debrifyTvStyle),
-      onOpenDebrifyTvStyle: _openDebrifyTvStylePage,
+      megawatchTvStyleLabel: megawatchTvStyleLabel(_megawatchTvStyle),
+      onOpenMegaWatchTvStyle: _openMegaWatchTvStylePage,
       playerGuideStyleLabel: playerGuideStyleLabel(_playerGuideStyle),
       playLoaderStyleLabel: playLoaderStyleLabel(_playLoaderStyle),
       onOpenPlayLoaderStyle: _openPlayLoaderStylePage,
@@ -1376,10 +1376,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _tvPlayerControlsStyle,
       ),
       onOpenTvPlayerControlsStyle: _openTvPlayerControlsStylePage,
-      debrifyTvPlayerStyleLabel: debrifyTvPlayerStyleLabel(
-        _debrifyTvPlayerStyle,
+      megawatchTvPlayerStyleLabel: megawatchTvPlayerStyleLabel(
+        _megawatchTvPlayerStyle,
       ),
-      onOpenDebrifyTvPlayerStyle: _openDebrifyTvPlayerStylePage,
+      onOpenMegaWatchTvPlayerStyle: _openMegaWatchTvPlayerStylePage,
       detailPageStyleLabel: detailPageStyleLabel(_detailPageStyle),
       onOpenDetailPageStyle: _openDetailPageStylePage,
       appThemeLabel: appThemeLabel(AppThemeController.instance.id),
@@ -1427,7 +1427,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onOpenProviderSettings: _openProviderSettings,
       onOpenQuickPlaySettings: _openQuickPlaySettings,
       onOpenDiscoverSettings: _openDiscoverSettings,
-      onOpenDebrifyTvSettings: _openDebrifyTvSettings,
+      onOpenMegaWatchTvSettings: _openMegaWatchTvSettings,
       onOpenPikPakSettings: _openPikPakSettings,
       onOpenHomePageSettings: _openHomePageSettings,
       onOpenMetadataSettings: _openMetadataSettings,
@@ -1479,8 +1479,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onOpenLaunchAnimation: _openLaunchAnimationPage,
       iptvStyleLabel: iptvStyleLabel(_iptvStyle),
       onOpenIptvStyle: _openIptvStylePage,
-      debrifyTvStyleLabel: debrifyTvStyleLabel(_debrifyTvStyle),
-      onOpenDebrifyTvStyle: _openDebrifyTvStylePage,
+      megawatchTvStyleLabel: megawatchTvStyleLabel(_megawatchTvStyle),
+      onOpenMegaWatchTvStyle: _openMegaWatchTvStylePage,
       playerGuideStyleLabel: playerGuideStyleLabel(_playerGuideStyle),
       playLoaderStyleLabel: playLoaderStyleLabel(_playLoaderStyle),
       onOpenPlayLoaderStyle: _openPlayLoaderStylePage,
@@ -1618,7 +1618,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'copy appearance and playback defaults',
             'search by title',
             'keyword search',
-            'debrify tv',
+            'megawatch tv',
             'stremio tv',
             'live tv',
             'youtube',
@@ -2211,12 +2211,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // Ungated: the pref covers every device class — the Spotlight arm has
       // a TV layout AND a phone layout. Lands on the picker.
       nav(
-        SettingsRows.debrifyTvAppearance,
+        SettingsRows.megawatchTvAppearance,
         'Appearance',
-        _openDebrifyTvStylePage,
-        subtitle: debrifyTvStyleLabel(_debrifyTvStyle),
+        _openMegaWatchTvStylePage,
+        subtitle: megawatchTvStyleLabel(_megawatchTvStyle),
         keywords: [
-          'debrify tv',
+          'megawatch tv',
           'channels',
           'channel grid',
           'rail',
@@ -2226,7 +2226,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'layout',
           'look',
           'appearance',
-          ...labels(kDebrifyTvStyleChoices.map((choice) => choice.label)),
+          ...labels(kMegaWatchTvStyleChoices.map((choice) => choice.label)),
         ],
       ),
       // Ungated: every platform has a player — phones use the Dart player,
@@ -2313,16 +2313,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ],
         ),
-      // Android TV only: the Debrify TV playback-screen style (native
+      // Android TV only: the MegaWatch TV playback-screen style (native
       // TorboxTvPlayerActivity is the pref's only reader).
       if (PlatformUtil.isAndroidTvCached)
         nav(
-          SettingsRows.debrifyTvPlayer,
+          SettingsRows.megawatchTvPlayer,
           'Appearance',
-          _openDebrifyTvPlayerStylePage,
-          subtitle: debrifyTvPlayerStyleLabel(_debrifyTvPlayerStyle),
+          _openMegaWatchTvPlayerStylePage,
+          subtitle: megawatchTvPlayerStyleLabel(_megawatchTvPlayerStyle),
           keywords: [
-            'debrify tv',
+            'megawatch tv',
             'magic tv',
             'channel',
             'player',
@@ -2337,7 +2337,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'look',
             'skin',
             ...labels(
-              kDebrifyTvPlayerStyleChoices.map((choice) => choice.label),
+              kMegaWatchTvPlayerStyleChoices.map((choice) => choice.label),
             ),
           ],
         ),
@@ -2646,9 +2646,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       // TV Mode
       nav(
-        SettingsRows.debrifyTv,
+        SettingsRows.megawatchTv,
         'Live TV & DVR',
-        _openDebrifyTvSettings,
+        _openMegaWatchTvSettings,
         keywords: const ['channels', 'limits', 'playback', 'android tv'],
       ),
       // One row, one entry: the recordings page owns the whole DVR — a second
@@ -2864,7 +2864,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // Support
       if (_supportDonation.hasProviders)
         SettingsSearchEntry(
-          icon: SettingsRows.supportDebrify.icon,
+          icon: SettingsRows.supportMegaWatch.icon,
           title: _supportSettingsLabel,
           subtitle: _supportSettingsSubtitle,
           category: 'About',
@@ -2892,7 +2892,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       // Danger Zone
       nav(
-        SettingsRows.resetDebrify,
+        SettingsRows.resetMegaWatch,
         'Danger Zone',
         _resetAppData,
         destructive: true,
@@ -2929,7 +2929,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'Sidebar': Icons.view_sidebar_rounded,
       'Profile Picker': Icons.switch_account_rounded,
       'Playback': Icons.open_in_new_rounded,
-      'Debrify TV': Icons.live_tv_rounded,
+      'MegaWatch TV': Icons.live_tv_rounded,
       'Stremio TV': Icons.smart_display_rounded,
       'IPTV Playlists': Icons.playlist_play_rounded,
       'Recordings': Icons.fiber_dvr_rounded,
@@ -2958,7 +2958,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'Sidebar': _openSidebarCustomization,
       'Profile Picker': _openProfileAppearance,
       'Playback': _openExternalPlayerSettings,
-      'Debrify TV': _openDebrifyTvSettings,
+      'MegaWatch TV': _openMegaWatchTvSettings,
       'Stremio TV': _openStremioTvSettings,
       'IPTV Playlists': _openIptvSettings,
       'Recordings': _openRecordings,
@@ -3248,7 +3248,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'open in torbox',
           'add to playlist',
           'add to channel',
-          'debrify tv',
+          'megawatch tv',
         ],
       ),
       leaf(
@@ -3282,7 +3282,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'download to device',
           'open in premiumize',
           'add to channel',
-          'debrify tv',
+          'megawatch tv',
         ],
       ),
       leaf(
@@ -3323,7 +3323,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'open in real-debrid',
           'add to playlist',
           'add to channel',
-          'debrify tv',
+          'megawatch tv',
         ],
       ),
       leaf(
@@ -3402,7 +3402,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'open in pikpak',
           'add to playlist',
           'add to channel',
-          'debrify tv',
+          'megawatch tv',
         ],
       ),
       leaf(
@@ -3984,7 +3984,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'Which player plays videos',
         const [
           'default player',
-          'debrify player',
+          'megawatch player',
           'external',
           'external player',
           'built-in',
@@ -4379,39 +4379,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onTap: () => _openPlaybackSection(PlaybackSettingsSection.player),
         ),
 
-      // Debrify TV
+      // MegaWatch TV
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Keyword Threshold',
-        'Choose when Debrify TV fetches more or fewer results per keyword',
+        'Choose when MegaWatch TV fetches more or fewer results per keyword',
         const ['keyword', 'threshold', 'results', 'fetch', 'global tv mode'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Batch Size',
         'Number of keywords processed in each batch',
         const ['batch', 'keywords', 'performance', 'global tv mode'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Min Torrents Per Keyword',
         'Skip keywords with fewer torrent results',
         const ['minimum', 'torrents', 'keyword', 'skip', 'result count'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Max Keywords (Quick Play)',
         'Limit the keywords used in Quick Play mode',
         const ['maximum', 'keyword limit', 'quick play', 'performance'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Avoid NSFW Content',
-        'Filter adult content out of Debrify TV results',
+        'Filter adult content out of MegaWatch TV results',
         const ['nsfw', 'adult', 'safe', 'filter', 'content'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Prepare Torrents in Background',
         'Pre-add upcoming Real-Debrid and AllDebrid torrents',
         const [
@@ -4425,33 +4425,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Engine TV Mode',
-        'Enable or disable each search engine for Debrify TV',
+        'Enable or disable each search engine for MegaWatch TV',
         const ['engine', 'tv mode enabled', 'tv mode disabled', 'toggle'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Small Channel Limit',
         'Maximum results for each engine in small channel mode',
         const ['small channel', 'result limit', 'max results', 'engine'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Large Channel Limit',
         'Maximum results for each engine in large channel mode',
         const ['large channel', 'result limit', 'max results', 'engine'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Quick Play Limit',
         'Maximum results for each engine in Quick Play mode',
         const ['quick play', 'result limit', 'max results', 'engine'],
       ),
       leaf(
-        'Debrify TV',
+        'MegaWatch TV',
         'Reset to Defaults',
-        'Restore the default Debrify TV engine settings',
+        'Restore the default MegaWatch TV engine settings',
         const ['reset', 'defaults', 'restore', 'engines'],
       ),
 
@@ -4671,7 +4671,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       leaf(
         'IPTV Playlists',
         'Start on a channel',
-        'Open straight into live TV when Debrify starts',
+        'Open straight into live TV when MegaWatch starts',
         const [
           'startup channel',
           'startup',
@@ -4740,7 +4740,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leaf(
           'IPTV Playlists',
           'Battery optimization',
-          'Exclude Debrify so recordings survive doze',
+          'Exclude MegaWatch so recordings survive doze',
           const [
             'battery',
             'doze',
@@ -4790,7 +4790,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leaf(
           'Profiles',
           'Ask who\'s watching at startup',
-          'Show the profile picker whenever Debrify opens',
+          'Show the profile picker whenever MegaWatch opens',
           const [
             'always ask',
             'profile behavior',
@@ -4962,8 +4962,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  Future<void> _openDebrifyTvSettings() async {
-    await pushSettingsPage(context, const DebrifyTvSettingsPage());
+  Future<void> _openMegaWatchTvSettings() async {
+    await pushSettingsPage(context, const MegaWatchTvSettingsPage());
     if (!mounted) return;
     setState(() {});
   }
@@ -5664,7 +5664,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final bytes = Uint8List.fromList(utf8.encode(jsonContent));
     final ts = DateTime.now();
     final fileName =
-        'debrify-backup-${ts.year.toString().padLeft(4, '0')}${ts.month.toString().padLeft(2, '0')}${ts.day.toString().padLeft(2, '0')}-${ts.hour.toString().padLeft(2, '0')}${ts.minute.toString().padLeft(2, '0')}.json';
+        'megawatch-backup-${ts.year.toString().padLeft(4, '0')}${ts.month.toString().padLeft(2, '0')}${ts.day.toString().padLeft(2, '0')}-${ts.hour.toString().padLeft(2, '0')}${ts.minute.toString().padLeft(2, '0')}.json';
 
     try {
       final savedPath = await ProfileBackupFlows(
@@ -5874,7 +5874,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // devices, leaving the backup unselectable. The contents are validated by
       // BackupRestoreService.parse below, so no extension filter is needed.
       pick = await FilePicker.platform.pickFiles(
-        dialogTitle: 'Choose Debrify backup file',
+        dialogTitle: 'Choose MegaWatch backup file',
         type: FileType.any,
         withData: false,
       );
@@ -5898,7 +5898,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('That file is too large to be a Debrify backup.'),
+          content: Text('That file is too large to be a MegaWatch backup.'),
         ),
       );
       return;
@@ -5928,8 +5928,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } on FormatException catch (error) {
       if (!mounted) return;
       final looksLikeProfilePackage =
-          content.contains('"format":"debrify-profile-package"') ||
-          content.contains('"format": "debrify-profile-package"');
+          content.contains('"format":"megawatch-profile-package"') ||
+          content.contains('"format": "megawatch-profile-package"');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -6255,7 +6255,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   String get _defaultDownloadLocationLabel {
     if (_downloadLocationUsesSaf || Platform.isWindows) {
-      return 'Downloads/Debrify (default)';
+      return 'Downloads/MegaWatch (default)';
     }
     // Linux: getDownloadsDirectory isn't used there — the app writes under
     // its documents dir (see DownloadService._appDownloadsSubdir fallback).
@@ -6410,7 +6410,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final probe = File(
         path.join(
           dir,
-          '.debrify_write_probe_${DateTime.now().millisecondsSinceEpoch}',
+          '.megawatch_write_probe_${DateTime.now().millisecondsSinceEpoch}',
         ),
       );
       await probe.writeAsString('probe', flush: true);
@@ -6537,7 +6537,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final action = await showSettingsDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(profileMode ? 'Reset this profile?' : 'Reset Debrify?'),
+        title: Text(profileMode ? 'Reset this profile?' : 'Reset MegaWatch?'),
         content: Text(
           profileMode
               ? 'This clears this profile\'s settings, history, playlists, and private app data. The profile, PIN, shared connections, active jobs, downloads, and recordings remain untouched.'
@@ -6574,7 +6574,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         context: context,
         builder: (dialogContext) => StatefulBuilder(
           builder: (context, setDialogState) => AlertDialog(
-            title: const Text('Reset this Debrify installation?'),
+            title: const Text('Reset this MegaWatch installation?'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -6673,14 +6673,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await StorageService.clearAllStartupSettings();
     await StorageService.clearAllHomePageSettings();
     await StorageService.clearAllIntegrationStates();
-    await StorageService.clearDebrifyTvProviderAndLegacy();
+    await StorageService.clearMegaWatchTvProviderAndLegacy();
     await StorageService.clearAllFilterSettings();
     await StorageService.clearAllTorrentEngineSettings();
     await StorageService.clearAllPostTorrentActions();
-    await StorageService.clearAllDebrifyTvSettings();
+    await StorageService.clearAllMegaWatchTvSettings();
     // A device-local reset must never mint circle-wide channel deletions:
     // rejoining a sync circle later means adopting its data, not erasing it.
-    await DebrifyTvRepository.instance.clearAll(
+    await MegaWatchTvRepository.instance.clearAll(
       origin: WebDavSyncMutationOrigin.maintenance,
     );
     await StremioService.instance.clearAllAddons();
@@ -7038,13 +7038,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  Future<void> _openDebrifyTvStylePage() async {
-    await pushSettingsPage(context, const DebrifyTvStylePage());
+  Future<void> _openMegaWatchTvStylePage() async {
+    await pushSettingsPage(context, const MegaWatchTvStylePage());
     if (!mounted) return;
-    final style = await StorageService.getDebrifyTvStyle();
+    final style = await StorageService.getMegaWatchTvStyle();
     if (!mounted) return;
     setState(() {
-      _debrifyTvStyle = style;
+      _megawatchTvStyle = style;
     });
   }
 
@@ -7083,14 +7083,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  /// Same contract as [_openTvHomeStyle], for the Debrify TV playback screen.
-  Future<void> _openDebrifyTvPlayerStylePage() async {
-    await pushSettingsPage(context, const DebrifyTvPlayerStylePage());
+  /// Same contract as [_openTvHomeStyle], for the MegaWatch TV playback screen.
+  Future<void> _openMegaWatchTvPlayerStylePage() async {
+    await pushSettingsPage(context, const MegaWatchTvPlayerStylePage());
     if (!mounted) return;
-    final style = await StorageService.getDebrifyTvPlayerStyle();
+    final style = await StorageService.getMegaWatchTvPlayerStyle();
     if (!mounted) return;
     setState(() {
-      _debrifyTvPlayerStyle = style;
+      _megawatchTvPlayerStyle = style;
     });
   }
 
@@ -7220,8 +7220,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final playLoaderStyle = await StorageService.getPlayLoaderStyle();
     final tvPlayerControlsStyle =
         await StorageService.getTvPlayerControlsStyle();
-    final debrifyTvStyle = await StorageService.getDebrifyTvStyle();
-    final debrifyTvPlayerStyle = await StorageService.getDebrifyTvPlayerStyle();
+    final megawatchTvStyle = await StorageService.getMegaWatchTvStyle();
+    final megawatchTvPlayerStyle = await StorageService.getMegaWatchTvPlayerStyle();
     final playerDockStyle = await StorageService.getPlayerDockStyle();
     final playerDockPalette = await StorageService.getPlayerDockPalette();
     final playerDockSize = await StorageService.getPlayerDockSize();
@@ -7232,8 +7232,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _playerGuideStyle = playerGuideStyle;
       _playLoaderStyle = playLoaderStyle;
       _tvPlayerControlsStyle = tvPlayerControlsStyle;
-      _debrifyTvStyle = debrifyTvStyle;
-      _debrifyTvPlayerStyle = debrifyTvPlayerStyle;
+      _megawatchTvStyle = megawatchTvStyle;
+      _megawatchTvPlayerStyle = megawatchTvPlayerStyle;
       _playerDockStyle = playerDockStyle;
       _playerDockPalette = playerDockPalette;
       _playerDockSize = playerDockSize;
@@ -7275,8 +7275,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         url: asset.downloadUrl.toString(),
         fileName: asset.name.isNotEmpty
             ? asset.name
-            : 'Debrify-${release.versionLabel}.apk',
-        subDir: 'Debrify/Updates',
+            : 'MegaWatch-${release.versionLabel}.apk',
+        subDir: 'MegaWatch/Updates',
         mimeType: mime,
       );
     } catch (_) {
@@ -7352,7 +7352,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final result = await Permission.requestInstallPackages.request();
     if (result.isGranted) return true;
     if (result.isPermanentlyDenied || result.isRestricted) {
-      _showSnack('Allow Debrify to install apps from your settings.');
+      _showSnack('Allow MegaWatch to install apps from your settings.');
       unawaited(openAppSettings());
     } else {
       _showSnack('Permission required to install the downloaded update.');
@@ -7544,14 +7544,14 @@ const List<SettingsCategoryDefinition> _kAdaptiveSettingsCategories = [
     label: 'About',
     subtitle: 'Updates, version & community',
     eyebrow: 'About',
-    title: 'Debrify, up to date.',
+    title: 'MegaWatch, up to date.',
     description:
         'Version, release checks, and the places where the community meets.',
   ),
   SettingsCategoryDefinition(
     icon: Icons.warning_amber_rounded,
     label: 'Danger Zone',
-    subtitle: 'Reset Debrify',
+    subtitle: 'Reset MegaWatch',
     eyebrow: 'Danger Zone',
     title: 'Start over, deliberately.',
     description:
@@ -7569,7 +7569,7 @@ class _SettingsLayout extends StatelessWidget {
   final Future<void> Function() onOpenProviderSettings;
   final Future<void> Function() onOpenQuickPlaySettings;
   final Future<void> Function() onOpenDiscoverSettings;
-  final Future<void> Function() onOpenDebrifyTvSettings;
+  final Future<void> Function() onOpenMegaWatchTvSettings;
   final Future<void> Function() onOpenPikPakSettings;
   final Future<void> Function() onOpenHomePageSettings;
   final Future<void> Function() onOpenMetadataSettings;
@@ -7615,8 +7615,8 @@ class _SettingsLayout extends StatelessWidget {
   // pickers (home style, discover, sidebar, screen size) live solely in
   // SettingsTvLayout's Appearance category.
   final bool showIptvAppearance;
-  final String debrifyTvStyleLabel;
-  final Future<void> Function() onOpenDebrifyTvStyle;
+  final String megawatchTvStyleLabel;
+  final Future<void> Function() onOpenMegaWatchTvStyle;
   final String textBrightnessLabel;
   final Future<void> Function() onOpenTextBrightness;
   final String launchAnimationLabel;
@@ -7667,7 +7667,7 @@ class _SettingsLayout extends StatelessWidget {
     required this.onOpenProviderSettings,
     required this.onOpenQuickPlaySettings,
     required this.onOpenDiscoverSettings,
-    required this.onOpenDebrifyTvSettings,
+    required this.onOpenMegaWatchTvSettings,
     required this.onOpenPikPakSettings,
     required this.onOpenHomePageSettings,
     required this.onOpenMetadataSettings,
@@ -7708,8 +7708,8 @@ class _SettingsLayout extends StatelessWidget {
     required this.onOpenRecordings,
     required this.onOpenIptvSettings,
     required this.showIptvAppearance,
-    required this.debrifyTvStyleLabel,
-    required this.onOpenDebrifyTvStyle,
+    required this.megawatchTvStyleLabel,
+    required this.onOpenMegaWatchTvStyle,
     required this.textBrightnessLabel,
     required this.onOpenTextBrightness,
     required this.launchAnimationLabel,
@@ -7962,9 +7962,9 @@ class _SettingsLayout extends StatelessWidget {
                     onTap: onOpenIptvStyle,
                   ),
                 SettingsTile.spec(
-                  SettingsRows.debrifyTvAppearance,
-                  subtitle: debrifyTvStyleLabel,
-                  onTap: onOpenDebrifyTvStyle,
+                  SettingsRows.megawatchTvAppearance,
+                  subtitle: megawatchTvStyleLabel,
+                  onTap: onOpenMegaWatchTvStyle,
                 ),
                 SettingsTile.spec(
                   SettingsRows.playerGuideStyle,
@@ -8047,8 +8047,8 @@ class _SettingsLayout extends StatelessWidget {
           title: '',
           children: [
             SettingsTile.spec(
-              SettingsRows.debrifyTv,
-              onTap: onOpenDebrifyTvSettings,
+              SettingsRows.megawatchTv,
+              onTap: onOpenMegaWatchTvSettings,
             ),
             SettingsTile.spec(SettingsRows.recordings, onTap: onOpenRecordings),
             SettingsTile.spec(
@@ -8204,7 +8204,7 @@ class _SettingsLayout extends StatelessWidget {
               children: [
                 if (showSupportDonation)
                   SettingsTile(
-                    icon: SettingsRows.supportDebrify.icon,
+                    icon: SettingsRows.supportMegaWatch.icon,
                     title: supportDonationLabel,
                     subtitle: supportDonationSubtitle,
                     onTap: onOpenSupportDonation,
@@ -8231,7 +8231,7 @@ class _SettingsLayout extends StatelessWidget {
           accentColor: t.danger,
           children: [
             SettingsTile.spec(
-              SettingsRows.resetDebrify,
+              SettingsRows.resetMegaWatch,
               onTap: onDangerAction,
               destructive: true,
             ),
@@ -8377,9 +8377,9 @@ class _SettingsLayout extends StatelessWidget {
                         onTap: onOpenIptvStyle,
                       ),
                     SettingsTile.spec(
-                      SettingsRows.debrifyTvAppearance,
-                      subtitle: debrifyTvStyleLabel,
-                      onTap: onOpenDebrifyTvStyle,
+                      SettingsRows.megawatchTvAppearance,
+                      subtitle: megawatchTvStyleLabel,
+                      onTap: onOpenMegaWatchTvStyle,
                     ),
                     SettingsTile.spec(
                       SettingsRows.playerGuideStyle,
@@ -8480,8 +8480,8 @@ class _SettingsLayout extends StatelessWidget {
                   title: 'Live TV & DVR',
                   children: [
                     SettingsTile.spec(
-                      SettingsRows.debrifyTv,
-                      onTap: onOpenDebrifyTvSettings,
+                      SettingsRows.megawatchTv,
+                      onTap: onOpenMegaWatchTvSettings,
                     ),
                     SettingsTile.spec(
                       SettingsRows.recordings,
@@ -8609,7 +8609,7 @@ class _SettingsLayout extends StatelessWidget {
                     ),
                     if (showSupportDonation)
                       SettingsTile(
-                        icon: SettingsRows.supportDebrify.icon,
+                        icon: SettingsRows.supportMegaWatch.icon,
                         title: supportDonationLabel,
                         subtitle: supportDonationSubtitle,
                         onTap: onOpenSupportDonation,
@@ -8641,7 +8641,7 @@ class _SettingsLayout extends StatelessWidget {
                   accentColor: t.danger.withValues(alpha: 0.85),
                   children: [
                     SettingsTile.spec(
-                      SettingsRows.resetDebrify,
+                      SettingsRows.resetMegaWatch,
                       onTap: onDangerAction,
                       destructive: true,
                     ),

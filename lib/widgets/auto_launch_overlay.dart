@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-/// Full-screen overlay shown during auto-launch of Debrify TV channels.
+/// Full-screen overlay shown during auto-launch of MegaWatch TV channels.
 ///
 /// This overlay provides a beautiful loading experience that masks the
 /// navigation and loading states, creating a seamless transition from
@@ -24,7 +24,7 @@ class AutoLaunchOverlay extends StatefulWidget {
 
   const AutoLaunchOverlay({
     super.key,
-    this.launchTitle = 'Launching Debrify TV',
+    this.launchTitle = 'Launching MegaWatch TV',
     required this.channelName,
     this.channelNumber,
     this.onTimeout,

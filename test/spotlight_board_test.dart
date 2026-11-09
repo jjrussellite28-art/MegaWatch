@@ -6,20 +6,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/models/stremio_addon.dart';
-import 'package:debrify/screens/search_screen.dart'
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/models/stremio_addon.dart';
+import 'package:megawatch/screens/search_screen.dart'
     show SpotlightIptvCardPreview;
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/theme/widgets/focus_expression.dart';
-import 'package:debrify/theme/widgets/parallax_focus.dart';
-import 'package:debrify/widgets/detail/theme/detail_themes.dart';
-import 'package:debrify/widgets/hero_trailer_backdrop.dart';
-import 'package:debrify/widgets/home/spotlight_board.dart';
-import 'package:debrify/widgets/home/spotlight_card_trailer.dart';
-import 'package:debrify/widgets/recoverable_network_image.dart';
-import 'package:debrify/widgets/collections/collection_focus_glow.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/theme/widgets/focus_expression.dart';
+import 'package:megawatch/theme/widgets/parallax_focus.dart';
+import 'package:megawatch/widgets/detail/theme/detail_themes.dart';
+import 'package:megawatch/widgets/hero_trailer_backdrop.dart';
+import 'package:megawatch/widgets/home/spotlight_board.dart';
+import 'package:megawatch/widgets/home/spotlight_card_trailer.dart';
+import 'package:megawatch/widgets/recoverable_network_image.dart';
+import 'package:megawatch/widgets/collections/collection_focus_glow.dart';
 
 /// Spotlight's hero, which is the piece that changes Home's focus topology
 /// rather than its paint.

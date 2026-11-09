@@ -50,7 +50,7 @@ Write `test/trakt_calendar_entry_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/trakt/trakt_calendar_entry.dart';
+import 'package:megawatch/models/trakt/trakt_calendar_entry.dart';
 
 void main() {
   group('TraktCalendarEntry.fromTraktJson', () {
@@ -379,8 +379,8 @@ Write `test/trakt_calendar_service_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/trakt/trakt_calendar_entry.dart';
-import 'package:debrify/services/trakt/trakt_calendar_service.dart';
+import 'package:megawatch/models/trakt/trakt_calendar_entry.dart';
+import 'package:megawatch/services/trakt/trakt_calendar_service.dart';
 
 void main() {
   group('TraktCalendarService.getChunk', () {

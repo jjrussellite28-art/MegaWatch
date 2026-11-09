@@ -9,11 +9,11 @@ private enum DeviceSecretError: Error {
 }
 
 private final class MacOsDeviceSecretCipher {
-  private let service = "com.debrify.app.profile-device-secret"
+  private let service = "com.megawatch.app.profile-device-secret"
   private let account = "device-key-v1"
 
   func install(on messenger: FlutterBinaryMessenger) -> FlutterMethodChannel {
-    let channel = FlutterMethodChannel(name: "debrify/device_secret", binaryMessenger: messenger)
+    let channel = FlutterMethodChannel(name: "megawatch/device_secret", binaryMessenger: messenger)
     channel.setMethodCallHandler { [weak self] call, result in
       guard let self else { result(FlutterError(code: "unavailable", message: nil, details: nil)); return }
       do {
@@ -121,7 +121,7 @@ class MainFlutterWindow: NSWindow {
     RegisterGeneratedPlugins(registry: flutterViewController)
     deviceSecretChannel = deviceSecretCipher.install(on: flutterViewController.engine.binaryMessenger)
     profilePrivacyChannel = FlutterMethodChannel(
-      name: "com.debrify.app/profile_privacy",
+      name: "com.megawatch.app/profile_privacy",
       binaryMessenger: flutterViewController.engine.binaryMessenger
     )
     profilePrivacyChannel?.setMethodCallHandler { [weak self] call, result in

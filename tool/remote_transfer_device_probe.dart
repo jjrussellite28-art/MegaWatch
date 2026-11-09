@@ -9,18 +9,18 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/services/debrify_tv_database.dart';
-import 'package:debrify/services/profiles/profile_bootstrap.dart';
-import 'package:debrify/services/profiles/profile_registry.dart';
-import 'package:debrify/services/profiles/profile_remote_lease.dart';
-import 'package:debrify/services/profiles/profile_runtime.dart';
-import 'package:debrify/services/profiles/profile_scope.dart';
-import 'package:debrify/services/remote_control/remote_channel_file.dart';
-import 'package:debrify/services/remote_control/remote_control_state.dart';
-import 'package:debrify/services/remote_control/remote_reliable_transfer.dart';
-import 'package:debrify/services/remote_control/remote_session.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/services/megawatch_tv_database.dart';
+import 'package:megawatch/services/profiles/profile_bootstrap.dart';
+import 'package:megawatch/services/profiles/profile_registry.dart';
+import 'package:megawatch/services/profiles/profile_remote_lease.dart';
+import 'package:megawatch/services/profiles/profile_runtime.dart';
+import 'package:megawatch/services/profiles/profile_scope.dart';
+import 'package:megawatch/services/remote_control/remote_channel_file.dart';
+import 'package:megawatch/services/remote_control/remote_control_state.dart';
+import 'package:megawatch/services/remote_control/remote_reliable_transfer.dart';
+import 'package:megawatch/services/remote_control/remote_session.dart';
+import 'package:megawatch/utils/app_storage.dart';
 
 final status = ValueNotifier('Starting isolated Remote transfer validation…');
 
@@ -50,7 +50,7 @@ void record(String event, Map<String, Object?> fields) {
 }
 
 Future<void> _run() async {
-  final root = await Directory.systemTemp.createTemp('debrify-device-probe-');
+  final root = await Directory.systemTemp.createTemp('megawatch-device-probe-');
   RemoteReliableTransfer? sender;
   RemoteReliableTransfer? receiver;
   ProfileRegistry? registry;
@@ -150,7 +150,7 @@ Future<void> _run() async {
       ..debugInstallOutboundSession(session, ip: '127.0.0.1')
       ..debugRememberPeer(session.peerFingerprint);
     final port = await state.debugStartReliableReceiver();
-    final db = await DebrifyTvDatabase.instance.database;
+    final db = await MegaWatchTvDatabase.instance.database;
     await db.insert('tv_channels', {
       'channel_id': 'source',
       'name': 'Probe channel',
@@ -226,7 +226,7 @@ Future<void> _run() async {
     await sender?.close();
     await receiver?.close();
     await state.debugResetForTesting();
-    await DebrifyTvDatabase.instance.closeScope();
+    await MegaWatchTvDatabase.instance.closeScope();
     ProfileRuntime.debugReset();
     ProfileBootstrap.debugInstallRegistry(null);
     AppStorage.debugReset();

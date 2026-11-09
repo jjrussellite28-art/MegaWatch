@@ -29,7 +29,7 @@ abstract final class MainTab {
   static const int legacyTorrentSearch = 0;
   static const int playlist = 1;
   static const int downloads = 2;
-  static const int debrifyTv = 3;
+  static const int megawatchTv = 3;
   static const int realDebrid = 4;
   static const int torbox = 5;
   static const int pikPak = 6;
@@ -81,7 +81,7 @@ class MainPageBridge {
     pendingCatalogDetailOpen = null;
     pendingMdblistListOpen = null;
     _pendingPostSetupSnackBarMessage = null;
-    _debrifyTvChannelToAutoPlay = null;
+    _megawatchTvChannelToAutoPlay = null;
     _stremioTvChannelToAutoPlay = null;
     cancelIptvStartupChannel();
     _continueWatchingItemToAutoPlay = null;
@@ -240,7 +240,7 @@ class MainPageBridge {
     _externalPlayerLaunchListeners.remove(listener);
   }
 
-  static Future<void> Function(String channelId)? watchDebrifyTvChannel;
+  static Future<void> Function(String channelId)? watchMegaWatchTvChannel;
   static Future<void> Function(String channelId)? watchStremioTvChannel;
   static Future<void> Function(Map<String, dynamic> item)?
   watchContinueWatchingItem;
@@ -532,23 +532,23 @@ class MainPageBridge {
     }
   }
 
-  // Debrify TV has one mounted library surface. Keep this hook deliberately
+  // MegaWatch TV has one mounted library surface. Keep this hook deliberately
   // narrower than the generic playback-return listeners: a remote channel or
   // pool apply only asks that screen to invalidate its private DB mirrors.
-  static VoidCallback? _debrifyTvLibraryListener;
+  static VoidCallback? _megawatchTvLibraryListener;
 
-  static void registerDebrifyTvLibraryListener(VoidCallback listener) {
-    _debrifyTvLibraryListener = listener;
+  static void registerMegaWatchTvLibraryListener(VoidCallback listener) {
+    _megawatchTvLibraryListener = listener;
   }
 
-  static void unregisterDebrifyTvLibraryListener(VoidCallback listener) {
-    if (_debrifyTvLibraryListener == listener) {
-      _debrifyTvLibraryListener = null;
+  static void unregisterMegaWatchTvLibraryListener(VoidCallback listener) {
+    if (_megawatchTvLibraryListener == listener) {
+      _megawatchTvLibraryListener = null;
     }
   }
 
-  static void notifyDebrifyTvLibraryChanged() {
-    _debrifyTvLibraryListener?.call();
+  static void notifyMegaWatchTvLibraryChanged() {
+    _megawatchTvLibraryListener?.call();
   }
 
   static void notifyAutoLaunchFailed([String? reason]) {
@@ -557,16 +557,16 @@ class MainPageBridge {
     notifyContentPlaybackStopped();
   }
 
-  // Store a Debrify TV channel ID that should be auto-played when DebrifyTVScreen initializes
-  static String? _debrifyTvChannelToAutoPlay;
+  // Store a MegaWatch TV channel ID that should be auto-played when MegaWatchTVScreen initializes
+  static String? _megawatchTvChannelToAutoPlay;
 
-  static void notifyDebrifyTvChannelToAutoPlay(String channelId) {
-    _debrifyTvChannelToAutoPlay = channelId;
+  static void notifyMegaWatchTvChannelToAutoPlay(String channelId) {
+    _megawatchTvChannelToAutoPlay = channelId;
   }
 
-  static String? getAndClearDebrifyTvChannelToAutoPlay() {
-    final channelId = _debrifyTvChannelToAutoPlay;
-    _debrifyTvChannelToAutoPlay = null;
+  static String? getAndClearMegaWatchTvChannelToAutoPlay() {
+    final channelId = _megawatchTvChannelToAutoPlay;
+    _megawatchTvChannelToAutoPlay = null;
     return channelId;
   }
 

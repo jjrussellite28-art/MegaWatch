@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../services/imdb_enrichment_service.dart';
 import '../../services/storage_service.dart';
 import '../../utils/platform_util.dart';
@@ -322,7 +322,7 @@ class _DetailConsoleState extends State<DetailConsole> {
         child: CachedNetworkImage(
           imageUrl: url,
           fit: BoxFit.cover,
-          cacheManager: DebrifyImageCache.manager,
+          cacheManager: MegaWatchImageCache.manager,
           memCacheWidth: 640,
           placeholder: (_, __) => ColoredBox(color: _t.placeholder),
           errorWidget: (_, __, ___) => ColoredBox(color: _t.placeholder),
@@ -881,7 +881,7 @@ class _CastPortrait extends StatelessWidget {
                 ? CachedNetworkImage(
                     imageUrl: url,
                     fit: BoxFit.cover,
-                    cacheManager: DebrifyImageCache.manager,
+                    cacheManager: MegaWatchImageCache.manager,
                     memCacheWidth: 110,
                     placeholder: (_, __) => ColoredBox(color: t.placeholder),
                     errorWidget: (_, __, ___) =>
@@ -1003,7 +1003,7 @@ class _ConsolePosterState extends State<_ConsolePoster> {
               ? CachedNetworkImage(
                   imageUrl: p,
                   fit: BoxFit.cover,
-                  cacheManager: DebrifyImageCache.manager,
+                  cacheManager: MegaWatchImageCache.manager,
                   memCacheWidth: 300,
                   placeholder: (_, __) => ColoredBox(color: t.placeholder),
                   errorWidget: (_, __, ___) => ColoredBox(color: t.placeholder),

@@ -1,6 +1,6 @@
-import 'package:debrify/models/quick_play_rules.dart';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/services/startup_recovery_sources.dart';
+import 'package:megawatch/models/quick_play_rules.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/services/startup_recovery_sources.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Torrent row(String id) => Torrent(
@@ -16,7 +16,7 @@ Torrent row(String id) => Torrent(
 );
 
 void main() {
-  final rules = QuickPlayRules.debrifyDefault(isMovie: false);
+  final rules = QuickPlayRules.megawatchDefault(isMovie: false);
   List<String> stages({
     QuickPlayRules? policy,
     String? provider = 'torbox',

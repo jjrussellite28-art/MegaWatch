@@ -1,5 +1,5 @@
-import 'package:debrify/services/home_row_refresh.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_ui_refresh.dart';
+import 'package:megawatch/services/home_row_refresh.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_ui_refresh.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -8,7 +8,7 @@ void main() {
     HomeRowRefreshSignal.addListener(received.add);
     addTearDown(() => HomeRowRefreshSignal.removeListener(received.add));
     WebDavSyncUiRefresh.dispatch({
-      'debrify_tv_favorite_channels_v1',
+      'megawatch_tv_favorite_channels_v1',
       'tv/ch',
       'playlist_poster_overrides_v1',
       'playback_state_v1',

@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/services/storage_service.dart';
+import 'package:megawatch/services/storage_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('Apple TV Debrify keyboard default migration', () {
+  group('Apple TV MegaWatch keyboard default migration', () {
     test(
-      'fresh Apple TV profiles start with the Debrify keyboard disabled',
+      'fresh Apple TV profiles start with the MegaWatch keyboard disabled',
       () async {
         SharedPreferences.setMockInitialValues(<String, Object>{});
 

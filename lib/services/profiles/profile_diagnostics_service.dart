@@ -44,7 +44,7 @@ class ProfileDiagnosticsService {
       }
     }
     return <String, Object?>{
-      'format': 'debrify-profile-diagnostics',
+      'format': 'megawatch-profile-diagnostics',
       'version': 1,
       'profilePackageVersion': PortableProfilePackage.version,
       ...summary,

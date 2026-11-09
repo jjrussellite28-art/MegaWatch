@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/services/torrent_file_service.dart';
+import 'package:megawatch/services/torrent_file_service.dart';
 
 void main() {
   group('TorrentFileService', () {

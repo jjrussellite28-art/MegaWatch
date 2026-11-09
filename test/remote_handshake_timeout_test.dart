@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:debrify/services/remote_control/remote_control_state.dart';
-import 'package:debrify/utils/app_storage.dart';
+import 'package:megawatch/services/remote_control/remote_control_state.dart';
+import 'package:megawatch/utils/app_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Pins the whenComplete self-deadlock fix: the handshake dedup map stored

@@ -1,11 +1,11 @@
-import 'package:debrify/models/webdav_item.dart';
-import 'package:debrify/models/profiles/profile_policy.dart';
-import 'package:debrify/screens/settings/webdav_settings_page.dart';
-import 'package:debrify/screens/webdav/webdav_files_screen.dart';
-import 'package:debrify/services/text_brightness.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_adapter.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
+import 'package:megawatch/models/webdav_item.dart';
+import 'package:megawatch/models/profiles/profile_policy.dart';
+import 'package:megawatch/screens/settings/webdav_settings_page.dart';
+import 'package:megawatch/screens/webdav/webdav_files_screen.dart';
+import 'package:megawatch/services/text_brightness.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_adapter.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,8 +41,8 @@ class _FakeSource extends WebDavFilesDataSource {
   ) async => const [
     WebDavItem(name: 'Folder', path: 'Folder/', isDirectory: true),
     WebDavItem(
-      name: 'debrify-profile.debrify.enc',
-      path: 'debrify-profile.debrify.enc',
+      name: 'megawatch-profile.megawatch.enc',
+      path: 'megawatch-profile.megawatch.enc',
       isDirectory: false,
       sizeBytes: 42,
     ),
@@ -93,7 +93,7 @@ void main() {
 
     expect(find.text('Choose server root'), findsOneWidget);
     expect(find.text('Folder'), findsWidgets);
-    expect(find.text('debrify-profile.debrify.enc'), findsNothing);
+    expect(find.text('megawatch-profile.megawatch.enc'), findsNothing);
     expect(
       FocusManager.instance.primaryFocus?.debugLabel,
       'webdav-choose-folder',
@@ -107,7 +107,7 @@ void main() {
     await _pumpPicker(tester, WebDavPickerMode.selectBackup);
 
     expect(find.text('Folder'), findsWidgets);
-    expect(find.text('debrify-profile.debrify.enc'), findsOneWidget);
+    expect(find.text('megawatch-profile.megawatch.enc'), findsOneWidget);
     expect(find.text('movie.mp4'), findsNothing);
     expect(FocusManager.instance.primaryFocus?.debugLabel, 'webdav-first-item');
     expect(tester.takeException(), isNull);

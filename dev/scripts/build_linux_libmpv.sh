@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Build the private Linux libmpv used by Debrify's AppImage.
+# Build the private Linux libmpv used by MegaWatch's AppImage.
 #
 # mpv-build statically links FFmpeg, libass and libplacebo into libmpv.  The
 # result deliberately keeps the host boundary at Linux desktop ABIs (OpenGL,
@@ -128,7 +128,7 @@ libdir=${prefix}
 includedir=${prefix}/include
 
 Name: mpv
-Description: Debrify private libmpv
+Description: MegaWatch private libmpv
 Version: 0.40.0
 Libs: -L${libdir} -lmpv
 Cflags: -I${includedir}

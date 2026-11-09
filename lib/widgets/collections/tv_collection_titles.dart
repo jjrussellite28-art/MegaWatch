@@ -1,7 +1,7 @@
 import 'dart:async';
 import '../../utils/tv_keys.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/stremio_addon.dart';
@@ -368,7 +368,7 @@ class TvCollectionTitlesState extends State<TvCollectionTitles>
       key: ValueKey(url),
       imageUrl: url,
       fit: fit,
-      cacheManager: DebrifyImageCache.manager,
+      cacheManager: MegaWatchImageCache.manager,
       memCacheWidth: width,
       placeholder: (_, _) => fallback,
       errorWidget: (_, _, _) => fallback,

@@ -1,6 +1,6 @@
-import 'package:debrify/models/metadata_preferences.dart';
-import 'package:debrify/screens/metadata_explore_page.dart';
-import 'package:debrify/services/metadata_preferences_service.dart';
+import 'package:megawatch/models/metadata_preferences.dart';
+import 'package:megawatch/screens/metadata_explore_page.dart';
+import 'package:megawatch/services/metadata_preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

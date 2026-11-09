@@ -25,7 +25,7 @@ abstract final class ProfileAppearancePreferences {
     'tv_home_style',
     'detail_page_style',
     'parents_guide_style',
-    'debrify_tv_style',
+    'megawatch_tv_style',
     'iptv_style',
     'iptv_player_guide_style',
     'play_loader_style',

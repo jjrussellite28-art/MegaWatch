@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:debrify/models/torrent.dart';
-import 'package:debrify/models/stream_badge_rules.dart';
-import 'package:debrify/services/stream_badge_matcher.dart';
-import 'package:debrify/services/stream_badges_service.dart';
-import 'package:debrify/screens/video_player/widgets/source_sheet.dart';
+import 'package:megawatch/models/torrent.dart';
+import 'package:megawatch/models/stream_badge_rules.dart';
+import 'package:megawatch/services/stream_badge_matcher.dart';
+import 'package:megawatch/services/stream_badges_service.dart';
+import 'package:megawatch/screens/video_player/widgets/source_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';

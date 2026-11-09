@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/services/iptv_catalog_db.dart';
-import 'package:debrify/services/iptv_epg_service.dart';
-import 'package:debrify/services/xmltv_epg_source.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/services/iptv_catalog_db.dart';
+import 'package:megawatch/services/iptv_epg_service.dart';
+import 'package:megawatch/services/xmltv_epg_source.dart';
 
 void main() {
   // All times sit around this instant so the parser's ±window keeps them.

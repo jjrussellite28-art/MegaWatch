@@ -1,8 +1,8 @@
-import 'package:debrify/models/iptv_playlist.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_category_control.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_content_type_control.dart';
-import 'package:debrify/widgets/iptv/spotlight/spotlight_rail.dart';
-import 'package:debrify/widgets/iptv/styles/iptv_style.dart';
+import 'package:megawatch/models/iptv_playlist.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_category_control.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_content_type_control.dart';
+import 'package:megawatch/widgets/iptv/spotlight/spotlight_rail.dart';
+import 'package:megawatch/widgets/iptv/styles/iptv_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

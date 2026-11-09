@@ -83,7 +83,7 @@ class _ThemedSkeletonState extends State<ThemedSkeleton>
   Widget build(BuildContext context) {
     final app = AppThemeScope.of(context);
 
-    // Debrify Classic renders the SHIPPED widget, not a token-coloured
+    // MegaWatch Classic renders the SHIPPED widget, not a token-coloured
     // approximation of it. `Shimmer` paints a hardcoded #223049 → #2A3A55
     // sweep at stops [0.1, 0.3, 0.5]; this widget's shimmer arm paints the
     // theme's ink at 7%/13% across the full width. They are close, and close

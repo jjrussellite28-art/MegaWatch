@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/utils/platform_util.dart';
-import 'package:debrify/widgets/app_tab_switcher.dart';
-import 'package:debrify/widgets/tv_ambient_art_stage.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/utils/platform_util.dart';
+import 'package:megawatch/widgets/app_tab_switcher.dart';
+import 'package:megawatch/widgets/tv_ambient_art_stage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

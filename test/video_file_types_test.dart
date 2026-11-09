@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/utils/file_utils.dart';
+import 'package:megawatch/utils/file_utils.dart';
 
 /// [FileUtils.isVideoFile] is the single gate every cloud browser asks before
 /// offering Play instead of download-only, so a container missing from it is

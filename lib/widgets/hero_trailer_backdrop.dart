@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import '../services/app_route_observer.dart';
 import '../services/main_page_bridge.dart';
 import '../services/storage_service.dart';
-import '../services/debrify_image_cache.dart';
+import '../services/megawatch_image_cache.dart';
 import '../utils/platform_util.dart';
 import '../utils/tv_keys.dart';
 import 'trailer_engine.dart';
@@ -921,7 +921,7 @@ class HeroTrailerBackdropState extends State<HeroTrailerBackdrop>
     final image = CachedNetworkImage(
       imageUrl: widget.imageUrl!,
       fit: BoxFit.cover,
-      cacheManager: DebrifyImageCache.manager,
+      cacheManager: MegaWatchImageCache.manager,
       // 96px on the filterless TV path (the upscale IS the blur); 480px under
       // a real gaussian, where the filter hides the upscale; a real decode when
       // the caller has asked for key art rather than a wash.

@@ -1,11 +1,11 @@
-import 'package:debrify/services/pip_service.dart';
+import 'package:megawatch/services/pip_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const channel = MethodChannel('com.debrify.app/pip');
+  const channel = MethodChannel('com.megawatch.app/pip');
   final calls = <MethodCall>[];
   setUp(() {
     PipService.resetForTesting();

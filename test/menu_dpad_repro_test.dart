@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:debrify/screens/video_player/models/gesture_state.dart';
-import 'package:debrify/screens/video_player/widgets/player_menu_panel.dart';
-import 'package:debrify/screens/video_player/widgets/sleep_timer_sheet.dart';
+import 'package:megawatch/screens/video_player/models/gesture_state.dart';
+import 'package:megawatch/screens/video_player/widgets/player_menu_panel.dart';
+import 'package:megawatch/screens/video_player/widgets/sleep_timer_sheet.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

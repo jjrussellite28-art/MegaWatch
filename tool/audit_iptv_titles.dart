@@ -3,7 +3,7 @@
 // Usage: dart run tool/audit_iptv_titles.dart /absolute/path/iptv_catalog.db
 import 'dart:convert';
 import 'dart:io';
-import 'package:debrify/utils/iptv_title.dart';
+import 'package:megawatch/utils/iptv_title.dart';
 
 Future<void> main(List<String> args) async {
   if (args.length != 1) throw ArgumentError('Pass the catalog database path');

@@ -12,11 +12,11 @@ private enum DeviceSecretError: Error {
 }
 
 private final class TvOsDeviceSecretCipher {
-    private let service = "com.varunsalian.debrifytv.profile-device-secret"
+    private let service = "com.varunsalian.megawatchtv.profile-device-secret"
     private let account = "device-key-v1"
 
     func install(on messenger: FlutterBinaryMessenger) -> FlutterMethodChannel {
-        let channel = FlutterMethodChannel(name: "debrify/device_secret", binaryMessenger: messenger)
+        let channel = FlutterMethodChannel(name: "megawatch/device_secret", binaryMessenger: messenger)
         channel.setMethodCallHandler { [weak self] call, result in
             guard let self else { result(FlutterError(code: "unavailable", message: nil, details: nil)); return }
             do {
@@ -110,9 +110,9 @@ private final class TvOsDeviceSecretCipher {
 }
 
 private final class TvOsProfileRecoveryChannel {
-    private let service = "com.varunsalian.debrifytv.profile-recovery"
+    private let service = "com.varunsalian.megawatchtv.profile-recovery"
     private let manifestAccount = "published-manifest-v1"
-    private let installMarkerKey = "debrify.profileRecovery.installInstanceId.v1"
+    private let installMarkerKey = "megawatch.profileRecovery.installInstanceId.v1"
     private let shardBytes = 8 * 1024
     private let maxEnvelopeBytes = 768 * 1024
 
@@ -148,7 +148,7 @@ private final class TvOsProfileRecoveryChannel {
     private let mirrorMaxSealedBytes = 192 * 1024
 
     func install(on messenger: FlutterBinaryMessenger) -> FlutterMethodChannel {
-        let channel = FlutterMethodChannel(name: "debrify/tvos_profile_recovery", binaryMessenger: messenger)
+        let channel = FlutterMethodChannel(name: "megawatch/tvos_profile_recovery", binaryMessenger: messenger)
         channel.setMethodCallHandler { [weak self] call, result in
             guard let self else { result(FlutterError(code: "unavailable", message: nil, details: nil)); return }
             do {
@@ -483,7 +483,7 @@ private final class TvOsProfileRecoveryChannel {
         return HKDF<SHA256>.deriveKey(
             inputKeyMaterial: SymmetricKey(data: Data(vendor.utf8)),
             salt: Data(service.utf8),
-            info: Data("debrify.profile-recovery.mirror-key.v3".utf8),
+            info: Data("megawatch.profile-recovery.mirror-key.v3".utf8),
             outputByteCount: 32)
     }
 
@@ -592,7 +592,7 @@ private final class TvOsProfilePrivacyController {
 
     func install(on messenger: FlutterBinaryMessenger) -> FlutterMethodChannel {
         let channel = FlutterMethodChannel(
-            name: "com.debrify.app/profile_privacy",
+            name: "com.megawatch.app/profile_privacy",
             binaryMessenger: messenger)
         channel.setMethodCallHandler { [weak self] call, result in
             guard call.method == "setSensitive",
@@ -641,8 +641,8 @@ class AppDelegate: FlutterAppDelegate {
     private var pendingTopShelfAction: [String: String]?
 
     private static var topShelfAppGroup: String {
-        Bundle.main.object(forInfoDictionaryKey: "DebrifyAppGroup") as? String
-            ?? "group.com.varunsalian.debrifytv"
+        Bundle.main.object(forInfoDictionaryKey: "MegaWatchAppGroup") as? String
+            ?? "group.com.varunsalian.megawatchtv"
     }
     private static let topShelfSnapshotPath = "Library/Caches/top-shelf-v1.json"
     private static let topShelfActionsPath = "Library/Caches/top-shelf-actions-v1.json"
@@ -679,7 +679,7 @@ class AppDelegate: FlutterAppDelegate {
         // NSLog, which `devicectl ... --console` does capture. Dart side opts in
         // (tvOS only) by reassigning debugPrint.
         let logChannel = FlutterMethodChannel(
-            name: "debrify/tvlog",
+            name: "megawatch/tvlog",
             binaryMessenger: flutterViewController.binaryMessenger)
         logChannel.setMethodCallHandler { call, result in
             if call.method == "log", let message = call.arguments as? String {
@@ -715,7 +715,7 @@ class AppDelegate: FlutterAppDelegate {
         // so this is the one call it would have made. nil is a valid answer —
         // the vault falls back to pepper-only derivation.
         let deviceChannel = FlutterMethodChannel(
-            name: "debrify/tvdevice",
+            name: "megawatch/tvdevice",
             binaryMessenger: flutterViewController.binaryMessenger)
         deviceChannel.setMethodCallHandler { call, result in
             if call.method == "id" {
@@ -741,7 +741,7 @@ class AppDelegate: FlutterAppDelegate {
         // setting remains authoritative, and tvOS may retain its configured
         // output resolution even when content dimensions are supplied.
         let displayMatchChannel = FlutterMethodChannel(
-            name: "debrify/tvos_display_match",
+            name: "megawatch/tvos_display_match",
             binaryMessenger: flutterViewController.binaryMessenger)
         displayMatchChannel.setMethodCallHandler { [weak self] call, result in
             guard call.method == "clear" || call.method == "apply" else {
@@ -883,7 +883,7 @@ class AppDelegate: FlutterAppDelegate {
         // only for schemes listed in LSApplicationQueriesSchemes; `open`
         // reports whether tvOS accepted the launch.
         let urlChannel = FlutterMethodChannel(
-            name: "debrify/tvurl",
+            name: "megawatch/tvurl",
             binaryMessenger: flutterViewController.binaryMessenger)
         urlChannel.setMethodCallHandler { call, result in
             guard let urlString = call.arguments as? String,
@@ -913,7 +913,7 @@ class AppDelegate: FlutterAppDelegate {
         // selector; this is a sideloaded app, App Store review is not a
         // constraint.)
         let systemChannel = FlutterMethodChannel(
-            name: "debrify/tvsystem",
+            name: "megawatch/tvsystem",
             binaryMessenger: flutterViewController.binaryMessenger)
         systemChannel.setMethodCallHandler { call, result in
             if call.method == "suspend" {
@@ -942,7 +942,7 @@ class AppDelegate: FlutterAppDelegate {
         // handed to Dart so the existing detail-page route remains the single
         // source of navigation truth.
         let topShelfChannel = FlutterMethodChannel(
-            name: "debrify/topshelf",
+            name: "megawatch/topshelf",
             binaryMessenger: flutterViewController.binaryMessenger)
         if let container = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: Self.topShelfAppGroup) {
@@ -1098,7 +1098,7 @@ class AppDelegate: FlutterAppDelegate {
         // BACK button emits the SAME notification, so commit and cancel are
         // indistinguishable here. Dart side decides what that's worth.
         let keyboardChannel = FlutterMethodChannel(
-            name: "debrify/tvkeyboard",
+            name: "megawatch/tvkeyboard",
             binaryMessenger: flutterViewController.binaryMessenger)
         self.keyboardChannel = keyboardChannel
         NotificationCenter.default.addObserver(
@@ -1137,7 +1137,7 @@ class AppDelegate: FlutterAppDelegate {
     }
 
     private func topShelfAction(from url: URL) -> [String: String]? {
-        guard url.scheme?.lowercased() == "debrify",
+        guard url.scheme?.lowercased() == "megawatch",
               url.host?.lowercased() == "topshelf",
               url.path == "/display",
               let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {

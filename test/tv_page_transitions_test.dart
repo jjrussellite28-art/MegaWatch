@@ -1,5 +1,5 @@
-import 'package:debrify/theme/app_theme_adapter.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/theme/app_theme_adapter.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

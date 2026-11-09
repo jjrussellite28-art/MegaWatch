@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'src/webdav_sync_audit_root.dart';
 
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_merge.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_circle_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_codec.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_models.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_library_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_merge.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_circle_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_codec.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_models.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_library_models.dart';
 
 const _passphraseEnvironmentVariable = 'WEBDAV_SYNC_AUDIT_PASSPHRASE';
 const _currentGraphSchemaVersion = 1;
@@ -1164,7 +1164,7 @@ Map<String, Object?> _decodeGraphPayload(String payload, String kind) {
         'integrity',
       }).isNotEmpty ||
       bodyKeys.any((key) => !envelope.containsKey(key)) ||
-      envelope['format'] != 'debrify-profile-package' ||
+      envelope['format'] != 'megawatch-profile-package' ||
       envelope['version'] != 4 ||
       envelope['mode'] != 'deviceGraph' ||
       envelope['profiles'] is! List ||

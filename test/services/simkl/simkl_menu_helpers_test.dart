@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:debrify/services/simkl/simkl_menu_helpers.dart';
-import 'package:debrify/services/simkl/simkl_service.dart';
+import 'package:megawatch/services/simkl/simkl_menu_helpers.dart';
+import 'package:megawatch/services/simkl/simkl_service.dart';
 
 Set<SimklItemMenuAction> _actions(List<SimklMenuOption> options) =>
     options.map((option) => option.action).toSet();

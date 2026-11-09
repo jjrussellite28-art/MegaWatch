@@ -1,13 +1,13 @@
-import 'package:debrify/services/metadata_preferences_service.dart';
+import 'package:megawatch/services/metadata_preferences_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:debrify/services/hide_watched_prefs.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_ui_refresh.dart';
-import 'package:debrify/services/main_page_bridge.dart';
-import 'package:debrify/services/storage_service.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_active_profile_refresh.dart';
-import 'package:debrify/services/webdav_sync/webdav_sync_hot_merge.dart';
+import 'package:megawatch/services/hide_watched_prefs.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_ui_refresh.dart';
+import 'package:megawatch/services/main_page_bridge.dart';
+import 'package:megawatch/services/storage_service.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_active_profile_refresh.dart';
+import 'package:megawatch/services/webdav_sync/webdav_sync_hot_merge.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/services/stremio_service.dart';
+import 'package:megawatch/services/stremio_service.dart';
 
 void main() {
   const refresher = DefaultWebDavSyncActiveProfileRefresher();

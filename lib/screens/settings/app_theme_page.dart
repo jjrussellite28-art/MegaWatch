@@ -16,14 +16,14 @@ import 'widgets/settings_widgets.dart' show SettingsSectionLabel;
 
 /// Row caption for the Appearance list.
 String appThemeLabel(String id) =>
-    id == AppThemes.legacyId ? 'Debrify Classic' : DetailThemes.byId(id).label;
+    id == AppThemes.legacyId ? 'MegaWatch Classic' : DetailThemes.byId(id).label;
 
 /// App-wide theme picker (`app_theme`) — and the Foundation's vertical proof.
 ///
 /// This page is the first surface migrated to the token layer: every colour
 /// it paints comes from [AppThemeScope] (its settings subprofile) or from the
 /// adapter-built `ThemeData` — no `kSettings*` constants, no literals. Under
-/// `Debrify Classic` the tokens pin the same values those constants hold, so
+/// `MegaWatch Classic` the tokens pin the same values those constants hold, so
 /// it is indistinguishable from its neighbours; under a real theme it
 /// restyles in place as you pick, light themes included.
 class AppThemePage extends StatefulWidget {
@@ -166,9 +166,9 @@ class _AppThemePageState extends State<AppThemePage> {
                           _optionRow(
                             app: app,
                             id: AppThemes.legacyId,
-                            label: 'Debrify Classic',
+                            label: 'MegaWatch Classic',
                             subtitle:
-                                'Today\'s Debrify, untouched. Details pages '
+                                'Today\'s MegaWatch, untouched. Details pages '
                                 'keep their own theme choice.',
                             selected: selected == AppThemes.legacyId,
                             swatches: null,
@@ -197,7 +197,7 @@ class _AppThemePageState extends State<AppThemePage> {
                     child: Text(
                       'Picking a theme here also sets the Details Theme to '
                       'match, so movie and series pages agree with the app. '
-                      'Switching back to Debrify Classic keeps that details '
+                      'Switching back to MegaWatch Classic keeps that details '
                       'choice.',
                       style: TextStyle(
                         fontSize: 12.5,

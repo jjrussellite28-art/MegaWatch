@@ -1,4 +1,4 @@
-# Debrify Cross-Device Sync over WebDAV — Implementation Plan
+# MegaWatch Cross-Device Sync over WebDAV — Implementation Plan
 
 Addenda status (2026-09-03): §13 (scalar provenance repair), §12
 (near-real-time propagation), and §11 (silent per-record sync for
@@ -22,7 +22,7 @@ physical-tvOS, and physical cross-device soak checks remain explicitly deferred
 manual compatibility gates; none is claimed as tested. The twelve reviewed
 architecture rounds remain the
 safety baseline, with the login-first product-flow amendment in §15:
-sync uses a dedicated in-memory WebDAV login and the fixed `Debrify` folder;
+sync uses a dedicated in-memory WebDAV login and the fixed `MegaWatch` folder;
 the app automatically initializes or connects to the sync data found there.
 “Circle”, “seed”,
 “join”, and “enrollment” are internal protocol terms, never user-facing
@@ -41,11 +41,11 @@ to ship.
 Goal: everything the app considers "the user's state" — profiles, connections,
 addons, playlists, favorites, settings, watch progress, source bindings —
 follows the user across devices, via a user-supplied WebDAV server, encrypted
-client-side, with no Debrify-run infrastructure. **Database carve-out
+client-side, with no MegaWatch-run infrastructure. **Database carve-out
 (2026-09-02, superseded by §14 on 2026-09-03):** each device still rebuilds
 its IPTV channel catalogue and EPG cache locally. Everything personal now
 syncs continuously: IPTV source credentials, favorites, watch history,
-resume, hidden categories and arrangements, plus Debrify TV channels and
+resume, hidden categories and arrangements, plus MegaWatch TV channels and
 their hash pools travel as live per-record library state (§14). Playlists and playlist favorites are prefs
 (`user_playlist_v1`, `playlist_favorites_v1`) and DO hot-sync.
 
@@ -68,11 +68,11 @@ pairings, OS grants, local paths, caches, download binaries). Rules:
 
 - Full database snapshots are preferred. If their raw total exceeds the
   portable-package budget, the existing bounded fallback removes only IPTV
-  catalogue/EPG cache tables and Debrify TV channels/hash pools from scratch
+  catalogue/EPG cache tables and MegaWatch TV channels/hash pools from scratch
   snapshots. IPTV credentials travel as encrypted connection resources and
   durable IPTV tables remain in the compact snapshot.
 - Only the validated `rebuildableDatabaseCachesOmitted` and
-  `debrifyTvChannelsOmitted` records are accepted. Any unknown/malformed
+  `megawatchTvChannelsOmitted` records are accepted. Any unknown/malformed
   omission or a package still oversized after compaction **refuses** the push
   and keeps the prior graph section.
 
@@ -88,10 +88,10 @@ uploads its graph; later devices adopt it when needed. We never merge two
 pre-existing profile registries.
 
 **Product model (amended by §15): the dedicated WebDAV account plus its fixed
-`Debrify` folder is the sync identity.** The user never chooses “start” versus
+`MegaWatch` folder is the sync identity.** The user never chooses “start” versus
 “join”, browses folders, names a circle, enters a passphrase, or handles an
 enrollment code. After login the app probes the hidden
-`Debrify/debrify-sync/circle.authority`:
+`MegaWatch/megawatch-sync/circle.authority`:
 
 - **unbound device + authority absent** → probe legacy names; if those are
   absent, generate a machine secret and stage a new encrypted sync set locally;
@@ -179,10 +179,10 @@ restore call:
    without DB sections yields new profiles with EMPTY databases — without
    this step, the prune below deletes the only copy of favorites/history.
    Paths resolve per scope with no session switch
-   (`ProfileRuntime.withCapturedScope`, `lib/services/debrify_tv_database.dart:87`).
+   (`ProfileRuntime.withCapturedScope`, `lib/services/megawatch_tv_database.dart:87`).
    **Handle lifecycle (round-4/7):** a pair copies only after the source
-   scope's DBs are deactivated + drained — `debrify_tv.db` via the
-   scope-lock/drain machinery (`debrify_tv_database.dart:188-212`) AND the
+   scope's DBs are deactivated + drained — `megawatch_tv.db` via the
+   scope-lock/drain machinery (`megawatch_tv_database.dart:188-212`) AND the
    independently-managed, WAL-mode `iptv_catalog.db` via its own
    `IptvCatalogDb.closeScope()` (`lib/services/iptv_catalog_db.dart:834`;
    round-7 — it has its own handle lifecycle and had been left to the
@@ -243,7 +243,7 @@ restore call:
    formerly-active profile's pair (its handles are now closed). **Target
    open-gate (round-7 — the sharpest hole in the round-6 ordering):** at
    this point the COPY TARGET is the freshly-activated Admin, whose
-   services would immediately open its still-empty `debrify_tv.db` /
+   services would immediately open its still-empty `megawatch_tv.db` /
    `iptv_catalog.db` — and copying over an open SQLite file corrupts it.
    The flow therefore holds the target scope's DBs closed (scope lock;
    the adoption progress screen is already full-screen and stays up)
@@ -322,7 +322,7 @@ migration risk).
   adoption flow for join.)
 
 **Refresh graphs are STRUCTURE-ONLY (round-8 upgraded this from
-"DB snapshots are bootstrap-only").** `debrify_tv.db` is, per its own
+"DB snapshots are bootstrap-only").** `megawatch_tv.db` is, per its own
 header, "favorites/history/resume bookkeeping" — mutable daily data that
 would make the graph permanently dirty and turn every favorite toggle into
 a destructive prompt. So: the **bootstrap section carries everything**;
@@ -377,7 +377,7 @@ win merely because another key changed on the same device.
 | Encrypted envelope | `lib/services/profiles/portable_profile_package.dart:534` Argon2id(19MB, it=2 — sub-second) + AES-GCM, off-isolate, `probeFile`/`decryptFile` | at-rest crypto, reused as-is for the graph; small additive `sealSyncDocument`/`openSyncDocument` for hot docs using the same primitives + own AAD, but with a **circle-fixed KDF salt** (stored in `circle.json`) + per-file random AEAD nonces, so the key derives ONCE per cycle — the stock format's per-file random salt would force one 19MB Argon2id run per peer × section on every pull, colliding with the tvOS low-memory gate |
 | Pref portability policy | `lib/services/profiles/profile_preference_portability.dart` | hot doc contents = `_exportPreferences` output — which is **private today** (`lib/services/profiles/profile_package_service.dart:387`); expose it additively (round-7). **Null rule (round-7):** `prepareValue` deliberately exports device-sealed IPTV execution state and malformed blobs as EXPLICIT NULLS (`profile_preference_portability.dart:51`) so a one-shot RESTORE clears them — but a recurring merge honoring nulls would erase local device state every cycle. The doc builder therefore DROPS null-valued entries; hot deletion travels only as tombstones |
 | WebDAV client (protocol layer only) | `lib/services/webdav_service.dart` (PROPFIND, DELETE, basic auth) | transport; only PUT/MKCOL/GET-bytes are new. **NOT reused: `_authorize`** — it gates on the ACTIVE profile's `ProfileFeature.cloud` grant, which would break sync under non-admin/kid sessions. The engine holds its OWN device-level transport credentials (§5) |
-| Credential storage | **`DeviceKeyProvider` (round-7 — supersedes round-6's SecretVault choice, which was WRONG):** the repo already ships a platform-native secret store — the `debrify/device_secret` channel backed by Android Keystore AEAD (`android/.../security/DeviceSecretCipherPlugin.kt`), Apple Keychain including a tvOS implementation (`tvos/Runner/AppDelegate.swift`), Windows DPAPI (`windows/runner/flutter_window.cpp:105`), and a Linux passphrase-wrapped vault (`lib/services/profiles/device_key_provider.dart:10`). The connection-resource secrets inside the very graph packages sync ships are ALREADY sealed with it; `SecretVault`'s "OS keystores unavailable" header is stale in scope | engine transport credentials + the machine-generated sync secret copied from `circle.authority` and sealed via `DeviceKeyProvider.cipher` with sync-specific AAD. Two encoded caveats: the **Linux vault can be LOCKED** — the cycle defers until unlock, exactly as profile resources already do; and sealed values are **device-bound, non-exportable**. Runtime cycles use this sealed copy while pinning the exact authority bytes. `SecretVault` (obfuscation-grade, `lib/services/secret_vault.dart:12`) is NOT used for sync secrets |
+| Credential storage | **`DeviceKeyProvider` (round-7 — supersedes round-6's SecretVault choice, which was WRONG):** the repo already ships a platform-native secret store — the `megawatch/device_secret` channel backed by Android Keystore AEAD (`android/.../security/DeviceSecretCipherPlugin.kt`), Apple Keychain including a tvOS implementation (`tvos/Runner/AppDelegate.swift`), Windows DPAPI (`windows/runner/flutter_window.cpp:105`), and a Linux passphrase-wrapped vault (`lib/services/profiles/device_key_provider.dart:10`). The connection-resource secrets inside the very graph packages sync ships are ALREADY sealed with it; `SecretVault`'s "OS keystores unavailable" header is stale in scope | engine transport credentials + the machine-generated sync secret copied from `circle.authority` and sealed via `DeviceKeyProvider.cipher` with sync-specific AAD. Two encoded caveats: the **Linux vault can be LOCKED** — the cycle defers until unlock, exactly as profile resources already do; and sealed values are **device-bound, non-exportable**. Runtime cycles use this sealed copy while pinning the exact authority bytes. `SecretVault` (obfuscation-grade, `lib/services/secret_vault.dart:12`) is NOT used for sync secrets |
 | Single-flight + scope-capture patterns | remote fast path (`_applyingRemotePayload` guard, captured authorization) | engine concurrency discipline |
 | Admin authorization for graph ops | remote receiver's pattern for `ConfigCommand.profileGraph` (`lib/services/remote_control/remote_command_router.dart:1088`) | graph build/apply authorization |
 
@@ -392,7 +392,7 @@ binding is enabled.
 ## 3. Server layout — dumb-server-proof by construction
 
 ```
-<effective endpoint>/Debrify/debrify-sync/
+<effective endpoint>/MegaWatch/megawatch-sync/
   circle.authority                    # sole LWW authority, JSON v1:
                                       #   sealed marker bytes + sync secret
   devices/<deviceId>/manifest.enc     # THE commit record: clockOffsetMs vs server
@@ -410,20 +410,20 @@ layout. They are written under app support in
 `webdav-sync/pre-join-backups/`, encrypted with the sealed circle-key secret,
 and are
 never synced. The same bounded database fallback applies when a full package
-cannot fit: IPTV caches rebuild and omitted Debrify TV channels are not part
+cannot fit: IPTV caches rebuild and omitted MegaWatch TV channels are not part
 of that recovery point. On physical tvOS, app support maps to purgeable
 Caches, so this is a verified transaction recovery point rather than a
 permanent archive; users still need normal M2 WebDAV backups for durable
 recovery.
 
 This layout is deliberately hidden implementation detail. Signing into the
-same effective WebDAV endpoint is sufficient to discover the fixed `Debrify`
-folder; users do not browse into `debrify-sync/` or copy IDs between devices.
+same effective WebDAV endpoint is sufficient to discover the fixed `MegaWatch`
+folder; users do not browse into `megawatch-sync/` or copy IDs between devices.
 
 **The single authority object is committed LAST, never first.** New-folder activation in
 M5 is one ordered operation:
 
-1. Ensure and PROPFIND-verify the `debrify-sync` collection. PUT a random
+1. Ensure and PROPFIND-verify the `megawatch-sync` collection. PUT a random
    sentinel, GET it immediately, and require exact bytes; DELETE is
    best-effort. This proves the linearizable read-after-write behavior the
    authority register requires. Conditional-create behavior is irrelevant.
@@ -937,8 +937,8 @@ needed) and **Migrate** (one-shot WebDAV backup/restore, M2). The words
   login that never registers in Cloud accounts. Koofr pins
   `https://app.koofr.net/dav/Koofr/`, hides the URL, identifies the username as
   the Koofr email, and explains Koofr app passwords. Custom exposes the URL and
-  an explicit warning for `http://`. Both use the fixed `Debrify` folder.
-- The read-only setup probe GETs `Debrify/debrify-sync/circle.authority` first.
+  an explicit warning for `http://`. Both use the fixed `MegaWatch` folder.
+- The read-only setup probe GETs `MegaWatch/megawatch-sync/circle.authority` first.
   Authentication failures remain inline and generic; server bodies,
   credentials, and secret material never enter errors or diagnostics. A valid
   authority means an existing root; 404 permits legacy-name probes and then a
@@ -990,14 +990,14 @@ needed) and **Migrate** (one-shot WebDAV backup/restore, M2). The words
   that an installed device still has the WebDAV password; real v1 revocation
   means changing that password on the server, while sync re-keying is v2.
 - The carve-out copy (updated for §14): *“IPTV sources, favorites, history,
-  resume state and Debrify TV channels stay in sync. Each device rebuilds
+  resume state and MegaWatch TV channels stay in sync. Each device rebuilds
   its channel and guide caches.”* iOS and tvOS use the same flow;
   tvOS uses `TvTextField` with the system keyboard idiom and
   Keychain-backed `DeviceKeyProvider`, needs no folder/document picker, and
   still observes the low-memory/playback gates.
 
 **Deliberate limits of automatic detection:** it checks only the fixed
-`Debrify` folder under the effective endpoint; it does not scan parents,
+`MegaWatch` folder under the effective endpoint; it does not scan parents,
 siblings, or the whole WebDAV account. Possession of the WebDAV credentials is
 sufficient in v1 because the server-side authority includes the secret with
 the sealed marker;
@@ -1065,7 +1065,7 @@ map dependency makes that safer than exposing a temporary incompatible format.
 | --- | --- | --- | --- |
 | M1 | WebDAV protocol client: `putBytes`/`uploadFile` (streamed from disk) with MKCOL-on-409 for parents, `getBytes` (capped)/`downloadToFile` (streamed), `exists`; typed error contract; **transport hardening (round-6):** the sync client sets `followRedirects = false` and refuses cross-origin / scheme-downgrade redirects (the current client follows redirects with `dart:io` defaults, which replay the Basic credentials at the new location; `_baseUri` upgrades only scheme-LESS URLs — an explicit `http://` goes out as-is, `lib/services/webdav_service.dart:186`); explicit `http://` stays allowed but is labeled insecure in the WebDAV server config UI from M1 onward (round-11; LAN Nextcloud/rclone reality — hard-requiring HTTPS was rejected); full acceptance criteria below (rounds 10–11) | ~400 LoC protocol client + tests | 1–1.5 |
 | M2 | Backup to/restore from WebDAV (phone + TV UI) — lands in the NEW **Settings → Sync and Migrate** section ("Migrate" half), NOT on the Backup & Restore page (§6); acceptance criteria below (round-10) | transport-neutral backup entry points + picker mode + new settings section | 1.5–2 |
-| M3 | Login-first binding foundation: dedicated Koofr/Custom credentials that never enter Cloud accounts; fixed `Debrify` folder; persisted lifecycle states; fresh-setup read-only strict authority probe with authenticated legacy marker/key fallback; an authenticated legacy open may provision the merged authority as specified in §15; existing-root embedded-secret/key-check verification + exact authority pin (**peer/bootstrap validation waits for M5**); engine-owned transport credentials + machine secret sealed via `DeviceKeyProvider` (Linux locked-vault deferral); per-root device UUID/state namespace + isolated Change-account staging; frozen bounded root/manifest/authority codecs and golden/tamper/version tests. **M3 publishes no new-circle authority, manifest, hot data, or graph.** | binding service + login/setup component + codec tests | 1.5–2 |
+| M3 | Login-first binding foundation: dedicated Koofr/Custom credentials that never enter Cloud accounts; fixed `MegaWatch` folder; persisted lifecycle states; fresh-setup read-only strict authority probe with authenticated legacy marker/key fallback; an authenticated legacy open may provision the merged authority as specified in §15; existing-root embedded-secret/key-check verification + exact authority pin (**peer/bootstrap validation waits for M5**); engine-owned transport credentials + machine secret sealed via `DeviceKeyProvider` (Linux locked-vault deferral); per-root device UUID/state namespace + isolated Change-account staging; frozen bounded root/manifest/authority codecs and golden/tamper/version tests. **M3 publishes no new-circle authority, manifest, hot data, or graph.** | binding service + login/setup component + codec tests | 1.5–2 |
 | M4 | **Inactive hot-state engine** requiring an injected root context + authenticated profile AND resource circle↔local maps—absence is no-op and local IDs are never used on wire: peer discovery + peer-count/doc-size bounds; server-`Date` clockOffset capture, monotonic high-water mark, offset-delta damping, and normalized-time arbitration; hot-document semantic digests; deletion-path audit (**normative** — ships a test matching audited APIs to helper call sites) → tombstone helpers + replication + pending-until-published; two-part hot doc with `origin` stamps; merge module (pure functions, heavy unit tests: LWW + key-union + deterministic tie-break, alias-keyed playback unions + order stamps, completion diff-stamping, tombstones + cutoff exemption, dormant-rejoin, last-pushed dirty compare + convergence-stops-traffic, publish-time clamp, CW re-cap, **null-dropping doc build + never-delete-on-null apply, tombstone horizon from first publication — round-7**; **playlist per-item union by `computePlaylistDedupeKey` + diff-stamps + tombstones + order value, lossy-twin projection-equality rule — round-8**); `_exportPreferences` exposed additively; **scope-captured BATCH apply op (one tvOS checkpoint + one native projection — round-7) guarded by a persisted pending-apply target (round-8)**; trigger plumbing remains unarmed until M5, whose bounded seed/adoption transaction may invoke builders explicitly | merge module + helpers + gated glue | 5.5–6 |
 | M5 | **Activation + graph tier.** New root: ensure + PROPFIND-verify the collection, prove linearizable exact read-after-write with one disposable sentinel, check whether a standing authority is the persisted candidate, then mint the single marker+secret authority; build/seal/upload/hash-verify initial sections; write/read-verify a non-empty seed manifest; PUT authority LAST and always read it back. Exact bytes win; a different valid authority atomically reseals its secret, invalidates stale candidate identity/state, and enters existing-root adoption. Conditional-create behavior never decides the result. Existing root: discover the newest complete bootstrap across authentic manifests **regardless of 30-day dormancy**, require first-connection replacement consent, then bootstrap→latest eligible graph→hot merge. Shared graph/adoption safety remains unchanged. Only after seed/adoption and real maps succeed does M5 transition Active and arm M4. | activation + graph/adoption flows + glue | 6–6.5 |
 | M6 | Device-matrix hardening: simulated phone ↔ Mi Box ↔ tvOS ↔ desktop convergence; bounded/LRU hot-section cache; disk-staged large WebDAV transfer and integrity verification; tvOS memory/path audit; explicit scenarios for strict authority parsing, legacy upgrade, LWW concurrent initializers, authority deletion/replacement, 30+ day bootstrap discovery, bootstrap-less-authority rejection, mandatory first-connection consent, account rebind isolation, and M4 remaining inactive without maps. Physical-device soak remains a manual gate. | fixes + matrix tests | 1–1.5 |
@@ -1229,7 +1229,7 @@ unchanged by the later M3–M5 product-flow and boundary corrections)
 - Remote backup names are **timestamp + random suffix** (round-12 — a
   timestamp alone is not collision-proof across two devices, and the
   current shipped stamp is even date-only:
-  `debrify-profiles-YYYY-MM-DD.json`,
+  `megawatch-profiles-YYYY-MM-DD.json`,
   `lib/screens/settings/profile_backup_flows.dart:234`, a silent
   same-day overwrite). Uploads use create-only PUT; **on 412, regenerate
   the suffix and retry — BOUNDED.** Verify-after-upload = streamed,
@@ -1271,7 +1271,7 @@ resource hardening while retaining the named physical-device manual gates.
 - Silent graph steady-state: per-category **set-reconcile** diff apply through
   the remote fast-path handlers (adds deletions-propagate; removes the prompt
   and the concurrent-Admin lost-edit trade).
-- **Ongoing `debrify_tv.db` sync** (channels, IPTV favorites/lists, TV
+- **Ongoing `megawatch_tv.db` sync** (channels, IPTV favorites/lists, TV
   history): needs record-level treatment, not snapshot replace. v1 carries
   it on first full connection and preserves it across refreshes via
   copy-forward.
@@ -1307,7 +1307,7 @@ resource hardening while retaining the named physical-device manual gates.
    verified backup + bootstrap restore + handoff — pre-circle profiles get
    no copy/carry, which would be the banned identity merge**; DBs copy
    only drained
-   (`debrify_tv.db` + `iptv_catalog.db`, never via the generic file walk);
+   (`megawatch_tv.db` + `iptv_catalog.db`, never via the generic file walk);
    prune revokes ALL other-profile grants (not just defaultSeed) and
    passes both dispositions (`deleteOwnedResources` +
    `detachPublicArtifacts`); quarantines on refusal; and **graph pushes
@@ -1316,7 +1316,7 @@ resource hardening while retaining the named physical-device manual gates.
    (round-6).
 2. **Never publish an unreviewed partial graph**: full database snapshots are
    preferred; the bounded size fallback may remove only rebuildable IPTV
-   catalogue/EPG rows and Debrify TV channels/hash pools. The two omission
+   catalogue/EPG rows and MegaWatch TV channels/hash pools. The two omission
    records are structurally validated; every unknown omission or post-compact
    oversize refuses the push and keeps the prior section. IPTV credentials
    remain encrypted graph resources and durable IPTV tables remain attached.
@@ -1335,7 +1335,7 @@ resource hardening while retaining the named physical-device manual gates.
 4. **Login-first connection, internal adoption model:** never ask the user to
    choose start versus join, browse a folder, enter a sync passphrase, or merge
    two pre-existing registries. Setup reads both marker and keyfile from the
-   fixed `Debrify` folder and applies the four-state matrix in §15. M5 claims
+   fixed `MegaWatch` folder and applies the four-state matrix in §15. M5 claims
    or adopts the keyfile before candidate use, uploads and verifies the full
    seed + non-empty manifest, then commits the marker LAST. An existing marker
    connects only after its keyfile secret and an authentic complete
@@ -1496,7 +1496,7 @@ today live in the prompted graph tier:
 
 After v2 the prompted graph tier carries **only database snapshots** (full,
 or bounded-compacted per §1 D1)
-(`debrify_tv.db`, IPTV catalog) and profile bootstrap for first connection.
+(`megawatch_tv.db`, IPTV catalog) and profile bootstrap for first connection.
 Structural edits stop minting prompted revisions. Ongoing database sync
 remains v3 (see 11.8).
 
@@ -1681,7 +1681,7 @@ Must land before v2 starts:
 
 ### 11.8 Still deferred after v2
 
-- Ongoing `debrify_tv.db` / IPTV catalog sync: whole SQLite files with no
+- Ongoing `megawatch_tv.db` / IPTV catalog sync: whole SQLite files with no
   row-level change tracking. Silent sync needs per-row stamps in those
   tables or accepts file-level LWW (loses data under concurrent use).
 - Sync re-key / true device revocation.
@@ -1886,8 +1886,8 @@ one extra line. No new page, no frequency setting.
   foreground. The 15-minute periodic and lifecycle triggers are unchanged
   and remain the safety net.
 - No user-facing "sync frequency" control. Emergency override follows the
-  existing `DEBRIFY_WEBDAV_SYNC` dart-define pattern
-  (`webdav_sync_feature.dart`) with `DEBRIFY_WEBDAV_SYNC_POLL` (default
+  existing `MEGAWATCH_WEBDAV_SYNC` dart-define pattern
+  (`webdav_sync_feature.dart`) with `MEGAWATCH_WEBDAV_SYNC_POLL` (default
   true).
 
 ### 12.5 Effort
@@ -2138,7 +2138,7 @@ Synced live, per record, under the same stamped-LWW rules as hot scalars:
   (`iptv_watch_history`), video resume (`video_resume`), custom-list metadata
   (`iptv_lists`) and Favorites/custom-list membership
   (`iptv_list_channels`).
-- Debrify TV: channels with their keywords (`tv_channels` +
+- MegaWatch TV: channels with their keywords (`tv_channels` +
   `tv_channel_keywords`, one record), and per-channel torrent hash pools
   (`tv_cached_torrents`) — the pool is the channel's playable inventory.
 
@@ -2173,7 +2173,7 @@ group names in the clear:
 
 ### 14.3 Sidecar provenance
 
-Both `debrify_tv.db` and `iptv_catalog.db` gained
+Both `megawatch_tv.db` and `iptv_catalog.db` gained
 `webdav_sync_record_state(kind, owner_key, item_key, updated_at_ms,
 origin_device_id, normalized, deleted, aux)` plus `webdav_sync_meta`
 holding a monotonic `mutation_revision` (seeded '0' via INSERT OR IGNORE
@@ -2190,7 +2190,7 @@ wipe must never mint a circle-wide deletion. Deletions that ARE user
 intent write `deleted=1` tombstone rows (channels: per-channel tombstones
 on delete and clear-all).
 
-`debrify_tv.db` schema v10 seeds migration-origin `iptv_lists` stamps for
+`megawatch_tv.db` schema v10 seeds migration-origin `iptv_lists` stamps for
 existing custom lists and `iptv_list_channels` stamps for every membership,
 including Favorites, using `updated_at` / `added_at` as their initial times.
 
@@ -2225,7 +2225,7 @@ tombstones.
   `tv_channels`/`tv_pool_generation` sidecar rows when it drops those
   tables (`feb07eae`), so adopted snapshots never inherit stamps for rows
   they do not contain. The library section is now the authoritative
-  carrier for Debrify TV: a joiner whose bootstrap omitted the TV tables
+  carrier for MegaWatch TV: a joiner whose bootstrap omitted the TV tables
   receives full channels and pools on its first cycles.
 - Identity: catalog families map through (circleResourceId, variant);
   records for unmapped resources are retained, not dropped or misapplied.
@@ -2237,7 +2237,7 @@ tombstones.
 User library mutations ride the same 2s coalescing local-change window and
 durable intent as hot scalars (`webDavSyncLibraryLogicalKey`). Applied
 batches dispatch family-scoped refreshes: `tv/ch` + `tv/pool` invalidate
-the mounted Debrify TV screen through a dedicated MainPageBridge hook;
+the mounted MegaWatch TV screen through a dedicated MainPageBridge hook;
 `catalog/*` and `iptv/*` reuse the IPTV catalog/source signals; watch and
 resume records fire the playback-data notification. UI callbacks are
 best-effort and can never fail a committed batch.
@@ -2336,13 +2336,13 @@ rejected with reasoning:
   Keying by canonical channel identity was judged a redesign not worth
   the migration.
 
-### 14.9 Debrify TV foreground-only carve-out (2026-09-04)
+### 14.9 MegaWatch TV foreground-only carve-out (2026-09-04)
 
-This subsection supersedes the Debrify TV placement and propagation parts
+This subsection supersedes the MegaWatch TV placement and propagation parts
 of §§14.2, 14.5, and 14.6. The IPTV, history, resume, stamp, origin, merge,
 pool-generation, and materialization contracts above are unchanged.
 
-- Debrify TV records live in the per-profile `tv-library/<circleProfileId>`
+- MegaWatch TV records live in the per-profile `tv-library/<circleProfileId>`
   section. It uses the existing schema-1 library document, shared codec,
   compression and large-section path, with the existing 64 MiB / 100k-leaf
   fail-closed caps. The ambient `library/<circleProfileId>` build emits no
@@ -2360,7 +2360,7 @@ pool-generation, and materialization contracts above are unchanged.
   newer TV user mutation raced the operation, and records its completion
   time.
 - The only operation that reads, applies, or publishes TV wire records is
-  **Sync Debrify TV now** in WebDAV settings. It runs in the foreground,
+  **Sync MegaWatch TV now** in WebDAV settings. It runs in the foreground,
   shares ordinary-cycle serialization, and refuses inactive bindings,
   pending first joins, and concurrent cycles. Its stages are Reading,
   Merging, Applying, and Publishing; Stop is checked between stages. A
@@ -2370,7 +2370,7 @@ pool-generation, and materialization contracts above are unchanged.
 - The settings block shows the pending hint and last successful completion
   time. The modal progress surface is blocking while the foreground
   operation runs and exposes the stage-granular Stop control. Product copy
-  says Debrify TV syncs only when run manually and calls out running it
+  says MegaWatch TV syncs only when run manually and calls out running it
   after connecting another device or importing channels.
 - The ambient library has a separate 20,000-leaf soft cap. Both local build
   and final merged-publish checks fail closed with an audited, visible
@@ -2390,8 +2390,8 @@ passphrase, this section supersedes them.
   binding store seals it. Koofr uses the pinned endpoint
   `https://app.koofr.net/dav/Koofr/`; Custom accepts HTTP(S) and keeps the
   explicit insecure warning for HTTP.
-- The folder is always `Debrify` below the effective endpoint, yielding
-  `Debrify/debrify-sync/...`. Setup never presents a folder picker. The normal
+- The folder is always `MegaWatch` below the effective endpoint, yielding
+  `MegaWatch/megawatch-sync/...`. Setup never presents a folder picker. The normal
   Cloud WebDAV add/browse flow is unchanged.
 - `circle.authority` is the only existence/authority object. Its strict JSON is
   `{"version":1,"marker":"<base64 sealed marker>","syncPassphrase":"<string>"}`.

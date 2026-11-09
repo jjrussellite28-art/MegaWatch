@@ -1,4 +1,4 @@
-import 'package:debrify/utils/stremio_episode_selector.dart';
+import 'package:megawatch/utils/stremio_episode_selector.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

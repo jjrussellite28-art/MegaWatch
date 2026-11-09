@@ -15,7 +15,7 @@ void main() {
     'lib/screens/video_player_screen.dart',
   ).readAsStringSync();
   final nativePlayer = File(
-    'android/app/src/main/kotlin/com/debrify/app/tv/AndroidTvTorrentPlayerActivity.kt',
+    'android/app/src/main/kotlin/com/megawatch/app/tv/AndroidTvTorrentPlayerActivity.kt',
   ).readAsStringSync();
   final playerBridge = File(
     'lib/services/android_tv_player_bridge.dart',

@@ -14,7 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
 
 import '../../models/stremio_addon.dart';
-import '../../services/debrify_image_cache.dart';
+import '../../services/megawatch_image_cache.dart';
 import '../../theme/app_focus.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/app_theme_scope.dart';
@@ -757,7 +757,7 @@ class SpotlightBoardState extends State<SpotlightBoard> with MetadataPresentatio
   @visibleForTesting
   ImageProvider heroWarmupProvider(String url) => ResizeImage.resizeIfNeeded(
       _heroDecodeWidth, null,
-      CachedNetworkImageProvider(url, cacheManager: DebrifyImageCache.manager));
+      CachedNetworkImageProvider(url, cacheManager: MegaWatchImageCache.manager));
 
   Future<bool> _warmHeroImage(String url) {
     final result = Completer<bool>();
@@ -1265,7 +1265,7 @@ class SpotlightBoardState extends State<SpotlightBoard> with MetadataPresentatio
       _emitAmbient(url, null);
       final tint = await extractDominantColor(
         CachedNetworkImageProvider(url,
-            cacheManager: DebrifyImageCache.manager),
+            cacheManager: MegaWatchImageCache.manager),
       );
       if (!mounted || gen != _probeGen) return;
       setState(() => _remember(url, tint));
@@ -1295,7 +1295,7 @@ class SpotlightBoardState extends State<SpotlightBoard> with MetadataPresentatio
     final url = _heroArt(next);
     if (url == null || url.isEmpty || _tints.containsKey(url)) return;
     final tint = await extractDominantColor(
-      CachedNetworkImageProvider(url, cacheManager: DebrifyImageCache.manager),
+      CachedNetworkImageProvider(url, cacheManager: MegaWatchImageCache.manager),
     );
     if (!mounted) return;
     setState(() => _remember(url, tint));
@@ -2009,7 +2009,7 @@ class SpotlightBoardState extends State<SpotlightBoard> with MetadataPresentatio
               imageUrl: url,
               key: ValueKey(url),
               fit: BoxFit.cover,
-              cacheManager: DebrifyImageCache.manager,
+              cacheManager: MegaWatchImageCache.manager,
               // Decode at the PANEL's resolution, not a guessed constant —
               // 900 was under a 1080-class phone's physical width (390 × 3),
               // so the one full-bleed image on the screen was the soft one.
@@ -2027,7 +2027,7 @@ class SpotlightBoardState extends State<SpotlightBoard> with MetadataPresentatio
                       ? CachedNetworkImage(
                           imageUrl: posterUrl,
                           fit: BoxFit.cover,
-                          cacheManager: DebrifyImageCache.manager,
+                          cacheManager: MegaWatchImageCache.manager,
                           memCacheWidth: 900,
                           placeholder: (_, __) => ColoredBox(color: ground),
                           errorWidget: (_, __, ___) =>
@@ -2225,7 +2225,7 @@ class SpotlightBoardState extends State<SpotlightBoard> with MetadataPresentatio
             imageUrl: url,
             key: ValueKey(url),
             fit: BoxFit.cover,
-            cacheManager: DebrifyImageCache.manager,
+            cacheManager: MegaWatchImageCache.manager,
             // Decode at the PANEL's resolution off-TV, same as the compact
             // hero — 1400 flat was under a retina desktop's physical width,
             // so the one full-bleed image on the screen was the soft one.
@@ -2246,7 +2246,7 @@ class SpotlightBoardState extends State<SpotlightBoard> with MetadataPresentatio
                     ? CachedNetworkImage(
                         imageUrl: posterUrl,
                         fit: BoxFit.cover,
-                        cacheManager: DebrifyImageCache.manager,
+                        cacheManager: MegaWatchImageCache.manager,
                         memCacheWidth: 1400,
                         placeholder: (_, __) => ColoredBox(color: ground),
                         errorWidget: (_, __, ___) =>
@@ -2871,7 +2871,7 @@ class _LogoOrTitle extends StatelessWidget {
         imageUrl: url!,
         fit: BoxFit.contain,
         alignment: corner,
-        cacheManager: DebrifyImageCache.manager,
+        cacheManager: MegaWatchImageCache.manager,
         memCacheWidth: 520,
         placeholder: (_, __) => const SizedBox.shrink(),
         // The title has to earn its way into the same slot rather than
@@ -3318,7 +3318,7 @@ class _CardState extends State<_Card> with MetadataPresentationMixin<_Card> {
         (hasSubtitle ? captionLineHeight * 0.85 : 0);
 
     // Apple platforms map this Flutter family token to SF Pro Text. Android
-    // TV keeps Debrify's Inter face, but shares the same optical treatment.
+    // TV keeps MegaWatch's Inter face, but shares the same optical treatment.
     // The caption is supplied to ParallaxFocus as a fixed-scale foreground:
     // it stays attached to the physical card without scaling its small glyphs
     // or letting the travelling glare wash through them.
@@ -3442,7 +3442,7 @@ class _CardState extends State<_Card> with MetadataPresentationMixin<_Card> {
                   child: RecoverableNetworkImage(
                     imageUrl: url,
                     fit: c.shape.fit,
-                    cacheManager: DebrifyImageCache.manager,
+                    cacheManager: MegaWatchImageCache.manager,
                     memCacheWidth: decodeW,
                     // Android TV used to POP (Duration.zero): a board mount
                     // once landed 20-30 posters inside a few seconds, and
@@ -3468,7 +3468,7 @@ class _CardState extends State<_Card> with MetadataPresentationMixin<_Card> {
                         ? RecoverableNetworkImage(
                             imageUrl: fallbackUrl,
                             fit: c.shape.fit,
-                            cacheManager: DebrifyImageCache.manager,
+                            cacheManager: MegaWatchImageCache.manager,
                             memCacheWidth: decodeW,
                             fadeInDuration:
                                 const Duration(milliseconds: 220),

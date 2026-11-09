@@ -1,4 +1,4 @@
-import 'package:debrify/widgets/collections/collection_category_tabs.dart';
+import 'package:megawatch/widgets/collections/collection_category_tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

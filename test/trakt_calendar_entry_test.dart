@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/models/trakt/trakt_calendar_entry.dart';
+import 'package:megawatch/models/trakt/trakt_calendar_entry.dart';
 
 void main() {
   group('TraktCalendarEntry.fromTraktJson', () {

@@ -1,14 +1,14 @@
-import 'package:debrify/theme/app_focus.dart';
-import 'package:debrify/theme/app_motion.dart';
-import 'package:debrify/theme/app_theme_scope.dart';
-import 'package:debrify/theme/app_light.dart';
-import 'package:debrify/theme/app_art.dart';
-import 'package:debrify/theme/app_surface.dart';
-import 'package:debrify/theme/app_theme.dart';
-import 'package:debrify/theme/theme_spec.dart';
-import 'package:debrify/theme/widgets/focus_expression.dart';
-import 'package:debrify/theme/widgets/parallax_focus.dart';
-import 'package:debrify/utils/platform_util.dart';
+import 'package:megawatch/theme/app_focus.dart';
+import 'package:megawatch/theme/app_motion.dart';
+import 'package:megawatch/theme/app_theme_scope.dart';
+import 'package:megawatch/theme/app_light.dart';
+import 'package:megawatch/theme/app_art.dart';
+import 'package:megawatch/theme/app_surface.dart';
+import 'package:megawatch/theme/app_theme.dart';
+import 'package:megawatch/theme/theme_spec.dart';
+import 'package:megawatch/theme/widgets/focus_expression.dart';
+import 'package:megawatch/theme/widgets/parallax_focus.dart';
+import 'package:megawatch/utils/platform_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

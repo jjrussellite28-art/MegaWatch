@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:debrify/utils/format_tag_detector.dart';
-import 'package:debrify/widgets/format_badge.dart';
-import 'package:debrify/widgets/source_row.dart';
+import 'package:megawatch/utils/format_tag_detector.dart';
+import 'package:megawatch/widgets/format_badge.dart';
+import 'package:megawatch/widgets/source_row.dart';
 
 void main() {
   Future<void> pump(WidgetTester tester, Widget child) => tester.pumpWidget(
