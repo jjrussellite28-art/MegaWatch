@@ -46,7 +46,7 @@ class RemoteSessionCrypto {
   static final Sha256 _sha256 = Sha256();
   static final Hmac _hmac = Hmac.sha256();
 
-  static const String _transcriptLabel = 'megawatch-rc-v2';
+  static const String _transcriptLabel = 'debrify-rc-v2';
 
   static Future<Uint8List> sha256Of(List<int> data) async {
     final hash = await _sha256.hash(data);

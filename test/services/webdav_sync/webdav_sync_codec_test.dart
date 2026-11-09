@@ -542,7 +542,7 @@ Future<Uint8List> _encryptDocumentPlaintext({
   required List<int> clear,
 }) async {
   final header = <String, Object?>{
-    'format': 'megawatch-webdav-sync-document',
+    'format': 'debrify-webdav-sync-document',
     'version': 1,
     'circleId': 'circle-test-1',
     'deviceId': 'device-test-1',

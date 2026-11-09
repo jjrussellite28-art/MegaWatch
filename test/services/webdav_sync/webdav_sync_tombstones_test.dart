@@ -40,7 +40,7 @@ void main() {
           Uint8List.fromList(List<int>.generate(length, (index) => index)),
     );
     stateDirectory = await Directory.systemTemp.createTemp(
-      'megawatch-webdav-sync-state-',
+      'debrify-webdav-sync-state-',
     );
     engineStore = WebDavSyncEngineStateStore(
       bindingStore: bindingStore,

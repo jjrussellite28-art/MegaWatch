@@ -54,11 +54,11 @@ final class WebDavSyncCodec {
   static const int defaultArgonIterations = 2;
   static const int defaultArgonParallelism = 1;
 
-  static const String _rootFormat = 'megawatch-webdav-sync-root';
-  static const String _documentFormat = 'megawatch-webdav-sync-document';
+  static const String _rootFormat = 'debrify-webdav-sync-root';
+  static const String _documentFormat = 'debrify-webdav-sync-document';
   static const String _aeadAlgorithm = 'aes-256-gcm';
   static const String _kdfAlgorithm = 'argon2id';
-  static const String _keyCheckContext = 'megawatch-webdav-sync-key-check-v1';
+  static const String _keyCheckContext = 'debrify-webdav-sync-key-check-v1';
   // A canonical legacy JSON payload can only begin with `null`, `true`,
   // `false`, a quote, a number, `[` or `{`. The leading NUL therefore makes
   // this in-plaintext marker impossible to confuse with any document emitted
